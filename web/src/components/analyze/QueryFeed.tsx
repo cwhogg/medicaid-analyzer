@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Clock, Trash2, ChevronRight, Database } from "lucide-react";
-import { getAllQueries, deleteQuery, type StoredQuery } from "@/lib/queryStore";
+import { Clock, Trash2, ChevronRight, Database, Layers } from "lucide-react";
+import { getAllQueries, deleteQuery, getAllAnalyses, deleteAnalysis, type StoredQuery, type StoredAnalysis } from "@/lib/queryStore";
 import { formatCurrency } from "@/lib/format";
 
+type FeedItem = (StoredQuery & { _type: "query" }) | (StoredAnalysis & { _type: "analysis" });
+
 interface QueryFeedProps {
-  onSelect: (query: StoredQuery) => void;
+  onSelect: (item: StoredQuery | StoredAnalysis) => void;
   refreshKey: number;
 }
 
@@ -21,9 +23,8 @@ function timeAgo(timestamp: number): string {
   return `${days}d ago`;
 }
 
-function summarizeResult(query: StoredQuery): string {
+function summarizeQueryResult(query: StoredQuery): string {
   if (!query.rows.length) return "No results";
-  // Try to find a numeric column and summarize
   const numColIdx = query.columns.findIndex((_, i) => {
     const v = query.rows[0]?.[i];
     return typeof v === "number" && v > 1000;
@@ -40,20 +41,33 @@ function summarizeResult(query: StoredQuery): string {
 }
 
 export function QueryFeed({ onSelect, refreshKey }: QueryFeedProps) {
-  const [queries, setQueries] = useState<StoredQuery[]>([]);
+  const [items, setItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getAllQueries()
-      .then(setQueries)
-      .catch(console.error)
+    Promise.all([
+      getAllQueries().catch(() => [] as StoredQuery[]),
+      getAllAnalyses().catch(() => [] as StoredAnalysis[]),
+    ])
+      .then(([queries, analyses]) => {
+        const tagged: FeedItem[] = [
+          ...queries.map((q) => ({ ...q, _type: "query" as const })),
+          ...analyses.map((a) => ({ ...a, _type: "analysis" as const })),
+        ];
+        tagged.sort((a, b) => b.timestamp - a.timestamp);
+        setItems(tagged);
+      })
       .finally(() => setLoading(false));
   }, [refreshKey]);
 
-  const handleDelete = async (e: React.MouseEvent, id: string) => {
+  const handleDelete = async (e: React.MouseEvent, item: FeedItem) => {
     e.stopPropagation();
-    await deleteQuery(id).catch(console.error);
-    setQueries((prev) => prev.filter((q) => q.id !== id));
+    if (item._type === "analysis") {
+      await deleteAnalysis(item.id).catch(console.error);
+    } else {
+      await deleteQuery(item.id).catch(console.error);
+    }
+    setItems((prev) => prev.filter((i) => i.id !== item.id));
   };
 
   if (loading) {
@@ -64,7 +78,7 @@ export function QueryFeed({ onSelect, refreshKey }: QueryFeedProps) {
     );
   }
 
-  if (!queries.length) {
+  if (!items.length) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <Database className="w-12 h-12 text-muted-dark mb-4" />
@@ -78,34 +92,57 @@ export function QueryFeed({ onSelect, refreshKey }: QueryFeedProps) {
 
   return (
     <div className="space-y-3">
-      {queries.map((query) => (
+      {items.map((item) => (
         <button
-          key={query.id}
-          onClick={() => onSelect(query)}
+          key={item.id}
+          onClick={() => {
+            // Strip the _type field before passing to parent
+            const { _type, ...rest } = item;
+            void _type;
+            onSelect(rest as StoredQuery | StoredAnalysis);
+          }}
           className="w-full text-left glass-card-hover p-4 group"
         >
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white leading-snug line-clamp-2">
-                {query.question}
-              </p>
+              <div className="flex items-center gap-2">
+                {item._type === "analysis" && (
+                  <span className="shrink-0 flex items-center gap-1 text-xs text-accent bg-accent/10 border border-accent/20 rounded px-1.5 py-0.5">
+                    <Layers className="w-3 h-3" />
+                    Deep
+                  </span>
+                )}
+                <p className="text-sm font-medium text-white leading-snug line-clamp-2">
+                  {item.question}
+                </p>
+              </div>
               <div className="flex items-center gap-3 mt-2 text-xs text-muted-dark">
                 <span className="flex items-center gap-1">
                   <Clock className="w-3 h-3" />
-                  {timeAgo(query.timestamp)}
+                  {timeAgo(item.timestamp)}
                 </span>
-                <span>{summarizeResult(query)}</span>
-                <span className="capitalize">{query.chartType}</span>
+                {item._type === "analysis" ? (
+                  <span>{item.stepCount} step{item.stepCount !== 1 ? "s" : ""}</span>
+                ) : (
+                  <span>{summarizeQueryResult(item)}</span>
+                )}
               </div>
-              <p className="text-xs text-muted-dark mt-1.5 truncate font-mono opacity-60">
-                {query.sql}
-              </p>
+              {item._type === "query" && (
+                <p className="text-xs text-muted-dark mt-1.5 truncate font-mono opacity-60">
+                  {item.sql}
+                </p>
+              )}
+              {item._type === "analysis" && item.summary && (
+                <p className="text-xs text-muted-dark mt-1.5 line-clamp-2">
+                  {item.summary}
+                </p>
+              )}
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <button
-                onClick={(e) => handleDelete(e, query.id)}
+                onClick={(e) => handleDelete(e, item)}
                 className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:text-red-400 text-muted-dark"
-                title="Delete query"
+                title="Delete"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
@@ -115,7 +152,7 @@ export function QueryFeed({ onSelect, refreshKey }: QueryFeedProps) {
         </button>
       ))}
       <p className="text-center text-xs text-muted-dark pt-2">
-        {queries.length} saved {queries.length === 1 ? "query" : "queries"}
+        {items.length} saved {items.length === 1 ? "item" : "items"}
       </p>
     </div>
   );

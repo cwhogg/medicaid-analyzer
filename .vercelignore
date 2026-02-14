@@ -1,0 +1,8 @@
+medicaid-provider-spending.parquet
+medicaid-provider-spending.csv
+medicaid-provider-spending.csv.zip
+scripts/
+.venv/
+__pycache__/
+*.pyc
+.git/

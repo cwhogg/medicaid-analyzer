@@ -26,7 +26,7 @@ export function useQuery() {
   });
 
   const submitQuestion = useCallback(
-    async (question: string) => {
+    async (question: string, years?: number[] | null) => {
       if (!ready) return;
       if (!question.trim()) return;
 
@@ -45,7 +45,7 @@ export function useQuery() {
         const response = await fetch("/api/query", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question }),
+          body: JSON.stringify({ question, years: years ?? null }),
         });
 
         if (!response.ok) {
@@ -66,13 +66,13 @@ export function useQuery() {
           result = await executeQuery(sql);
         } catch (execErr) {
           const errMsg = execErr instanceof Error ? execErr.message : String(execErr);
-          const isSqlError = /binder error|parser error|catalog error|no such|not found|does not have/i.test(errMsg);
+          const isSqlError = /binder error|parser error|catalog error|not implemented|no such|not found|does not have/i.test(errMsg);
           if (!isSqlError) throw execErr;
 
           const retryResponse = await fetch("/api/query", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ question, failedSql: sql, sqlError: errMsg }),
+            body: JSON.stringify({ question, years: years ?? null, failedSql: sql, sqlError: errMsg }),
           });
 
           if (!retryResponse.ok) {

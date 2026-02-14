@@ -24,3 +24,4 @@ scripts/.hcpcs_clean_checkpoint.json
 # DuckDB WASM files (copied from node_modules at build time)
 web/public/duckdb-eh.wasm
 web/public/duckdb-browser-eh.worker.js
+.vercel

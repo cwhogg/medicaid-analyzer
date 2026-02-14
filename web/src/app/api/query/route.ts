@@ -1,46 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { generateSchemaPrompt } from "@/lib/schemas";
-
-// --- Rate Limiting (per-IP sliding window) ---
-const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
-const RATE_LIMIT_MAX = 30; // max requests per window
-
-const requestLog = new Map<string, number[]>();
-
-// Clean stale entries every 5 minutes to prevent memory leaks
-let lastCleanup = Date.now();
-function cleanupRequestLog() {
-  const now = Date.now();
-  if (now - lastCleanup < 5 * 60 * 1000) return;
-  lastCleanup = now;
-  const cutoff = now - RATE_LIMIT_WINDOW_MS;
-  requestLog.forEach((timestamps, ip) => {
-    const valid = timestamps.filter((t) => t > cutoff);
-    if (valid.length === 0) {
-      requestLog.delete(ip);
-    } else {
-      requestLog.set(ip, valid);
-    }
-  });
-}
-
-function checkRateLimit(ip: string): { allowed: boolean; remaining: number; retryAfterSec?: number } {
-  cleanupRequestLog();
-  const now = Date.now();
-  const cutoff = now - RATE_LIMIT_WINDOW_MS;
-  const timestamps = (requestLog.get(ip) || []).filter((t) => t > cutoff);
-
-  if (timestamps.length >= RATE_LIMIT_MAX) {
-    const oldest = timestamps[0];
-    const retryAfterSec = Math.ceil((oldest + RATE_LIMIT_WINDOW_MS - now) / 1000);
-    return { allowed: false, remaining: 0, retryAfterSec };
-  }
-
-  timestamps.push(now);
-  requestLog.set(ip, timestamps);
-  return { allowed: true, remaining: RATE_LIMIT_MAX - timestamps.length };
-}
+import { checkRateLimit } from "@/lib/rateLimit";
+import { validateSQL, inferChartType } from "@/lib/sqlValidation";
 
 // --- SQL Response Cache (LRU, keyed by normalized question) ---
 const CACHE_MAX_SIZE = 500;
@@ -82,56 +44,6 @@ function setCachedSQL(question: string, sql: string, chartType: string) {
   sqlCache.set(key, { sql, chartType, timestamp: Date.now() });
 }
 
-// --- SQL Validation ---
-const FORBIDDEN_KEYWORDS = [
-  "CREATE", "DROP", "ALTER", "TRUNCATE",
-  "INSERT", "UPDATE", "DELETE", "MERGE",
-  "GRANT", "REVOKE", "EXEC", "EXECUTE",
-  "CALL", "COPY", "ATTACH", "DETACH",
-  "LOAD", "INSTALL", "PRAGMA",
-];
-
-function validateSQL(sql: string): { valid: boolean; error?: string } {
-  const trimmed = sql.trim().replace(/;+$/, "").trim();
-  const upper = trimmed.toUpperCase();
-
-  if (!upper.startsWith("SELECT") && !upper.startsWith("WITH")) {
-    return { valid: false, error: "Only SELECT queries are allowed." };
-  }
-
-  for (const keyword of FORBIDDEN_KEYWORDS) {
-    const regex = new RegExp(`\\b${keyword}\\b`, "i");
-    if (regex.test(upper)) {
-      return { valid: false, error: `Forbidden SQL keyword detected: ${keyword}` };
-    }
-  }
-
-  return { valid: true };
-}
-
-function inferChartType(sql: string, question: string): "table" | "line" | "bar" | "pie" {
-  const q = question.toLowerCase();
-  const s = sql.toLowerCase();
-
-  if (q.includes("trend") || q.includes("over time") || q.includes("monthly") || q.includes("by month") || q.includes("by year")) {
-    return "line";
-  }
-  if (q.includes("top") || q.includes("compare") || q.includes("ranking") || q.includes("highest") || q.includes("largest")) {
-    return "bar";
-  }
-  if (q.includes("breakdown") || q.includes("distribution") || q.includes("share") || q.includes("proportion") || q.includes("percentage")) {
-    return "pie";
-  }
-  if (s.includes("claim_month") || s.includes("date_trunc") || s.includes("extract(year")) {
-    return "line";
-  }
-  if (s.includes("order by") && s.includes("limit")) {
-    return "bar";
-  }
-
-  return "table";
-}
-
 // --- Route Handler ---
 export async function POST(request: NextRequest) {
   try {
@@ -155,7 +67,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { question, failedSql, sqlError } = body;
+    const { question, years, failedSql, sqlError } = body;
 
     if (!question || typeof question !== "string") {
       return NextResponse.json({ error: "Question is required and must be a string." }, { status: 400 });
@@ -169,9 +81,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Question cannot be empty." }, { status: 400 });
     }
 
+    // Validate years if provided
+    const yearFilter: number[] | null = Array.isArray(years) && years.length > 0
+      ? years.filter((y: unknown) => typeof y === "number" && y >= 2018 && y <= 2024).sort()
+      : null;
+
     // Check cache (only for first attempts, not retries)
+    const cacheQuestion = yearFilter ? `${question} [years:${yearFilter.join(",")}]` : question;
     if (!failedSql) {
-      const cached = getCachedSQL(question);
+      const cached = getCachedSQL(cacheQuestion);
       if (cached) {
         return NextResponse.json(
           { sql: cached.sql, chartType: cached.chartType, cached: true },
@@ -188,6 +106,15 @@ export async function POST(request: NextRequest) {
     const client = new Anthropic({ apiKey });
 
     const schemaPrompt = generateSchemaPrompt();
+
+    let yearConstraint = "";
+    if (yearFilter && yearFilter.length === 1) {
+      const y = yearFilter[0];
+      yearConstraint = `\n\nIMPORTANT: The user has selected year ${y} as a filter. You MUST add a WHERE clause to filter data to only year ${y}. For tables with a claim_month column, use: WHERE claim_month >= '${y}-01-01' AND claim_month < '${y + 1}-01-01'. For tables with a claim_year column, use: WHERE claim_year = ${y}.`;
+    } else if (yearFilter && yearFilter.length > 1) {
+      const monthConditions = yearFilter.map((y) => `(claim_month >= '${y}-01-01' AND claim_month < '${y + 1}-01-01')`).join(" OR ");
+      yearConstraint = `\n\nIMPORTANT: The user has selected years ${yearFilter.join(", ")} as a filter. You MUST add a WHERE clause to filter data to only these years. For tables with a claim_month column, use: WHERE ${monthConditions}. For tables with a claim_year column, use: WHERE claim_year IN (${yearFilter.join(", ")}).`;
+    }
 
     const messages: Anthropic.MessageParam[] = [
       { role: "user", content: question },
@@ -217,7 +144,7 @@ Rules:
 - Use DuckDB SQL syntax.
 - Format dollar amounts with ROUND() for readability.
 - When a question is ambiguous, make reasonable assumptions and use the most appropriate table.
-- Use short, distinct table aliases (e.g. hs, hm, ps, tpm, hl, nl) and ensure every alias referenced in the query is defined in a FROM or JOIN clause.`,
+- Use short, distinct table aliases (e.g. hs, hm, ps, tpm, hl, nl) and ensure every alias referenced in the query is defined in a FROM or JOIN clause.${yearConstraint}`,
       messages,
     });
 
@@ -242,7 +169,7 @@ Rules:
 
     // Cache the result (only for first attempts, not retries)
     if (!failedSql) {
-      setCachedSQL(question, sql, chartType);
+      setCachedSQL(cacheQuestion, sql, chartType);
     }
 
     return NextResponse.json(
