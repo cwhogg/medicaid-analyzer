@@ -1,0 +1,26 @@
+# Raw data files (too large for git)
+medicaid-provider-spending.csv
+medicaid-provider-spending.csv.zip
+medicaid-provider-spending.parquet
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Environment
+.env.local
+.env*.local
+
+# OS
+.DS_Store
+
+# Claude Code
+.claude/
+
+# Scripts temp files
+scripts/.hcpcs_clean_checkpoint.json
+
+# DuckDB WASM files (copied from node_modules at build time)
+web/public/duckdb-eh.wasm
+web/public/duckdb-browser-eh.worker.js
