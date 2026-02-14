@@ -1,33 +1,86 @@
 import { Database } from "duckdb-async";
+import { existsSync } from "fs";
 
 let db: Database | null = null;
+let viewsReady = false;
 
 const DATA_DIR = process.env.DATA_DIR || "/data";
 const QUERY_TIMEOUT_MS = 30_000;
+
+const VIEWS: [string, string][] = [
+  ["claims", "medicaid-provider-spending.parquet"],
+  ["hcpcs_lookup", "hcpcs_lookup.parquet"],
+  ["npi_lookup", "npi_lookup.parquet"],
+];
 
 export async function initDB(): Promise<void> {
   if (db) return;
 
   db = await Database.create(":memory:");
 
-  // Register Parquet files as views
-  const views: [string, string][] = [
-    ["claims", "medicaid-provider-spending.parquet"],
-    ["hcpcs_lookup", "hcpcs_lookup.parquet"],
-    ["npi_lookup", "npi_lookup.parquet"],
-  ];
+  // Try to register views — skip missing files gracefully
+  await tryCreateViews();
+}
 
-  for (const [viewName, fileName] of views) {
+async function tryCreateViews(): Promise<void> {
+  if (!db) return;
+
+  const missing: string[] = [];
+  const created: string[] = [];
+
+  for (const [viewName, fileName] of VIEWS) {
     const filePath = `${DATA_DIR}/${fileName}`;
-    await db.run(
-      `CREATE VIEW ${viewName} AS SELECT * FROM read_parquet('${filePath}')`
-    );
+    if (!existsSync(filePath)) {
+      missing.push(fileName);
+      continue;
+    }
+    try {
+      await db.run(`CREATE OR REPLACE VIEW ${viewName} AS SELECT * FROM read_parquet('${filePath}')`);
+      created.push(viewName);
+    } catch (err) {
+      console.error(`Failed to create view ${viewName}:`, err);
+      missing.push(fileName);
+    }
   }
 
-  console.log(
-    "DuckDB initialized with views:",
-    views.map(([v]) => v).join(", ")
-  );
+  if (created.length > 0) {
+    console.log("Views created:", created.join(", "));
+  }
+  if (missing.length > 0) {
+    console.warn("Missing data files:", missing.join(", "));
+    console.warn("Upload files to", DATA_DIR, "and call POST /reload to register them.");
+  }
+
+  viewsReady = created.length === VIEWS.length;
+}
+
+export async function reloadViews(): Promise<{ created: string[]; missing: string[] }> {
+  if (!db) throw new Error("DuckDB not initialized");
+
+  const missing: string[] = [];
+  const created: string[] = [];
+
+  for (const [viewName, fileName] of VIEWS) {
+    const filePath = `${DATA_DIR}/${fileName}`;
+    if (!existsSync(filePath)) {
+      missing.push(fileName);
+      continue;
+    }
+    try {
+      await db.run(`CREATE OR REPLACE VIEW ${viewName} AS SELECT * FROM read_parquet('${filePath}')`);
+      created.push(viewName);
+    } catch (err) {
+      console.error(`Failed to create view ${viewName}:`, err);
+      missing.push(fileName);
+    }
+  }
+
+  viewsReady = created.length === VIEWS.length;
+  return { created, missing };
+}
+
+export function isReady(): boolean {
+  return viewsReady;
 }
 
 export async function executeSQL(
@@ -35,6 +88,10 @@ export async function executeSQL(
 ): Promise<{ columns: string[]; rows: unknown[][] }> {
   if (!db) {
     throw new Error("DuckDB not initialized");
+  }
+
+  if (!viewsReady) {
+    throw new Error("Data files not loaded. Upload Parquet files and call POST /reload.");
   }
 
   // Inject LIMIT 10000 if no LIMIT clause present

@@ -1,18 +1,24 @@
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
-import { initDB, executeSQL } from "./db.js";
+import { initDB, executeSQL, reloadViews, isReady } from "./db.js";
 
 const app = new Hono();
 
 const API_KEY = process.env.RAILWAY_API_KEY || "";
 
-// Auth middleware
+// Auth middleware for /query and /reload
 app.use("/query", async (c, next) => {
   const auth = c.req.header("Authorization");
-  if (!API_KEY) {
-    // No key configured — allow (dev mode)
-    return next();
+  if (!API_KEY) return next();
+  if (auth !== `Bearer ${API_KEY}`) {
+    return c.json({ error: "Unauthorized" }, 401);
   }
+  return next();
+});
+
+app.use("/reload", async (c, next) => {
+  const auth = c.req.header("Authorization");
+  if (!API_KEY) return next();
   if (auth !== `Bearer ${API_KEY}`) {
     return c.json({ error: "Unauthorized" }, 401);
   }
@@ -20,12 +26,18 @@ app.use("/query", async (c, next) => {
 });
 
 // Health check
-app.get("/health", async (c) => {
+app.get("/health", (c) => {
+  return c.json({ ok: true, dataReady: isReady() });
+});
+
+// Reload views after uploading data files
+app.post("/reload", async (c) => {
   try {
-    const result = await executeSQL("SELECT 1 AS ok");
-    return c.json({ ok: result.rows[0]?.[0] === 1 });
-  } catch {
-    return c.json({ ok: false }, 500);
+    const result = await reloadViews();
+    return c.json(result);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Reload failed";
+    return c.json({ error: message }, 500);
   }
 });
 
@@ -75,7 +87,7 @@ const PORT = parseInt(process.env.PORT || "3001", 10);
 async function main() {
   console.log("Initializing DuckDB...");
   await initDB();
-  console.log("DuckDB ready.");
+  console.log("DuckDB initialized. Server starting...");
 
   serve({ fetch: app.fetch, port: PORT }, (info) => {
     console.log(`Query service listening on port ${info.port}`);
