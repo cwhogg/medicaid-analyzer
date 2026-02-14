@@ -94,16 +94,6 @@ export default function AnalyzePage() {
             </div>
           </div>
 
-          {/* DuckDB status */}
-          {dbLoading && (
-            <div className="glass-card p-4 mb-6 flex items-center gap-3">
-              <Loader2 className="w-5 h-5 text-accent animate-spin" />
-              <p className="text-sm text-muted">
-                Initializing DuckDB-WASM... This loads the query engine and data files in your browser.
-              </p>
-            </div>
-          )}
-
           {dbError && (
             <div className="glass-card p-4 mb-6 border-red-500/30 flex items-center gap-3">
               <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
