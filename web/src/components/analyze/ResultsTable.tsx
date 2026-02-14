@@ -18,6 +18,9 @@ function formatCell(value: unknown, colName?: string): string {
   if (typeof value === "number") {
     // Don't comma-format years, IDs, codes, or NPI numbers
     if (colName && isYearOrIdColumn(colName)) return String(value);
+    if (colName && /paid|spending|cost|amount|payment|charge|price/i.test(colName)) {
+      return Math.round(value).toLocaleString();
+    }
     if (Number.isInteger(value)) return value.toLocaleString();
     return value.toLocaleString(undefined, { maximumFractionDigits: 2 });
   }
