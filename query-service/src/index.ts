@@ -1,6 +1,9 @@
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
+import { writeFileSync, existsSync, readdirSync } from "fs";
 import { initDB, executeSQL, reloadViews, isReady } from "./db.js";
+
+const DATA_DIR = process.env.DATA_DIR || "/data";
 
 const app = new Hono();
 
@@ -8,6 +11,15 @@ const API_KEY = process.env.RAILWAY_API_KEY || "";
 
 // Auth middleware for /query and /reload
 app.use("/query", async (c, next) => {
+  const auth = c.req.header("Authorization");
+  if (!API_KEY) return next();
+  if (auth !== `Bearer ${API_KEY}`) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  return next();
+});
+
+app.use("/upload", async (c, next) => {
   const auth = c.req.header("Authorization");
   if (!API_KEY) return next();
   if (auth !== `Bearer ${API_KEY}`) {
@@ -28,6 +40,35 @@ app.use("/reload", async (c, next) => {
 // Health check
 app.get("/health", (c) => {
   return c.json({ ok: true, dataReady: isReady() });
+});
+
+// Upload a file to the data volume
+app.post("/upload", async (c) => {
+  try {
+    const filename = c.req.header("X-Filename");
+    if (!filename) {
+      return c.json({ error: "X-Filename header required" }, 400);
+    }
+    const body = await c.req.arrayBuffer();
+    const filePath = `${DATA_DIR}/${filename}`;
+    writeFileSync(filePath, Buffer.from(body));
+    return c.json({ ok: true, path: filePath, bytes: body.byteLength });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Upload failed";
+    return c.json({ error: message }, 500);
+  }
+});
+
+// List files in data volume
+app.get("/files", (c) => {
+  try {
+    if (!existsSync(DATA_DIR)) return c.json({ files: [] });
+    const files = readdirSync(DATA_DIR);
+    return c.json({ files });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to list files";
+    return c.json({ error: message }, 500);
+  }
 });
 
 // Reload views after uploading data files
