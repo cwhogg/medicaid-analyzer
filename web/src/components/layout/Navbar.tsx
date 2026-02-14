@@ -46,7 +46,7 @@ export function Navbar() {
               href="/analyze"
               className="btn-primary text-sm"
             >
-              Start Querying
+              Start Analyzing
             </Link>
           </div>
         </div>

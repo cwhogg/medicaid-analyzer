@@ -54,7 +54,7 @@ export function LiveDemo() {
             Monthly Spending Trends
           </h2>
           <p className="mt-4 text-muted max-w-xl mx-auto">
-            Medicaid provider spending from January 2018 to December 2024
+            Medicaid provider spending from January 2018 to September 2024
           </p>
         </div>
 
