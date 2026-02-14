@@ -28,7 +28,6 @@ const TABS = [
 export default function AnalyzePage() {
   const {
     dbReady,
-    dbLoading,
     dbError,
     sql,
     columns,

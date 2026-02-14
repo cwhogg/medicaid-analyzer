@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import type { Metadata } from "next";
 import { Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
@@ -12,11 +13,16 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains",
 });
 
-export const metadata: Metadata = {
-  title: "Medicaid Claims Analyzer",
-  description:
-    "Explore 227M+ rows of Medicaid provider spending data with natural language queries powered by AI.",
-};
+export function generateMetadata(): Metadata {
+  return {
+    title: "Medicaid Claims Analyzer",
+    description:
+      "Explore 227M+ rows of Medicaid provider spending data with natural language queries powered by AI.",
+    other: {
+      ...Sentry.getTraceData(),
+    },
+  };
+}
 
 export default function RootLayout({
   children,
