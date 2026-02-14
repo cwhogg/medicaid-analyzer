@@ -72,7 +72,7 @@ export function QueryInput({ onSubmit, loading, disabled, analysisRunning, onCan
                       Running...
                     </>
                   ) : (
-                    "Query"
+                    "Simple Query"
                   )}
                 </button>
                 <button
