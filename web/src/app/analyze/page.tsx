@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useRef } from "react";
 import { useQuery } from "@/hooks/useQuery";
-import { useDuckDB } from "@/hooks/useDuckDB";
 import { useAnalysis } from "@/hooks/useAnalysis";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -34,8 +33,6 @@ type Mode = "idle" | "query" | "analysis";
 
 export default function AnalyzePage() {
   const {
-    dbReady,
-    dbError,
     sql,
     columns,
     rows,
@@ -48,9 +45,7 @@ export default function AnalyzePage() {
     clearResults,
   } = useQuery();
 
-  // Shared DuckDB instance for analysis — same singleton as useQuery's
-  const { executeQuery } = useDuckDB();
-  const analysis = useAnalysis(executeQuery);
+  const analysis = useAnalysis();
 
   const [activeTab, setActiveTab] = useState<"query" | "feed">("query");
   const [feedRefreshKey, setFeedRefreshKey] = useState(0);
@@ -145,16 +140,6 @@ export default function AnalyzePage() {
             </div>
           </div>
 
-          {dbError && (
-            <div className="glass-card p-4 mb-6 border-red-500/30 flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
-              <div>
-                <p className="text-sm text-red-400 font-medium">Failed to initialize DuckDB</p>
-                <p className="text-xs text-muted-dark mt-1">{dbError}</p>
-              </div>
-            </div>
-          )}
-
           {/* Feed tab */}
           {activeTab === "feed" && (
             <QueryFeed onSelect={handleFeedSelect} refreshKey={feedRefreshKey} />
@@ -195,7 +180,6 @@ export default function AnalyzePage() {
               <QueryInput
                 onSubmit={handleSubmit}
                 loading={loading}
-                disabled={!dbReady}
                 analysisRunning={analysisRunning}
                 onCancelAnalysis={analysis.cancelAnalysis}
               />
@@ -253,7 +237,7 @@ export default function AnalyzePage() {
                     <div className="glass-card p-12 flex flex-col items-center gap-3">
                       <Loader2 className="w-8 h-8 text-accent animate-spin" />
                       <p className="text-sm text-muted">
-                        {sql ? "Executing query..." : "Generating SQL..."}
+                        Generating and executing query...
                       </p>
                     </div>
                   )}

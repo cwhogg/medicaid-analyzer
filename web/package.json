@@ -4,14 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "cp node_modules/@duckdb/duckdb-wasm/dist/duckdb-eh.wasm public/ && cp node_modules/@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js public/",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
-    "@duckdb/duckdb-wasm": "^1.29.0",
     "@sentry/nextjs": "^10.38.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.469.0",

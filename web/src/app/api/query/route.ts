@@ -3,45 +3,47 @@ import Anthropic from "@anthropic-ai/sdk";
 import { generateSchemaPrompt } from "@/lib/schemas";
 import { checkRateLimit } from "@/lib/rateLimit";
 import { validateSQL, inferChartType } from "@/lib/sqlValidation";
+import { executeRemoteQuery } from "@/lib/railway";
 
-// --- SQL Response Cache (LRU, keyed by normalized question) ---
+// --- Response Cache (LRU, keyed by normalized question) ---
 const CACHE_MAX_SIZE = 500;
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 interface CacheEntry {
   sql: string;
   chartType: string;
+  columns: string[];
+  rows: unknown[][];
   timestamp: number;
 }
 
-const sqlCache = new Map<string, CacheEntry>();
+const cache = new Map<string, CacheEntry>();
 
 function normalizeQuestion(q: string): string {
   return q.toLowerCase().trim().replace(/[?.!]+$/, "").replace(/\s+/g, " ");
 }
 
-function getCachedSQL(question: string): CacheEntry | null {
+function getCached(question: string): CacheEntry | null {
   const key = normalizeQuestion(question);
-  const entry = sqlCache.get(key);
+  const entry = cache.get(key);
   if (!entry) return null;
   if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
-    sqlCache.delete(key);
+    cache.delete(key);
     return null;
   }
   // Move to end (most recently used)
-  sqlCache.delete(key);
-  sqlCache.set(key, entry);
+  cache.delete(key);
+  cache.set(key, entry);
   return entry;
 }
 
-function setCachedSQL(question: string, sql: string, chartType: string) {
+function setCache(question: string, entry: Omit<CacheEntry, "timestamp">) {
   const key = normalizeQuestion(question);
-  // Evict oldest entries if at capacity
-  if (sqlCache.size >= CACHE_MAX_SIZE) {
-    const firstKey = sqlCache.keys().next().value;
-    if (firstKey !== undefined) sqlCache.delete(firstKey);
+  if (cache.size >= CACHE_MAX_SIZE) {
+    const firstKey = cache.keys().next().value;
+    if (firstKey !== undefined) cache.delete(firstKey);
   }
-  sqlCache.set(key, { sql, chartType, timestamp: Date.now() });
+  cache.set(key, { ...entry, timestamp: Date.now() });
 }
 
 // --- Route Handler ---
@@ -67,7 +69,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { question, years, failedSql, sqlError } = body;
+    const { question, years } = body;
 
     if (!question || typeof question !== "string") {
       return NextResponse.json({ error: "Question is required and must be a string." }, { status: 400 });
@@ -86,16 +88,14 @@ export async function POST(request: NextRequest) {
       ? years.filter((y: unknown) => typeof y === "number" && y >= 2018 && y <= 2024).sort()
       : null;
 
-    // Check cache (only for first attempts, not retries)
+    // Check cache
     const cacheQuestion = yearFilter ? `${question} [years:${yearFilter.join(",")}]` : question;
-    if (!failedSql) {
-      const cached = getCachedSQL(cacheQuestion);
-      if (cached) {
-        return NextResponse.json(
-          { sql: cached.sql, chartType: cached.chartType, cached: true },
-          { headers: { "X-RateLimit-Remaining": String(rateCheck.remaining), "X-Cache": "HIT" } }
-        );
-      }
+    const cached = getCached(cacheQuestion);
+    if (cached) {
+      return NextResponse.json(
+        { sql: cached.sql, chartType: cached.chartType, columns: cached.columns, rows: cached.rows, cached: true },
+        { headers: { "X-RateLimit-Remaining": String(rateCheck.remaining), "X-Cache": "HIT" } }
+      );
     }
 
     const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -104,29 +104,21 @@ export async function POST(request: NextRequest) {
     }
 
     const client = new Anthropic({ apiKey });
-
     const schemaPrompt = generateSchemaPrompt();
 
     let yearConstraint = "";
     if (yearFilter && yearFilter.length === 1) {
       const y = yearFilter[0];
-      yearConstraint = `\n\nIMPORTANT: The user has selected year ${y} as a filter. You MUST add a WHERE clause to filter data to only year ${y}. For tables with a claim_month column, use: WHERE claim_month >= '${y}-01-01' AND claim_month < '${y + 1}-01-01'. For tables with a claim_year column, use: WHERE claim_year = ${y}.`;
+      yearConstraint = `\n\nIMPORTANT: The user has selected year ${y} as a filter. You MUST add a WHERE clause to filter data to only year ${y}. Use: WHERE claim_month >= '${y}-01-01' AND claim_month < '${y + 1}-01-01'.`;
     } else if (yearFilter && yearFilter.length > 1) {
       const monthConditions = yearFilter.map((y) => `(claim_month >= '${y}-01-01' AND claim_month < '${y + 1}-01-01')`).join(" OR ");
-      yearConstraint = `\n\nIMPORTANT: The user has selected years ${yearFilter.join(", ")} as a filter. You MUST add a WHERE clause to filter data to only these years. For tables with a claim_month column, use: WHERE ${monthConditions}. For tables with a claim_year column, use: WHERE claim_year IN (${yearFilter.join(", ")}).`;
+      yearConstraint = `\n\nIMPORTANT: The user has selected years ${yearFilter.join(", ")} as a filter. You MUST add a WHERE clause to filter data to only these years. Use: WHERE ${monthConditions}.`;
     }
 
+    // Generate SQL
     const messages: Anthropic.MessageParam[] = [
       { role: "user", content: question },
     ];
-
-    // If retrying after a SQL error, include the failed attempt so Claude can fix it
-    if (failedSql && sqlError) {
-      messages.push(
-        { role: "assistant", content: failedSql },
-        { role: "user", content: `That SQL query failed with this error:\n${sqlError}\n\nPlease fix the query and return only the corrected SQL.` },
-      );
-    }
 
     const message = await client.messages.create({
       model: "claude-sonnet-4-20250514",
@@ -138,13 +130,14 @@ ${schemaPrompt}
 
 Rules:
 - Return ONLY the SQL query, nothing else. No markdown, no explanation, no code fences.
+- EXCEPTION: If the available tables cannot answer the user's question, instead of SQL return exactly: CANNOT_ANSWER: followed by a clear explanation of what data is and is not available.
 - Always include a LIMIT clause (max 10000).
 - Only use SELECT statements.
-- Use the table names exactly as defined (monthly_totals, hcpcs_summary, hcpcs_monthly, provider_summary, top_providers_monthly, hcpcs_lookup, npi_lookup).
+- Use the table names exactly as defined (claims, hcpcs_lookup, npi_lookup).
 - Use DuckDB SQL syntax.
 - Format dollar amounts with ROUND() for readability.
-- When a question is ambiguous, make reasonable assumptions and use the most appropriate table.
-- Use short, distinct table aliases (e.g. hs, hm, ps, tpm, hl, nl) and ensure every alias referenced in the query is defined in a FROM or JOIN clause.${yearConstraint}`,
+- When a question is ambiguous, make reasonable assumptions and use the most appropriate approach.
+- Use short, distinct table aliases (e.g. c, l, n) and ensure every alias referenced in the query is defined in a FROM or JOIN clause.${yearConstraint}`,
       messages,
     });
 
@@ -154,6 +147,15 @@ Rules:
     }
 
     let sql = textBlock.text.trim();
+
+    // Handle CANNOT_ANSWER refusals
+    if (sql.startsWith("CANNOT_ANSWER:")) {
+      const explanation = sql.slice("CANNOT_ANSWER:".length).trim();
+      return NextResponse.json(
+        { error: explanation, cannotAnswer: true },
+        { status: 422, headers: { "X-RateLimit-Remaining": String(rateCheck.remaining) } }
+      );
+    }
 
     // Strip markdown code fences if present
     if (sql.startsWith("```")) {
@@ -167,13 +169,73 @@ Rules:
 
     const chartType = inferChartType(sql, question);
 
-    // Cache the result (only for first attempts, not retries)
-    if (!failedSql) {
-      setCachedSQL(cacheQuestion, sql, chartType);
+    // Execute SQL via Railway
+    let columns: string[];
+    let rows: unknown[][];
+    try {
+      const result = await executeRemoteQuery(sql);
+      columns = result.columns;
+      rows = result.rows;
+    } catch (execErr) {
+      const errMsg = execErr instanceof Error ? execErr.message : String(execErr);
+      const isSqlError = /binder error|parser error|catalog error|not implemented|no such|not found|does not have/i.test(errMsg);
+
+      if (!isSqlError) {
+        return NextResponse.json({ error: errMsg }, { status: 500 });
+      }
+
+      // Retry: ask Claude to fix the SQL
+      const retryMessage = await client.messages.create({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1024,
+        temperature: 0,
+        system: `You are a SQL expert that translates natural language questions into DuckDB SQL queries for a Medicaid provider spending dataset.
+
+${schemaPrompt}
+
+Rules:
+- Return ONLY the SQL query, nothing else. No markdown, no explanation, no code fences.
+- Always include a LIMIT clause (max 10000).
+- Only use SELECT statements.
+- Use DuckDB SQL syntax.
+- Use short, distinct table aliases.${yearConstraint}`,
+        messages: [
+          { role: "user", content: question },
+          { role: "assistant", content: sql },
+          { role: "user", content: `That SQL query failed with this error:\n${errMsg}\n\nPlease fix the query and return only the corrected SQL.` },
+        ],
+      });
+
+      const retryBlock = retryMessage.content.find((block) => block.type === "text");
+      if (!retryBlock || retryBlock.type !== "text") {
+        return NextResponse.json({ error: errMsg }, { status: 500 });
+      }
+
+      let fixedSql = retryBlock.text.trim();
+      if (fixedSql.startsWith("```")) {
+        fixedSql = fixedSql.replace(/^```(?:sql)?\n?/, "").replace(/\n?```$/, "").trim();
+      }
+
+      const retryValidation = validateSQL(fixedSql);
+      if (!retryValidation.valid) {
+        return NextResponse.json({ error: errMsg }, { status: 500 });
+      }
+
+      try {
+        const retryResult = await executeRemoteQuery(fixedSql);
+        sql = fixedSql;
+        columns = retryResult.columns;
+        rows = retryResult.rows;
+      } catch {
+        return NextResponse.json({ error: errMsg }, { status: 500 });
+      }
     }
 
+    // Cache the result
+    setCache(cacheQuestion, { sql, chartType, columns, rows });
+
     return NextResponse.json(
-      { sql, chartType },
+      { sql, chartType, columns, rows },
       { headers: { "X-RateLimit-Remaining": String(rateCheck.remaining), "X-Cache": "MISS" } }
     );
   } catch (err) {

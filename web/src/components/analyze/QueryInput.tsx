@@ -14,22 +14,21 @@ const EXAMPLE_QUERIES = [
 interface QueryInputProps {
   onSubmit: (question: string, mode: "query" | "analysis") => void;
   loading: boolean;
-  disabled: boolean;
   analysisRunning?: boolean;
   onCancelAnalysis?: () => void;
 }
 
-export function QueryInput({ onSubmit, loading, disabled, analysisRunning, onCancelAnalysis }: QueryInputProps) {
+export function QueryInput({ onSubmit, loading, analysisRunning, onCancelAnalysis }: QueryInputProps) {
   const [question, setQuestion] = useState("");
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!question.trim() || loading || disabled || analysisRunning) return;
+    if (!question.trim() || loading || analysisRunning) return;
     onSubmit(question.trim(), "query");
   };
 
   const handleDeepAnalysis = () => {
-    if (!question.trim() || loading || disabled || analysisRunning) return;
+    if (!question.trim() || loading || analysisRunning) return;
     onSubmit(question.trim(), "analysis");
   };
 
@@ -44,8 +43,8 @@ export function QueryInput({ onSubmit, loading, disabled, analysisRunning, onCan
             type="text"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder={disabled ? "Initializing DuckDB..." : "Ask a question about Medicaid spending..."}
-            disabled={disabled || busy}
+            placeholder="Ask a question about Medicaid spending..."
+            disabled={busy}
             className="flex-1 bg-transparent border-none outline-none text-white placeholder:text-muted-dark py-2 text-sm"
             maxLength={500}
           />
@@ -63,7 +62,7 @@ export function QueryInput({ onSubmit, loading, disabled, analysisRunning, onCan
               <>
                 <button
                   type="submit"
-                  disabled={!question.trim() || busy || disabled}
+                  disabled={!question.trim() || busy}
                   className="btn-primary py-2 px-4 text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (
@@ -78,7 +77,7 @@ export function QueryInput({ onSubmit, loading, disabled, analysisRunning, onCan
                 <button
                   type="button"
                   onClick={handleDeepAnalysis}
-                  disabled={!question.trim() || busy || disabled}
+                  disabled={!question.trim() || busy}
                   className="py-2 px-4 text-sm flex items-center gap-2 rounded-lg border border-accent/50 text-accent hover:bg-accent/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Layers className="w-4 h-4" />
@@ -96,9 +95,9 @@ export function QueryInput({ onSubmit, loading, disabled, analysisRunning, onCan
             key={q}
             onClick={() => {
               setQuestion(q);
-              if (!busy && !disabled) onSubmit(q, "query");
+              if (!busy) onSubmit(q, "query");
             }}
-            disabled={busy || disabled}
+            disabled={busy}
             className="text-xs text-muted hover:text-white bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.08] rounded-lg px-3 py-1.5 transition-colors disabled:opacity-50"
           >
             {q}

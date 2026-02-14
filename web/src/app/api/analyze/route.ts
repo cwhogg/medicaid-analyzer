@@ -3,6 +3,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import { generateSchemaPrompt } from "@/lib/schemas";
 import { checkRateLimit } from "@/lib/rateLimit";
 import { validateSQL } from "@/lib/sqlValidation";
+import { executeRemoteQuery } from "@/lib/railway";
+import { summarizeResults } from "@/lib/summarize";
 
 const MAX_STEPS = 5;
 
@@ -21,26 +23,22 @@ interface AnalyzeRequest {
   sessionId: string;
   stepIndex: number;
   previousSteps?: PreviousStep[];
-  failedSql?: string;
-  sqlError?: string;
 }
 
 function buildYearConstraint(yearFilter: number[] | null): string {
   if (!yearFilter) return "";
   if (yearFilter.length === 1) {
     const y = yearFilter[0];
-    return `\n\nIMPORTANT: The user has selected year ${y} as a filter. You MUST add a WHERE clause to filter data to only year ${y}. For tables with a claim_month column, use: WHERE claim_month >= '${y}-01-01' AND claim_month < '${y + 1}-01-01'. For tables with a claim_year column, use: WHERE claim_year = ${y}.`;
+    return `\n\nIMPORTANT: The user has selected year ${y} as a filter. You MUST add a WHERE clause to filter data to only year ${y}. Use: WHERE claim_month >= '${y}-01-01' AND claim_month < '${y + 1}-01-01'.`;
   }
   const monthConditions = yearFilter.map((y) => `(claim_month >= '${y}-01-01' AND claim_month < '${y + 1}-01-01')`).join(" OR ");
-  return `\n\nIMPORTANT: The user has selected years ${yearFilter.join(", ")} as a filter. You MUST add a WHERE clause to filter data to only these years. For tables with a claim_month column, use: WHERE ${monthConditions}. For tables with a claim_year column, use: WHERE claim_year IN (${yearFilter.join(", ")}).`;
+  return `\n\nIMPORTANT: The user has selected years ${yearFilter.join(", ")} as a filter. You MUST add a WHERE clause to filter data to only these years. Use: WHERE ${monthConditions}.`;
 }
 
 function buildConversationHistory(
   question: string,
   stepIndex: number,
   previousSteps: PreviousStep[],
-  failedSql?: string,
-  sqlError?: string,
 ): Anthropic.MessageParam[] {
   const messages: Anthropic.MessageParam[] = [];
 
@@ -50,14 +48,12 @@ function buildConversationHistory(
     content: `Analyze this question: ${question}`,
   });
 
-  if (stepIndex === 0 && !failedSql) {
-    // First call — Claude should return a plan + first step SQL
+  if (stepIndex === 0) {
     return messages;
   }
 
   // Build conversation from previous steps
   for (const step of previousSteps) {
-    // Claude's response for this step
     const assistantParts: string[] = [];
     if (step.title) assistantParts.push(`Step ${step.stepIndex + 1}: ${step.title}`);
     if (step.sql) assistantParts.push(`SQL: ${step.sql}`);
@@ -67,7 +63,6 @@ function buildConversationHistory(
       messages.push({ role: "assistant", content: assistantParts.join("\n") });
     }
 
-    // User provides results or error
     if (step.error) {
       messages.push({
         role: "user",
@@ -79,14 +74,6 @@ function buildConversationHistory(
         content: `Step ${step.stepIndex + 1} results:\n${step.resultSummary}\n\nContinue the analysis.`,
       });
     }
-  }
-
-  // If this is a SQL retry for the current step
-  if (failedSql && sqlError) {
-    messages.push(
-      { role: "assistant", content: failedSql },
-      { role: "user", content: `That SQL query failed with this error:\n${sqlError}\n\nPlease fix the query. Respond with the same JSON format.` },
-    );
   }
 
   return messages;
@@ -113,7 +100,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body: AnalyzeRequest = await request.json();
-    const { question, years, sessionId, stepIndex, previousSteps = [], failedSql, sqlError } = body;
+    const { question, years, sessionId, stepIndex, previousSteps = [] } = body;
 
     if (!question || typeof question !== "string") {
       return NextResponse.json({ error: "Question is required and must be a string." }, { status: 400 });
@@ -144,7 +131,7 @@ export async function POST(request: NextRequest) {
     const schemaPrompt = generateSchemaPrompt();
     const yearConstraint = buildYearConstraint(yearFilter);
 
-    const isFirstStep = stepIndex === 0 && !failedSql;
+    const isFirstStep = stepIndex === 0;
     const remainingSteps = MAX_STEPS - stepIndex;
 
     const systemPrompt = `You are an expert data analyst performing multi-step analysis on a Medicaid provider spending dataset. You analyze data iteratively: plan steps, write SQL queries, interpret results, and synthesize insights.
@@ -206,12 +193,13 @@ Rules:
 - Keep step titles concise (under 60 characters).
 - chartType should match the data shape: "line" for time series, "bar" for rankings, "pie" for proportions, "table" for detailed data.
 - The "insight" field on each step is optional but encouraged — briefly describe what the step's results reveal.
-- Use short, distinct table aliases and ensure every alias is defined in FROM or JOIN.${yearConstraint}`;
+- Use short, distinct table aliases and ensure every alias is defined in FROM or JOIN.
+- If you determine that the available tables cannot answer the user's question (or a specific step), include a "cannotAnswer" field with a clear explanation instead of a "sql" field.${yearConstraint}`;
 
-    const messages = buildConversationHistory(question, stepIndex, previousSteps, failedSql, sqlError);
+    const messages = buildConversationHistory(question, stepIndex, previousSteps);
 
     const response = await client.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-opus-4-20250514",
       max_tokens: 2048,
       temperature: 0,
       system: systemPrompt,
@@ -237,7 +225,7 @@ Rules:
       return NextResponse.json({ error: "Failed to parse analysis response." }, { status: 500 });
     }
 
-    // Validate SQL if present
+    // Validate and execute SQL if present
     if (parsed.step?.sql) {
       let sql = parsed.step.sql.trim();
       if (sql.startsWith("```")) {
@@ -248,6 +236,71 @@ Rules:
       const validation = validateSQL(sql);
       if (!validation.valid) {
         return NextResponse.json({ error: validation.error }, { status: 400 });
+      }
+
+      // Execute SQL via Railway
+      try {
+        const result = await executeRemoteQuery(sql);
+        parsed.step.columns = result.columns;
+        parsed.step.rows = result.rows;
+        parsed.step.resultSummary = summarizeResults(result.columns, result.rows);
+      } catch (execErr) {
+        const errMsg = execErr instanceof Error ? execErr.message : String(execErr);
+        const isSqlError = /binder error|parser error|catalog error|not implemented|no such|not found|does not have/i.test(errMsg);
+
+        if (isSqlError) {
+          // Retry: ask Claude to fix the SQL
+          try {
+            const retryMessages = [...messages];
+            retryMessages.push(
+              { role: "assistant", content: sql },
+              { role: "user", content: `That SQL query failed with this error:\n${errMsg}\n\nPlease fix the query. Respond with the same JSON format.` },
+            );
+
+            const retryResponse = await client.messages.create({
+              model: "claude-opus-4-20250514",
+              max_tokens: 2048,
+              temperature: 0,
+              system: systemPrompt,
+              messages: retryMessages,
+            });
+
+            const retryBlock = retryResponse.content.find((b) => b.type === "text");
+            if (retryBlock && retryBlock.type === "text") {
+              let retryText = retryBlock.text.trim();
+              if (retryText.startsWith("```")) {
+                retryText = retryText.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "").trim();
+              }
+              const retryParsed = JSON.parse(retryText);
+              if (retryParsed.step?.sql) {
+                let fixedSql = retryParsed.step.sql.trim();
+                if (fixedSql.startsWith("```")) {
+                  fixedSql = fixedSql.replace(/^```(?:sql)?\n?/, "").replace(/\n?```$/, "").trim();
+                }
+                const retryValidation = validateSQL(fixedSql);
+                if (retryValidation.valid) {
+                  const retryResult = await executeRemoteQuery(fixedSql);
+                  parsed.step.sql = fixedSql;
+                  parsed.step.columns = retryResult.columns;
+                  parsed.step.rows = retryResult.rows;
+                  parsed.step.resultSummary = summarizeResults(retryResult.columns, retryResult.rows);
+                  // Update other fields from retry if available
+                  if (retryParsed.step.title) parsed.step.title = retryParsed.step.title;
+                  if (retryParsed.step.chartType) parsed.step.chartType = retryParsed.step.chartType;
+                }
+              }
+            }
+          } catch {
+            // Retry failed — attach the error to the step
+            parsed.step.error = errMsg;
+            parsed.step.columns = [];
+            parsed.step.rows = [];
+          }
+        } else {
+          parsed.step.error = errMsg;
+          parsed.step.columns = [];
+          parsed.step.rows = [];
+        }
       }
     }
 

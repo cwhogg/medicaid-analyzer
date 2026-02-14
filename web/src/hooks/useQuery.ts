@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useDuckDB } from "./useDuckDB";
 import { saveQuery, type StoredQuery } from "@/lib/queryStore";
 
 interface QueryState {
@@ -14,8 +13,6 @@ interface QueryState {
 }
 
 export function useQuery() {
-  const { ready, loading: dbLoading, error: dbError, executeQuery } = useDuckDB();
-
   const [state, setState] = useState<QueryState>({
     sql: null,
     columns: [],
@@ -27,7 +24,6 @@ export function useQuery() {
 
   const submitQuestion = useCallback(
     async (question: string, years?: number[] | null) => {
-      if (!ready) return;
       if (!question.trim()) return;
 
       setState((prev) => ({
@@ -41,7 +37,6 @@ export function useQuery() {
       }));
 
       try {
-        // Step 1: Get SQL from API
         const response = await fetch("/api/query", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -53,47 +48,14 @@ export function useQuery() {
           throw new Error(errorData.error || `API error: ${response.status}`);
         }
 
-        let { sql } = await response.json();
+        const { sql, chartType, columns, rows } = await response.json();
 
         setState((prev) => ({
           ...prev,
           sql,
-        }));
-
-        // Step 2: Execute SQL in DuckDB-WASM, with one retry on SQL errors
-        let result;
-        try {
-          result = await executeQuery(sql);
-        } catch (execErr) {
-          const errMsg = execErr instanceof Error ? execErr.message : String(execErr);
-          const isSqlError = /binder error|parser error|catalog error|not implemented|no such|not found|does not have/i.test(errMsg);
-          if (!isSqlError) throw execErr;
-
-          const retryResponse = await fetch("/api/query", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ question, years: years ?? null, failedSql: sql, sqlError: errMsg }),
-          });
-
-          if (!retryResponse.ok) {
-            throw new Error(errMsg);
-          }
-
-          const retryData = await retryResponse.json();
-          sql = retryData.sql;
-
-          setState((prev) => ({
-            ...prev,
-            sql,
-          }));
-
-          result = await executeQuery(sql);
-        }
-
-        setState((prev) => ({
-          ...prev,
-          columns: result.columns,
-          rows: result.rows,
+          chartType: chartType || "table",
+          columns,
+          rows,
           loading: false,
         }));
 
@@ -102,10 +64,10 @@ export function useQuery() {
           id: crypto.randomUUID(),
           question,
           sql,
-          chartType: "table",
-          columns: result.columns,
-          rows: result.rows,
-          rowCount: result.rows.length,
+          chartType: chartType || "table",
+          columns,
+          rows,
+          rowCount: rows.length,
           timestamp: Date.now(),
         };
         await saveQuery(stored).catch(console.error);
@@ -117,7 +79,7 @@ export function useQuery() {
         }));
       }
     },
-    [ready, executeQuery]
+    []
   );
 
   const setChartType = useCallback((chartType: "table" | "line" | "bar" | "pie") => {
@@ -147,9 +109,6 @@ export function useQuery() {
   }, []);
 
   return {
-    dbReady: ready,
-    dbLoading,
-    dbError,
     ...state,
     submitQuestion,
     setChartType,

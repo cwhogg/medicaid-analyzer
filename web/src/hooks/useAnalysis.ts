@@ -4,7 +4,6 @@ import { useState, useCallback, useRef } from "react";
 import { saveAnalysis, type StoredAnalysis } from "@/lib/queryStore";
 
 const MAX_STEPS = 5;
-const MAX_SUMMARY_ROWS = 20;
 
 export type AnalysisStepStatus = "pending" | "generating_sql" | "executing" | "complete" | "error";
 
@@ -32,42 +31,16 @@ interface AnalysisState {
   error: string | null;
 }
 
-type ExecuteQueryFn = (sql: string) => Promise<{ columns: string[]; rows: unknown[][] }>;
-
-function summarizeResults(columns: string[], rows: unknown[][]): string {
-  const lines: string[] = [];
-  lines.push(`Columns: ${columns.join(", ")}`);
-  lines.push(`Row count: ${rows.length}`);
-
-  // Show first N rows
-  const preview = rows.slice(0, MAX_SUMMARY_ROWS);
-  for (const row of preview) {
-    const cells = row.map((cell, i) => `${columns[i]}=${cell}`);
-    lines.push(cells.join(", "));
-  }
-
-  if (rows.length > MAX_SUMMARY_ROWS) {
-    lines.push(`... and ${rows.length - MAX_SUMMARY_ROWS} more rows`);
-  }
-
-  // Numeric column stats
-  for (let i = 0; i < columns.length; i++) {
-    const numericVals = rows
-      .map((r) => r[i])
-      .filter((v): v is number => typeof v === "number");
-    if (numericVals.length > 0) {
-      const min = Math.min(...numericVals);
-      const max = Math.max(...numericVals);
-      const sum = numericVals.reduce((a, b) => a + b, 0);
-      const avg = sum / numericVals.length;
-      lines.push(`${columns[i]} stats: min=${min}, max=${max}, avg=${Math.round(avg)}, sum=${Math.round(sum)}`);
-    }
-  }
-
-  return lines.join("\n");
+interface CompletedStep {
+  stepIndex: number;
+  title: string;
+  sql: string | null;
+  resultSummary: string | null;
+  insight: string | null;
+  error: string | null;
 }
 
-export function useAnalysis(executeQuery: ExecuteQueryFn) {
+export function useAnalysis() {
   const abortRef = useRef<AbortController | null>(null);
   const planRef = useRef<string[] | null>(null);
 
@@ -106,14 +79,7 @@ export function useAnalysis(executeQuery: ExecuteQueryFn) {
       });
 
       try {
-        const completedSteps: {
-          stepIndex: number;
-          title: string;
-          sql: string | null;
-          resultSummary: string | null;
-          insight: string | null;
-          error: string | null;
-        }[] = [];
+        const completedSteps: CompletedStep[] = [];
 
         for (let stepIndex = 0; stepIndex < MAX_STEPS; stepIndex++) {
           if (abortController.signal.aborted) {
@@ -141,7 +107,7 @@ export function useAnalysis(executeQuery: ExecuteQueryFn) {
             ],
           }));
 
-          // Call API
+          // Call API — server now executes SQL and returns results
           const apiResponse = await fetch("/api/analyze", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -173,13 +139,46 @@ export function useAnalysis(executeQuery: ExecuteQueryFn) {
             setState((prev) => ({ ...prev, plan: data.plan }));
           }
 
+          // If a step has cannotAnswer, treat it as completed with the explanation
+          if (data.step?.cannotAnswer) {
+            setState((prev) => ({
+              ...prev,
+              steps: prev.steps.map((s, i) =>
+                i === stepIndex
+                  ? { ...s, title: data.step.title || "Cannot answer", sql: null, status: "complete", insight: data.step.cannotAnswer }
+                  : s
+              ),
+              ...(data.done ? { summary: data.summary || data.step.cannotAnswer, status: "complete" } : {}),
+            }));
+
+            completedSteps.push({
+              stepIndex,
+              title: data.step.title || "Cannot answer",
+              sql: null,
+              resultSummary: null,
+              insight: data.step.cannotAnswer,
+              error: null,
+            });
+
+            if (data.done) {
+              await saveToStore({
+                sessionId,
+                question,
+                plan: planRef.current || data.plan || null,
+                steps: completedSteps,
+                summary: data.summary || data.step.cannotAnswer,
+              });
+              return;
+            }
+            continue;
+          }
+
           // If done with just a summary (no more SQL)
           if (data.done && !data.step?.sql) {
             setState((prev) => ({
               ...prev,
               summary: data.summary || null,
               status: "complete",
-              // Remove the pending step we added
               steps: prev.steps.slice(0, -1),
             }));
 
@@ -198,93 +197,25 @@ export function useAnalysis(executeQuery: ExecuteQueryFn) {
           }
 
           const step = data.step;
+          const stepColumns: string[] = step.columns || [];
+          const stepRows: unknown[][] = step.rows || [];
+          const stepError: string | null = step.error || null;
 
-          // Update step with title and SQL
-          setState((prev) => ({
-            ...prev,
-            steps: prev.steps.map((s, i) =>
-              i === stepIndex
-                ? { ...s, title: step.title || `Step ${stepIndex + 1}`, sql: step.sql, chartType: step.chartType || "table", status: step.sql ? "executing" : "complete", insight: step.insight || null }
-                : s
-            ),
-          }));
-
-          // Execute SQL if present
-          let resultSummary: string | null = null;
-          let stepError: string | null = null;
-          let columns: string[] = [];
-          let rows: unknown[][] = [];
-
-          if (step.sql) {
-            try {
-              const result = await executeQuery(step.sql);
-              columns = result.columns;
-              rows = result.rows;
-              resultSummary = summarizeResults(columns, rows);
-            } catch (execErr) {
-              const errMsg = execErr instanceof Error ? execErr.message : String(execErr);
-              const isSqlError = /binder error|parser error|catalog error|not implemented|no such|not found|does not have/i.test(errMsg);
-
-              if (isSqlError) {
-                // One retry — ask Claude to fix the SQL
-                try {
-                  const retryResponse = await fetch("/api/analyze", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      question,
-                      years: years ?? null,
-                      sessionId,
-                      stepIndex,
-                      previousSteps: completedSteps,
-                      failedSql: step.sql,
-                      sqlError: errMsg,
-                    }),
-                    signal: abortController.signal,
-                  });
-
-                  if (retryResponse.ok) {
-                    const retryData = await retryResponse.json();
-                    if (retryData.step?.sql) {
-                      const fixedSql = retryData.step.sql;
-                      setState((prev) => ({
-                        ...prev,
-                        steps: prev.steps.map((s, i) =>
-                          i === stepIndex ? { ...s, sql: fixedSql } : s
-                        ),
-                      }));
-
-                      const retryResult = await executeQuery(fixedSql);
-                      columns = retryResult.columns;
-                      rows = retryResult.rows;
-                      resultSummary = summarizeResults(columns, rows);
-                    } else {
-                      stepError = errMsg;
-                    }
-                  } else {
-                    stepError = errMsg;
-                  }
-                } catch {
-                  stepError = errMsg;
-                }
-              } else {
-                stepError = errMsg;
-              }
-            }
-          }
-
-          // Update step as complete or error
+          // Update step with results from server
           setState((prev) => ({
             ...prev,
             steps: prev.steps.map((s, i) =>
               i === stepIndex
                 ? {
                     ...s,
-                    columns,
-                    rows,
+                    title: step.title || `Step ${stepIndex + 1}`,
+                    sql: step.sql,
+                    chartType: step.chartType || "table",
+                    columns: stepColumns,
+                    rows: stepRows,
                     status: stepError ? "error" : "complete",
                     error: stepError,
-                    insight: step.insight || s.insight,
+                    insight: step.insight || null,
                   }
                 : s
             ),
@@ -294,7 +225,7 @@ export function useAnalysis(executeQuery: ExecuteQueryFn) {
             stepIndex,
             title: step.title || `Step ${stepIndex + 1}`,
             sql: step.sql,
-            resultSummary,
+            resultSummary: step.resultSummary || null,
             insight: step.insight || null,
             error: stepError,
           });
@@ -318,7 +249,7 @@ export function useAnalysis(executeQuery: ExecuteQueryFn) {
           }
         }
 
-        // If we reached max steps without "done", mark as complete
+        // Reached max steps without "done"
         setState((prev) => ({
           ...prev,
           status: "complete",
@@ -344,7 +275,7 @@ export function useAnalysis(executeQuery: ExecuteQueryFn) {
         }));
       }
     },
-    [executeQuery]
+    []
   );
 
   const cancelAnalysis = useCallback(() => {
@@ -406,14 +337,7 @@ async function saveToStore(data: {
   sessionId: string;
   question: string;
   plan: string[] | null;
-  steps: {
-    stepIndex: number;
-    title: string;
-    sql: string | null;
-    resultSummary: string | null;
-    insight: string | null;
-    error: string | null;
-  }[];
+  steps: CompletedStep[];
   summary: string | null | undefined;
 }) {
   const stored: StoredAnalysis = {

@@ -6,76 +6,22 @@ export interface TableSchema {
 
 export const TABLE_SCHEMAS: TableSchema[] = [
   {
-    name: "monthly_totals",
+    name: "claims",
     description:
-      "Overall monthly spending totals across all providers and procedures. 84 rows, one per month from Jan 2018 to Dec 2024.",
-    columns: [
-      { name: "claim_month", type: "DATE", description: "Month of claims (first day of month, e.g. 2024-01-01)" },
-      { name: "total_paid", type: "DOUBLE", description: "Total Medicaid payments in dollars for the month" },
-      { name: "total_claims", type: "BIGINT", description: "Total number of claims in the month" },
-      { name: "unique_beneficiaries", type: "BIGINT", description: "Number of unique beneficiaries in the month" },
-      { name: "unique_providers", type: "INTEGER", description: "Number of unique billing providers in the month" },
-      { name: "unique_hcpcs_codes", type: "INTEGER", description: "Number of unique HCPCS procedure codes used" },
-    ],
-  },
-  {
-    name: "hcpcs_summary",
-    description:
-      "Aggregated spending by HCPCS procedure code across all time. ~10.9K rows, one per HCPCS code.",
-    columns: [
-      { name: "hcpcs_code", type: "VARCHAR", description: "HCPCS/CPT procedure code (e.g. '99213', 'J0178')" },
-      { name: "total_paid", type: "DOUBLE", description: "Total Medicaid payments for this procedure code" },
-      { name: "total_claims", type: "BIGINT", description: "Total claims for this procedure code" },
-      { name: "unique_beneficiaries", type: "BIGINT", description: "Unique beneficiaries who received this procedure" },
-      { name: "unique_providers", type: "INTEGER", description: "Unique providers who billed this procedure" },
-      { name: "first_month", type: "DATE", description: "First month this code appears in data" },
-      { name: "last_month", type: "DATE", description: "Last month this code appears in data" },
-    ],
-  },
-  {
-    name: "hcpcs_monthly",
-    description:
-      "Monthly spending breakdown by HCPCS procedure code. ~536K rows. Use this for procedure-level time trends.",
-    columns: [
-      { name: "hcpcs_code", type: "VARCHAR", description: "HCPCS/CPT procedure code" },
-      { name: "claim_month", type: "DATE", description: "Month of claims" },
-      { name: "total_paid", type: "DOUBLE", description: "Total payments for this code in this month" },
-      { name: "total_claims", type: "BIGINT", description: "Total claims for this code in this month" },
-      { name: "unique_beneficiaries", type: "BIGINT", description: "Unique beneficiaries for this code in this month" },
-      { name: "unique_providers", type: "INTEGER", description: "Unique providers billing this code in this month" },
-    ],
-  },
-  {
-    name: "provider_summary",
-    description:
-      "Aggregated spending by billing provider NPI across all time. ~617K rows, one per provider.",
+      "Raw Medicaid provider spending data. 227 million rows, one per provider+procedure+month combination. Covers Jan 2018 – Dec 2024. This is the primary data table.",
     columns: [
       { name: "billing_npi", type: "VARCHAR", description: "National Provider Identifier (10-digit NPI number)" },
-      { name: "total_paid", type: "DOUBLE", description: "Total Medicaid payments to this provider" },
-      { name: "total_claims", type: "BIGINT", description: "Total claims billed by this provider" },
-      { name: "unique_beneficiaries", type: "BIGINT", description: "Unique beneficiaries seen by this provider" },
-      { name: "unique_hcpcs_codes", type: "INTEGER", description: "Unique procedure codes billed by this provider" },
-      { name: "first_month", type: "DATE", description: "First month this provider appears" },
-      { name: "last_month", type: "DATE", description: "Last month this provider appears" },
-    ],
-  },
-  {
-    name: "top_providers_monthly",
-    description:
-      "Monthly spending detail for the top 1,000 providers by total spending. ~82K rows. Use for provider-level time trends.",
-    columns: [
-      { name: "billing_npi", type: "VARCHAR", description: "National Provider Identifier" },
-      { name: "claim_month", type: "DATE", description: "Month of claims" },
-      { name: "total_paid", type: "DOUBLE", description: "Total payments for this provider in this month" },
-      { name: "total_claims", type: "BIGINT", description: "Total claims for this provider in this month" },
-      { name: "unique_beneficiaries", type: "BIGINT", description: "Unique beneficiaries for this provider in this month" },
-      { name: "unique_hcpcs_codes", type: "INTEGER", description: "Unique procedure codes billed in this month" },
+      { name: "hcpcs_code", type: "VARCHAR", description: "HCPCS/CPT procedure code (e.g. '99213', 'J0178')" },
+      { name: "claim_month", type: "DATE", description: "Month of claims (first day of month, e.g. 2024-01-01)" },
+      { name: "total_paid", type: "DOUBLE", description: "Total Medicaid payments in dollars" },
+      { name: "total_claims", type: "BIGINT", description: "Total number of claims" },
+      { name: "unique_beneficiaries", type: "BIGINT", description: "Number of unique beneficiaries" },
     ],
   },
   {
     name: "hcpcs_lookup",
     description:
-      "Lookup table mapping HCPCS/CPT codes to their English descriptions. ~17.5K rows. JOIN this with other tables on hcpcs_code to get human-readable procedure names.",
+      "Lookup table mapping HCPCS/CPT codes to their English descriptions. ~17.5K rows. JOIN this with claims on hcpcs_code to get human-readable procedure names.",
     columns: [
       { name: "hcpcs_code", type: "VARCHAR", description: "HCPCS/CPT procedure code" },
       { name: "description", type: "VARCHAR", description: "Short English description of the procedure (e.g. 'Office o/p est low 20 min')" },
@@ -84,7 +30,7 @@ export const TABLE_SCHEMAS: TableSchema[] = [
   {
     name: "npi_lookup",
     description:
-      "Lookup table mapping billing NPI numbers to provider names, type, and location. ~615K rows. JOIN this with other tables on billing_npi to get human-readable provider names.",
+      "Lookup table mapping billing NPI numbers to provider names, type, and location. ~615K rows. JOIN this with claims on billing_npi to get human-readable provider names.",
     columns: [
       { name: "billing_npi", type: "VARCHAR", description: "National Provider Identifier (10-digit)" },
       { name: "provider_name", type: "VARCHAR", description: "Provider or organization name (e.g. 'PUBLIC PARTNERSHIPS LLC', 'John Smith')" },
@@ -96,7 +42,7 @@ export const TABLE_SCHEMAS: TableSchema[] = [
 ];
 
 export function generateSchemaPrompt(): string {
-  let prompt = "You have access to the following pre-aggregated Medicaid provider spending tables (Jan 2018 – Dec 2024):\n\n";
+  let prompt = "You have access to the following Medicaid provider spending tables (Jan 2018 – Dec 2024):\n\n";
 
   for (const table of TABLE_SCHEMAS) {
     prompt += `## Table: ${table.name}\n`;
@@ -109,37 +55,80 @@ export function generateSchemaPrompt(): string {
     prompt += "\n";
   }
 
-  prompt += `## CRITICAL column availability:
-- billing_npi is ONLY in: provider_summary, top_providers_monthly, npi_lookup
-- hcpcs_code is ONLY in: hcpcs_summary, hcpcs_monthly, hcpcs_lookup
-- claim_month is in: monthly_totals, hcpcs_monthly, top_providers_monthly
-- hcpcs_monthly does NOT have billing_npi. It has: hcpcs_code, claim_month, total_paid, total_claims, unique_beneficiaries, unique_providers
-- monthly_totals does NOT have billing_npi or hcpcs_code
-- provider_summary does NOT have hcpcs_code or claim_month
-- The unique_providers column in hcpcs_monthly and hcpcs_summary is a pre-computed COUNT of distinct providers. Use it directly instead of trying to COUNT(DISTINCT billing_npi).
+  prompt += `## Query patterns:
 
-## Join rules (CRITICAL for performance):
-- NEVER join top_providers_monthly with hcpcs_monthly — they share no meaningful key and will create a Cartesian product.
-- NEVER join provider_summary with hcpcs_summary — same problem, no shared key.
-- The ONLY valid joins are with the lookup tables: hcpcs_lookup (on hcpcs_code) and npi_lookup (on billing_npi).
-- To answer "how many providers billed X procedure", use the unique_providers column from hcpcs_summary or hcpcs_monthly. Do NOT try to count distinct billing_npi from other tables.
-- Keep queries simple. Prefer querying a single data table + lookup joins.
+### Monthly/yearly trends
+\`\`\`sql
+SELECT date_trunc('month', claim_month) AS month, SUM(total_paid) AS spending
+FROM claims
+GROUP BY month ORDER BY month
+\`\`\`
+
+### Top providers
+\`\`\`sql
+SELECT c.billing_npi, n.provider_name, n.state, SUM(c.total_paid) AS total_spending
+FROM claims c
+LEFT JOIN npi_lookup n ON c.billing_npi = n.billing_npi
+GROUP BY c.billing_npi, n.provider_name, n.state
+ORDER BY total_spending DESC LIMIT 20
+\`\`\`
+
+### Top procedures
+\`\`\`sql
+SELECT c.hcpcs_code, l.description, SUM(c.total_paid) AS total_spending
+FROM claims c
+LEFT JOIN hcpcs_lookup l ON c.hcpcs_code = l.hcpcs_code
+GROUP BY c.hcpcs_code, l.description
+ORDER BY total_spending DESC LIMIT 20
+\`\`\`
+
+### State-level analysis
+\`\`\`sql
+SELECT n.state, SUM(c.total_paid) AS total_spending
+FROM claims c
+JOIN npi_lookup n ON c.billing_npi = n.billing_npi
+GROUP BY n.state
+ORDER BY total_spending DESC
+\`\`\`
+
+### Provider + procedure detail
+\`\`\`sql
+SELECT c.hcpcs_code, l.description, SUM(c.total_paid) AS spending
+FROM claims c
+LEFT JOIN hcpcs_lookup l ON c.hcpcs_code = l.hcpcs_code
+WHERE c.billing_npi = '1234567890'
+GROUP BY c.hcpcs_code, l.description
+ORDER BY spending DESC LIMIT 20
+\`\`\`
+
+## Performance rules (CRITICAL — the claims table has 227M rows):
+- ALWAYS use GROUP BY to aggregate. Never SELECT * FROM claims without aggregation.
+- ALWAYS include a LIMIT clause (max 10000 rows).
+- For time series, use date_trunc('month', claim_month) or date_trunc('year', claim_month) and GROUP BY.
+- When filtering by year, use: WHERE claim_month >= '2024-01-01' AND claim_month < '2025-01-01'
+- Keep queries simple. Prefer a single scan of claims + lookup joins.
+- Avoid subqueries on claims when a single GROUP BY suffices.
+
+## CRITICAL — Data integrity rules:
+- NEVER fabricate, hardcode, or invent data values. Every number in your SQL must come from the tables.
+- NEVER use hardcoded UNION ALL constructs with literal values to simulate data that doesn't exist in the tables.
+- If the available tables cannot answer the user's question, respond with CANNOT_ANSWER: followed by a clear explanation of what data is and is not available, rather than generating a query with made-up numbers.
+- The dataset contains ONLY: billing NPI, HCPCS code, claim month, total paid, total claims, and unique beneficiaries. It does NOT contain: diagnosis codes, patient demographics, drug names (only J-codes), facility types, payer types, or clinical outcomes.
 
 ## Important notes:
-- All tables are registered in DuckDB as views. Query them directly by name (e.g. SELECT * FROM monthly_totals).
+- All tables are registered as views. Query them directly by name (e.g. SELECT ... FROM claims).
 - Date columns are DATE type. Use date functions like EXTRACT(YEAR FROM claim_month), date_trunc('year', claim_month), etc.
 - Dollar amounts are in raw USD (not thousands/millions). Format large values with ROUND() as needed.
 - Always include a LIMIT clause (max 10000 rows).
 - Only generate SELECT statements. No DDL or DML.
 - Use DuckDB SQL syntax (not PostgreSQL or MySQL).
 - For "top N" queries, use ORDER BY ... DESC LIMIT N.
-- When asked about trends over time, prefer monthly_totals or hcpcs_monthly tables.
-- When asked about specific providers, use provider_summary or top_providers_monthly.
-- When asked about specific procedures/HCPCS codes, use hcpcs_summary or hcpcs_monthly.
-- ALWAYS JOIN with hcpcs_lookup to include human-readable descriptions when returning HCPCS codes. Use LEFT JOIN so codes without descriptions still appear. Example: SELECT h.hcpcs_code, l.description, h.total_paid FROM hcpcs_summary h LEFT JOIN hcpcs_lookup l ON h.hcpcs_code = l.hcpcs_code
+- ALWAYS JOIN with hcpcs_lookup to include human-readable descriptions when returning HCPCS codes. Use LEFT JOIN so codes without descriptions still appear.
 - Show the description column right after the hcpcs_code column for readability.
-- ALWAYS JOIN with npi_lookup to include provider names when returning billing_npi. Use LEFT JOIN so NPIs without names still appear. Example: SELECT p.billing_npi, n.provider_name, p.total_paid FROM provider_summary p LEFT JOIN npi_lookup n ON p.billing_npi = n.billing_npi
+- ALWAYS JOIN with npi_lookup to include provider names when returning billing_npi. Use LEFT JOIN so NPIs without names still appear.
 - Show the provider_name column right after the billing_npi column for readability.
+- For geographic/state questions, JOIN claims with npi_lookup to get the provider's state.
+- Use short, distinct table aliases (e.g. c for claims, l for hcpcs_lookup, n for npi_lookup).
 
 ## Searching for procedures by topic:
 - ALWAYS filter by hcpcs_code ranges or specific codes, NOT by description text. The descriptions are cleaned-up labels and may not match keyword searches.
