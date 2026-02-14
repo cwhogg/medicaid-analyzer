@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "cp node_modules/@duckdb/duckdb-wasm/dist/duckdb-eh.wasm public/ && cp node_modules/@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js public/",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
