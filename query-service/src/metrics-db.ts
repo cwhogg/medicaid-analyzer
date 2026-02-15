@@ -64,9 +64,17 @@ export async function initMetricsDB(): Promise<void> {
       timestamp BIGINT NOT NULL,
       summary VARCHAR,
       step_count INTEGER DEFAULT 0,
-      row_count INTEGER DEFAULT 0
+      row_count INTEGER DEFAULT 0,
+      result_data VARCHAR
     )
   `);
+
+  // Add result_data column if it doesn't exist (migration for existing DBs)
+  try {
+    await metricsDb.run(`ALTER TABLE feed_items ADD COLUMN result_data VARCHAR`);
+  } catch {
+    // Column already exists — ignore
+  }
 
   // Initialize totals row if not exists
   const existing = await metricsDb.all(`SELECT 1 FROM totals WHERE id = 1`);
@@ -321,6 +329,7 @@ export interface FeedItemInput {
   summary?: string | null;
   stepCount?: number;
   rowCount?: number;
+  resultData?: unknown;
 }
 
 export async function recordFeedItem(item: FeedItemInput): Promise<void> {
@@ -328,18 +337,31 @@ export async function recordFeedItem(item: FeedItemInput): Promise<void> {
 
   // Deduplicate by id
   const exists = await metricsDb.all(`SELECT 1 FROM feed_items WHERE id = ?`, item.id);
-  if (exists.length > 0) return;
+  if (exists.length > 0) {
+    // Update result_data if provided on an existing item (for analyses that record metadata first, results later)
+    if (item.resultData) {
+      await metricsDb.run(
+        `UPDATE feed_items SET result_data = ?, summary = COALESCE(?, summary), step_count = COALESCE(?, step_count) WHERE id = ?`,
+        JSON.stringify(item.resultData),
+        item.summary ?? null,
+        item.stepCount ?? null,
+        item.id
+      );
+    }
+    return;
+  }
 
   await metricsDb.run(
-    `INSERT INTO feed_items (id, question, route, timestamp, summary, step_count, row_count)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO feed_items (id, question, route, timestamp, summary, step_count, row_count, result_data)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     item.id,
     item.question,
     item.route,
     item.timestamp,
     item.summary ?? null,
     item.stepCount ?? 0,
-    item.rowCount ?? 0
+    item.rowCount ?? 0,
+    item.resultData ? JSON.stringify(item.resultData) : null
   );
 
   // Prune old items
@@ -360,13 +382,20 @@ export async function getFeedItems(limit = 50): Promise<Record<string, unknown>[
     `SELECT * FROM feed_items ORDER BY timestamp DESC LIMIT ?`, limit
   ) as Record<string, unknown>[]);
 
-  return rows.map((r) => ({
-    id: r.id,
-    question: r.question,
-    route: r.route,
-    timestamp: r.timestamp,
-    summary: r.summary || null,
-    stepCount: r.step_count ?? 0,
-    rowCount: r.row_count ?? 0,
-  }));
+  return rows.map((r) => {
+    let resultData = null;
+    if (r.result_data && typeof r.result_data === "string") {
+      try { resultData = JSON.parse(r.result_data); } catch { /* ignore */ }
+    }
+    return {
+      id: r.id,
+      question: r.question,
+      route: r.route,
+      timestamp: r.timestamp,
+      summary: r.summary || null,
+      stepCount: r.step_count ?? 0,
+      rowCount: r.row_count ?? 0,
+      resultData,
+    };
+  });
 }

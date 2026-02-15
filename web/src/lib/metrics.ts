@@ -96,6 +96,7 @@ export function recordFeedItem(item: {
   summary?: string | null;
   stepCount?: number;
   rowCount?: number;
+  resultData?: unknown;
 }): void {
   if (!RAILWAY_QUERY_URL) return;
 

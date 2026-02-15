@@ -428,6 +428,17 @@ export async function POST(request: NextRequest) {
 
     // Record to public feed when analysis is complete
     if (parsed.done && parsed.summary) {
+      // Build step result for this final step
+      const stepResult = parsed.step ? {
+        stepIndex,
+        title: parsed.step.title,
+        sql: parsed.step.sql || null,
+        chartType: parsed.step.chartType || "table",
+        columns: (parsed.step.columns || []) as string[],
+        rows: ((parsed.step.rows || []) as unknown[][]).slice(0, 200),
+        insight: parsed.step.insight || null,
+      } : null;
+
       recordFeedItem({
         id: sessionId,
         question,
@@ -435,6 +446,10 @@ export async function POST(request: NextRequest) {
         timestamp: Date.now(),
         summary: parsed.summary,
         stepCount: stepIndex,
+        resultData: {
+          summary: parsed.summary,
+          lastStep: stepResult,
+        },
       });
     }
 

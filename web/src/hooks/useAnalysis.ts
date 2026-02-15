@@ -399,25 +399,49 @@ async function saveToStore(data: {
   steps: CompletedStep[];
   summary: string | null | undefined;
 }) {
+  const filteredSteps = data.steps
+    .filter((s) => s.stepIndex > 0) // Don't store the plan-only step
+    .map((s) => ({
+      stepIndex: s.stepIndex,
+      title: s.title,
+      sql: s.sql,
+      chartType: s.chartType || "table",
+      columns: s.columns,
+      rows: s.rows,
+      insight: s.insight,
+      error: s.error,
+    }));
+
   const stored: StoredAnalysis = {
     id: data.sessionId,
     question: data.question,
     plan: data.plan || [],
-    steps: data.steps
-      .filter((s) => s.stepIndex > 0) // Don't store the plan-only step
-      .map((s) => ({
-        stepIndex: s.stepIndex,
-        title: s.title,
-        sql: s.sql,
-        chartType: s.chartType || "table",
-        columns: s.columns,
-        rows: s.rows,
-        insight: s.insight,
-        error: s.error,
-      })),
+    steps: filteredSteps,
     summary: data.summary || null,
-    stepCount: data.steps.filter((s) => s.stepIndex > 0).length,
+    stepCount: filteredSteps.length,
     timestamp: Date.now(),
   };
   await saveAnalysis(stored).catch(console.error);
+
+  // Update server feed with full analysis results (fire-and-forget)
+  fetch("/api/feed", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      id: data.sessionId,
+      question: data.question,
+      route: "analyze",
+      timestamp: Date.now(),
+      summary: data.summary || null,
+      stepCount: filteredSteps.length,
+      resultData: {
+        plan: data.plan || [],
+        steps: filteredSteps.map((s) => ({
+          ...s,
+          rows: (s.rows || []).slice(0, 200),
+        })),
+        summary: data.summary || null,
+      },
+    }),
+  }).catch(() => {});
 }

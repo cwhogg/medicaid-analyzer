@@ -257,6 +257,15 @@ app.get("/feed", async (c) => {
   }
 });
 
+app.use("/feed/record", async (c, next) => {
+  const auth = c.req.header("Authorization");
+  if (!API_KEY) return next();
+  if (auth !== `Bearer ${API_KEY}`) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  return next();
+});
+
 // Record feed item (auth required — from Vercel)
 app.post("/feed/record", async (c) => {
   try {

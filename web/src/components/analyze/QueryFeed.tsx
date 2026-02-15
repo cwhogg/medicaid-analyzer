@@ -12,6 +12,7 @@ interface ServerFeedItem {
   summary: string | null;
   stepCount: number;
   rowCount: number;
+  resultData: unknown | null;
 }
 
 type FeedItem =
@@ -83,8 +84,48 @@ export function QueryFeed({ onSelect, refreshKey }: QueryFeedProps) {
       void _source;
       onSelect(rest as StoredQuery | StoredAnalysis);
     } else {
-      // Server item — pre-fill the question for the user to re-run
-      onSelect(null, item.question);
+      // Server item — try to load stored results, otherwise pre-fill question
+      const serverItem = item as ServerFeedItem & { _type: string; _source: string };
+      const rd = serverItem.resultData as Record<string, unknown> | null;
+
+      if (rd && serverItem.route === "query" && rd.sql && rd.columns) {
+        // Reconstruct a StoredQuery from server result data
+        const storedQuery: StoredQuery = {
+          id: serverItem.id,
+          question: serverItem.question,
+          sql: rd.sql as string,
+          chartType: (rd.chartType as StoredQuery["chartType"]) || "table",
+          columns: rd.columns as string[],
+          rows: (rd.rows as unknown[][]) || [],
+          rowCount: serverItem.rowCount || ((rd.rows as unknown[][]) || []).length,
+          timestamp: serverItem.timestamp,
+        };
+        onSelect(storedQuery);
+      } else if (rd && serverItem.route === "analyze" && rd.steps) {
+        // Reconstruct a StoredAnalysis from server result data
+        const storedAnalysis: StoredAnalysis = {
+          id: serverItem.id,
+          question: serverItem.question,
+          plan: (rd.plan as string[]) || [],
+          steps: ((rd.steps as Record<string, unknown>[]) || []).map((s) => ({
+            stepIndex: (s.stepIndex as number) || 0,
+            title: (s.title as string) || "",
+            sql: (s.sql as string) || null,
+            chartType: (s.chartType as string) || "table",
+            columns: (s.columns as string[]) || [],
+            rows: (s.rows as unknown[][]) || [],
+            insight: (s.insight as string) || null,
+            error: (s.error as string) || null,
+          })),
+          summary: (rd.summary as string) || serverItem.summary || null,
+          stepCount: serverItem.stepCount || ((rd.steps as unknown[]) || []).length,
+          timestamp: serverItem.timestamp,
+        };
+        onSelect(storedAnalysis);
+      } else {
+        // No stored results — pre-fill question for re-run
+        onSelect(null, serverItem.question);
+      }
     }
   };
 

@@ -265,7 +265,14 @@ Rules:
 
     recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 200, claudeMs, railwayMs, totalMs: Date.now() - requestStart, cached: false, inputTokens: totalInputTokens, outputTokens: totalOutputTokens });
     recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql, status: 200, totalMs: Date.now() - requestStart, cached: false });
-    recordFeedItem({ id: crypto.randomUUID(), question, route: "query", timestamp: Date.now(), rowCount: rows.length });
+    recordFeedItem({
+      id: crypto.randomUUID(),
+      question,
+      route: "query",
+      timestamp: Date.now(),
+      rowCount: rows.length,
+      resultData: { sql, chartType, columns, rows: rows.slice(0, 200) },
+    });
 
     return NextResponse.json(
       { sql, chartType, columns, rows },
