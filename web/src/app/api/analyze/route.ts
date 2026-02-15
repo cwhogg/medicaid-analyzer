@@ -69,18 +69,18 @@ function buildConversationHistory(
     if (step.error) {
       messages.push({
         role: "user",
-        content: `Step ${step.stepIndex} SQL failed with error: ${step.error}\nAdjust your approach for the next step. Consider whether the error reveals something about the data structure.`,
+        content: `Step ${step.stepIndex} failed with error: ${step.error}\nAdjust your approach for the next step.`,
       });
     } else if (step.resultSummary) {
       messages.push({
         role: "user",
-        content: `Step ${step.stepIndex} results:\n${step.resultSummary}\n\nConsider whether these results confirm or challenge your hypothesis. What is the most important next question to answer? Continue the analysis.`,
+        content: `Step ${step.stepIndex} results:\n${step.resultSummary}\n\nUse these results to inform your next step. Continue executing the plan.`,
       });
     } else {
       // Plan step or step with no SQL results — still need a user turn
       messages.push({
         role: "user",
-        content: `Plan confirmed. Now execute step 1 of the analysis.`,
+        content: `Plan confirmed. Begin executing the analysis.`,
       });
     }
   }
@@ -94,25 +94,19 @@ function buildSystemPrompt(
   stepIndex: number,
   remainingSteps: number,
 ): string {
-  const analyticalFramework = `You are a senior health policy data analyst performing a rigorous multi-step investigation of a Medicaid provider spending dataset. You think like an expert: decompose problems, form hypotheses, query strategically, interpret results critically, and adapt your plan based on what you find.
-
-## Analytical Framework
-1. DECOMPOSE: Break the question into distinct analytical sub-questions
-2. HYPOTHESIZE: Before each query, state what you expect to find and why
-3. QUERY: Write targeted SQL that tests your hypothesis
-4. INTERPRET: Explain what the results mean, citing specific numbers
-5. ADAPT: Revise your plan if results are surprising or reveal new angles
+  const analystRole = `You are an expert healthcare claims analyst specializing in Medicaid claims data, with deep expertise in quantitative analysis and SQL. You reason like a human analyst: you understand what the user wants to know, determine what the final answer should look like, and work backwards to figure out what queries will produce that answer.
 
 ## Medicaid Domain Knowledge
 - Spending is highly concentrated: a small number of providers and procedures account for the majority of dollars
 - J-codes (injections/drugs) dominate high-cost procedures — J0178 (aflibercept), J9312 (rituximab), J1745 (infliximab) are common top spenders
+- T-codes (T1019, T1015, T2016) are Medicaid-specific and represent the highest-spending categories overall
 - Geographic variation is significant — states like CA, NY, TX, FL have the highest total spending but per-provider averages vary
 - Seasonal patterns exist: some procedures spike in Q1 (flu season), behavioral health utilization shows summer dips
 - Oct-Dec 2024 data is INCOMPLETE — always truncate time series at Sept 2024 or note the incompleteness
 - Remote Patient Monitoring (RPM) and Chronic Care Management (CCM) are rapidly growing categories
 - Provider types matter: Organizations vs Individual providers show different spending patterns`;
 
-  const basePrompt = `${analyticalFramework}
+  const basePrompt = `${analystRole}
 
 ${schemaPrompt}
 
@@ -122,32 +116,38 @@ You MUST respond with valid JSON only. No markdown, no code fences, no text outs
     // Plan-only step — NO SQL query
     return `${basePrompt}
 
-This is the PLANNING step. Analyze the question and create an investigation plan. Do NOT write any SQL yet — just plan.
+This is the PLANNING step. Analyze the question and create an execution plan. Do NOT write any SQL yet — just plan.
 
-Assess the question complexity:
-- "simple": straightforward lookup or single aggregation (2 SQL steps)
-- "moderate": requires comparison, trend analysis, or joining multiple dimensions (3 SQL steps)
-- "complex": multi-faceted investigation requiring hypothesis testing across dimensions (4 SQL steps)
+## How to Plan
+
+1. **Understand the ask**: What exactly does the user want to know? What would a complete, satisfying answer look like?
+2. **Define the final result**: What is the shape and structure of the ideal output? (e.g., "a ranked table of states with spending totals and provider counts", "a time series showing monthly growth rates")
+3. **Work backwards**: What data do you need to produce that final result? Can a single well-crafted query answer it completely? If not, what intermediate results are needed first?
+4. **Identify dependencies**: Do any steps require results from prior steps? (e.g., "I need to find the top 10 providers first, then query their monthly trends") Order steps so dependencies are resolved.
+
+## Complexity Assessment
+- "simple": A single query can fully answer the question (1 step)
+- "moderate": Requires 2-3 queries, possibly with step dependencies (2-3 steps)
+- "complex": Multi-dimensional analysis requiring 3-4 queries with dependencies (3-4 steps)
 
 Response format:
 {
   "plan": [
-    { "stepNumber": 1, "title": "Brief title", "purpose": "What hypothesis this step tests or what question it answers" },
-    { "stepNumber": 2, "title": "Brief title", "purpose": "..." }
+    { "stepNumber": 1, "title": "Brief title", "purpose": "What this step produces and why it's needed" }
   ],
-  "reasoning": "2-3 sentences explaining your overall analytical approach and key hypotheses",
+  "reasoning": "2-3 sentences explaining what the final answer looks like and how the steps build toward it",
   "complexity": "simple|moderate|complex",
   "stepIndex": 0,
   "done": false
 }
 
 Rules for planning:
-- Each step MUST have a distinct analytical purpose — not generic "look at data"
-- Steps should build on each other: later steps should test hypotheses raised by earlier results
-- Plan 2 steps for simple, 3 for moderate, 4 for complex questions
-- The final step should synthesize or compare, not just fetch more data
-- Good step purposes: "Test whether spending concentration follows Pareto pattern", "Identify if the growth is driven by volume or price increases", "Compare geographic distribution to identify outlier states"
-- Bad step purposes: "Get more data", "Look at trends", "Check the numbers"${yearConstraint}`;
+- If one query can perfectly answer the question, plan just 1 step. Do NOT pad with unnecessary steps.
+- Each step must produce a specific, concrete result — not "explore" or "look at" data.
+- When steps depend on prior results, state this explicitly in the purpose (e.g., "Using the top providers from step 1, get their monthly trends").
+- Maximum 4 steps. Prefer fewer, more targeted steps over many shallow ones.
+- Good purposes: "Get annual spending by state for RPM codes, ranked by total", "Using top 5 states from step 1, break down spending by individual HCPCS code"
+- Bad purposes: "Explore the data", "Look at trends", "Get more details"${yearConstraint}`;
   }
 
   // Execution steps (1+)
@@ -157,52 +157,54 @@ This is step ${stepIndex} of the analysis. You have ${remainingSteps} step(s) re
 
 ${remainingSteps === 1 ? "This is your FINAL step. You MUST set \"done\": true and include a comprehensive \"summary\" field." : ""}
 
+Write the SQL query for this step. If a prior step produced results you need, they have been provided to you — use those specific values (codes, NPIs, states, etc.) in your query.
+
 Response format for a continuing step:
 {
   "step": {
     "title": "Brief title for this step",
     "sql": "SELECT ... FROM ... LIMIT ...",
     "chartType": "table|line|bar|pie",
-    "insight": "Interpret the results: what do the numbers mean? Cite specific values. Did they confirm or challenge your hypothesis?"
+    "insight": "What the results show — cite specific numbers from the data"
   },
-  "reasoning": "Why this specific query, what hypothesis it tests",
+  "reasoning": "What this step produces and how it feeds into the next step",
   ${remainingSteps > 1 ? '"revisedPlan": null,' : ""}
   "done": false,
   "stepIndex": ${stepIndex}
 }
 
-Response format for the final step (when done):
+If this step fully answers the question, or if you've gathered enough data across steps:
 {
   "step": {
     "title": "Brief title for this step",
     "sql": "SELECT ... FROM ... LIMIT ...",
     "chartType": "table|line|bar|pie",
-    "insight": "What this final query reveals — cite specific numbers"
+    "insight": "What the results show — cite specific numbers"
   },
-  "summary": "A comprehensive 2-4 paragraph summary synthesizing ALL findings. Structure: (1) Direct answer to the question with key numbers, (2) Most surprising or important findings, (3) Caveats or context needed to interpret the results. Reference specific numbers from each step.",
+  "summary": "A comprehensive 2-4 paragraph answer to the user's question. Structure: (1) Direct answer with key numbers, (2) Most important findings, (3) Caveats or context. Reference specific numbers from each step.",
   "done": true,
   "stepIndex": ${stepIndex}
 }
 
-If no more SQL is needed and you just want to summarize:
+If no more SQL is needed and you just want to summarize previous results:
 {
   "summary": "Comprehensive summary...",
   "done": true,
   "stepIndex": ${stepIndex}
 }
 
-${remainingSteps > 1 ? `If the previous results surprised you or revealed a more important angle, you may revise the remaining plan:
+${remainingSteps > 1 ? `If prior results change what you need to query next, you may revise the remaining plan:
 "revisedPlan": [
   { "stepNumber": ${stepIndex + 1}, "title": "New title", "purpose": "New purpose" },
   ...
 ]
-Set "revisedPlan" to null if the original plan still makes sense.` : ""}
+Set "revisedPlan" to null if the original plan still works.` : ""}
 
 Rules:
 - Each SQL query must be a valid DuckDB SELECT statement with a LIMIT clause (max 10000).
 - Keep step titles concise (under 60 characters).
 - chartType should match the data shape: "line" for time series, "bar" for rankings/comparisons, "pie" for proportions (only if <8 categories), "table" for detailed data.
-- The "insight" field is REQUIRED — briefly interpret the results, citing specific numbers. Don't just describe the query.
+- The "insight" field is REQUIRED — interpret the results with specific numbers. Don't just describe the query.
 - Use short, distinct table aliases and ensure every alias is defined in FROM or JOIN.
 - If the available tables cannot answer a specific step, include "cannotAnswer" instead of "sql".${yearConstraint}`;
 }
