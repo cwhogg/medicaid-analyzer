@@ -44,27 +44,27 @@ app.get("/health", (c) => {
   return c.json({ ok: true, dataReady: isReady() });
 });
 
-// Download a file from a URL into the data volume (streaming, no memory issues)
+// Stream upload a file to the data volume (handles large files without buffering)
 app.post("/upload", async (c) => {
   try {
-    const body = await c.req.json<{ url: string; filename: string }>();
-    if (!body.url || !body.filename) {
-      return c.json({ error: "url and filename required" }, 400);
+    const filename = c.req.header("X-Filename");
+    if (!filename) {
+      return c.json({ error: "X-Filename header required" }, 400);
     }
-    const filePath = `${DATA_DIR}/${body.filename}`;
-    console.log(`Downloading ${body.url} -> ${filePath}...`);
+    const filePath = `${DATA_DIR}/${filename}`;
+    console.log(`Receiving upload: ${filename} -> ${filePath}...`);
 
-    const response = await fetch(body.url);
-    if (!response.ok || !response.body) {
-      return c.json({ error: `Download failed: ${response.status}` }, 500);
+    const body = c.req.raw.body;
+    if (!body) {
+      return c.json({ error: "No request body" }, 400);
     }
 
-    const nodeStream = Readable.fromWeb(response.body as import("stream/web").ReadableStream);
+    const nodeStream = Readable.fromWeb(body as import("stream/web").ReadableStream);
     const fileStream = createWriteStream(filePath);
     await pipeline(nodeStream, fileStream);
 
     const stats = statSync(filePath);
-    console.log(`Downloaded ${body.filename}: ${stats.size} bytes`);
+    console.log(`Uploaded ${filename}: ${stats.size} bytes`);
     return c.json({ ok: true, path: filePath, bytes: stats.size });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Upload failed";
