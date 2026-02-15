@@ -4,6 +4,7 @@ import { createWriteStream, createReadStream, existsSync, readdirSync, statSync,
 import { pipeline } from "stream/promises";
 import { Readable } from "stream";
 import { initDB, executeSQL, reloadViews, isReady } from "./db.js";
+import { initMetricsDB, recordMetrics, getMetrics } from "./metrics-db.js";
 
 const DATA_DIR = process.env.DATA_DIR || "/data";
 
@@ -40,6 +41,24 @@ app.use("/reload", async (c, next) => {
 });
 
 app.use("/concat", async (c, next) => {
+  const auth = c.req.header("Authorization");
+  if (!API_KEY) return next();
+  if (auth !== `Bearer ${API_KEY}`) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  return next();
+});
+
+app.use("/metrics/*", async (c, next) => {
+  const auth = c.req.header("Authorization");
+  if (!API_KEY) return next();
+  if (auth !== `Bearer ${API_KEY}`) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  return next();
+});
+
+app.use("/metrics", async (c, next) => {
   const auth = c.req.header("Authorization");
   if (!API_KEY) return next();
   if (auth !== `Bearer ${API_KEY}`) {
@@ -225,13 +244,42 @@ app.post("/query", async (c) => {
   }
 });
 
+// Record metrics (fire-and-forget from Vercel)
+app.post("/metrics/record", async (c) => {
+  try {
+    const body = await c.req.json();
+    await recordMetrics(body.request || undefined, body.query || undefined);
+    return c.json({ ok: true });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to record metrics";
+    console.error("Metrics record error:", message);
+    return c.json({ error: message }, 500);
+  }
+});
+
+// Fetch aggregated metrics
+app.get("/metrics", async (c) => {
+  try {
+    const metrics = await getMetrics();
+    return c.json(metrics);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to fetch metrics";
+    console.error("Metrics fetch error:", message);
+    return c.json({ error: message }, 500);
+  }
+});
+
 // Start server
 const PORT = parseInt(process.env.PORT || "3001", 10);
 
 async function main() {
   console.log("Initializing DuckDB...");
   await initDB();
-  console.log("DuckDB initialized. Server starting...");
+  console.log("DuckDB initialized.");
+
+  console.log("Initializing metrics DB...");
+  await initMetricsDB();
+  console.log("Metrics DB initialized. Server starting...");
 
   serve({ fetch: app.fetch, port: PORT }, (info) => {
     console.log(`Query service listening on port ${info.port}`);

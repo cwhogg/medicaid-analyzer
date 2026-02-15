@@ -126,10 +126,7 @@ function AdminDashboard() {
         <div>
           <h1 className="text-2xl font-bold font-heading">Admin Dashboard</h1>
           <p className="text-sm text-muted mt-1">
-            Uptime: {formatUptime(metrics.uptime.seconds)} &middot; Since {new Date(metrics.uptime.startTime).toLocaleString()}
-          </p>
-          <p className="text-xs text-muted/60 mt-1">
-            In-memory metrics — resets on deploy/cold start. Shows data from this instance only.
+            Tracking since {new Date(metrics.uptime.startTime).toLocaleDateString()} ({formatUptime(metrics.uptime.seconds)})
           </p>
         </div>
         <div className="flex items-center gap-4">

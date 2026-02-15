@@ -10,8 +10,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const metrics = getMetrics();
-  const rateLimit = getRateLimitStats();
-
-  return NextResponse.json({ ...metrics, rateLimit });
+  try {
+    const metrics = await getMetrics();
+    const rateLimit = getRateLimitStats();
+    return NextResponse.json({ ...metrics, rateLimit });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to fetch metrics";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }
