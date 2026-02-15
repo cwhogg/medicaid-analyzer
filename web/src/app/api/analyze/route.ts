@@ -76,6 +76,12 @@ function buildConversationHistory(
         role: "user",
         content: `Step ${step.stepIndex} results:\n${step.resultSummary}\n\nConsider whether these results confirm or challenge your hypothesis. What is the most important next question to answer? Continue the analysis.`,
       });
+    } else {
+      // Plan step or step with no SQL results — still need a user turn
+      messages.push({
+        role: "user",
+        content: `Plan confirmed. Now execute step 1 of the analysis.`,
+      });
     }
   }
 

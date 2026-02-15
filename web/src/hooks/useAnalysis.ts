@@ -98,6 +98,10 @@ export function useAnalysis() {
             // Keep status as "planning" — no step card created
           } else {
             // Push placeholder step card for SQL steps
+            // Use plan title if available (plan[i] maps to stepIndex i+1)
+            const planTitle = planRef.current?.[stepIndex - 1];
+            // Extract just the title part before the colon (plan format is "Title: Purpose")
+            const placeholderTitle = planTitle ? planTitle.split(":")[0] : "";
             setState((prev) => ({
               ...prev,
               status: "running",
@@ -105,7 +109,7 @@ export function useAnalysis() {
                 ...prev.steps,
                 {
                   stepIndex,
-                  title: "",
+                  title: placeholderTitle,
                   sql: null,
                   chartType: "table",
                   columns: [],
