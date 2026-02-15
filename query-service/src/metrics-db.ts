@@ -191,45 +191,58 @@ const INPUT_COST_PER_TOKEN = 3 / 1_000_000;
 const OUTPUT_COST_PER_TOKEN = 15 / 1_000_000;
 const BUDGET_LIMIT = 100;
 
+// Convert all BigInt values in a row to Number
+function toNumbers(row: Record<string, unknown>): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(row)) {
+    out[k] = typeof v === "bigint" ? Number(v) : v;
+  }
+  return out;
+}
+
+function allToNumbers(rows: Record<string, unknown>[]): Record<string, unknown>[] {
+  return rows.map(toNumbers);
+}
+
 export async function getMetrics() {
   if (!metricsDb) throw new Error("Metrics DB not initialized");
 
-  const totalsRow = await metricsDb.all(`SELECT * FROM totals WHERE id = 1`);
+  const totalsRow = allToNumbers(await metricsDb.all(`SELECT * FROM totals WHERE id = 1`) as Record<string, unknown>[]);
   const totals = totalsRow[0] as Record<string, unknown> | undefined;
 
-  const routeRows = await metricsDb.all(`SELECT route, COUNT(*) as count FROM requests GROUP BY route`);
-  const statusRows = await metricsDb.all(`SELECT status, COUNT(*) as count FROM requests GROUP BY status`);
-  const uniqueUsersRow = await metricsDb.all(`SELECT COUNT(DISTINCT ip) as cnt FROM requests`);
-  const topUsersRows = await metricsDb.all(
+  const routeRows = allToNumbers(await metricsDb.all(`SELECT route, COUNT(*) as count FROM requests GROUP BY route`) as Record<string, unknown>[]);
+  const statusRows = allToNumbers(await metricsDb.all(`SELECT status, COUNT(*) as count FROM requests GROUP BY status`) as Record<string, unknown>[]);
+  const uniqueUsersRow = allToNumbers(await metricsDb.all(`SELECT COUNT(DISTINCT ip) as cnt FROM requests`) as Record<string, unknown>[]);
+  const topUsersRows = allToNumbers(await metricsDb.all(
     `SELECT ip, COUNT(*) as count FROM requests GROUP BY ip ORDER BY count DESC LIMIT 20`
-  );
+  ) as Record<string, unknown>[]);
 
-  const perfRows = await metricsDb.all(`
+  const perfRows = allToNumbers(await metricsDb.all(`
     SELECT
       AVG(total_ms) as avg_total,
       PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY total_ms) as p95_total,
       COUNT(*) as sample_size,
       COUNT(*) FILTER (WHERE cached = true) as cache_hits
     FROM (SELECT * FROM requests ORDER BY timestamp DESC LIMIT 1000)
-  `);
+  `) as Record<string, unknown>[]);
 
-  const claudePerfRows = await metricsDb.all(`
+  const claudePerfRows = allToNumbers(await metricsDb.all(`
     SELECT
       AVG(claude_ms) as avg_claude,
       PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY claude_ms) as p95_claude
     FROM (SELECT claude_ms FROM requests WHERE claude_ms IS NOT NULL ORDER BY timestamp DESC LIMIT 1000)
-  `);
+  `) as Record<string, unknown>[]);
 
-  const railwayPerfRows = await metricsDb.all(`
+  const railwayPerfRows = allToNumbers(await metricsDb.all(`
     SELECT
       AVG(railway_ms) as avg_railway,
       PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY railway_ms) as p95_railway
     FROM (SELECT railway_ms FROM requests WHERE railway_ms IS NOT NULL ORDER BY timestamp DESC LIMIT 1000)
-  `);
+  `) as Record<string, unknown>[]);
 
-  const recentQueryRows = await metricsDb.all(
+  const recentQueryRows = allToNumbers(await metricsDb.all(
     `SELECT * FROM query_log ORDER BY timestamp DESC LIMIT 50`
-  );
+  ) as Record<string, unknown>[]);
 
   const perf = (perfRows[0] as Record<string, unknown>) || {};
   const claudePerf = (claudePerfRows[0] as Record<string, unknown>) || {};
