@@ -29,44 +29,38 @@ export async function GET(
         LIMIT 1
       `),
 
-      // 2. Summary stats from claims
+      // 2. Summary stats from pre-aggregated provider_stats
       executeRemoteQuery(`
         SELECT
-          ROUND(SUM(total_paid), 0) AS total_paid,
-          SUM(total_claims) AS total_claims,
-          SUM(unique_beneficiaries) AS unique_beneficiaries,
-          COUNT(DISTINCT hcpcs_code) AS procedures_billed,
-          MIN(claim_month) AS first_month,
-          MAX(claim_month) AS last_month
-        FROM claims
+          total_paid, total_claims, unique_beneficiaries,
+          procedures_billed, first_month, last_month
+        FROM provider_stats
         WHERE billing_npi = '${npi}'
       `),
 
-      // 3. Top procedures
+      // 3. Top procedures from pre-aggregated provider_hcpcs
       executeRemoteQuery(`
         SELECT
-          c.hcpcs_code,
+          ph.hcpcs_code,
           COALESCE(h.description, 'Unknown') AS description,
-          ROUND(SUM(c.total_paid), 0) AS total_spending,
-          SUM(c.total_claims) AS total_claims,
-          SUM(c.unique_beneficiaries) AS total_beneficiaries
-        FROM claims c
-        LEFT JOIN hcpcs_lookup h ON c.hcpcs_code = h.hcpcs_code
-        WHERE c.billing_npi = '${npi}'
-        GROUP BY c.hcpcs_code, h.description
-        ORDER BY total_spending DESC
+          ph.total_paid AS total_spending,
+          ph.total_claims AS total_claims,
+          ph.unique_beneficiaries AS total_beneficiaries
+        FROM provider_hcpcs ph
+        LEFT JOIN hcpcs_lookup h ON ph.hcpcs_code = h.hcpcs_code
+        WHERE ph.billing_npi = '${npi}'
+        ORDER BY ph.total_paid DESC
         LIMIT 50
       `),
 
-      // 4. Monthly spending trend
+      // 4. Monthly spending trend from pre-aggregated provider_monthly
       executeRemoteQuery(`
         SELECT
           claim_month AS month,
-          ROUND(SUM(total_paid), 0) AS spending,
-          SUM(total_claims) AS claims
-        FROM claims
+          total_paid AS spending,
+          total_claims AS claims
+        FROM provider_monthly
         WHERE billing_npi = '${npi}'
-        GROUP BY claim_month
         ORDER BY claim_month
         LIMIT 100
       `),
