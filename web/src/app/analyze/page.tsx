@@ -5,7 +5,7 @@ import { useQuery } from "@/hooks/useQuery";
 import { useAnalysis } from "@/hooks/useAnalysis";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { QueryInput } from "@/components/analyze/QueryInput";
+import { QueryInput, type QueryInputHandle } from "@/components/analyze/QueryInput";
 import { SQLDisplay } from "@/components/analyze/SQLDisplay";
 import { ResultsTable } from "@/components/analyze/ResultsTable";
 import { ResultsChart } from "@/components/analyze/ResultsChart";
@@ -87,8 +87,17 @@ export default function AnalyzePage() {
     [submitQuestion, selectedYears, clearResults]
   );
 
+  const queryInputRef = useRef<QueryInputHandle | null>(null);
+
   const handleFeedSelect = useCallback(
-    (item: StoredQuery | StoredAnalysis) => {
+    (item: StoredQuery | StoredAnalysis | null, question?: string) => {
+      if (item === null && question) {
+        // Server feed item — pre-fill question and switch to query tab
+        setActiveTab("query");
+        queryInputRef.current?.setQuestion(question);
+        return;
+      }
+      if (!item) return;
       if ("steps" in item) {
         analysisRef.current.loadStoredAnalysis(item);
         clearResults();
@@ -178,6 +187,7 @@ export default function AnalyzePage() {
               </div>
 
               <QueryInput
+                ref={queryInputRef}
                 onSubmit={handleSubmit}
                 loading={loading}
                 analysisRunning={analysisRunning}

@@ -5,7 +5,7 @@ import { checkRateLimit } from "@/lib/rateLimit";
 import { validateSQL } from "@/lib/sqlValidation";
 import { executeRemoteQuery } from "@/lib/railway";
 import { summarizeResults } from "@/lib/summarize";
-import { recordRequest, recordQuery } from "@/lib/metrics";
+import { recordRequest, recordQuery, recordFeedItem } from "@/lib/metrics";
 
 export const maxDuration = 120;
 
@@ -425,6 +425,18 @@ export async function POST(request: NextRequest) {
     }
 
     recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 200, claudeMs, railwayMs, totalMs: Date.now() - requestStart, cached: false, inputTokens: cumulativeInputTokens, outputTokens: cumulativeOutputTokens });
+
+    // Record to public feed when analysis is complete
+    if (parsed.done && parsed.summary) {
+      recordFeedItem({
+        id: sessionId,
+        question,
+        route: "analyze",
+        timestamp: Date.now(),
+        summary: parsed.summary,
+        stepCount: stepIndex,
+      });
+    }
 
     return NextResponse.json(parsed, {
       headers: { "X-RateLimit-Remaining": String(rateCheck.remaining) },

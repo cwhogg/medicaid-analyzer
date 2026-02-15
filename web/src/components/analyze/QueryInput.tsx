@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, forwardRef, useImperativeHandle, FormEvent } from "react";
 import { Search, Loader2, Layers, X } from "lucide-react";
 
 interface QueryInputProps {
@@ -10,8 +10,16 @@ interface QueryInputProps {
   onCancelAnalysis?: () => void;
 }
 
-export function QueryInput({ onSubmit, loading, analysisRunning, onCancelAnalysis }: QueryInputProps) {
+export interface QueryInputHandle {
+  setQuestion: (q: string) => void;
+}
+
+export const QueryInput = forwardRef<QueryInputHandle, QueryInputProps>(function QueryInput({ onSubmit, loading, analysisRunning, onCancelAnalysis }, ref) {
   const [question, setQuestion] = useState("");
+
+  useImperativeHandle(ref, () => ({
+    setQuestion: (q: string) => setQuestion(q),
+  }));
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -85,4 +93,4 @@ export function QueryInput({ onSubmit, loading, analysisRunning, onCancelAnalysi
       </form>
     </div>
   );
-}
+});

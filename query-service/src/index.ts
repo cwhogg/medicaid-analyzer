@@ -4,7 +4,7 @@ import { createWriteStream, createReadStream, existsSync, readdirSync, statSync,
 import { pipeline } from "stream/promises";
 import { Readable } from "stream";
 import { initDB, executeSQL, reloadViews, isReady } from "./db.js";
-import { initMetricsDB, recordMetrics, getMetrics } from "./metrics-db.js";
+import { initMetricsDB, recordMetrics, getMetrics, recordFeedItem, getFeedItems } from "./metrics-db.js";
 
 const DATA_DIR = process.env.DATA_DIR || "/data";
 
@@ -240,6 +240,32 @@ app.post("/query", async (c) => {
   } catch (err) {
     const message = err instanceof Error ? err.message : "Internal server error";
     console.error("Query error:", message);
+    return c.json({ error: message }, 500);
+  }
+});
+
+// Public feed — no auth required
+app.get("/feed", async (c) => {
+  try {
+    const limit = parseInt(c.req.query("limit") || "50", 10);
+    const items = await getFeedItems(Math.min(limit, 100));
+    return c.json({ items });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to fetch feed";
+    console.error("Feed fetch error:", message);
+    return c.json({ error: message }, 500);
+  }
+});
+
+// Record feed item (auth required — from Vercel)
+app.post("/feed/record", async (c) => {
+  try {
+    const body = await c.req.json();
+    await recordFeedItem(body);
+    return c.json({ ok: true });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to record feed item";
+    console.error("Feed record error:", message);
     return c.json({ error: message }, 500);
   }
 });

@@ -88,6 +88,25 @@ export function recordQuery(entry: QueryLogEntry) {
   sendToRailway(undefined, entry);
 }
 
+export function recordFeedItem(item: {
+  id: string;
+  question: string;
+  route: string;
+  timestamp: number;
+  summary?: string | null;
+  stepCount?: number;
+  rowCount?: number;
+}): void {
+  if (!RAILWAY_QUERY_URL) return;
+
+  fetch(`${RAILWAY_QUERY_URL}/feed/record`, {
+    method: "POST",
+    headers: railwayHeaders(),
+    body: JSON.stringify(item),
+    signal: AbortSignal.timeout(5000),
+  }).catch(() => {});
+}
+
 export async function getMetrics() {
   if (!RAILWAY_QUERY_URL) {
     throw new Error("RAILWAY_QUERY_URL is not configured");

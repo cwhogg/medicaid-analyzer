@@ -56,6 +56,18 @@ export async function initMetricsDB(): Promise<void> {
     )
   `);
 
+  await metricsDb.run(`
+    CREATE TABLE IF NOT EXISTS feed_items (
+      id VARCHAR NOT NULL,
+      question VARCHAR NOT NULL,
+      route VARCHAR NOT NULL,
+      timestamp BIGINT NOT NULL,
+      summary VARCHAR,
+      step_count INTEGER DEFAULT 0,
+      row_count INTEGER DEFAULT 0
+    )
+  `);
+
   // Initialize totals row if not exists
   const existing = await metricsDb.all(`SELECT 1 FROM totals WHERE id = 1`);
   if (existing.length === 0) {
@@ -295,4 +307,66 @@ export async function getMetrics() {
     },
     recentQueries,
   };
+}
+
+// --- Public Feed ---
+
+const MAX_FEED_ITEMS = 500;
+
+export interface FeedItemInput {
+  id: string;
+  question: string;
+  route: string;
+  timestamp: number;
+  summary?: string | null;
+  stepCount?: number;
+  rowCount?: number;
+}
+
+export async function recordFeedItem(item: FeedItemInput): Promise<void> {
+  if (!metricsDb) throw new Error("Metrics DB not initialized");
+
+  // Deduplicate by id
+  const exists = await metricsDb.all(`SELECT 1 FROM feed_items WHERE id = ?`, item.id);
+  if (exists.length > 0) return;
+
+  await metricsDb.run(
+    `INSERT INTO feed_items (id, question, route, timestamp, summary, step_count, row_count)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    item.id,
+    item.question,
+    item.route,
+    item.timestamp,
+    item.summary ?? null,
+    item.stepCount ?? 0,
+    item.rowCount ?? 0
+  );
+
+  // Prune old items
+  const count = await metricsDb.all(`SELECT COUNT(*) as cnt FROM feed_items`);
+  if (count[0] && (count[0] as Record<string, unknown>).cnt as number > MAX_FEED_ITEMS) {
+    await metricsDb.run(`
+      DELETE FROM feed_items WHERE timestamp <= (
+        SELECT timestamp FROM feed_items ORDER BY timestamp DESC LIMIT 1 OFFSET ${MAX_FEED_ITEMS}
+      )
+    `);
+  }
+}
+
+export async function getFeedItems(limit = 50): Promise<Record<string, unknown>[]> {
+  if (!metricsDb) throw new Error("Metrics DB not initialized");
+
+  const rows = allToNumbers(await metricsDb.all(
+    `SELECT * FROM feed_items ORDER BY timestamp DESC LIMIT ?`, limit
+  ) as Record<string, unknown>[]);
+
+  return rows.map((r) => ({
+    id: r.id,
+    question: r.question,
+    route: r.route,
+    timestamp: r.timestamp,
+    summary: r.summary || null,
+    stepCount: r.step_count ?? 0,
+    rowCount: r.row_count ?? 0,
+  }));
 }
