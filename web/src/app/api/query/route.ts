@@ -139,7 +139,8 @@ Rules:
 - Use DuckDB SQL syntax.
 - Format dollar amounts with ROUND(..., 0) to whole dollars (no cents).
 - When a question is ambiguous, make reasonable assumptions and use the most appropriate approach.
-- Use short, distinct table aliases (e.g. c, l, n) and ensure every alias referenced in the query is defined in a FROM or JOIN clause.${yearConstraint}`,
+- Use short, distinct table aliases (e.g. c, l, n) and ensure every alias referenced in the query is defined in a FROM or JOIN clause.
+- IMPORTANT: Oct-Dec 2024 data is incomplete. For any query involving monthly trends or time series, add: AND claim_month < '2024-10-01' to exclude incomplete months.${yearConstraint}`,
       messages,
     });
 

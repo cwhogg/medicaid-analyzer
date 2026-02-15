@@ -60,7 +60,7 @@ export async function GET(
           total_paid AS spending,
           total_claims AS claims
         FROM provider_monthly
-        WHERE billing_npi = '${npi}'
+        WHERE billing_npi = '${npi}' AND claim_month < '2024-10-01'
         ORDER BY claim_month
         LIMIT 100
       `),

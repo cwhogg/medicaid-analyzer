@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, DollarSign, FileText, Users, Stethoscope, Calendar, Loader2, AlertCircle, UserCheck, BarChart3, Clock, TrendingUp } from "lucide-react";
+import { ArrowLeft, DollarSign, FileText, Users, Hash, Calendar, Loader2, AlertCircle, UserCheck, BarChart3, Clock, TrendingUp } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ResultsTable } from "@/components/analyze/ResultsTable";
@@ -163,15 +163,19 @@ export default function ProviderPage({ params }: { params: { npi: string } }) {
                   value={data.summary.unique_beneficiaries != null ? formatFullNumber(data.summary.unique_beneficiaries) : "N/A"}
                 />
                 <StatCard
-                  icon={Stethoscope}
-                  label="Procedures"
+                  icon={Hash}
+                  label="Unique Codes"
                   value={data.summary.procedures_billed != null ? formatFullNumber(data.summary.procedures_billed) : "N/A"}
                 />
                 <StatCard
                   icon={UserCheck}
-                  label="$ / Beneficiary"
-                  value={data.summary.total_paid != null && data.summary.unique_beneficiaries
-                    ? formatCurrency(data.summary.total_paid / data.summary.unique_beneficiaries)
+                  label="$ / Bene / Yr"
+                  value={data.summary.total_paid != null && data.summary.unique_beneficiaries && data.summary.first_month && data.summary.last_month
+                    ? (() => {
+                        const months = (new Date(data.summary.last_month).getTime() - new Date(data.summary.first_month).getTime()) / (1000 * 60 * 60 * 24 * 30.44) + 1;
+                        const years = Math.max(1, months / 12);
+                        return formatCurrency(data.summary.total_paid / data.summary.unique_beneficiaries / years);
+                      })()
                     : "N/A"}
                 />
                 <StatCard

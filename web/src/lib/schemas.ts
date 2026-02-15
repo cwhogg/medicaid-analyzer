@@ -42,7 +42,7 @@ export const TABLE_SCHEMAS: TableSchema[] = [
 ];
 
 export function generateSchemaPrompt(): string {
-  let prompt = "You have access to the following Medicaid provider spending tables (Jan 2018 – Dec 2024):\n\n";
+  let prompt = "You have access to the following Medicaid provider spending tables (Jan 2018 – Sep 2024; Oct-Dec 2024 excluded — incomplete data):\n\n";
 
   for (const table of TABLE_SCHEMAS) {
     prompt += `## Table: ${table.name}\n`;
