@@ -129,12 +129,8 @@ export async function POST(request: NextRequest) {
     let totalInputTokens = 0;
     let totalOutputTokens = 0;
 
-    const claudeStart = Date.now();
-    const message = await client.messages.create({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1024,
-      temperature: 0,
-      system: `You are a SQL expert that translates natural language questions into DuckDB SQL queries for a Medicaid provider spending dataset.
+    // Build system prompt with caching — schema is static and cached across requests
+    const staticSystemPrompt = `You are a SQL expert that translates natural language questions into DuckDB SQL queries for a Medicaid provider spending dataset.
 
 ${schemaPrompt}
 
@@ -148,7 +144,21 @@ Rules:
 - Format dollar amounts with ROUND(..., 0) to whole dollars (no cents).
 - When a question is ambiguous, make reasonable assumptions and use the most appropriate approach.
 - Use short, distinct table aliases (e.g. c, l, n) and ensure every alias referenced in the query is defined in a FROM or JOIN clause.
-- IMPORTANT: Oct-Dec 2024 data is incomplete. For any query involving monthly trends or time series, add: AND claim_month < '2024-10-01' to exclude incomplete months.${yearConstraint}`,
+- IMPORTANT: Oct-Dec 2024 data is incomplete. For any query involving monthly trends or time series, add: AND claim_month < '2024-10-01' to exclude incomplete months.`;
+
+    const systemBlocks: Anthropic.TextBlockParam[] = [
+      { type: "text", text: staticSystemPrompt, cache_control: { type: "ephemeral" } },
+    ];
+    if (yearConstraint) {
+      systemBlocks.push({ type: "text", text: yearConstraint });
+    }
+
+    const claudeStart = Date.now();
+    const message = await client.messages.create({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1024,
+      temperature: 0,
+      system: systemBlocks,
       messages,
     });
     const claudeMs = Date.now() - claudeStart;
@@ -203,13 +213,9 @@ Rules:
         return NextResponse.json({ error: errMsg }, { status: 500 });
       }
 
-      // Retry: ask Claude to fix the SQL
-      const retryClaudeStart = Date.now();
-      const retryMessage = await client.messages.create({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1024,
-        temperature: 0,
-        system: `You are a SQL expert that translates natural language questions into DuckDB SQL queries for a Medicaid provider spending dataset.
+      // Retry: ask Claude to fix the SQL (reuses cached schema prompt)
+      const retrySystemBlocks: Anthropic.TextBlockParam[] = [
+        { type: "text", text: `You are a SQL expert that translates natural language questions into DuckDB SQL queries for a Medicaid provider spending dataset.
 
 ${schemaPrompt}
 
@@ -218,7 +224,18 @@ Rules:
 - Always include a LIMIT clause (max 10000).
 - Only use SELECT statements.
 - Use DuckDB SQL syntax.
-- Use short, distinct table aliases.${yearConstraint}`,
+- Use short, distinct table aliases.`, cache_control: { type: "ephemeral" } },
+      ];
+      if (yearConstraint) {
+        retrySystemBlocks.push({ type: "text", text: yearConstraint });
+      }
+
+      const retryClaudeStart = Date.now();
+      const retryMessage = await client.messages.create({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1024,
+        temperature: 0,
+        system: retrySystemBlocks,
         messages: [
           { role: "user", content: question },
           { role: "assistant", content: sql },

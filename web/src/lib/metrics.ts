@@ -108,6 +108,19 @@ export function recordFeedItem(item: {
   }).catch(() => {});
 }
 
+export async function getFeedback(): Promise<Record<string, unknown>[]> {
+  if (!RAILWAY_QUERY_URL) return [];
+
+  const response = await fetch(`${RAILWAY_QUERY_URL}/feedback?limit=50`, {
+    headers: railwayHeaders(),
+    signal: AbortSignal.timeout(10000),
+  });
+
+  if (!response.ok) return [];
+  const data = await response.json();
+  return data.items || [];
+}
+
 export async function getMetrics() {
   if (!RAILWAY_QUERY_URL) {
     throw new Error("RAILWAY_QUERY_URL is not configured");

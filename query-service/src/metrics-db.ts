@@ -69,6 +69,16 @@ export async function initMetricsDB(): Promise<void> {
     )
   `);
 
+  await metricsDb.run(`
+    CREATE TABLE IF NOT EXISTS feedback (
+      id VARCHAR NOT NULL,
+      message VARCHAR NOT NULL,
+      page VARCHAR,
+      ip VARCHAR,
+      timestamp BIGINT NOT NULL
+    )
+  `);
+
   // Add result_data column if it doesn't exist (migration for existing DBs)
   try {
     await metricsDb.run(`ALTER TABLE feed_items ADD COLUMN result_data VARCHAR`);
@@ -398,4 +408,42 @@ export async function getFeedItems(limit = 50): Promise<Record<string, unknown>[
       resultData,
     };
   });
+}
+
+// --- Feedback ---
+
+export interface FeedbackInput {
+  id: string;
+  message: string;
+  page?: string;
+  ip?: string;
+}
+
+export async function recordFeedback(item: FeedbackInput): Promise<void> {
+  if (!metricsDb) throw new Error("Metrics DB not initialized");
+
+  await metricsDb.run(
+    `INSERT INTO feedback (id, message, page, ip, timestamp) VALUES (?, ?, ?, ?, ?)`,
+    item.id,
+    item.message,
+    item.page ?? null,
+    item.ip ?? null,
+    Date.now()
+  );
+}
+
+export async function getFeedback(limit = 50): Promise<Record<string, unknown>[]> {
+  if (!metricsDb) throw new Error("Metrics DB not initialized");
+
+  const rows = allToNumbers(await metricsDb.all(
+    `SELECT * FROM feedback ORDER BY timestamp DESC LIMIT ?`, limit
+  ) as Record<string, unknown>[]);
+
+  return rows.map((r) => ({
+    id: r.id,
+    message: r.message,
+    page: r.page || null,
+    ip: r.ip ? maskIP(String(r.ip)) : null,
+    timestamp: r.timestamp,
+  }));
 }

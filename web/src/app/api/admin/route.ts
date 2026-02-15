@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getMetrics } from "@/lib/metrics";
+import { getMetrics, getFeedback } from "@/lib/metrics";
 import { getRateLimitStats } from "@/lib/rateLimit";
 
 export async function GET(request: NextRequest) {
@@ -11,9 +11,12 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const metrics = await getMetrics();
+    const [metrics, feedback] = await Promise.all([
+      getMetrics(),
+      getFeedback().catch(() => []),
+    ]);
     const rateLimit = getRateLimitStats();
-    return NextResponse.json({ ...metrics, rateLimit });
+    return NextResponse.json({ ...metrics, rateLimit, feedback });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to fetch metrics";
     return NextResponse.json({ error: message }, { status: 500 });

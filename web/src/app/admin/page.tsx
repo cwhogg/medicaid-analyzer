@@ -4,6 +4,14 @@ import { Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { GlassCard } from "@/components/ui/GlassCard";
 
+interface FeedbackItem {
+  id: string;
+  message: string;
+  page: string | null;
+  ip: string | null;
+  timestamp: number;
+}
+
 interface Metrics {
   uptime: { startTime: string; seconds: number };
   traffic: {
@@ -28,6 +36,7 @@ interface Metrics {
     budgetPercent: number;
   };
   rateLimit: { trackedIPs: number; limitPerHour: number };
+  feedback: FeedbackItem[];
   recentQueries: {
     timestamp: number;
     ip: string;
@@ -340,6 +349,29 @@ function AdminDashboard() {
           </a>
         </div>
       </GlassCard>
+
+      {/* Feedback */}
+      {metrics.feedback && metrics.feedback.length > 0 && (
+        <GlassCard className="mb-6">
+          <div className="p-4">
+            <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-3">
+              User Feedback ({metrics.feedback.length})
+            </h2>
+            <div className="space-y-3">
+              {metrics.feedback.map((fb) => (
+                <div key={fb.id} className="bg-white/[0.02] rounded-lg p-3 border border-white/[0.05]">
+                  <p className="text-sm text-white whitespace-pre-wrap">{fb.message}</p>
+                  <div className="flex items-center gap-3 mt-2 text-xs text-muted/60">
+                    <span>{new Date(fb.timestamp).toLocaleString()}</span>
+                    {fb.page && <span className="font-mono">{fb.page}</span>}
+                    {fb.ip && <span className="font-mono">{fb.ip}</span>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </GlassCard>
+      )}
 
       {/* Recent Queries */}
       <GlassCard>

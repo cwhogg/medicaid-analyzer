@@ -89,13 +89,16 @@ function buildConversationHistory(
   return messages;
 }
 
+type SystemBlock = { type: "text"; text: string; cache_control?: { type: "ephemeral" } };
+
 function buildSystemPrompt(
   schemaPrompt: string,
   yearConstraint: string,
   stepIndex: number,
   remainingSteps: number,
-): string {
-  const analystRole = `You are an expert healthcare claims analyst specializing in Medicaid claims data, with deep expertise in quantitative analysis and SQL. You reason like a human analyst: you understand what the user wants to know, determine what the final answer should look like, and work backwards to figure out what queries will produce that answer.
+): SystemBlock[] {
+  // Static part — cached across all requests and steps
+  const cachedPart = `You are an expert healthcare claims analyst specializing in Medicaid claims data, with deep expertise in quantitative analysis and SQL. You reason like a human analyst: you understand what the user wants to know, determine what the final answer should look like, and work backwards to figure out what queries will produce that answer.
 
 ## Medicaid Domain Knowledge
 - Spending is highly concentrated: a small number of providers and procedures account for the majority of dollars
@@ -105,19 +108,17 @@ function buildSystemPrompt(
 - Seasonal patterns exist: some procedures spike in Q1 (flu season), behavioral health utilization shows summer dips
 - Oct-Dec 2024 data is INCOMPLETE — always truncate time series at Sept 2024 or note the incompleteness
 - Remote Patient Monitoring (RPM) and Chronic Care Management (CCM) are rapidly growing categories
-- Provider types matter: Organizations vs Individual providers show different spending patterns`;
-
-  const basePrompt = `${analystRole}
+- Provider types matter: Organizations vs Individual providers show different spending patterns
 
 ${schemaPrompt}
 
 You MUST respond with valid JSON only. No markdown, no code fences, no text outside the JSON.`;
 
+  let dynamicPart: string;
+
   if (stepIndex === 0) {
     // Plan-only step — NO SQL query
-    return `${basePrompt}
-
-This is the PLANNING step. Analyze the question and create an execution plan. Do NOT write any SQL yet — just plan.
+    dynamicPart = `This is the PLANNING step. Analyze the question and create an execution plan. Do NOT write any SQL yet — just plan.
 
 ## How to Plan
 
@@ -149,12 +150,9 @@ Rules for planning:
 - Maximum 4 steps. Prefer fewer, more targeted steps over many shallow ones.
 - Good purposes: "Get annual spending by state for RPM codes, ranked by total", "Using top 5 states from step 1, break down spending by individual HCPCS code"
 - Bad purposes: "Explore the data", "Look at trends", "Get more details"${yearConstraint}`;
-  }
-
-  // Execution steps (1+)
-  return `${basePrompt}
-
-This is step ${stepIndex} of the analysis. You have ${remainingSteps} step(s) remaining (including this one).
+  } else {
+    // Execution steps (1+)
+    dynamicPart = `This is step ${stepIndex} of the analysis. You have ${remainingSteps} step(s) remaining (including this one).
 
 ${remainingSteps === 1 ? "This is your FINAL step. You MUST set \"done\": true and include a comprehensive \"summary\" field." : ""}
 
@@ -208,6 +206,12 @@ Rules:
 - The "insight" field is REQUIRED — interpret the results with specific numbers. Don't just describe the query.
 - Use short, distinct table aliases and ensure every alias is defined in FROM or JOIN.
 - If the available tables cannot answer a specific step, include "cannotAnswer" instead of "sql".${yearConstraint}`;
+  }
+
+  return [
+    { type: "text", text: cachedPart, cache_control: { type: "ephemeral" } },
+    { type: "text", text: dynamicPart },
+  ];
 }
 
 export async function POST(request: NextRequest) {
@@ -265,7 +269,7 @@ export async function POST(request: NextRequest) {
     const yearConstraint = buildYearConstraint(yearFilter);
     const remainingSteps = MAX_STEPS - stepIndex;
 
-    const systemPrompt = buildSystemPrompt(schemaPrompt, yearConstraint, stepIndex, remainingSteps);
+    const systemBlocks = buildSystemPrompt(schemaPrompt, yearConstraint, stepIndex, remainingSteps);
     const messages = buildConversationHistory(question, stepIndex, previousSteps);
 
     let cumulativeInputTokens = 0;
@@ -276,7 +280,7 @@ export async function POST(request: NextRequest) {
       model: "claude-sonnet-4-20250514",
       max_tokens: 2048,
       temperature: 0,
-      system: systemPrompt,
+      system: systemBlocks,
       messages,
     });
     const claudeMs = Date.now() - claudeStart;
@@ -374,7 +378,7 @@ export async function POST(request: NextRequest) {
               model: "claude-sonnet-4-20250514",
               max_tokens: 2048,
               temperature: 0,
-              system: systemPrompt,
+              system: systemBlocks,
               messages: retryMessages,
             });
             cumulativeInputTokens += retryResponse.usage.input_tokens;
