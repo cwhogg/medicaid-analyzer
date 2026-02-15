@@ -40,3 +40,25 @@ export function formatDate(date: string | Date): string {
   const d = typeof date === "string" ? new Date(date) : date;
   return d.toLocaleDateString("en-US", { year: "numeric", month: "short" });
 }
+
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}(T|\s)/;
+
+/**
+ * Format a date/timestamp cell value based on column context.
+ * - "year" columns → "2019"
+ * - "month"/"date"/"quarter"/"period" columns → "Jan 2019"
+ * Returns null if the value isn't a recognizable date string.
+ */
+export function formatDateCell(value: unknown, colName?: string): string | null {
+  if (typeof value !== "string" || !ISO_DATE_RE.test(value)) return null;
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return null;
+
+  const lower = (colName || "").toLowerCase();
+  if (lower === "year" || lower.endsWith("_year")) {
+    return String(d.getUTCFullYear());
+  }
+  // Month, date, quarter, period, or any other temporal column
+  const month = d.toLocaleString("en-US", { month: "short", timeZone: "UTC" });
+  return `${month} ${d.getUTCFullYear()}`;
+}

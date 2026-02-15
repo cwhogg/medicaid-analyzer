@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { formatDateCell } from "@/lib/format";
 
 interface ResultsTableProps {
   columns: string[];
@@ -16,6 +17,9 @@ function isYearOrIdColumn(colName: string): boolean {
 
 function formatCell(value: unknown, colName?: string): string {
   if (value === null || value === undefined) return "—";
+  // Try date formatting first for string values
+  const dateFormatted = formatDateCell(value, colName);
+  if (dateFormatted) return dateFormatted;
   if (typeof value === "number") {
     // Don't comma-format years, IDs, codes, or NPI numbers
     if (colName && isYearOrIdColumn(colName)) return String(value);

@@ -17,6 +17,7 @@ import {
   Legend,
 } from "recharts";
 import { GlassCard } from "@/components/ui/GlassCard";
+import { formatDateCell } from "@/lib/format";
 
 interface ResultsChartProps {
   columns: string[];
@@ -112,10 +113,16 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
       // Build a human-readable label
       if (descIdx !== -1 && row[descIdx] && String(row[descIdx]).trim()) {
         record[LABEL_KEY] = shortenLabel(String(row[descIdx]), 28);
-      } else if (typeof record[firstCol] === "string") {
-        record[LABEL_KEY] = shortenLabel(record[firstCol] as string);
       } else {
-        record[LABEL_KEY] = String(record[firstCol] ?? "");
+        // Try date formatting for the first column
+        const dateLabel = formatDateCell(record[firstCol], firstCol);
+        if (dateLabel) {
+          record[LABEL_KEY] = dateLabel;
+        } else if (typeof record[firstCol] === "string") {
+          record[LABEL_KEY] = shortenLabel(record[firstCol] as string);
+        } else {
+          record[LABEL_KEY] = String(record[firstCol] ?? "");
+        }
       }
 
       return record;

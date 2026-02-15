@@ -37,6 +37,9 @@ interface CompletedStep {
   stepIndex: number;
   title: string;
   sql: string | null;
+  chartType: string;
+  columns: string[];
+  rows: unknown[][];
   resultSummary: string | null;
   insight: string | null;
   error: string | null;
@@ -164,6 +167,9 @@ export function useAnalysis() {
               stepIndex: 0,
               title: "Analysis Plan",
               sql: null,
+              chartType: "table",
+              columns: [],
+              rows: [],
               resultSummary: null,
               insight: data.reasoning || null,
               error: null,
@@ -196,6 +202,9 @@ export function useAnalysis() {
               stepIndex,
               title: data.step.title || "Cannot answer",
               sql: null,
+              chartType: "table",
+              columns: [],
+              rows: [],
               resultSummary: null,
               insight: data.step.cannotAnswer,
               error: null,
@@ -268,6 +277,9 @@ export function useAnalysis() {
             stepIndex,
             title: step.title || `Step ${stepIndex}`,
             sql: step.sql,
+            chartType: step.chartType || "table",
+            columns: stepColumns,
+            rows: stepRows,
             resultSummary: step.resultSummary || null,
             insight: step.insight || null,
             error: stepError,
@@ -397,9 +409,9 @@ async function saveToStore(data: {
         stepIndex: s.stepIndex,
         title: s.title,
         sql: s.sql,
-        chartType: "table",
-        columns: [],
-        rows: [],
+        chartType: s.chartType || "table",
+        columns: s.columns,
+        rows: s.rows,
         insight: s.insight,
         error: s.error,
       })),
