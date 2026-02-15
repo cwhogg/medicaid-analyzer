@@ -1,6 +1,8 @@
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
-import { writeFileSync, existsSync, readdirSync } from "fs";
+import { createWriteStream, existsSync, readdirSync, statSync } from "fs";
+import { pipeline } from "stream/promises";
+import { Readable } from "stream";
 import { initDB, executeSQL, reloadViews, isReady } from "./db.js";
 
 const DATA_DIR = process.env.DATA_DIR || "/data";
@@ -42,19 +44,31 @@ app.get("/health", (c) => {
   return c.json({ ok: true, dataReady: isReady() });
 });
 
-// Upload a file to the data volume
+// Download a file from a URL into the data volume (streaming, no memory issues)
 app.post("/upload", async (c) => {
   try {
-    const filename = c.req.header("X-Filename");
-    if (!filename) {
-      return c.json({ error: "X-Filename header required" }, 400);
+    const body = await c.req.json<{ url: string; filename: string }>();
+    if (!body.url || !body.filename) {
+      return c.json({ error: "url and filename required" }, 400);
     }
-    const body = await c.req.arrayBuffer();
-    const filePath = `${DATA_DIR}/${filename}`;
-    writeFileSync(filePath, Buffer.from(body));
-    return c.json({ ok: true, path: filePath, bytes: body.byteLength });
+    const filePath = `${DATA_DIR}/${body.filename}`;
+    console.log(`Downloading ${body.url} -> ${filePath}...`);
+
+    const response = await fetch(body.url);
+    if (!response.ok || !response.body) {
+      return c.json({ error: `Download failed: ${response.status}` }, 500);
+    }
+
+    const nodeStream = Readable.fromWeb(response.body as import("stream/web").ReadableStream);
+    const fileStream = createWriteStream(filePath);
+    await pipeline(nodeStream, fileStream);
+
+    const stats = statSync(filePath);
+    console.log(`Downloaded ${body.filename}: ${stats.size} bytes`);
+    return c.json({ ok: true, path: filePath, bytes: stats.size });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Upload failed";
+    console.error("Upload error:", message);
     return c.json({ error: message }, 500);
   }
 });
@@ -63,7 +77,14 @@ app.post("/upload", async (c) => {
 app.get("/files", (c) => {
   try {
     if (!existsSync(DATA_DIR)) return c.json({ files: [] });
-    const files = readdirSync(DATA_DIR);
+    const files = readdirSync(DATA_DIR).map((f) => {
+      try {
+        const s = statSync(`${DATA_DIR}/${f}`);
+        return { name: f, size: s.size };
+      } catch {
+        return { name: f, size: 0 };
+      }
+    });
     return c.json({ files });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to list files";
