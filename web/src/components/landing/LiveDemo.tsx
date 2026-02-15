@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
+import { ExternalLink } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { formatCurrency } from "@/lib/format";
 
@@ -92,6 +93,42 @@ export function LiveDemo() {
             </LineChart>
           </ResponsiveContainer>
         </GlassCard>
+
+        <GlassCard className="mt-6 p-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-medium text-white">Data Source</p>
+              <p className="text-sm text-muted mt-1">
+                CMS Medicaid Provider Utilization and Spending dataset. 227M+ claims records covering 617K+ providers and 10K+ procedure codes, January 2018 through September 2024.
+              </p>
+            </div>
+            <a
+              href="https://opendata.hhs.gov/datasets/medicaid-provider-spending/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 inline-flex items-center gap-1.5 text-sm text-accent hover:underline"
+            >
+              View on HHS Open Data
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        </GlassCard>
+
+        <div className="mt-8 text-center space-y-2">
+          <p className="text-sm font-medium text-accent">Government Open Data FTW</p>
+          <p className="text-xs text-muted-dark">
+            Made by Claude Code (with guidance from{" "}
+            <a
+              href="https://x.com/cwhogg"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted hover:text-white transition-colors"
+            >
+              Chris Hogg
+            </a>
+            )
+          </p>
+        </div>
       </div>
     </section>
   );
