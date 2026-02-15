@@ -133,6 +133,9 @@ ORDER BY spending DESC LIMIT 20
 ## Searching for procedures by topic:
 - ALWAYS filter by hcpcs_code ranges or specific codes, NOT by description text. The descriptions are cleaned-up labels and may not match keyword searches.
 - Common HCPCS code families:
+  - Personal Care Services: T1019 (per 15 min), T1020 (per diem) — T1019 is the LARGEST single code in Medicaid by total spending (~$122B). Do NOT confuse with Principal Care Management (PCM).
+  - Clinic / Rehabilitation Services: T1015 (clinic service), T2016 (habilitation residential waiver per diem), T2003 (non-emergency transport)
+  - Principal Care Management (PCM): 99424, 99425, 99426, 99427 — physician management of a single chronic condition. Much smaller than Personal Care Services.
   - Remote Patient Monitoring (RPM): 99453, 99454, 99457, 99458, 99473, 99474 (99454 is the device/data transmission code, 99457/99458 are treatment management)
   - Chronic Care Management (CCM): 99490, 99491, 99437, 99439
   - Evaluation & Management (E/M) office visits: 99202-99215 (99211-99215 are established, 99202-99205 are new)
@@ -140,9 +143,11 @@ ORDER BY spending DESC LIMIT 20
   - Behavioral Health Integration: 99484, 99492, 99493, 99494
   - Annual Wellness Visit: G0438 (initial), G0439 (subsequent)
   - Transitional Care Management: 99495, 99496
-- When the user asks about a category (e.g. "RPM", "telehealth", "CCM"), use WHERE hcpcs_code IN (...) with the appropriate code list above.
+- IMPORTANT: T-codes (T1019, T1015, T2016, etc.) are Medicaid-specific temporary codes and represent the highest-spending categories. They are NOT the same as CPT codes like 99424-99427.
+- When the user asks about a category (e.g. "RPM", "telehealth", "CCM", "personal care"), use WHERE hcpcs_code IN (...) with the appropriate code list above.
 - For drug/injection queries, J-codes start with 'J' — use WHERE hcpcs_code LIKE 'J%' or specific J-codes.
 - For DME/supply queries, use A-codes (LIKE 'A%'), E-codes (LIKE 'E%'), or L-codes (LIKE 'L%').
+- For Medicaid-specific services, T-codes start with 'T' — use WHERE hcpcs_code LIKE 'T%' or specific T-codes.
 `;
 
   return prompt;

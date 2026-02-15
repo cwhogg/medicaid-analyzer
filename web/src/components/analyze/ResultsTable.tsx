@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 
 interface ResultsTableProps {
@@ -63,6 +64,12 @@ export function ResultsTable({ columns, rows }: ResultsTableProps) {
     }
   };
 
+  // Find NPI column index for linking provider names
+  const npiColIndex = useMemo(
+    () => columns.findIndex((c) => c.toLowerCase() === "billing_npi"),
+    [columns]
+  );
+
   if (!rows.length) return null;
 
   return (
@@ -102,25 +109,37 @@ export function ResultsTable({ columns, rows }: ResultsTableProps) {
                 key={i}
                 className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors"
               >
-                {row.map((cell, j) => (
-                  <td
-                    key={j}
-                    className="px-4 py-2.5 text-muted font-mono text-xs whitespace-nowrap"
-                  >
-                    {columns[j].toLowerCase() === "billing_npi" && cell ? (
-                      <a
-                        href={`https://npiregistry.cms.hhs.gov/provider-view/${cell}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-accent hover:underline"
-                      >
-                        {formatCell(cell, columns[j])}
-                      </a>
-                    ) : (
-                      formatCell(cell, columns[j])
-                    )}
-                  </td>
-                ))}
+                {row.map((cell, j) => {
+                  const colName = columns[j].toLowerCase();
+                  const npi = npiColIndex !== -1 ? row[npiColIndex] : null;
+
+                  return (
+                    <td
+                      key={j}
+                      className="px-4 py-2.5 text-muted font-mono text-xs whitespace-nowrap"
+                    >
+                      {colName === "billing_npi" && cell ? (
+                        <a
+                          href={`https://npiregistry.cms.hhs.gov/provider-view/${cell}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-accent hover:underline"
+                        >
+                          {formatCell(cell, columns[j])}
+                        </a>
+                      ) : colName === "provider_name" && cell && npi ? (
+                        <Link
+                          href={`/provider/${npi}`}
+                          className="text-accent hover:underline"
+                        >
+                          {formatCell(cell, columns[j])}
+                        </Link>
+                      ) : (
+                        formatCell(cell, columns[j])
+                      )}
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>
