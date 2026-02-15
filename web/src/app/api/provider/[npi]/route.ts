@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { executeRemoteQuery } from "@/lib/railway";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export const maxDuration = 30;
 
@@ -10,6 +11,18 @@ export async function GET(
   { params }: { params: Promise<{ npi: string }> }
 ) {
   try {
+    const ip = _request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+      || _request.headers.get("x-real-ip")
+      || "unknown";
+
+    const rateCheck = checkRateLimit(ip);
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        { error: `Rate limit exceeded. Try again in ${rateCheck.retryAfterSec} seconds.` },
+        { status: 429, headers: { "Retry-After": String(rateCheck.retryAfterSec) } }
+      );
+    }
+
     const { npi } = await params;
 
     if (!NPI_REGEX.test(npi)) {

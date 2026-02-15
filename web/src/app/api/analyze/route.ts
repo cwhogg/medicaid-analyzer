@@ -266,7 +266,7 @@ export async function POST(request: NextRequest) {
     const messages = buildConversationHistory(question, stepIndex, previousSteps);
 
     const response = await client.messages.create({
-      model: "claude-opus-4-20250514",
+      model: "claude-sonnet-4-20250514",
       max_tokens: 2048,
       temperature: 0,
       system: systemPrompt,
@@ -353,7 +353,7 @@ export async function POST(request: NextRequest) {
             );
 
             const retryResponse = await client.messages.create({
-              model: "claude-opus-4-20250514",
+              model: "claude-sonnet-4-20250514",
               max_tokens: 2048,
               temperature: 0,
               system: systemPrompt,
