@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
-import { createWriteStream, existsSync, readdirSync, statSync } from "fs";
+import { createWriteStream, createReadStream, existsSync, readdirSync, statSync, unlinkSync } from "fs";
 import { pipeline } from "stream/promises";
 import { Readable } from "stream";
 import { initDB, executeSQL, reloadViews, isReady } from "./db.js";
@@ -31,6 +31,15 @@ app.use("/upload", async (c, next) => {
 });
 
 app.use("/reload", async (c, next) => {
+  const auth = c.req.header("Authorization");
+  if (!API_KEY) return next();
+  if (auth !== `Bearer ${API_KEY}`) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  return next();
+});
+
+app.use("/concat", async (c, next) => {
   const auth = c.req.header("Authorization");
   if (!API_KEY) return next();
   if (auth !== `Bearer ${API_KEY}`) {
@@ -88,6 +97,49 @@ app.get("/files", (c) => {
     return c.json({ files });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to list files";
+    return c.json({ error: message }, 500);
+  }
+});
+
+// Concatenate uploaded chunks into a single file
+app.post("/concat", async (c) => {
+  try {
+    const body = await c.req.json<{ chunks: string[]; target: string }>();
+    if (!body.chunks || !body.target) {
+      return c.json({ error: "chunks and target are required" }, 400);
+    }
+
+    const targetPath = `${DATA_DIR}/${body.target}`;
+    const writeStream = createWriteStream(targetPath);
+
+    for (const chunk of body.chunks) {
+      const chunkPath = `${DATA_DIR}/${chunk}`;
+      if (!existsSync(chunkPath)) {
+        writeStream.destroy();
+        return c.json({ error: `Chunk not found: ${chunk}` }, 400);
+      }
+      await new Promise<void>((resolve, reject) => {
+        const readStream = createReadStream(chunkPath);
+        readStream.pipe(writeStream, { end: false });
+        readStream.on("end", resolve);
+        readStream.on("error", reject);
+      });
+    }
+
+    writeStream.end();
+    await new Promise<void>((resolve) => writeStream.on("finish", resolve));
+
+    // Delete chunk files
+    for (const chunk of body.chunks) {
+      try { unlinkSync(`${DATA_DIR}/${chunk}`); } catch {}
+    }
+
+    const stats = statSync(targetPath);
+    console.log(`Concatenated ${body.chunks.length} chunks -> ${body.target}: ${stats.size} bytes`);
+    return c.json({ ok: true, path: targetPath, bytes: stats.size });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Concat failed";
+    console.error("Concat error:", message);
     return c.json({ error: message }, 500);
   }
 });
