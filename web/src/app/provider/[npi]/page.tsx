@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, DollarSign, FileText, Users, Stethoscope, Calendar, Loader2, AlertCircle } from "lucide-react";
+import { ArrowLeft, DollarSign, FileText, Users, Stethoscope, Calendar, Loader2, AlertCircle, UserCheck, BarChart3, Clock, TrendingUp } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ResultsTable } from "@/components/analyze/ResultsTable";
@@ -145,7 +145,7 @@ export default function ProviderPage({ params }: { params: { npi: string } }) {
                 </div>
               </div>
 
-              {/* Stats row */}
+              {/* Stats grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <StatCard
                   icon={DollarSign}
@@ -166,6 +166,41 @@ export default function ProviderPage({ params }: { params: { npi: string } }) {
                   icon={Stethoscope}
                   label="Procedures"
                   value={data.summary.procedures_billed != null ? formatFullNumber(data.summary.procedures_billed) : "N/A"}
+                />
+                <StatCard
+                  icon={UserCheck}
+                  label="$ / Beneficiary"
+                  value={data.summary.total_paid != null && data.summary.unique_beneficiaries
+                    ? formatCurrency(data.summary.total_paid / data.summary.unique_beneficiaries)
+                    : "N/A"}
+                />
+                <StatCard
+                  icon={BarChart3}
+                  label="$ / Claim"
+                  value={data.summary.total_paid != null && data.summary.total_claims
+                    ? formatCurrency(data.summary.total_paid / data.summary.total_claims)
+                    : "N/A"}
+                />
+                <StatCard
+                  icon={Clock}
+                  label="Active Years"
+                  value={data.summary.first_month && data.summary.last_month
+                    ? (() => {
+                        const months = (new Date(data.summary.last_month).getTime() - new Date(data.summary.first_month).getTime()) / (1000 * 60 * 60 * 24 * 30.44) + 1;
+                        const years = months / 12;
+                        return years >= 1 ? `${years.toFixed(1)} yrs` : `${Math.round(months)} mo`;
+                      })()
+                    : "N/A"}
+                />
+                <StatCard
+                  icon={TrendingUp}
+                  label="Avg $ / Month"
+                  value={data.summary.total_paid != null && data.summary.first_month && data.summary.last_month
+                    ? (() => {
+                        const months = Math.max(1, Math.round((new Date(data.summary.last_month).getTime() - new Date(data.summary.first_month).getTime()) / (1000 * 60 * 60 * 24 * 30.44)) + 1);
+                        return formatCurrency(data.summary.total_paid / months);
+                      })()
+                    : "N/A"}
                 />
               </div>
 
