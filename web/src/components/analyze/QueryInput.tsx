@@ -3,14 +3,6 @@
 import { useState, FormEvent } from "react";
 import { Search, Loader2, Layers, X } from "lucide-react";
 
-const EXAMPLE_QUERIES = [
-  "What are the top 10 HCPCS codes by total spending?",
-  "Show monthly spending trends for 2024",
-  "Which providers have the most unique beneficiaries?",
-  "What is the average spending per claim by year?",
-  "Top 5 procedure codes with the fastest spending growth",
-];
-
 interface QueryInputProps {
   onSubmit: (question: string, mode: "query" | "analysis") => void;
   loading: boolean;
@@ -36,6 +28,7 @@ export function QueryInput({ onSubmit, loading, analysisRunning, onCancelAnalysi
 
   return (
     <div>
+      <h2 className="text-lg font-semibold text-white mb-3">Ask a question about Medicaid spending</h2>
       <form onSubmit={handleSubmit} className="relative">
         <div className="glass-card flex items-center gap-3 p-2 pr-3">
           <Search className="w-5 h-5 text-muted-dark ml-3 shrink-0" />
@@ -43,7 +36,7 @@ export function QueryInput({ onSubmit, loading, analysisRunning, onCancelAnalysi
             type="text"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Ask a question about Medicaid spending..."
+            placeholder="What are the top 10 services by total spending?"
             disabled={busy}
             className="flex-1 bg-transparent border-none outline-none text-white placeholder:text-muted-dark py-2 text-sm"
             maxLength={500}
@@ -88,22 +81,6 @@ export function QueryInput({ onSubmit, loading, analysisRunning, onCancelAnalysi
           </div>
         </div>
       </form>
-
-      <div className="mt-3 flex flex-wrap gap-2">
-        {EXAMPLE_QUERIES.map((q) => (
-          <button
-            key={q}
-            onClick={() => {
-              setQuestion(q);
-              if (!busy) onSubmit(q, "query");
-            }}
-            disabled={busy}
-            className="text-xs text-muted hover:text-white bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.08] rounded-lg px-3 py-1.5 transition-colors disabled:opacity-50"
-          >
-            {q}
-          </button>
-        ))}
-      </div>
     </div>
   );
 }
