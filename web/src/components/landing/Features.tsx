@@ -1,4 +1,4 @@
-import { MessageSquare, Zap, BarChart3 } from "lucide-react";
+import { MessageSquare, Layers, BarChart3 } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 
 const features = [
@@ -6,22 +6,22 @@ const features = [
     icon: MessageSquare,
     title: "Natural Language Queries",
     description:
-      "Ask questions in plain English. AI converts your question into optimized SQL and returns results instantly.",
-    example: '"What are the top 10 procedure codes by spending in 2024?"',
+      "Ask questions in plain English. AI converts your question into optimized SQL, executes it against 227M rows, and returns results in seconds.",
+    example: '"What are the top 10 services by total spending?"',
   },
   {
-    icon: Zap,
-    title: "Browser-Native SQL Engine",
+    icon: Layers,
+    title: "Deep Analysis",
     description:
-      "DuckDB-WASM runs entirely in your browser. No data leaves your machine — fast, private, and secure.",
-    example: "Powered by DuckDB-WASM with pre-aggregated Parquet files",
+      "Multi-step investigations powered by AI. The analyst plans a research approach, executes queries in sequence, and synthesizes findings into a comprehensive answer.",
+    example: "Works like a human analyst — each step builds on prior results",
   },
   {
     icon: BarChart3,
     title: "Interactive Visualizations",
     description:
-      "Results are automatically visualized as tables, line charts, bar charts, or pie charts based on your query.",
-    example: "AI selects the best chart type for your data",
+      "Results are automatically visualized as tables, line charts, bar charts, or pie charts. Drill into provider detail pages for spending breakdowns and trends.",
+    example: "Click any provider name to see their full profile",
   },
 ];
 
@@ -34,7 +34,7 @@ export function Features() {
             How It Works
           </h2>
           <p className="mt-4 text-muted max-w-xl mx-auto">
-            Three powerful capabilities in one simple interface
+            From quick lookups to multi-step investigations
           </p>
         </div>
 

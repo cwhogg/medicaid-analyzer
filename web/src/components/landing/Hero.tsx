@@ -106,8 +106,8 @@ export function Hero() {
 
           <p className="mt-6 text-lg text-muted max-w-2xl mx-auto leading-relaxed">
             Query $1+ trillion in Medicaid provider spending across 617K+ providers
-            and 10K+ procedure codes. Ask questions in plain English — AI translates
-            to SQL and runs it in your browser.
+            and 10K+ procedure codes. Ask questions in plain English — AI generates
+            SQL, executes it, and returns results with visualizations.
           </p>
 
           <div className="mt-8 flex items-center justify-center gap-4">
