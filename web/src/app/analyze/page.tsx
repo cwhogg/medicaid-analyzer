@@ -248,6 +248,7 @@ export default function AnalyzePage() {
               {showAnalysisResults && (
                 <AnalysisSteps
                   plan={analysis.plan}
+                  planReasoning={analysis.planReasoning}
                   steps={analysis.steps}
                   summary={analysis.summary}
                   status={analysis.status}

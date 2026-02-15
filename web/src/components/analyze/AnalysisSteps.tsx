@@ -10,6 +10,7 @@ import type { AnalysisStep, AnalysisStatus } from "@/hooks/useAnalysis";
 
 interface AnalysisStepsProps {
   plan: string[] | null;
+  planReasoning: string | null;
   steps: AnalysisStep[];
   summary: string | null;
   status: AnalysisStatus;
@@ -116,7 +117,12 @@ function StepCard({ step }: { step: AnalysisStep }) {
   );
 }
 
-export function AnalysisSteps({ plan, steps, summary, status, error }: AnalysisStepsProps) {
+export function AnalysisSteps({ plan, planReasoning, steps, summary, status, error }: AnalysisStepsProps) {
+  // Map plan[i] to its corresponding step: steps store stepIndex starting at 1,
+  // so plan[0] corresponds to steps.find(s => s.stepIndex === 1), etc.
+  const getStepForPlanIndex = (planIndex: number): AnalysisStep | undefined =>
+    steps.find((s) => s.stepIndex === planIndex + 1);
+
   return (
     <div className="space-y-4">
       {/* Plan display */}
@@ -127,28 +133,34 @@ export function AnalysisSteps({ plan, steps, summary, status, error }: AnalysisS
             <h3 className="text-sm font-medium text-white">Analysis Plan</h3>
           </div>
           <ol className="space-y-1.5 ml-1">
-            {plan.map((step, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm">
-                <span className={cn(
-                  "shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-medium mt-0.5",
-                  i < steps.length
-                    ? steps[i].status === "error"
-                      ? "bg-red-500/20 text-red-400"
-                      : steps[i].status === "complete"
-                        ? "bg-green-500/20 text-green-400"
-                        : "bg-accent/20 text-accent"
-                    : "bg-white/[0.08] text-muted-dark"
-                )}>
-                  {i + 1}
-                </span>
-                <span className={cn(
-                  i < steps.length ? "text-muted" : "text-muted-dark"
-                )}>
-                  {step}
-                </span>
-              </li>
-            ))}
+            {plan.map((step, i) => {
+              const matchedStep = getStepForPlanIndex(i);
+              return (
+                <li key={i} className="flex items-start gap-2 text-sm">
+                  <span className={cn(
+                    "shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-medium mt-0.5",
+                    matchedStep
+                      ? matchedStep.status === "error"
+                        ? "bg-red-500/20 text-red-400"
+                        : matchedStep.status === "complete"
+                          ? "bg-green-500/20 text-green-400"
+                          : "bg-accent/20 text-accent"
+                      : "bg-white/[0.08] text-muted-dark"
+                  )}>
+                    {i + 1}
+                  </span>
+                  <span className={cn(
+                    matchedStep ? "text-muted" : "text-muted-dark"
+                  )}>
+                    {step}
+                  </span>
+                </li>
+              );
+            })}
           </ol>
+          {planReasoning && (
+            <p className="text-xs text-muted-dark italic mt-3 ml-1">{planReasoning}</p>
+          )}
         </div>
       )}
 

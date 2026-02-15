@@ -46,12 +46,12 @@ function formatValue(value: unknown, colName?: string): string {
   if (typeof value === "number") {
     const dollar = colName ? isDollarColumn(colName) : false;
     const prefix = dollar ? "$" : "";
-    if (Math.abs(value) >= 1e9) return `${prefix}${(value / 1e9).toFixed(2)}B`;
-    if (Math.abs(value) >= 1e6) return `${prefix}${(value / 1e6).toFixed(2)}M`;
-    if (Math.abs(value) >= 1e3) return `${prefix}${(value / 1e3).toFixed(1)}K`;
+    if (Math.abs(value) >= 1e9) return `${prefix}${(value / 1e9).toFixed(1)}B`;
+    if (Math.abs(value) >= 1e6) return `${prefix}${(value / 1e6).toFixed(1)}M`;
+    if (Math.abs(value) >= 1e3) return `${prefix}${(value / 1e3).toFixed(0)}K`;
     return dollar
-      ? `$${value.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
-      : value.toLocaleString(undefined, { maximumFractionDigits: 2 });
+      ? `$${Math.round(value).toLocaleString()}`
+      : Math.round(value).toLocaleString();
   }
   return String(value);
 }

@@ -19,10 +19,10 @@ function formatCell(value: unknown, colName?: string): string {
     // Don't comma-format years, IDs, codes, or NPI numbers
     if (colName && isYearOrIdColumn(colName)) return String(value);
     if (colName && /paid|spending|cost|amount|payment|charge|price/i.test(colName)) {
-      return Math.round(value).toLocaleString();
+      return "$" + Math.round(value).toLocaleString();
     }
     if (Number.isInteger(value)) return value.toLocaleString();
-    return value.toLocaleString(undefined, { maximumFractionDigits: 2 });
+    return Math.round(value).toLocaleString();
   }
   if (typeof value === "bigint") {
     if (colName && isYearOrIdColumn(colName)) return String(value);

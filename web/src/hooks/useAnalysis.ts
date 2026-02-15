@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef } from "react";
 import { saveAnalysis, type StoredAnalysis } from "@/lib/queryStore";
 
-const MAX_STEPS = 5;
+const MAX_STEPS = 5; // step 0 = plan, steps 1-4 = SQL queries
 
 export type AnalysisStepStatus = "pending" | "generating_sql" | "executing" | "complete" | "error";
 
@@ -25,6 +25,8 @@ interface AnalysisState {
   sessionId: string | null;
   question: string | null;
   plan: string[] | null;
+  planReasoning: string | null;
+  complexity: string | null;
   steps: AnalysisStep[];
   summary: string | null;
   status: AnalysisStatus;
@@ -48,6 +50,8 @@ export function useAnalysis() {
     sessionId: null,
     question: null,
     plan: null,
+    planReasoning: null,
+    complexity: null,
     steps: [],
     summary: null,
     status: "idle",
@@ -72,6 +76,8 @@ export function useAnalysis() {
         sessionId,
         question,
         plan: null,
+        planReasoning: null,
+        complexity: null,
         steps: [],
         summary: null,
         status: "planning",
@@ -87,27 +93,32 @@ export function useAnalysis() {
             return;
           }
 
-          // Update status for current step
-          setState((prev) => ({
-            ...prev,
-            status: stepIndex === 0 ? "planning" : "running",
-            steps: [
-              ...prev.steps,
-              {
-                stepIndex,
-                title: "",
-                sql: null,
-                chartType: "table",
-                columns: [],
-                rows: [],
-                insight: null,
-                status: "generating_sql",
-                error: null,
-              },
-            ],
-          }));
+          // Step 0 is plan-only — don't push a placeholder step card
+          if (stepIndex === 0) {
+            // Keep status as "planning" — no step card created
+          } else {
+            // Push placeholder step card for SQL steps
+            setState((prev) => ({
+              ...prev,
+              status: "running",
+              steps: [
+                ...prev.steps,
+                {
+                  stepIndex,
+                  title: "",
+                  sql: null,
+                  chartType: "table",
+                  columns: [],
+                  rows: [],
+                  insight: null,
+                  status: "generating_sql",
+                  error: null,
+                },
+              ],
+            }));
+          }
 
-          // Call API — server now executes SQL and returns results
+          // Call API
           const apiResponse = await fetch("/api/analyze", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -133,22 +144,48 @@ export function useAnalysis() {
             return;
           }
 
-          // Update plan on first step
-          if (stepIndex === 0 && data.plan) {
+          // Step 0: plan-only response — store plan and continue to step 1
+          if (stepIndex === 0) {
+            if (data.plan) {
+              planRef.current = data.plan;
+              setState((prev) => ({
+                ...prev,
+                plan: data.plan,
+                planReasoning: data.reasoning || null,
+                complexity: data.complexity || null,
+              }));
+            }
+            // Record in completedSteps for context, then continue to step 1
+            completedSteps.push({
+              stepIndex: 0,
+              title: "Analysis Plan",
+              sql: null,
+              resultSummary: null,
+              insight: data.reasoning || null,
+              error: null,
+            });
+            continue;
+          }
+
+          // Handle revised plan from later steps
+          if (data.plan && stepIndex > 1) {
             planRef.current = data.plan;
             setState((prev) => ({ ...prev, plan: data.plan }));
           }
+
+          // Find the step's array index (step 1 = index 0, step 2 = index 1, etc.)
+          const arrayIndex = stepIndex - 1;
 
           // If a step has cannotAnswer, treat it as completed with the explanation
           if (data.step?.cannotAnswer) {
             setState((prev) => ({
               ...prev,
               steps: prev.steps.map((s, i) =>
-                i === stepIndex
-                  ? { ...s, title: data.step.title || "Cannot answer", sql: null, status: "complete", insight: data.step.cannotAnswer }
+                i === arrayIndex
+                  ? { ...s, title: data.step.title || "Cannot answer", sql: null, status: "complete" as const, insight: data.step.cannotAnswer }
                   : s
               ),
-              ...(data.done ? { summary: data.summary || data.step.cannotAnswer, status: "complete" } : {}),
+              ...(data.done ? { summary: data.summary || data.step.cannotAnswer, status: "complete" as const } : {}),
             }));
 
             completedSteps.push({
@@ -179,6 +216,7 @@ export function useAnalysis() {
               ...prev,
               summary: data.summary || null,
               status: "complete",
+              // Remove the placeholder step we just pushed
               steps: prev.steps.slice(0, -1),
             }));
 
@@ -205,15 +243,16 @@ export function useAnalysis() {
           setState((prev) => ({
             ...prev,
             steps: prev.steps.map((s, i) =>
-              i === stepIndex
+              i === arrayIndex
                 ? {
                     ...s,
-                    title: step.title || `Step ${stepIndex + 1}`,
+                    stepIndex,
+                    title: step.title || `Step ${stepIndex}`,
                     sql: step.sql,
                     chartType: step.chartType || "table",
                     columns: stepColumns,
                     rows: stepRows,
-                    status: stepError ? "error" : "complete",
+                    status: stepError ? "error" as const : "complete" as const,
                     error: stepError,
                     insight: step.insight || null,
                   }
@@ -223,7 +262,7 @@ export function useAnalysis() {
 
           completedSteps.push({
             stepIndex,
-            title: step.title || `Step ${stepIndex + 1}`,
+            title: step.title || `Step ${stepIndex}`,
             sql: step.sql,
             resultSummary: step.resultSummary || null,
             insight: step.insight || null,
@@ -291,6 +330,8 @@ export function useAnalysis() {
       sessionId: analysis.id,
       question: analysis.question,
       plan: analysis.plan,
+      planReasoning: null,
+      complexity: null,
       steps: analysis.steps.map((s) => ({
         stepIndex: s.stepIndex,
         title: s.title,
@@ -317,6 +358,8 @@ export function useAnalysis() {
       sessionId: null,
       question: null,
       plan: null,
+      planReasoning: null,
+      complexity: null,
       steps: [],
       summary: null,
       status: "idle",
@@ -344,18 +387,20 @@ async function saveToStore(data: {
     id: data.sessionId,
     question: data.question,
     plan: data.plan || [],
-    steps: data.steps.map((s) => ({
-      stepIndex: s.stepIndex,
-      title: s.title,
-      sql: s.sql,
-      chartType: "table",
-      columns: [],
-      rows: [],
-      insight: s.insight,
-      error: s.error,
-    })),
+    steps: data.steps
+      .filter((s) => s.stepIndex > 0) // Don't store the plan-only step
+      .map((s) => ({
+        stepIndex: s.stepIndex,
+        title: s.title,
+        sql: s.sql,
+        chartType: "table",
+        columns: [],
+        rows: [],
+        insight: s.insight,
+        error: s.error,
+      })),
     summary: data.summary || null,
-    stepCount: data.steps.length,
+    stepCount: data.steps.filter((s) => s.stepIndex > 0).length,
     timestamp: Date.now(),
   };
   await saveAnalysis(stored).catch(console.error);

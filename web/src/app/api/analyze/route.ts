@@ -6,7 +6,9 @@ import { validateSQL } from "@/lib/sqlValidation";
 import { executeRemoteQuery } from "@/lib/railway";
 import { summarizeResults } from "@/lib/summarize";
 
-const MAX_STEPS = 5;
+export const maxDuration = 120;
+
+const MAX_STEPS = 5; // step 0 = plan, steps 1-4 = SQL queries
 
 interface PreviousStep {
   stepIndex: number;
@@ -54,10 +56,11 @@ function buildConversationHistory(
 
   // Build conversation from previous steps
   for (const step of previousSteps) {
+    // Assistant message includes reasoning context
     const assistantParts: string[] = [];
-    if (step.title) assistantParts.push(`Step ${step.stepIndex + 1}: ${step.title}`);
+    if (step.title) assistantParts.push(`Step ${step.stepIndex}: ${step.title}`);
     if (step.sql) assistantParts.push(`SQL: ${step.sql}`);
-    if (step.insight) assistantParts.push(`Insight: ${step.insight}`);
+    if (step.insight) assistantParts.push(`Interpretation: ${step.insight}`);
 
     if (assistantParts.length > 0) {
       messages.push({ role: "assistant", content: assistantParts.join("\n") });
@@ -66,17 +69,136 @@ function buildConversationHistory(
     if (step.error) {
       messages.push({
         role: "user",
-        content: `Step ${step.stepIndex + 1} SQL failed with error: ${step.error}\nPlease continue the analysis, adjusting your approach as needed.`,
+        content: `Step ${step.stepIndex} SQL failed with error: ${step.error}\nAdjust your approach for the next step. Consider whether the error reveals something about the data structure.`,
       });
     } else if (step.resultSummary) {
       messages.push({
         role: "user",
-        content: `Step ${step.stepIndex + 1} results:\n${step.resultSummary}\n\nContinue the analysis.`,
+        content: `Step ${step.stepIndex} results:\n${step.resultSummary}\n\nConsider whether these results confirm or challenge your hypothesis. What is the most important next question to answer? Continue the analysis.`,
       });
     }
   }
 
   return messages;
+}
+
+function buildSystemPrompt(
+  schemaPrompt: string,
+  yearConstraint: string,
+  stepIndex: number,
+  remainingSteps: number,
+): string {
+  const analyticalFramework = `You are a senior health policy data analyst performing a rigorous multi-step investigation of a Medicaid provider spending dataset. You think like an expert: decompose problems, form hypotheses, query strategically, interpret results critically, and adapt your plan based on what you find.
+
+## Analytical Framework
+1. DECOMPOSE: Break the question into distinct analytical sub-questions
+2. HYPOTHESIZE: Before each query, state what you expect to find and why
+3. QUERY: Write targeted SQL that tests your hypothesis
+4. INTERPRET: Explain what the results mean, citing specific numbers
+5. ADAPT: Revise your plan if results are surprising or reveal new angles
+
+## Medicaid Domain Knowledge
+- Spending is highly concentrated: a small number of providers and procedures account for the majority of dollars
+- J-codes (injections/drugs) dominate high-cost procedures — J0178 (aflibercept), J9312 (rituximab), J1745 (infliximab) are common top spenders
+- Geographic variation is significant — states like CA, NY, TX, FL have the highest total spending but per-provider averages vary
+- Seasonal patterns exist: some procedures spike in Q1 (flu season), behavioral health utilization shows summer dips
+- Oct-Dec 2024 data is INCOMPLETE — always truncate time series at Sept 2024 or note the incompleteness
+- Remote Patient Monitoring (RPM) and Chronic Care Management (CCM) are rapidly growing categories
+- Provider types matter: Organizations vs Individual providers show different spending patterns`;
+
+  const basePrompt = `${analyticalFramework}
+
+${schemaPrompt}
+
+You MUST respond with valid JSON only. No markdown, no code fences, no text outside the JSON.`;
+
+  if (stepIndex === 0) {
+    // Plan-only step — NO SQL query
+    return `${basePrompt}
+
+This is the PLANNING step. Analyze the question and create an investigation plan. Do NOT write any SQL yet — just plan.
+
+Assess the question complexity:
+- "simple": straightforward lookup or single aggregation (2 SQL steps)
+- "moderate": requires comparison, trend analysis, or joining multiple dimensions (3 SQL steps)
+- "complex": multi-faceted investigation requiring hypothesis testing across dimensions (4 SQL steps)
+
+Response format:
+{
+  "plan": [
+    { "stepNumber": 1, "title": "Brief title", "purpose": "What hypothesis this step tests or what question it answers" },
+    { "stepNumber": 2, "title": "Brief title", "purpose": "..." }
+  ],
+  "reasoning": "2-3 sentences explaining your overall analytical approach and key hypotheses",
+  "complexity": "simple|moderate|complex",
+  "stepIndex": 0,
+  "done": false
+}
+
+Rules for planning:
+- Each step MUST have a distinct analytical purpose — not generic "look at data"
+- Steps should build on each other: later steps should test hypotheses raised by earlier results
+- Plan 2 steps for simple, 3 for moderate, 4 for complex questions
+- The final step should synthesize or compare, not just fetch more data
+- Good step purposes: "Test whether spending concentration follows Pareto pattern", "Identify if the growth is driven by volume or price increases", "Compare geographic distribution to identify outlier states"
+- Bad step purposes: "Get more data", "Look at trends", "Check the numbers"${yearConstraint}`;
+  }
+
+  // Execution steps (1+)
+  return `${basePrompt}
+
+This is step ${stepIndex} of the analysis. You have ${remainingSteps} step(s) remaining (including this one).
+
+${remainingSteps === 1 ? "This is your FINAL step. You MUST set \"done\": true and include a comprehensive \"summary\" field." : ""}
+
+Response format for a continuing step:
+{
+  "step": {
+    "title": "Brief title for this step",
+    "sql": "SELECT ... FROM ... LIMIT ...",
+    "chartType": "table|line|bar|pie",
+    "insight": "Interpret the results: what do the numbers mean? Cite specific values. Did they confirm or challenge your hypothesis?"
+  },
+  "reasoning": "Why this specific query, what hypothesis it tests",
+  ${remainingSteps > 1 ? '"revisedPlan": null,' : ""}
+  "done": false,
+  "stepIndex": ${stepIndex}
+}
+
+Response format for the final step (when done):
+{
+  "step": {
+    "title": "Brief title for this step",
+    "sql": "SELECT ... FROM ... LIMIT ...",
+    "chartType": "table|line|bar|pie",
+    "insight": "What this final query reveals — cite specific numbers"
+  },
+  "summary": "A comprehensive 2-4 paragraph summary synthesizing ALL findings. Structure: (1) Direct answer to the question with key numbers, (2) Most surprising or important findings, (3) Caveats or context needed to interpret the results. Reference specific numbers from each step.",
+  "done": true,
+  "stepIndex": ${stepIndex}
+}
+
+If no more SQL is needed and you just want to summarize:
+{
+  "summary": "Comprehensive summary...",
+  "done": true,
+  "stepIndex": ${stepIndex}
+}
+
+${remainingSteps > 1 ? `If the previous results surprised you or revealed a more important angle, you may revise the remaining plan:
+"revisedPlan": [
+  { "stepNumber": ${stepIndex + 1}, "title": "New title", "purpose": "New purpose" },
+  ...
+]
+Set "revisedPlan" to null if the original plan still makes sense.` : ""}
+
+Rules:
+- Each SQL query must be a valid DuckDB SELECT statement with a LIMIT clause (max 10000).
+- Keep step titles concise (under 60 characters).
+- chartType should match the data shape: "line" for time series, "bar" for rankings/comparisons, "pie" for proportions (only if <8 categories), "table" for detailed data.
+- The "insight" field is REQUIRED — briefly interpret the results, citing specific numbers. Don't just describe the query.
+- Use short, distinct table aliases and ensure every alias is defined in FROM or JOIN.
+- If the available tables cannot answer a specific step, include "cannotAnswer" instead of "sql".${yearConstraint}`;
 }
 
 export async function POST(request: NextRequest) {
@@ -130,72 +252,9 @@ export async function POST(request: NextRequest) {
     const client = new Anthropic({ apiKey });
     const schemaPrompt = generateSchemaPrompt();
     const yearConstraint = buildYearConstraint(yearFilter);
-
-    const isFirstStep = stepIndex === 0;
     const remainingSteps = MAX_STEPS - stepIndex;
 
-    const systemPrompt = `You are an expert data analyst performing multi-step analysis on a Medicaid provider spending dataset. You analyze data iteratively: plan steps, write SQL queries, interpret results, and synthesize insights.
-
-${schemaPrompt}
-
-You MUST respond with valid JSON only. No markdown, no code fences, no text outside the JSON.
-
-${isFirstStep ? `This is the FIRST step. You must return a plan and the first SQL query.
-
-Response format:
-{
-  "plan": ["Step 1 description", "Step 2 description", ...],
-  "step": {
-    "title": "Brief title for step 1",
-    "sql": "SELECT ... FROM ... LIMIT ...",
-    "chartType": "table|line|bar|pie"
-  },
-  "done": false,
-  "stepIndex": 0
-}` : `This is step ${stepIndex + 1} of the analysis. You have ${remainingSteps} step(s) remaining (including this one).
-
-If you have enough information to provide a final summary, or this is the last step, set "done": true and include a "summary" field.
-
-Response format for a continuing step:
-{
-  "step": {
-    "title": "Brief title for this step",
-    "sql": "SELECT ... FROM ... LIMIT ...",
-    "chartType": "table|line|bar|pie"
-  },
-  "done": false,
-  "stepIndex": ${stepIndex}
-}
-
-Response format for the final step (when done):
-{
-  "step": {
-    "title": "Brief title for this step",
-    "sql": "SELECT ... FROM ... LIMIT ...",
-    "chartType": "table|line|bar|pie",
-    "insight": "What this final query reveals"
-  },
-  "summary": "A comprehensive 2-4 paragraph summary synthesizing all findings from the analysis. Reference specific numbers and trends discovered. Highlight the most important insights.",
-  "done": true,
-  "stepIndex": ${stepIndex}
-}
-
-If no more SQL is needed and you just want to summarize:
-{
-  "summary": "Comprehensive summary...",
-  "done": true,
-  "stepIndex": ${stepIndex}
-}`}
-
-Rules:
-- Each SQL query must be a valid DuckDB SELECT statement with a LIMIT clause (max 10000).
-- Plan should have 2-5 steps. Each step should build on previous results.
-- Keep step titles concise (under 60 characters).
-- chartType should match the data shape: "line" for time series, "bar" for rankings, "pie" for proportions, "table" for detailed data.
-- The "insight" field on each step is optional but encouraged — briefly describe what the step's results reveal.
-- Use short, distinct table aliases and ensure every alias is defined in FROM or JOIN.
-- If you determine that the available tables cannot answer the user's question (or a specific step), include a "cannotAnswer" field with a clear explanation instead of a "sql" field.${yearConstraint}`;
-
+    const systemPrompt = buildSystemPrompt(schemaPrompt, yearConstraint, stepIndex, remainingSteps);
     const messages = buildConversationHistory(question, stepIndex, previousSteps);
 
     const response = await client.messages.create({
@@ -223,6 +282,34 @@ Rules:
       parsed = JSON.parse(responseText);
     } catch {
       return NextResponse.json({ error: "Failed to parse analysis response." }, { status: 500 });
+    }
+
+    // Step 0: plan-only — convert rich plan to string[] for UI
+    if (stepIndex === 0 && parsed.plan && Array.isArray(parsed.plan)) {
+      const richPlan = parsed.plan;
+      // Convert rich plan objects to display strings
+      if (richPlan.length > 0 && typeof richPlan[0] === "object") {
+        parsed.plan = richPlan.map((s: { title?: string; purpose?: string; stepNumber?: number }) =>
+          `${s.title || `Step ${s.stepNumber}`}: ${s.purpose || ""}`
+        );
+      }
+      // Plan-only step — no SQL to execute, return immediately
+      return NextResponse.json(parsed, {
+        headers: { "X-RateLimit-Remaining": String(rateCheck.remaining) },
+      });
+    }
+
+    // Handle revisedPlan — convert rich objects to string[]
+    if (parsed.revisedPlan && Array.isArray(parsed.revisedPlan)) {
+      const richPlan = parsed.revisedPlan;
+      if (richPlan.length > 0 && typeof richPlan[0] === "object") {
+        parsed.revisedPlan = richPlan.map((s: { title?: string; purpose?: string; stepNumber?: number }) =>
+          `${s.title || `Step ${s.stepNumber}`}: ${s.purpose || ""}`
+        );
+      }
+      // Wrap revisedPlan as plan for the client
+      parsed.plan = parsed.revisedPlan;
+      delete parsed.revisedPlan;
     }
 
     // Validate and execute SQL if present
@@ -284,9 +371,9 @@ Rules:
                   parsed.step.columns = retryResult.columns;
                   parsed.step.rows = retryResult.rows;
                   parsed.step.resultSummary = summarizeResults(retryResult.columns, retryResult.rows);
-                  // Update other fields from retry if available
                   if (retryParsed.step.title) parsed.step.title = retryParsed.step.title;
                   if (retryParsed.step.chartType) parsed.step.chartType = retryParsed.step.chartType;
+                  if (retryParsed.step.insight) parsed.step.insight = retryParsed.step.insight;
                 }
               }
             }

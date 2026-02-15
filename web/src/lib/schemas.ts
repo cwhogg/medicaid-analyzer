@@ -118,7 +118,7 @@ ORDER BY spending DESC LIMIT 20
 ## Important notes:
 - All tables are registered as views. Query them directly by name (e.g. SELECT ... FROM claims).
 - Date columns are DATE type. Use date functions like EXTRACT(YEAR FROM claim_month), date_trunc('year', claim_month), etc.
-- Dollar amounts are in raw USD (not thousands/millions). Format large values with ROUND() as needed.
+- Dollar amounts are in raw USD (not thousands/millions). Always round to whole dollars with ROUND(..., 0) — never show cents.
 - Always include a LIMIT clause (max 10000 rows).
 - Only generate SELECT statements. No DDL or DML.
 - Use DuckDB SQL syntax (not PostgreSQL or MySQL).

@@ -5,6 +5,8 @@ import { checkRateLimit } from "@/lib/rateLimit";
 import { validateSQL, inferChartType } from "@/lib/sqlValidation";
 import { executeRemoteQuery } from "@/lib/railway";
 
+export const maxDuration = 60; // Allow up to 60s for Claude + Railway query
+
 // --- Response Cache (LRU, keyed by normalized question) ---
 const CACHE_MAX_SIZE = 500;
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
@@ -135,7 +137,7 @@ Rules:
 - Only use SELECT statements.
 - Use the table names exactly as defined (claims, hcpcs_lookup, npi_lookup).
 - Use DuckDB SQL syntax.
-- Format dollar amounts with ROUND() for readability.
+- Format dollar amounts with ROUND(..., 0) to whole dollars (no cents).
 - When a question is ambiguous, make reasonable assumptions and use the most appropriate approach.
 - Use short, distinct table aliases (e.g. c, l, n) and ensure every alias referenced in the query is defined in a FROM or JOIN clause.${yearConstraint}`,
       messages,
