@@ -68,8 +68,9 @@ app.post("/upload", async (c) => {
       return c.json({ error: "No request body" }, 400);
     }
 
+    const append = c.req.header("X-Append") === "true";
     const nodeStream = Readable.fromWeb(body as import("stream/web").ReadableStream);
-    const fileStream = createWriteStream(filePath);
+    const fileStream = createWriteStream(filePath, { flags: append ? "a" : "w" });
     await pipeline(nodeStream, fileStream);
 
     const stats = statSync(filePath);
@@ -97,6 +98,35 @@ app.get("/files", (c) => {
     return c.json({ files });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to list files";
+    return c.json({ error: message }, 500);
+  }
+});
+
+// Delete a file from the data volume
+app.use("/delete", async (c, next) => {
+  const auth = c.req.header("Authorization");
+  if (!API_KEY) return next();
+  if (auth !== `Bearer ${API_KEY}`) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  return next();
+});
+
+app.post("/delete", async (c) => {
+  try {
+    const body = await c.req.json<{ filename: string }>();
+    if (!body.filename) {
+      return c.json({ error: "filename is required" }, 400);
+    }
+    const filePath = `${DATA_DIR}/${body.filename}`;
+    if (!existsSync(filePath)) {
+      return c.json({ error: "File not found" }, 404);
+    }
+    unlinkSync(filePath);
+    console.log(`Deleted: ${filePath}`);
+    return c.json({ ok: true, deleted: filePath });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Delete failed";
     return c.json({ error: message }, 500);
   }
 });
