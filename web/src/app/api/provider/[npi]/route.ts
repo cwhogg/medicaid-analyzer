@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { executeRemoteQuery } from "@/lib/railway";
 import { checkRateLimit } from "@/lib/rateLimit";
+import { recordRequest } from "@/lib/metrics";
 
 export const maxDuration = 30;
 
@@ -10,6 +11,7 @@ export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ npi: string }> }
 ) {
+  const requestStart = Date.now();
   try {
     const ip = _request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
       || _request.headers.get("x-real-ip")
@@ -17,6 +19,7 @@ export async function GET(
 
     const rateCheck = checkRateLimit(ip);
     if (!rateCheck.allowed) {
+      recordRequest({ timestamp: Date.now(), route: "/api/provider", ip, status: 429, totalMs: Date.now() - requestStart, cached: false });
       return NextResponse.json(
         { error: `Rate limit exceeded. Try again in ${rateCheck.retryAfterSec} seconds.` },
         { status: 429, headers: { "Retry-After": String(rateCheck.retryAfterSec) } }
@@ -33,6 +36,7 @@ export async function GET(
     }
 
     // Run all 4 queries in parallel
+    const railwayStart = Date.now();
     const [providerInfo, stats, procedures, trend] = await Promise.all([
       // 1. Provider info from npi_lookup
       executeRemoteQuery(`
@@ -79,8 +83,11 @@ export async function GET(
       `),
     ]);
 
+    const railwayMs = Date.now() - railwayStart;
+
     // Check if provider exists
     if (providerInfo.rows.length === 0 && stats.rows.length === 0) {
+      recordRequest({ timestamp: Date.now(), route: "/api/provider", ip, status: 404, railwayMs, totalMs: Date.now() - requestStart, cached: false });
       return NextResponse.json(
         { error: "Provider not found." },
         { status: 404 }
@@ -107,6 +114,8 @@ export async function GET(
       first_month: statsRow[4] as string | null,
       last_month: statsRow[5] as string | null,
     };
+
+    recordRequest({ timestamp: Date.now(), route: "/api/provider", ip, status: 200, railwayMs, totalMs: Date.now() - requestStart, cached: false });
 
     return NextResponse.json({
       npi,

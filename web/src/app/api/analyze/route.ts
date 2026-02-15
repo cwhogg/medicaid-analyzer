@@ -5,6 +5,7 @@ import { checkRateLimit } from "@/lib/rateLimit";
 import { validateSQL } from "@/lib/sqlValidation";
 import { executeRemoteQuery } from "@/lib/railway";
 import { summarizeResults } from "@/lib/summarize";
+import { recordRequest, recordQuery } from "@/lib/metrics";
 
 export const maxDuration = 120;
 
@@ -210,6 +211,7 @@ Rules:
 }
 
 export async function POST(request: NextRequest) {
+  const requestStart = Date.now();
   try {
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
       || request.headers.get("x-real-ip")
@@ -217,6 +219,7 @@ export async function POST(request: NextRequest) {
 
     const rateCheck = checkRateLimit(ip);
     if (!rateCheck.allowed) {
+      recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 429, totalMs: Date.now() - requestStart, cached: false });
       return NextResponse.json(
         { error: `Rate limit exceeded. Try again in ${rateCheck.retryAfterSec} seconds.` },
         {
@@ -265,6 +268,10 @@ export async function POST(request: NextRequest) {
     const systemPrompt = buildSystemPrompt(schemaPrompt, yearConstraint, stepIndex, remainingSteps);
     const messages = buildConversationHistory(question, stepIndex, previousSteps);
 
+    let cumulativeInputTokens = 0;
+    let cumulativeOutputTokens = 0;
+
+    const claudeStart = Date.now();
     const response = await client.messages.create({
       model: "claude-sonnet-4-20250514",
       max_tokens: 2048,
@@ -272,6 +279,9 @@ export async function POST(request: NextRequest) {
       system: systemPrompt,
       messages,
     });
+    const claudeMs = Date.now() - claudeStart;
+    cumulativeInputTokens += response.usage.input_tokens;
+    cumulativeOutputTokens += response.usage.output_tokens;
 
     const textBlock = response.content.find((block) => block.type === "text");
     if (!textBlock || textBlock.type !== "text") {
@@ -302,6 +312,7 @@ export async function POST(request: NextRequest) {
         );
       }
       // Plan-only step — no SQL to execute, return immediately
+      recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 200, claudeMs, totalMs: Date.now() - requestStart, cached: false, inputTokens: cumulativeInputTokens, outputTokens: cumulativeOutputTokens });
       return NextResponse.json(parsed, {
         headers: { "X-RateLimit-Remaining": String(rateCheck.remaining) },
       });
@@ -321,6 +332,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate and execute SQL if present
+    let railwayMs: number | undefined;
+
     if (parsed.step?.sql) {
       let sql = parsed.step.sql.trim();
       if (sql.startsWith("```")) {
@@ -330,15 +343,20 @@ export async function POST(request: NextRequest) {
 
       const validation = validateSQL(sql);
       if (!validation.valid) {
+        recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 400, claudeMs, totalMs: Date.now() - requestStart, cached: false, inputTokens: cumulativeInputTokens, outputTokens: cumulativeOutputTokens });
         return NextResponse.json({ error: validation.error }, { status: 400 });
       }
 
       // Execute SQL via Railway
+      const railwayStart = Date.now();
       try {
         const result = await executeRemoteQuery(sql);
+        railwayMs = Date.now() - railwayStart;
         parsed.step.columns = result.columns;
         parsed.step.rows = result.rows;
         parsed.step.resultSummary = summarizeResults(result.columns, result.rows);
+
+        recordQuery({ timestamp: Date.now(), ip, route: "/api/analyze", question, sql, status: 200, totalMs: Date.now() - requestStart, cached: false });
       } catch (execErr) {
         const errMsg = execErr instanceof Error ? execErr.message : String(execErr);
         const isSqlError = /binder error|parser error|catalog error|not implemented|no such|not found|does not have/i.test(errMsg);
@@ -359,6 +377,8 @@ export async function POST(request: NextRequest) {
               system: systemPrompt,
               messages: retryMessages,
             });
+            cumulativeInputTokens += retryResponse.usage.input_tokens;
+            cumulativeOutputTokens += retryResponse.usage.output_tokens;
 
             const retryBlock = retryResponse.content.find((b) => b.type === "text");
             if (retryBlock && retryBlock.type === "text") {
@@ -375,6 +395,7 @@ export async function POST(request: NextRequest) {
                 const retryValidation = validateSQL(fixedSql);
                 if (retryValidation.valid) {
                   const retryResult = await executeRemoteQuery(fixedSql);
+                  railwayMs = Date.now() - railwayStart;
                   parsed.step.sql = fixedSql;
                   parsed.step.columns = retryResult.columns;
                   parsed.step.rows = retryResult.rows;
@@ -382,6 +403,8 @@ export async function POST(request: NextRequest) {
                   if (retryParsed.step.title) parsed.step.title = retryParsed.step.title;
                   if (retryParsed.step.chartType) parsed.step.chartType = retryParsed.step.chartType;
                   if (retryParsed.step.insight) parsed.step.insight = retryParsed.step.insight;
+
+                  recordQuery({ timestamp: Date.now(), ip, route: "/api/analyze", question, sql: fixedSql, status: 200, totalMs: Date.now() - requestStart, cached: false });
                 }
               }
             }
@@ -390,14 +413,18 @@ export async function POST(request: NextRequest) {
             parsed.step.error = errMsg;
             parsed.step.columns = [];
             parsed.step.rows = [];
+            recordQuery({ timestamp: Date.now(), ip, route: "/api/analyze", question, sql, status: 500, totalMs: Date.now() - requestStart, cached: false, error: errMsg });
           }
         } else {
           parsed.step.error = errMsg;
           parsed.step.columns = [];
           parsed.step.rows = [];
+          recordQuery({ timestamp: Date.now(), ip, route: "/api/analyze", question, sql, status: 500, totalMs: Date.now() - requestStart, cached: false, error: errMsg });
         }
       }
     }
+
+    recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 200, claudeMs, railwayMs, totalMs: Date.now() - requestStart, cached: false, inputTokens: cumulativeInputTokens, outputTokens: cumulativeOutputTokens });
 
     return NextResponse.json(parsed, {
       headers: { "X-RateLimit-Remaining": String(rateCheck.remaining) },

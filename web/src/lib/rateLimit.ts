@@ -21,6 +21,10 @@ function cleanupRequestLog() {
   });
 }
 
+export function getRateLimitStats() {
+  return { trackedIPs: requestLog.size, limitPerHour: RATE_LIMIT_MAX };
+}
+
 export function checkRateLimit(ip: string): { allowed: boolean; remaining: number; retryAfterSec?: number } {
   cleanupRequestLog();
   const now = Date.now();

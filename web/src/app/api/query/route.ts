@@ -4,6 +4,7 @@ import { generateSchemaPrompt } from "@/lib/schemas";
 import { checkRateLimit } from "@/lib/rateLimit";
 import { validateSQL, inferChartType } from "@/lib/sqlValidation";
 import { executeRemoteQuery } from "@/lib/railway";
+import { recordRequest, recordQuery } from "@/lib/metrics";
 
 export const maxDuration = 60; // Allow up to 60s for Claude + Railway query
 
@@ -50,6 +51,7 @@ function setCache(question: string, entry: Omit<CacheEntry, "timestamp">) {
 
 // --- Route Handler ---
 export async function POST(request: NextRequest) {
+  const requestStart = Date.now();
   try {
     // Rate limit by IP
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
@@ -58,6 +60,7 @@ export async function POST(request: NextRequest) {
 
     const rateCheck = checkRateLimit(ip);
     if (!rateCheck.allowed) {
+      recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 429, totalMs: Date.now() - requestStart, cached: false });
       return NextResponse.json(
         { error: `Rate limit exceeded. Try again in ${rateCheck.retryAfterSec} seconds.` },
         {
@@ -94,6 +97,7 @@ export async function POST(request: NextRequest) {
     const cacheQuestion = yearFilter ? `${question} [years:${yearFilter.join(",")}]` : question;
     const cached = getCached(cacheQuestion);
     if (cached) {
+      recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 200, totalMs: Date.now() - requestStart, cached: true });
       return NextResponse.json(
         { sql: cached.sql, chartType: cached.chartType, columns: cached.columns, rows: cached.rows, cached: true },
         { headers: { "X-RateLimit-Remaining": String(rateCheck.remaining), "X-Cache": "HIT" } }
@@ -122,6 +126,10 @@ export async function POST(request: NextRequest) {
       { role: "user", content: question },
     ];
 
+    let totalInputTokens = 0;
+    let totalOutputTokens = 0;
+
+    const claudeStart = Date.now();
     const message = await client.messages.create({
       model: "claude-sonnet-4-20250514",
       max_tokens: 1024,
@@ -143,6 +151,9 @@ Rules:
 - IMPORTANT: Oct-Dec 2024 data is incomplete. For any query involving monthly trends or time series, add: AND claim_month < '2024-10-01' to exclude incomplete months.${yearConstraint}`,
       messages,
     });
+    const claudeMs = Date.now() - claudeStart;
+    totalInputTokens += message.usage.input_tokens;
+    totalOutputTokens += message.usage.output_tokens;
 
     const textBlock = message.content.find((block) => block.type === "text");
     if (!textBlock || textBlock.type !== "text") {
@@ -154,6 +165,8 @@ Rules:
     // Handle CANNOT_ANSWER refusals
     if (sql.startsWith("CANNOT_ANSWER:")) {
       const explanation = sql.slice("CANNOT_ANSWER:".length).trim();
+      recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 422, claudeMs, totalMs: Date.now() - requestStart, cached: false, inputTokens: totalInputTokens, outputTokens: totalOutputTokens });
+      recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql: null, status: 422, totalMs: Date.now() - requestStart, cached: false, error: explanation });
       return NextResponse.json(
         { error: explanation, cannotAnswer: true },
         { status: 422, headers: { "X-RateLimit-Remaining": String(rateCheck.remaining) } }
@@ -175,6 +188,7 @@ Rules:
     // Execute SQL via Railway
     let columns: string[];
     let rows: unknown[][];
+    const railwayStart = Date.now();
     try {
       const result = await executeRemoteQuery(sql);
       columns = result.columns;
@@ -184,10 +198,13 @@ Rules:
       const isSqlError = /binder error|parser error|catalog error|not implemented|no such|not found|does not have/i.test(errMsg);
 
       if (!isSqlError) {
+        recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 500, claudeMs, railwayMs: Date.now() - railwayStart, totalMs: Date.now() - requestStart, cached: false, inputTokens: totalInputTokens, outputTokens: totalOutputTokens });
+        recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql, status: 500, totalMs: Date.now() - requestStart, cached: false, error: errMsg });
         return NextResponse.json({ error: errMsg }, { status: 500 });
       }
 
       // Retry: ask Claude to fix the SQL
+      const retryClaudeStart = Date.now();
       const retryMessage = await client.messages.create({
         model: "claude-sonnet-4-20250514",
         max_tokens: 1024,
@@ -208,9 +225,13 @@ Rules:
           { role: "user", content: `That SQL query failed with this error:\n${errMsg}\n\nPlease fix the query and return only the corrected SQL.` },
         ],
       });
+      totalInputTokens += retryMessage.usage.input_tokens;
+      totalOutputTokens += retryMessage.usage.output_tokens;
 
       const retryBlock = retryMessage.content.find((block) => block.type === "text");
       if (!retryBlock || retryBlock.type !== "text") {
+        recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 500, claudeMs: claudeMs + (Date.now() - retryClaudeStart), railwayMs: Date.now() - railwayStart, totalMs: Date.now() - requestStart, cached: false, inputTokens: totalInputTokens, outputTokens: totalOutputTokens });
+        recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql, status: 500, totalMs: Date.now() - requestStart, cached: false, error: errMsg });
         return NextResponse.json({ error: errMsg }, { status: 500 });
       }
 
@@ -221,6 +242,8 @@ Rules:
 
       const retryValidation = validateSQL(fixedSql);
       if (!retryValidation.valid) {
+        recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 500, claudeMs: claudeMs + (Date.now() - retryClaudeStart), railwayMs: Date.now() - railwayStart, totalMs: Date.now() - requestStart, cached: false, inputTokens: totalInputTokens, outputTokens: totalOutputTokens });
+        recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql, status: 500, totalMs: Date.now() - requestStart, cached: false, error: errMsg });
         return NextResponse.json({ error: errMsg }, { status: 500 });
       }
 
@@ -230,12 +253,18 @@ Rules:
         columns = retryResult.columns;
         rows = retryResult.rows;
       } catch {
+        recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 500, claudeMs: claudeMs + (Date.now() - retryClaudeStart), railwayMs: Date.now() - railwayStart, totalMs: Date.now() - requestStart, cached: false, inputTokens: totalInputTokens, outputTokens: totalOutputTokens });
+        recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql, status: 500, totalMs: Date.now() - requestStart, cached: false, error: errMsg });
         return NextResponse.json({ error: errMsg }, { status: 500 });
       }
     }
+    const railwayMs = Date.now() - railwayStart;
 
     // Cache the result
     setCache(cacheQuestion, { sql, chartType, columns, rows });
+
+    recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 200, claudeMs, railwayMs, totalMs: Date.now() - requestStart, cached: false, inputTokens: totalInputTokens, outputTokens: totalOutputTokens });
+    recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql, status: 200, totalMs: Date.now() - requestStart, cached: false });
 
     return NextResponse.json(
       { sql, chartType, columns, rows },
