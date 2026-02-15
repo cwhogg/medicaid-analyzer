@@ -267,12 +267,12 @@ function AdminDashboard() {
                 <span className="font-mono">{formatNumber(metrics.costs.outputTokens)}</span>
               </div>
               <div className="flex justify-between pt-2 border-t border-white/[0.05]">
-                <span className="text-muted">Input cost ($3/M)</span>
-                <span className="font-mono">${(metrics.costs.inputTokens * 3 / 1_000_000).toFixed(4)}</span>
+                <span className="text-muted">Raw token cost</span>
+                <span className="font-mono">${(metrics.costs.inputTokens * 3 / 1_000_000 + metrics.costs.outputTokens * 15 / 1_000_000).toFixed(4)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted">Output cost ($15/M)</span>
-                <span className="font-mono">${(metrics.costs.outputTokens * 15 / 1_000_000).toFixed(4)}</span>
+                <span className="text-muted">Est. actual (5x)</span>
+                <span className="font-mono">${((metrics.costs.inputTokens * 3 / 1_000_000 + metrics.costs.outputTokens * 15 / 1_000_000) * 5).toFixed(4)}</span>
               </div>
             </div>
           </div>

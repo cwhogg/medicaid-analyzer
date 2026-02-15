@@ -219,6 +219,9 @@ function maskIP(ip: string): string {
 
 const INPUT_COST_PER_TOKEN = 3 / 1_000_000;
 const OUTPUT_COST_PER_TOKEN = 15 / 1_000_000;
+// Tracked tokens undercount actual usage (retries, cache writes, multi-step analyses).
+// 5x multiplier calibrated against real Anthropic billing.
+const COST_MULTIPLIER = 5;
 const BUDGET_LIMIT = 100;
 
 // Convert all BigInt values in a row to Number
@@ -280,7 +283,7 @@ export async function getMetrics() {
 
   const totalInputTokens = Number(totals?.total_input_tokens ?? 0);
   const totalOutputTokens = Number(totals?.total_output_tokens ?? 0);
-  const estimatedCostUSD = totalInputTokens * INPUT_COST_PER_TOKEN + totalOutputTokens * OUTPUT_COST_PER_TOKEN;
+  const estimatedCostUSD = (totalInputTokens * INPUT_COST_PER_TOKEN + totalOutputTokens * OUTPUT_COST_PER_TOKEN) * COST_MULTIPLIER;
   const totalRequests = Number(totals?.total_requests ?? 0);
   const now = Date.now();
 
