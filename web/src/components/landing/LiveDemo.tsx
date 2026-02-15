@@ -38,9 +38,11 @@ export function LiveDemo() {
   const [data, setData] = useState<MonthlyTrend[]>([]);
 
   useEffect(() => {
+    // Oct-Dec 2024 data is incomplete — always truncate at Sept 2024
+    const CUTOFF = "2024-10-01";
     fetch("/data/monthly_trend.json")
       .then((r) => r.json())
-      .then(setData)
+      .then((rows: MonthlyTrend[]) => setData(rows.filter((r) => r.month < CUTOFF)))
       .catch(console.error);
   }, []);
 

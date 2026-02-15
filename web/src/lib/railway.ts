@@ -1,6 +1,6 @@
 const RAILWAY_QUERY_URL = process.env.RAILWAY_QUERY_URL;
 const RAILWAY_API_KEY = process.env.RAILWAY_API_KEY;
-const TIMEOUT_MS = 30_000;
+const TIMEOUT_MS = 90_000;
 
 export async function executeRemoteQuery(
   sql: string
@@ -35,6 +35,11 @@ export async function executeRemoteQuery(
 
     const data = await response.json() as { columns: string[]; rows: unknown[][] };
     return { columns: data.columns, rows: data.rows };
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw new Error("Query timed out — the dataset is large and this query may need simplification.");
+    }
+    throw err;
   } finally {
     clearTimeout(timeout);
   }
