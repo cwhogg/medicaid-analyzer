@@ -5,7 +5,7 @@ let db: Database | null = null;
 let viewsReady = false;
 
 const DATA_DIR = process.env.DATA_DIR || "/data";
-const QUERY_TIMEOUT_MS = 30_000;
+const QUERY_TIMEOUT_MS = 90_000;
 
 const VIEWS: [string, string][] = [
   ["claims", "medicaid-provider-spending.parquet"],
@@ -105,7 +105,7 @@ export async function executeSQL(
     db.all(finalSQL),
     new Promise<never>((_, reject) =>
       setTimeout(
-        () => reject(new Error("Query timed out after 30 seconds")),
+        () => reject(new Error("Query timed out — the dataset is large and this query may need simplification.")),
         QUERY_TIMEOUT_MS
       )
     ),
