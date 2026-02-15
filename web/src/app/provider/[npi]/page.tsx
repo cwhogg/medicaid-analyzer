@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, DollarSign, FileText, Users, Stethoscope, Calendar, Loader2, AlertCircle } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
@@ -60,8 +60,8 @@ function formatMonth(dateStr: string | null): string {
   return d.toLocaleDateString("en-US", { year: "numeric", month: "short" });
 }
 
-export default function ProviderPage({ params }: { params: Promise<{ npi: string }> }) {
-  const { npi } = use(params);
+export default function ProviderPage({ params }: { params: { npi: string } }) {
+  const { npi } = params;
   const router = useRouter();
   const [data, setData] = useState<ProviderData | null>(null);
   const [loading, setLoading] = useState(true);
