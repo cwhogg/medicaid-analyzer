@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   LineChart,
   Line,
@@ -35,8 +35,20 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
   );
 }
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  const check = useCallback(() => setIsMobile(window.innerWidth < 640), []);
+  useEffect(() => {
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, [check]);
+  return isMobile;
+}
+
 export function LiveDemo() {
   const [data, setData] = useState<MonthlyTrend[]>([]);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     // Oct-Dec 2024 data is incomplete — always truncate at Sept 2024
@@ -61,25 +73,25 @@ export function LiveDemo() {
           </p>
         </div>
 
-        <GlassCard className="p-6 sm:p-8">
-          <ResponsiveContainer width="100%" height={400}>
+        <GlassCard className="p-4 sm:p-6 md:p-8">
+          <ResponsiveContainer width="100%" height={isMobile ? 260 : 400}>
             <LineChart data={data}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
               <XAxis
                 dataKey="month"
                 tickFormatter={formatMonth}
                 stroke="#6B7280"
-                fontSize={12}
+                fontSize={isMobile ? 10 : 12}
                 tickLine={false}
-                interval={11}
+                interval={isMobile ? 17 : 11}
               />
               <YAxis
                 tickFormatter={(v) => formatCurrency(v)}
                 stroke="#6B7280"
-                fontSize={12}
+                fontSize={isMobile ? 10 : 12}
                 tickLine={false}
                 axisLine={false}
-                width={80}
+                width={isMobile ? 55 : 80}
               />
               <Tooltip content={<CustomTooltip />} />
               <Line

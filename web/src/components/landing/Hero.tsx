@@ -104,18 +104,18 @@ export function Hero() {
             <span className="text-accent">Spending Data</span>
           </h1>
 
-          <p className="mt-6 text-lg text-muted max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-6 text-base sm:text-lg text-muted max-w-2xl mx-auto leading-relaxed">
             Query $1+ trillion in Medicaid provider spending across 617K+ providers
             and 10K+ procedure codes. Ask questions in plain English — AI generates
             SQL, executes it, and returns results with visualizations.
           </p>
 
-          <div className="mt-8 flex items-center justify-center gap-4">
-            <Link href="/analyze" className="btn-primary inline-flex items-center gap-2 text-base">
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+            <Link href="/analyze" className="btn-primary inline-flex items-center justify-center gap-2 text-base w-full sm:w-auto">
               Start Analyzing
               <ArrowRight className="w-4 h-4" />
             </Link>
-            <a href="#features" className="btn-secondary inline-flex items-center gap-2 text-base">
+            <a href="#features" className="btn-secondary inline-flex items-center justify-center gap-2 text-base w-full sm:w-auto">
               Learn More
             </a>
           </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import {
   LineChart,
   Line,
@@ -76,7 +76,19 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
   );
 }
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  const check = useCallback(() => setIsMobile(window.innerWidth < 640), []);
+  useEffect(() => {
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, [check]);
+  return isMobile;
+}
+
 export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
+  const isMobile = useIsMobile();
   const { data, labelKey, valueKeys } = useMemo(() => {
     if (!columns.length || !rows.length) return { data: [], labelKey: "", valueKeys: [] };
 
@@ -135,8 +147,8 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
   if (!data.length || !valueKeys.length) return null;
 
   return (
-    <GlassCard className="p-6">
-      <ResponsiveContainer width="100%" height={400}>
+    <GlassCard className="p-3 sm:p-6">
+      <ResponsiveContainer width="100%" height={isMobile ? 280 : 400}>
         {chartType === "pie" ? (
           <PieChart>
             <Pie
@@ -145,8 +157,8 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
               nameKey={labelKey}
               cx="50%"
               cy="50%"
-              outerRadius={150}
-              label={({ name, percent }) =>
+              outerRadius={isMobile ? 90 : 150}
+              label={isMobile ? false : ({ name, percent }) =>
                 `${shortenLabel(String(name), 15)} ${(percent * 100).toFixed(0)}%`
               }
               labelLine={false}
@@ -159,22 +171,25 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
             <Legend />
           </PieChart>
         ) : chartType === "bar" ? (
-          <BarChart data={data.slice(0, 20)}>
+          <BarChart data={data.slice(0, isMobile ? 10 : 20)}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
             <XAxis
               dataKey={labelKey}
               stroke="#6B7280"
-              fontSize={11}
+              fontSize={isMobile ? 9 : 11}
               tickLine={false}
               angle={-45}
               textAnchor="end"
-              height={80}
+              height={isMobile ? 60 : 80}
+              interval={0}
+              tickFormatter={(v) => shortenLabel(String(v), isMobile ? 10 : 20)}
             />
             <YAxis
               stroke="#6B7280"
-              fontSize={11}
+              fontSize={isMobile ? 9 : 11}
               tickLine={false}
               axisLine={false}
+              width={isMobile ? 45 : undefined}
               tickFormatter={(v) => formatValue(v, valueKeys[0])}
             />
             <Tooltip content={<CustomTooltip />} />
@@ -188,14 +203,15 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
             <XAxis
               dataKey={labelKey}
               stroke="#6B7280"
-              fontSize={11}
+              fontSize={isMobile ? 9 : 11}
               tickLine={false}
             />
             <YAxis
               stroke="#6B7280"
-              fontSize={11}
+              fontSize={isMobile ? 9 : 11}
               tickLine={false}
               axisLine={false}
+              width={isMobile ? 45 : undefined}
               tickFormatter={(v) => formatValue(v, valueKeys[0])}
             />
             <Tooltip content={<CustomTooltip />} />

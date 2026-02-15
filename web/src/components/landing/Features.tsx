@@ -43,7 +43,7 @@ export function Features() {
             <GlassCard
               key={feature.title}
               hover
-              className="p-8 animate-fade-in-up"
+              className="p-5 sm:p-8 animate-fade-in-up"
             >
               <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mb-4">
                 <feature.icon className="w-6 h-6 text-accent" />

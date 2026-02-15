@@ -112,22 +112,22 @@ export default function AnalyzePage() {
       <Navbar />
       <main className="min-h-screen pt-24 pb-12">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-end justify-between mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-white">Analyze Spending</h1>
-              <p className="text-muted mt-2">
+              <h1 className="text-2xl sm:text-3xl font-bold text-white">Analyze Spending</h1>
+              <p className="text-sm sm:text-base text-muted mt-1 sm:mt-2">
                 Ask questions about Medicaid provider spending in natural language
               </p>
             </div>
 
             {/* Tab switcher */}
-            <div className="flex items-center gap-1 glass-card p-1">
+            <div className="flex items-center gap-1 glass-card p-1 self-start sm:self-auto">
               {TABS.map((tab) => (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
                   className={cn(
-                    "flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium transition-colors",
+                    "flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors",
                     activeTab === tab.key
                       ? "bg-accent text-white"
                       : "text-muted hover:text-white"
@@ -149,11 +149,11 @@ export default function AnalyzePage() {
           {activeTab === "query" && (
             <div className="space-y-6">
               {/* Year filter */}
-              <div className="flex items-center gap-1.5 flex-wrap">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                 <button
                   onClick={() => setSelectedYears(new Set())}
                   className={cn(
-                    "px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border",
+                    "px-3 py-2 rounded-lg text-xs font-medium transition-colors border",
                     selectedYears.size === 0
                       ? "bg-accent text-white border-accent"
                       : "text-muted hover:text-white bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.08]"
@@ -166,7 +166,7 @@ export default function AnalyzePage() {
                     key={y}
                     onClick={() => toggleYear(y)}
                     className={cn(
-                      "px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border",
+                      "px-3 py-2 rounded-lg text-xs font-medium transition-colors border",
                       selectedYears.has(y)
                         ? "bg-accent text-white border-accent"
                         : "text-muted hover:text-white bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.08]"

@@ -40,14 +40,14 @@ function StatCard({
   value: string;
 }) {
   return (
-    <GlassCard className="p-4">
-      <div className="flex items-center gap-3">
-        <div className="p-2 rounded-lg bg-accent/10">
-          <Icon className="w-5 h-5 text-accent" />
+    <GlassCard className="p-3 sm:p-4">
+      <div className="flex items-center gap-2.5 sm:gap-3">
+        <div className="p-1.5 sm:p-2 rounded-lg bg-accent/10 shrink-0">
+          <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />
         </div>
-        <div>
-          <p className="text-xs text-muted-dark uppercase tracking-wider">{label}</p>
-          <p className="text-lg font-semibold text-white font-mono">{value}</p>
+        <div className="min-w-0">
+          <p className="text-[10px] sm:text-xs text-muted-dark uppercase tracking-wider truncate">{label}</p>
+          <p className="text-sm sm:text-lg font-semibold text-white font-mono truncate">{value}</p>
         </div>
       </div>
     </GlassCard>
@@ -127,7 +127,7 @@ export default function ProviderPage({ params }: { params: { npi: string } }) {
             <div className="space-y-8">
               {/* Header */}
               <div>
-                <h1 className="text-3xl font-bold text-white">
+                <h1 className="text-2xl sm:text-3xl font-bold text-white">
                   {data.info.name || `Provider ${npi}`}
                 </h1>
                 <div className="flex items-center gap-3 mt-2 flex-wrap">
@@ -146,7 +146,7 @@ export default function ProviderPage({ params }: { params: { npi: string } }) {
               </div>
 
               {/* Stats grid */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
                 <StatCard
                   icon={DollarSign}
                   label="Total Spending"
