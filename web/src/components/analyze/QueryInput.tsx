@@ -1,20 +1,22 @@
 "use client";
 
 import { useState, forwardRef, useImperativeHandle, FormEvent } from "react";
-import { Search, Loader2, Layers, X } from "lucide-react";
+import { Search, Loader2, Layers, X, CornerDownRight, RotateCcw } from "lucide-react";
 
 interface QueryInputProps {
   onSubmit: (question: string, mode: "query" | "analysis") => void;
   loading: boolean;
   analysisRunning?: boolean;
   onCancelAnalysis?: () => void;
+  followUpQuestion?: string | null;
+  onNewAnalysis?: () => void;
 }
 
 export interface QueryInputHandle {
   setQuestion: (q: string) => void;
 }
 
-export const QueryInput = forwardRef<QueryInputHandle, QueryInputProps>(function QueryInput({ onSubmit, loading, analysisRunning, onCancelAnalysis }, ref) {
+export const QueryInput = forwardRef<QueryInputHandle, QueryInputProps>(function QueryInput({ onSubmit, loading, analysisRunning, onCancelAnalysis, followUpQuestion, onNewAnalysis }, ref) {
   const [question, setQuestion] = useState("");
 
   useImperativeHandle(ref, () => ({
@@ -36,7 +38,24 @@ export const QueryInput = forwardRef<QueryInputHandle, QueryInputProps>(function
 
   return (
     <div>
-      <h2 className="text-lg font-semibold text-white mb-3">Ask a question about Medicaid spending</h2>
+      {followUpQuestion ? (
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2 text-sm">
+            <CornerDownRight className="w-4 h-4 text-accent shrink-0" />
+            <span className="text-muted">Following up on:</span>
+            <span className="text-white font-medium truncate max-w-[300px] sm:max-w-[400px]">{followUpQuestion}</span>
+          </div>
+          <button
+            onClick={onNewAnalysis}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg text-muted hover:text-white bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.08] transition-colors shrink-0"
+          >
+            <RotateCcw className="w-3 h-3" />
+            New Analysis
+          </button>
+        </div>
+      ) : (
+        <h2 className="text-lg font-semibold text-white mb-3">Ask a question about Medicaid spending</h2>
+      )}
       <form onSubmit={handleSubmit}>
         <div className="glass-card p-2 sm:pr-3">
           <div className="flex items-center gap-2 sm:gap-3">
@@ -45,7 +64,7 @@ export const QueryInput = forwardRef<QueryInputHandle, QueryInputProps>(function
               type="text"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              placeholder="What are the top 10 services by total spending?"
+              placeholder={followUpQuestion ? "Ask a follow-up question..." : "What are the top 10 services by total spending?"}
               disabled={busy}
               className="flex-1 bg-transparent border-none outline-none text-white placeholder:text-muted-dark py-2.5 text-sm min-w-0"
               maxLength={500}

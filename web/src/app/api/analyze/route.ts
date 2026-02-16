@@ -20,12 +20,19 @@ interface PreviousStep {
   error: string | null;
 }
 
+interface PriorContext {
+  question: string;
+  summary: string;
+  steps: { title: string; insight: string | null }[];
+}
+
 interface AnalyzeRequest {
   question: string;
   years?: number[] | null;
   sessionId: string;
   stepIndex: number;
   previousSteps?: PreviousStep[];
+  priorContext?: PriorContext | null;
 }
 
 function buildYearConstraint(yearFilter: number[] | null): string {
@@ -96,6 +103,7 @@ function buildSystemPrompt(
   yearConstraint: string,
   stepIndex: number,
   remainingSteps: number,
+  priorContext?: PriorContext | null,
 ): SystemBlock[] {
   // Static part — cached across all requests and steps
   const cachedPart = `You are an expert healthcare claims analyst specializing in Medicaid claims data, with deep expertise in quantitative analysis and SQL. You reason like a human analyst: you understand what the user wants to know, determine what the final answer should look like, and work backwards to figure out what queries will produce that answer.
@@ -149,7 +157,18 @@ Rules for planning:
 - When steps depend on prior results, state this explicitly in the purpose (e.g., "Using the top providers from step 1, get their monthly trends").
 - Maximum 4 steps. Prefer fewer, more targeted steps over many shallow ones.
 - Good purposes: "Get annual spending by state for RPM codes, ranked by total", "Using top 5 states from step 1, break down spending by individual HCPCS code"
-- Bad purposes: "Explore the data", "Look at trends", "Get more details"${yearConstraint}`;
+- Bad purposes: "Explore the data", "Look at trends", "Get more details"${priorContext ? `
+
+## Prior Analysis Context
+The user previously analyzed: "${priorContext.question}"
+
+Summary of prior findings:
+${priorContext.summary}
+
+Key findings from each step:
+${priorContext.steps.map(s => `- ${s.title}${s.insight ? `: ${s.insight}` : ""}`).join("\n")}
+
+This is a FOLLOW-UP question. The user wants to build on the prior analysis. Reference specific values, codes, providers, states, or patterns identified above when planning your new steps. Do not repeat queries that were already answered — dig deeper or explore a new angle.` : ""}${yearConstraint}`;
   } else {
     // Execution steps (1+)
     dynamicPart = `This is step ${stepIndex} of the analysis. You have ${remainingSteps} step(s) remaining (including this one).
@@ -237,7 +256,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body: AnalyzeRequest = await request.json();
-    const { question, years, sessionId, stepIndex, previousSteps = [] } = body;
+    const { question, years, sessionId, stepIndex, previousSteps = [], priorContext } = body;
 
     if (!question || typeof question !== "string") {
       return NextResponse.json({ error: "Question is required and must be a string." }, { status: 400 });
@@ -269,7 +288,7 @@ export async function POST(request: NextRequest) {
     const yearConstraint = buildYearConstraint(yearFilter);
     const remainingSteps = MAX_STEPS - stepIndex;
 
-    const systemBlocks = buildSystemPrompt(schemaPrompt, yearConstraint, stepIndex, remainingSteps);
+    const systemBlocks = buildSystemPrompt(schemaPrompt, yearConstraint, stepIndex, remainingSteps, stepIndex === 0 ? priorContext : null);
     const messages = buildConversationHistory(question, stepIndex, previousSteps);
 
     let cumulativeInputTokens = 0;

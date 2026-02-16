@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useQuery } from "@/hooks/useQuery";
-import { useAnalysis } from "@/hooks/useAnalysis";
+import { useAnalysis, type PriorContext } from "@/hooks/useAnalysis";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { QueryInput, type QueryInputHandle } from "@/components/analyze/QueryInput";
@@ -51,10 +51,22 @@ export default function AnalyzePage() {
   const [feedRefreshKey, setFeedRefreshKey] = useState(0);
   const [selectedYears, setSelectedYears] = useState<Set<number>>(new Set());
   const [mode, setMode] = useState<Mode>("idle");
+  const [priorContext, setPriorContext] = useState<PriorContext | null>(null);
 
   // Use refs for stable callback references
   const analysisRef = useRef(analysis);
   analysisRef.current = analysis;
+
+  // Build prior context when analysis completes (for follow-up queries)
+  useEffect(() => {
+    if (analysis.status === "complete" && analysis.question && analysis.summary) {
+      setPriorContext({
+        question: analysis.question,
+        summary: analysis.summary,
+        steps: analysis.steps.map((s) => ({ title: s.title, insight: s.insight })),
+      });
+    }
+  }, [analysis.status, analysis.question, analysis.summary, analysis.steps]);
 
   const toggleYear = useCallback((year: number) => {
     setSelectedYears((prev) => {
@@ -75,19 +87,27 @@ export default function AnalyzePage() {
       if (submitMode === "analysis") {
         setMode("analysis");
         clearResults();
-        await analysisRef.current.startAnalysis(question, years);
+        await analysisRef.current.startAnalysis(question, years, priorContext);
         setFeedRefreshKey((k) => k + 1);
       } else {
         setMode("query");
         analysisRef.current.clearAnalysis();
+        setPriorContext(null);
         await submitQuestion(question, years);
         setFeedRefreshKey((k) => k + 1);
       }
     },
-    [submitQuestion, selectedYears, clearResults]
+    [submitQuestion, selectedYears, clearResults, priorContext]
   );
 
   const queryInputRef = useRef<QueryInputHandle | null>(null);
+
+  const handleNewAnalysis = useCallback(() => {
+    analysisRef.current.clearAnalysis();
+    clearResults();
+    setPriorContext(null);
+    setMode("idle");
+  }, [clearResults]);
 
   const handleFeedSelect = useCallback(
     (item: StoredQuery | StoredAnalysis | null, question?: string) => {
@@ -192,6 +212,8 @@ export default function AnalyzePage() {
                 loading={loading}
                 analysisRunning={analysisRunning}
                 onCancelAnalysis={analysis.cancelAnalysis}
+                followUpQuestion={priorContext?.question || null}
+                onNewAnalysis={handleNewAnalysis}
               />
 
               {/* Single query results */}

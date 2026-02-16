@@ -45,6 +45,12 @@ interface CompletedStep {
   error: string | null;
 }
 
+export interface PriorContext {
+  question: string;
+  summary: string;
+  steps: { title: string; insight: string | null }[];
+}
+
 export function useAnalysis() {
   const abortRef = useRef<AbortController | null>(null);
   const planRef = useRef<string[] | null>(null);
@@ -62,7 +68,7 @@ export function useAnalysis() {
   });
 
   const startAnalysis = useCallback(
-    async (question: string, years?: number[] | null) => {
+    async (question: string, years?: number[] | null, priorContext?: PriorContext | null) => {
       if (!question.trim()) return;
 
       // Cancel any in-flight analysis
@@ -135,6 +141,7 @@ export function useAnalysis() {
               sessionId,
               stepIndex,
               previousSteps: completedSteps,
+              ...(stepIndex === 0 && priorContext ? { priorContext } : {}),
             }),
             signal: abortController.signal,
           });
