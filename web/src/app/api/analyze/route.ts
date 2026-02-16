@@ -173,7 +173,7 @@ This is a FOLLOW-UP question. The user wants to build on the prior analysis. Ref
     // Execution steps (1+)
     dynamicPart = `This is step ${stepIndex} of the analysis. You have ${remainingSteps} step(s) remaining (including this one).
 
-${remainingSteps === 1 ? "This is your FINAL step. You MUST set \"done\": true and include a comprehensive \"summary\" field." : ""}
+${remainingSteps === 1 ? "This is your FINAL step. You MUST set \"done\": true." : ""}
 
 Write the SQL query for this step. If a prior step produced results you need, they have been provided to you — use those specific values (codes, NPIs, states, etc.) in your query.
 
@@ -182,8 +182,7 @@ Response format for a continuing step:
   "step": {
     "title": "Brief title for this step",
     "sql": "SELECT ... FROM ... LIMIT ...",
-    "chartType": "table|line|bar|pie",
-    "insight": "What the results show — cite specific numbers from the data"
+    "chartType": "table|line|bar|pie"
   },
   "reasoning": "What this step produces and how it feeds into the next step",
   ${remainingSteps > 1 ? '"revisedPlan": null,' : ""}
@@ -196,17 +195,14 @@ If this step fully answers the question, or if you've gathered enough data acros
   "step": {
     "title": "Brief title for this step",
     "sql": "SELECT ... FROM ... LIMIT ...",
-    "chartType": "table|line|bar|pie",
-    "insight": "What the results show — cite specific numbers"
+    "chartType": "table|line|bar|pie"
   },
-  "summary": "A comprehensive 2-4 paragraph answer to the user's question. Structure: (1) Direct answer with key numbers, (2) Most important findings, (3) Caveats or context. Reference specific numbers from each step.",
   "done": true,
   "stepIndex": ${stepIndex}
 }
 
 If no more SQL is needed and you just want to summarize previous results:
 {
-  "summary": "Comprehensive summary...",
   "done": true,
   "stepIndex": ${stepIndex}
 }
@@ -222,7 +218,7 @@ Rules:
 - Each SQL query must be a valid DuckDB SELECT statement with a LIMIT clause (max 10000).
 - Keep step titles concise (under 60 characters).
 - chartType should match the data shape: "line" for time series, "bar" for rankings/comparisons, "pie" for proportions (only if <8 categories), "table" for detailed data.
-- The "insight" field is REQUIRED — interpret the results with specific numbers. Don't just describe the query.
+- Do NOT include an "insight" or "summary" field — these will be generated separately after query execution.
 - Use short, distinct table aliases and ensure every alias is defined in FROM or JOIN.
 - If the available tables cannot answer a specific step, include "cannotAnswer" instead of "sql".${yearConstraint}`;
   }
@@ -231,6 +227,72 @@ Rules:
     { type: "text", text: cachedPart, cache_control: { type: "ephemeral" } },
     { type: "text", text: dynamicPart },
   ];
+}
+
+/**
+ * Generate an accurate insight AFTER SQL execution using actual results.
+ * Uses Haiku for speed and low cost.
+ */
+async function generatePostExecutionInsight(
+  client: Anthropic,
+  question: string,
+  stepTitle: string,
+  sql: string,
+  resultSummary: string,
+): Promise<{ text: string; inputTokens: number; outputTokens: number } | null> {
+  try {
+    const response = await client.messages.create({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 256,
+      temperature: 0,
+      system: "You are a concise data analyst. Given SQL query results, write a 1-2 sentence insight citing specific numbers from the data. Be precise — only reference numbers that appear in the results. Do not speculate beyond the data shown.",
+      messages: [{
+        role: "user",
+        content: `User question: ${question}\nStep: ${stepTitle}\nSQL: ${sql}\n\nActual query results:\n${resultSummary}\n\nWrite a concise insight (1-2 sentences) interpreting these results. Cite specific numbers.`,
+      }],
+    });
+    const text = response.content.find(b => b.type === "text");
+    if (text?.type === "text") {
+      return { text: text.text.trim(), inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Generate an accurate final summary AFTER all steps have executed,
+ * using actual resultSummaries from each step.
+ */
+async function generatePostExecutionSummary(
+  client: Anthropic,
+  question: string,
+  stepSummaries: { title: string; resultSummary: string | null; insight: string | null }[],
+): Promise<{ text: string; inputTokens: number; outputTokens: number } | null> {
+  try {
+    const stepsContext = stepSummaries.map((s, i) =>
+      `Step ${i + 1}: ${s.title}\n${s.insight ? `Insight: ${s.insight}` : ""}${s.resultSummary ? `\nResults:\n${s.resultSummary}` : ""}`
+    ).join("\n\n");
+
+    const response = await client.messages.create({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 512,
+      temperature: 0,
+      system: "You are a data analyst. Synthesize query results into a clear summary. Structure: (1) Direct answer with key numbers, (2) Most important findings, (3) Caveats or context. Only cite numbers from the actual results — never guess or extrapolate.",
+      messages: [{
+        role: "user",
+        content: `Question: ${question}\n\n${stepsContext}\n\nWrite a comprehensive 2-3 paragraph summary answering the question. Only cite numbers from the actual results above.`,
+      }],
+    });
+    const text = response.content.find(b => b.type === "text");
+    if (text?.type === "text") {
+      return { text: text.text.trim(), inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens };
+    }
+    return null;
+  } catch {
+    return null;
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -425,7 +487,6 @@ export async function POST(request: NextRequest) {
                   parsed.step.resultSummary = summarizeResults(retryResult.columns, retryResult.rows);
                   if (retryParsed.step.title) parsed.step.title = retryParsed.step.title;
                   if (retryParsed.step.chartType) parsed.step.chartType = retryParsed.step.chartType;
-                  if (retryParsed.step.insight) parsed.step.insight = retryParsed.step.insight;
 
                   recordQuery({ timestamp: Date.now(), ip, route: "/api/analyze", question, sql: fixedSql, status: 200, totalMs: Date.now() - requestStart, cached: false });
                 }
@@ -443,6 +504,43 @@ export async function POST(request: NextRequest) {
           parsed.step.columns = [];
           parsed.step.rows = [];
           recordQuery({ timestamp: Date.now(), ip, route: "/api/analyze", question, sql, status: 500, totalMs: Date.now() - requestStart, cached: false, error: errMsg });
+        }
+      }
+    }
+
+    // Post-execution: generate accurate insight from actual query results
+    if (parsed.step?.resultSummary && parsed.step?.columns?.length > 0 && !parsed.step?.error) {
+      const insightResult = await generatePostExecutionInsight(
+        client, question, parsed.step.title || `Step ${stepIndex}`,
+        parsed.step.sql, parsed.step.resultSummary,
+      );
+      if (insightResult) {
+        parsed.step.insight = insightResult.text;
+        cumulativeInputTokens += insightResult.inputTokens;
+        cumulativeOutputTokens += insightResult.outputTokens;
+      }
+    }
+
+    // Post-execution: generate accurate summary from all actual results
+    if (parsed.done) {
+      const allStepSummaries = [
+        ...previousSteps.filter(s => s.stepIndex > 0).map(s => ({
+          title: s.title,
+          resultSummary: s.resultSummary,
+          insight: s.insight,
+        })),
+        ...(parsed.step?.resultSummary ? [{
+          title: parsed.step.title || `Step ${stepIndex}`,
+          resultSummary: parsed.step.resultSummary as string | null,
+          insight: parsed.step.insight || null,
+        }] : []),
+      ];
+      if (allStepSummaries.length > 0) {
+        const summaryResult = await generatePostExecutionSummary(client, question, allStepSummaries);
+        if (summaryResult) {
+          parsed.summary = summaryResult.text;
+          cumulativeInputTokens += summaryResult.inputTokens;
+          cumulativeOutputTokens += summaryResult.outputTokens;
         }
       }
     }
