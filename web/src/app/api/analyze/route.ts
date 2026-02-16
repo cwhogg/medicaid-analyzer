@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { generateSchemaPrompt } from "@/lib/schemas";
 import { checkRateLimit } from "@/lib/rateLimit";
+import { checkDataScope } from "@/lib/dataScope";
 import { validateSQL } from "@/lib/sqlValidation";
 import { executeRemoteQuery } from "@/lib/railway";
 import { summarizeResults } from "@/lib/summarize";
@@ -335,6 +336,19 @@ export async function POST(request: NextRequest) {
     }
     if (typeof stepIndex !== "number" || stepIndex < 0 || stepIndex >= MAX_STEPS) {
       return NextResponse.json({ error: `stepIndex must be 0-${MAX_STEPS - 1}.` }, { status: 400 });
+    }
+
+    // Check if question is obviously outside dataset scope (only on first step)
+    if (stepIndex === 0) {
+      const scopeError = checkDataScope(question);
+      if (scopeError) {
+        recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 422, totalMs: Date.now() - requestStart, cached: false });
+        recordQuery({ timestamp: Date.now(), ip, route: "/api/analyze", question, sql: null, status: 422, totalMs: Date.now() - requestStart, cached: false, error: scopeError });
+        return NextResponse.json(
+          { error: scopeError, cannotAnswer: true },
+          { status: 422, headers: { "X-RateLimit-Remaining": String(rateCheck.remaining) } }
+        );
+      }
     }
 
     const yearFilter: number[] | null = Array.isArray(years) && years.length > 0

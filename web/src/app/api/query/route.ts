@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { generateSchemaPrompt } from "@/lib/schemas";
 import { checkRateLimit } from "@/lib/rateLimit";
+import { checkDataScope } from "@/lib/dataScope";
 import { validateSQL, inferChartType } from "@/lib/sqlValidation";
 import { executeRemoteQuery } from "@/lib/railway";
 import { recordRequest, recordQuery, recordFeedItem } from "@/lib/metrics";
@@ -86,6 +87,17 @@ export async function POST(request: NextRequest) {
 
     if (question.trim().length === 0) {
       return NextResponse.json({ error: "Question cannot be empty." }, { status: 400 });
+    }
+
+    // Check if question is obviously outside dataset scope
+    const scopeError = checkDataScope(question);
+    if (scopeError) {
+      recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 422, totalMs: Date.now() - requestStart, cached: false });
+      recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql: null, status: 422, totalMs: Date.now() - requestStart, cached: false, error: scopeError });
+      return NextResponse.json(
+        { error: scopeError, cannotAnswer: true },
+        { status: 422, headers: { "X-RateLimit-Remaining": String(rateCheck.remaining) } }
+      );
     }
 
     // Validate years if provided
