@@ -88,7 +88,7 @@ export function ResultsTable({ columns, rows }: ResultsTableProps) {
               {columns.map((col, i) => (
                 <th
                   key={col}
-                  className="px-4 py-3 text-left text-xs font-medium text-muted-dark uppercase tracking-wider cursor-pointer hover:text-white transition-colors select-none"
+                  className="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-muted-dark uppercase tracking-wider cursor-pointer hover:text-white transition-colors select-none"
                   onClick={() => handleSort(i)}
                 >
                   <div className="flex items-center gap-1">
@@ -120,7 +120,7 @@ export function ResultsTable({ columns, rows }: ResultsTableProps) {
                   return (
                     <td
                       key={j}
-                      className="px-4 py-2.5 text-muted font-mono text-xs whitespace-nowrap"
+                      className="px-2 sm:px-4 py-2 sm:py-2.5 text-muted font-mono text-xs whitespace-nowrap"
                     >
                       {colName === "billing_npi" && cell ? (
                         <a

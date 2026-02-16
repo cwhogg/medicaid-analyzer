@@ -111,9 +111,9 @@ function StepCard({ step }: { step: AnalysisStep }) {
   const hasResults = step.columns.length > 0 && step.rows.length > 0;
 
   return (
-    <div className="glass-card p-4 space-y-3">
-      <div className="flex items-center justify-between">
-        <h4 className="text-sm font-medium text-white">{step.title || `Step ${step.stepIndex + 1}`}</h4>
+    <div className="glass-card p-3 sm:p-4 space-y-3">
+      <div className="flex items-center justify-between gap-2">
+        <h4 className="text-sm font-medium text-white min-w-0 truncate">{step.title || `Step ${step.stepIndex + 1}`}</h4>
         <StepStatusLabel stepStatus={step.status} />
       </div>
 
@@ -235,15 +235,15 @@ export function AnalysisSteps({ plan, planReasoning, steps, summary, status, err
       {/* Steps timeline */}
       {steps.length > 0 && (
         <div className="relative space-y-4">
-          {/* Vertical line connector */}
+          {/* Vertical line connector — hidden on mobile */}
           {steps.length > 1 && (
-            <div className="absolute left-[19px] top-8 bottom-8 w-px bg-white/[0.08]" />
+            <div className="absolute left-[19px] top-8 bottom-8 w-px bg-white/[0.08] hidden sm:block" />
           )}
 
           {steps.map((step) => (
-            <div key={step.stepIndex} className="flex gap-4">
-              {/* Step indicator */}
-              <div className="flex flex-col items-center shrink-0 z-10">
+            <div key={step.stepIndex} className="flex gap-2 sm:gap-4">
+              {/* Step indicator — hidden on mobile to maximize content width */}
+              <div className="hidden sm:flex flex-col items-center shrink-0 z-10">
                 <div className={cn(
                   "w-10 h-10 rounded-full flex items-center justify-center",
                   step.status === "complete" ? "bg-green-500/10 border border-green-500/30" :
