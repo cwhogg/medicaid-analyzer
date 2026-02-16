@@ -40,9 +40,16 @@ export function summarizeResults(columns: string[], rows: unknown[][]): string {
       const outliers = numericVals.filter((v) => v < outlierThresholdLow || v > outlierThresholdHigh).length;
 
       const isDollar = /paid|spending|cost|amount|total_paid/i.test(col);
+      const isBeneficiary = /beneficiar/i.test(col);
       const fmt = (v: number) => isDollar ? `$${Math.round(v).toLocaleString("en-US")}` : round(v);
 
-      let line = `  ${col}: min=${fmt(min)}, max=${fmt(max)}, mean=${fmt(mean)}, median=${fmt(median)}, sum=${fmt(sum)}, stdDev=${fmt(stdDev)}, distribution=${skewLabel}`;
+      // Beneficiary counts must NOT be summed across rows (overlap between codes/providers)
+      let line: string;
+      if (isBeneficiary) {
+        line = `  ${col}: min=${fmt(min)}, max=${fmt(max)}, mean=${fmt(mean)}, median=${fmt(median)}, stdDev=${fmt(stdDev)}, distribution=${skewLabel} (DO NOT SUM — beneficiaries overlap across codes/providers)`;
+      } else {
+        line = `  ${col}: min=${fmt(min)}, max=${fmt(max)}, mean=${fmt(mean)}, median=${fmt(median)}, sum=${fmt(sum)}, stdDev=${fmt(stdDev)}, distribution=${skewLabel}`;
+      }
       if (outliers > 0) line += `, outliers=${outliers}/${n}`;
       statLines.push(line);
     } else {
@@ -61,7 +68,8 @@ export function summarizeResults(columns: string[], rows: unknown[][]): string {
   // Concentration / Pareto analysis for numeric columns
   for (let i = 0; i < columns.length; i++) {
     const col = columns[i];
-    if (!/paid|spending|cost|amount|claims|beneficiaries/i.test(col)) continue;
+    if (!/paid|spending|cost|amount|claims/i.test(col)) continue;
+    if (/beneficiar/i.test(col)) continue; // beneficiaries overlap — sum is meaningless
 
     const numericVals = rows.map((r) => r[i]).filter((v): v is number => typeof v === "number" && !isNaN(v));
     if (numericVals.length < 5) continue;
