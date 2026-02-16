@@ -8,6 +8,63 @@ import { ResultsChart } from "./ResultsChart";
 import { cn } from "@/lib/utils";
 import type { AnalysisStep, AnalysisStatus } from "@/hooks/useAnalysis";
 
+/** Render a limited subset of markdown (headings, bold, paragraphs) as React elements. */
+function renderMarkdown(text: string) {
+  const lines = text.split("\n");
+  const elements: React.ReactNode[] = [];
+  let paraLines: string[] = [];
+  let key = 0;
+
+  const flushParagraph = () => {
+    if (paraLines.length === 0) return;
+    const joined = paraLines.join(" ");
+    elements.push(<p key={key++} className="text-sm text-muted leading-relaxed">{renderInline(joined)}</p>);
+    paraLines = [];
+  };
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed === "") {
+      flushParagraph();
+      continue;
+    }
+    const h1Match = trimmed.match(/^#\s+(.+)$/);
+    if (h1Match) {
+      flushParagraph();
+      elements.push(<h4 key={key++} className="text-base font-semibold text-white mt-3 first:mt-0">{renderInline(h1Match[1])}</h4>);
+      continue;
+    }
+    const h2Match = trimmed.match(/^##\s+(.+)$/);
+    if (h2Match) {
+      flushParagraph();
+      elements.push(<h5 key={key++} className="text-sm font-semibold text-white/80 mt-3">{renderInline(h2Match[1])}</h5>);
+      continue;
+    }
+    paraLines.push(trimmed);
+  }
+  flushParagraph();
+  return elements;
+}
+
+function renderInline(text: string): React.ReactNode[] {
+  const parts: React.ReactNode[] = [];
+  const regex = /\*\*(.+?)\*\*/g;
+  let lastIndex = 0;
+  let match;
+  let key = 0;
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    parts.push(<strong key={key++} className="text-white font-medium">{match[1]}</strong>);
+    lastIndex = regex.lastIndex;
+  }
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+  return parts;
+}
+
 interface AnalysisStepsProps {
   plan: string[] | null;
   planReasoning: string | null;
@@ -109,9 +166,9 @@ function StepCard({ step }: { step: AnalysisStep }) {
       )}
 
       {step.insight && (
-        <p className="text-sm text-muted leading-relaxed border-t border-white/[0.08] pt-3">
-          {step.insight}
-        </p>
+        <div className="text-sm text-muted leading-relaxed border-t border-white/[0.08] pt-3">
+          {renderInline(step.insight)}
+        </div>
       )}
     </div>
   );
@@ -223,8 +280,8 @@ export function AnalysisSteps({ plan, planReasoning, steps, summary, status, err
       {summary && status === "complete" && (
         <div className="glass-card p-5 border-accent/20">
           <h3 className="text-sm font-semibold text-accent mb-3 uppercase tracking-wider">Summary</h3>
-          <div className="text-sm text-muted leading-relaxed whitespace-pre-line">
-            {summary}
+          <div className="space-y-2">
+            {renderMarkdown(summary)}
           </div>
         </div>
       )}

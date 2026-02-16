@@ -117,6 +117,7 @@ function buildSystemPrompt(
 - Oct-Dec 2024 data is INCOMPLETE — always truncate time series at Sept 2024 or note the incompleteness
 - Remote Patient Monitoring (RPM) and Chronic Care Management (CCM) are rapidly growing categories
 - Provider types matter: Organizations vs Individual providers show different spending patterns
+- CRITICAL: Beneficiary counts CANNOT be summed across HCPCS codes or providers because beneficiaries overlap between codes/providers. Only report beneficiary counts per individual code or per individual provider. Never produce a "total beneficiaries" by summing across codes or providers.
 
 ${schemaPrompt}
 
@@ -245,7 +246,7 @@ async function generatePostExecutionInsight(
       model: "claude-haiku-4-5-20251001",
       max_tokens: 256,
       temperature: 0,
-      system: "You are a concise data analyst. Given SQL query results, write a 1-2 sentence insight citing specific numbers from the data. Be precise — only reference numbers that appear in the results. Do not speculate beyond the data shown.",
+      system: "You are a concise data analyst. Given SQL query results, write a 1-2 sentence insight citing specific numbers from the data. Be precise — only reference numbers that appear in the results. Do not speculate beyond the data shown. IMPORTANT: Never sum beneficiary counts across HCPCS codes or providers — beneficiaries overlap between codes/providers, so only report beneficiary counts per individual code or provider.",
       messages: [{
         role: "user",
         content: `User question: ${question}\nStep: ${stepTitle}\nSQL: ${sql}\n\nActual query results:\n${resultSummary}\n\nWrite a concise insight (1-2 sentences) interpreting these results. Cite specific numbers.`,
@@ -279,7 +280,7 @@ async function generatePostExecutionSummary(
       model: "claude-haiku-4-5-20251001",
       max_tokens: 512,
       temperature: 0,
-      system: "You are a data analyst. Synthesize query results into a clear summary. Structure: (1) Direct answer with key numbers, (2) Most important findings, (3) Caveats or context. Only cite numbers from the actual results — never guess or extrapolate.",
+      system: "You are a data analyst. Synthesize query results into a clear summary. Structure: (1) Direct answer with key numbers, (2) Most important findings, (3) Caveats or context. Only cite numbers from the actual results — never guess or extrapolate. IMPORTANT: Never sum beneficiary counts across HCPCS codes or providers — beneficiaries overlap between codes/providers, so only report beneficiary counts per individual code or provider.",
       messages: [{
         role: "user",
         content: `Question: ${question}\n\n${stepsContext}\n\nWrite a comprehensive 2-3 paragraph summary answering the question. Only cite numbers from the actual results above.`,
