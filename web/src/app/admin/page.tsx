@@ -171,9 +171,9 @@ function AdminDashboard() {
         </GlassCard>
         <GlassCard>
           <div className="p-4">
-            <p className="text-xs text-muted uppercase tracking-wider">Cache Hit Rate</p>
-            <p className="text-3xl font-bold font-mono mt-1">{metrics.performance.cacheHitRate}%</p>
-            <p className="text-xs text-muted mt-1">of total requests</p>
+            <p className="text-xs text-muted uppercase tracking-wider">Queries / User</p>
+            <p className="text-3xl font-bold font-mono mt-1">{metrics.traffic.uniqueUsers > 0 ? (metrics.traffic.totalRequests / metrics.traffic.uniqueUsers).toFixed(1) : "0"}</p>
+            <p className="text-xs text-muted mt-1">avg requests per user</p>
           </div>
         </GlassCard>
         <GlassCard>
