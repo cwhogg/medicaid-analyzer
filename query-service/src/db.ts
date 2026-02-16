@@ -11,6 +11,7 @@ const VIEWS: [string, string][] = [
   ["claims", "medicaid-provider-spending.parquet"],
   ["hcpcs_lookup", "hcpcs_lookup.parquet"],
   ["npi_lookup", "npi_lookup.parquet"],
+  ["state_population", "state_population.parquet"],
   ["provider_stats", "provider_stats.parquet"],
   ["provider_hcpcs", "provider_hcpcs.parquet"],
   ["provider_monthly", "provider_monthly.parquet"],

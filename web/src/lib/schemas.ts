@@ -39,6 +39,17 @@ export const TABLE_SCHEMAS: TableSchema[] = [
       { name: "state", type: "VARCHAR", description: "Practice location state (2-letter abbreviation)" },
     ],
   },
+  {
+    name: "state_population",
+    description:
+      "Lookup table with US state population and Medicaid enrollment figures (2023 Census estimates). 52 rows (50 states + DC + PR). JOIN with npi_lookup on state for per-capita calculations.",
+    columns: [
+      { name: "state", type: "VARCHAR", description: "2-letter state abbreviation (e.g. 'CA', 'NY')" },
+      { name: "state_name", type: "VARCHAR", description: "Full state name (e.g. 'California')" },
+      { name: "population_2023", type: "BIGINT", description: "Total state population (2023 Census estimate)" },
+      { name: "medicaid_enrollment_2023", type: "BIGINT", description: "Medicaid enrollment count (2023)" },
+    ],
+  },
 ];
 
 export function generateSchemaPrompt(): string {
@@ -89,6 +100,19 @@ FROM claims c
 JOIN npi_lookup n ON c.billing_npi = n.billing_npi
 GROUP BY n.state
 ORDER BY total_spending DESC
+\`\`\`
+
+### Per-capita / per-enrollee analysis
+\`\`\`sql
+SELECT n.state, sp.state_name, sp.population_2023,
+  SUM(c.total_paid) AS total_spending,
+  ROUND(SUM(c.total_paid) / sp.population_2023, 2) AS spending_per_capita,
+  ROUND(SUM(c.total_paid) / sp.medicaid_enrollment_2023, 2) AS spending_per_enrollee
+FROM claims c
+JOIN npi_lookup n ON c.billing_npi = n.billing_npi
+JOIN state_population sp ON n.state = sp.state
+GROUP BY n.state, sp.state_name, sp.population_2023, sp.medicaid_enrollment_2023
+ORDER BY spending_per_capita DESC
 \`\`\`
 
 ### Provider + procedure detail
