@@ -48,7 +48,7 @@ function StepStatusLabel({ stepStatus }: { stepStatus: AnalysisStep["status"] })
 
 function StepCard({ step }: { step: AnalysisStep }) {
   const [showResults, setShowResults] = useState(true);
-  const [chartType, setChartType] = useState<"table" | "line" | "bar" | "pie">(step.chartType || "table");
+  const [chartType, setChartType] = useState<"table" | "line" | "bar" | "pie">("table");
 
   const hasResults = step.columns.length > 0 && step.rows.length > 0;
 

@@ -53,7 +53,7 @@ export function useQuery() {
         setState((prev) => ({
           ...prev,
           sql,
-          chartType: chartType || "table",
+          chartType: "table",
           columns,
           rows,
           loading: false,
