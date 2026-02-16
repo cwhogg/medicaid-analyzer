@@ -285,6 +285,12 @@ export default function AnalyzePage() {
                   summary={analysis.summary}
                   status={analysis.status}
                   error={analysis.error}
+                  onRefine={(instruction) => {
+                    const years = selectedYears.size > 0 ? Array.from(selectedYears).sort() : null;
+                    setMode("analysis");
+                    clearResults();
+                    analysisRef.current.startAnalysis(instruction, years, priorContext);
+                  }}
                 />
               )}
             </div>

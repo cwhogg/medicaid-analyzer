@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Check, AlertCircle, Loader2, ChevronRight, ListChecks } from "lucide-react";
+import { useState, type FormEvent } from "react";
+import { Check, AlertCircle, Loader2, ChevronRight, ListChecks, Layers, ArrowRight } from "lucide-react";
 import { SQLDisplay } from "./SQLDisplay";
 import { ResultsTable } from "./ResultsTable";
 import { ResultsChart } from "./ResultsChart";
@@ -72,6 +72,7 @@ interface AnalysisStepsProps {
   summary: string | null;
   status: AnalysisStatus;
   error: string | null;
+  onRefine?: (instruction: string) => void;
 }
 
 function StepIcon({ stepStatus }: { stepStatus: AnalysisStep["status"] }) {
@@ -174,7 +175,17 @@ function StepCard({ step }: { step: AnalysisStep }) {
   );
 }
 
-export function AnalysisSteps({ plan, planReasoning, steps, summary, status, error }: AnalysisStepsProps) {
+export function AnalysisSteps({ plan, planReasoning, steps, summary, status, error, onRefine }: AnalysisStepsProps) {
+  const [refineOpen, setRefineOpen] = useState(false);
+  const [refineText, setRefineText] = useState("");
+
+  const handleRefineSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!refineText.trim() || !onRefine) return;
+    onRefine(refineText.trim());
+    setRefineText("");
+    setRefineOpen(false);
+  };
   // Map plan[i] to its corresponding step: steps store stepIndex starting at 1,
   // so plan[0] corresponds to steps.find(s => s.stepIndex === 1), etc.
   const getStepForPlanIndex = (planIndex: number): AnalysisStep | undefined =>
@@ -278,12 +289,60 @@ export function AnalysisSteps({ plan, planReasoning, steps, summary, status, err
 
       {/* Summary */}
       {summary && status === "complete" && (
-        <div className="glass-card p-5 border-accent/20">
-          <h3 className="text-sm font-semibold text-accent mb-3 uppercase tracking-wider">Summary</h3>
-          <div className="space-y-2">
-            {renderMarkdown(summary)}
+        <>
+          <div className="glass-card p-5 border-accent/20">
+            <h3 className="text-sm font-semibold text-accent mb-3 uppercase tracking-wider">Summary</h3>
+            <div className="space-y-2">
+              {renderMarkdown(summary)}
+            </div>
           </div>
-        </div>
+
+          {/* Refine Analysis */}
+          {onRefine && (
+            <div>
+              {refineOpen ? (
+                <form onSubmit={handleRefineSubmit} className="glass-card p-4 space-y-3">
+                  <label className="text-sm font-medium text-white">Add instructions to refine analysis</label>
+                  <input
+                    type="text"
+                    value={refineText}
+                    onChange={(e) => setRefineText(e.target.value)}
+                    placeholder="e.g. Break down by state, focus on top 5 providers, compare year-over-year..."
+                    autoFocus
+                    className="w-full bg-white/[0.05] border border-white/[0.08] rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-muted-dark outline-none focus:border-accent/50 transition-colors"
+                    maxLength={500}
+                  />
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="submit"
+                      disabled={!refineText.trim()}
+                      className="btn-primary py-2 px-4 text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Layers className="w-4 h-4" />
+                      Run Refined Analysis
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setRefineOpen(false); setRefineText(""); }}
+                      className="py-2 px-4 text-sm text-muted hover:text-white transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <button
+                  onClick={() => setRefineOpen(true)}
+                  className="w-full py-3 px-4 text-sm flex items-center justify-center gap-2 rounded-xl border border-accent/30 text-accent hover:bg-accent/10 transition-colors"
+                >
+                  <Layers className="w-4 h-4" />
+                  Refine Analysis
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
