@@ -217,6 +217,10 @@ function maskIP(ip: string): string {
   return ip;
 }
 
+// IPs to exclude from admin metrics (admin/testing traffic)
+const EXCLUDED_IP_PREFIXES = ["73.162.79."];
+const EXCLUDE_IP_CLAUSE = EXCLUDED_IP_PREFIXES.map(p => `ip NOT LIKE '${p}%'`).join(" AND ");
+
 const INPUT_COST_PER_TOKEN = 3 / 1_000_000;
 const OUTPUT_COST_PER_TOKEN = 15 / 1_000_000;
 // Tracked tokens undercount actual usage (retries, cache writes, multi-step analyses).
@@ -240,14 +244,21 @@ function allToNumbers(rows: Record<string, unknown>[]): Record<string, unknown>[
 export async function getMetrics() {
   if (!metricsDb) throw new Error("Metrics DB not initialized");
 
+  // Uptime comes from totals (unfiltered — just tracks first_seen)
   const totalsRow = allToNumbers(await metricsDb.all(`SELECT * FROM totals WHERE id = 1`) as Record<string, unknown>[]);
   const totals = totalsRow[0] as Record<string, unknown> | undefined;
 
-  const routeRows = allToNumbers(await metricsDb.all(`SELECT route, COUNT(*) as count FROM requests GROUP BY route`) as Record<string, unknown>[]);
-  const statusRows = allToNumbers(await metricsDb.all(`SELECT status, COUNT(*) as count FROM requests GROUP BY status`) as Record<string, unknown>[]);
-  const uniqueUsersRow = allToNumbers(await metricsDb.all(`SELECT COUNT(DISTINCT ip) as cnt FROM requests`) as Record<string, unknown>[]);
+  // All other metrics exclude admin/testing IPs
+  const f = EXCLUDE_IP_CLAUSE;
+
+  const trafficRow = allToNumbers(await metricsDb.all(
+    `SELECT COUNT(*) as total_requests, SUM(input_tokens) as total_input, SUM(output_tokens) as total_output FROM requests WHERE ${f}`
+  ) as Record<string, unknown>[]);
+  const routeRows = allToNumbers(await metricsDb.all(`SELECT route, COUNT(*) as count FROM requests WHERE ${f} GROUP BY route`) as Record<string, unknown>[]);
+  const statusRows = allToNumbers(await metricsDb.all(`SELECT status, COUNT(*) as count FROM requests WHERE ${f} GROUP BY status`) as Record<string, unknown>[]);
+  const uniqueUsersRow = allToNumbers(await metricsDb.all(`SELECT COUNT(DISTINCT ip) as cnt FROM requests WHERE ${f}`) as Record<string, unknown>[]);
   const topUsersRows = allToNumbers(await metricsDb.all(
-    `SELECT ip, COUNT(*) as count FROM requests GROUP BY ip ORDER BY count DESC LIMIT 20`
+    `SELECT ip, COUNT(*) as count FROM requests WHERE ${f} GROUP BY ip ORDER BY count DESC LIMIT 20`
   ) as Record<string, unknown>[]);
 
   const perfRows = allToNumbers(await metricsDb.all(`
@@ -256,35 +267,36 @@ export async function getMetrics() {
       PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY total_ms) as p95_total,
       COUNT(*) as sample_size,
       COUNT(*) FILTER (WHERE cached = true) as cache_hits
-    FROM (SELECT * FROM requests ORDER BY timestamp DESC LIMIT 1000)
+    FROM (SELECT * FROM requests WHERE ${f} ORDER BY timestamp DESC LIMIT 1000)
   `) as Record<string, unknown>[]);
 
   const claudePerfRows = allToNumbers(await metricsDb.all(`
     SELECT
       AVG(claude_ms) as avg_claude,
       PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY claude_ms) as p95_claude
-    FROM (SELECT claude_ms FROM requests WHERE claude_ms IS NOT NULL ORDER BY timestamp DESC LIMIT 1000)
+    FROM (SELECT claude_ms FROM requests WHERE claude_ms IS NOT NULL AND ${f} ORDER BY timestamp DESC LIMIT 1000)
   `) as Record<string, unknown>[]);
 
   const railwayPerfRows = allToNumbers(await metricsDb.all(`
     SELECT
       AVG(railway_ms) as avg_railway,
       PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY railway_ms) as p95_railway
-    FROM (SELECT railway_ms FROM requests WHERE railway_ms IS NOT NULL ORDER BY timestamp DESC LIMIT 1000)
+    FROM (SELECT railway_ms FROM requests WHERE railway_ms IS NOT NULL AND ${f} ORDER BY timestamp DESC LIMIT 1000)
   `) as Record<string, unknown>[]);
 
   const recentQueryRows = allToNumbers(await metricsDb.all(
-    `SELECT * FROM query_log ORDER BY timestamp DESC LIMIT 50`
+    `SELECT * FROM query_log WHERE ${f} ORDER BY timestamp DESC LIMIT 50`
   ) as Record<string, unknown>[]);
 
   const perf = (perfRows[0] as Record<string, unknown>) || {};
   const claudePerf = (claudePerfRows[0] as Record<string, unknown>) || {};
   const railwayPerf = (railwayPerfRows[0] as Record<string, unknown>) || {};
 
-  const totalInputTokens = Number(totals?.total_input_tokens ?? 0);
-  const totalOutputTokens = Number(totals?.total_output_tokens ?? 0);
+  const traffic = (trafficRow[0] as Record<string, unknown>) || {};
+  const totalInputTokens = Number(traffic.total_input ?? 0);
+  const totalOutputTokens = Number(traffic.total_output ?? 0);
   const estimatedCostUSD = (totalInputTokens * INPUT_COST_PER_TOKEN + totalOutputTokens * OUTPUT_COST_PER_TOKEN) * COST_MULTIPLIER;
-  const totalRequests = Number(totals?.total_requests ?? 0);
+  const totalRequests = Number(traffic.total_requests ?? 0);
   const now = Date.now();
 
   const recentQueries = recentQueryRows.map((q: Record<string, unknown>) => ({
