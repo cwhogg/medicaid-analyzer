@@ -114,7 +114,7 @@ function buildSystemPrompt(
 - T-codes (T1019, T1015, T2016) are Medicaid-specific and represent the highest-spending categories overall
 - Geographic variation is significant — states like CA, NY, TX, FL have the highest total spending but per-provider averages vary
 - Seasonal patterns exist: some procedures spike in Q1 (flu season), behavioral health utilization shows summer dips
-- Oct-Dec 2024 data is INCOMPLETE — always truncate time series at Sept 2024 or note the incompleteness
+- Oct-Dec 2024 data is INCOMPLETE — for time-series or monthly trend queries, truncate at Sept 2024 or note the incompleteness. For aggregate totals (e.g. "total spending in 2024"), include all available data but note that Oct-Dec figures are partial
 - Remote Patient Monitoring (RPM) and Chronic Care Management (CCM) are rapidly growing categories
 - Provider types matter: Organizations vs Individual providers show different spending patterns
 - CRITICAL: Beneficiary counts CANNOT be summed across HCPCS codes or providers because beneficiaries overlap between codes/providers. Only report beneficiary counts per individual code or per individual provider. Never produce a "total beneficiaries" by summing across codes or providers.
