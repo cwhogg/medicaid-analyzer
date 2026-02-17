@@ -21,10 +21,15 @@ interface PreviousStep {
   error: string | null;
 }
 
-interface PriorContext {
+interface PriorAnalysis {
   question: string;
   summary: string;
   steps: { title: string; insight: string | null }[];
+}
+
+interface PriorContext {
+  /** Chain of prior analyses, oldest first */
+  history: PriorAnalysis[];
 }
 
 interface AnalyzeRequest {
@@ -159,18 +164,17 @@ Rules for planning:
 - When steps depend on prior results, state this explicitly in the purpose (e.g., "Using the top providers from step 1, get their monthly trends").
 - Maximum 4 steps. Prefer fewer, more targeted steps over many shallow ones.
 - Good purposes: "Get annual spending by state for RPM codes, ranked by total", "Using top 5 states from step 1, break down spending by individual HCPCS code"
-- Bad purposes: "Explore the data", "Look at trends", "Get more details"${priorContext ? `
+- Bad purposes: "Explore the data", "Look at trends", "Get more details"${priorContext && priorContext.history?.length > 0 ? `
 
-## Prior Analysis Context
-The user previously analyzed: "${priorContext.question}"
-
-Summary of prior findings:
-${priorContext.summary}
-
-Key findings from each step:
-${priorContext.steps.map(s => `- ${s.title}${s.insight ? `: ${s.insight}` : ""}`).join("\n")}
-
-This is a FOLLOW-UP question. The user wants to build on the prior analysis. Reference specific values, codes, providers, states, or patterns identified above when planning your new steps. Do not repeat queries that were already answered — dig deeper or explore a new angle.` : ""}${yearConstraint}`;
+## Conversation History — Prior Analyses
+The user has been iteratively refining their analysis. Below is the FULL chain of prior analyses, from oldest to newest. Each refinement builds on the previous. Use ALL of this context — do not ask the user to re-state constraints or factors they already specified.
+${priorContext.history.map((analysis, i) => `
+### Analysis ${i + 1}: "${analysis.question}"
+Summary: ${analysis.summary}
+Key findings:
+${analysis.steps.map(s => `- ${s.title}${s.insight ? `: ${s.insight}` : ""}`).join("\n")}
+`).join("")}
+This is a FOLLOW-UP refinement. The user wants to build on ALL prior analyses above. Carry forward ALL constraints, filters, inclusions, and exclusions from the prior analyses unless the user explicitly changes them. Reference specific values, codes, providers, states, or patterns identified above. Do not repeat queries that were already answered — dig deeper or refine based on the user's new instruction.` : ""}${yearConstraint}`;
   } else {
     // Execution steps (1+)
     dynamicPart = `This is step ${stepIndex} of the analysis. You have ${remainingSteps} step(s) remaining (including this one).

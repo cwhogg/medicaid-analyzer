@@ -45,10 +45,15 @@ interface CompletedStep {
   error: string | null;
 }
 
-export interface PriorContext {
+export interface PriorAnalysis {
   question: string;
   summary: string;
   steps: { title: string; insight: string | null }[];
+}
+
+export interface PriorContext {
+  /** Chain of all prior analyses, oldest first */
+  history: PriorAnalysis[];
 }
 
 export function useAnalysis() {

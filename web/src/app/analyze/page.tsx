@@ -57,14 +57,19 @@ export default function AnalyzePage() {
   const analysisRef = useRef(analysis);
   analysisRef.current = analysis;
 
-  // Build prior context when analysis completes (for follow-up queries)
+  // Accumulate prior context when analysis completes (for follow-up/refine queries)
   useEffect(() => {
     if (analysis.status === "complete" && analysis.question && analysis.summary) {
-      setPriorContext({
-        question: analysis.question,
-        summary: analysis.summary,
-        steps: analysis.steps.map((s) => ({ title: s.title, insight: s.insight })),
-      });
+      setPriorContext((prev) => ({
+        history: [
+          ...(prev?.history ?? []),
+          {
+            question: analysis.question!,
+            summary: analysis.summary!,
+            steps: analysis.steps.map((s) => ({ title: s.title, insight: s.insight })),
+          },
+        ],
+      }));
     }
   }, [analysis.status, analysis.question, analysis.summary, analysis.steps]);
 
@@ -212,7 +217,7 @@ export default function AnalyzePage() {
                 loading={loading}
                 analysisRunning={analysisRunning}
                 onCancelAnalysis={analysis.cancelAnalysis}
-                followUpQuestion={priorContext?.question || null}
+                followUpQuestion={priorContext?.history?.length ? priorContext.history[priorContext.history.length - 1].question : null}
                 onNewAnalysis={handleNewAnalysis}
               />
 
