@@ -52,6 +52,7 @@ export default function AnalyzePage() {
   const [selectedYears, setSelectedYears] = useState<Set<number>>(new Set());
   const [mode, setMode] = useState<Mode>("idle");
   const [priorContext, setPriorContext] = useState<PriorContext | null>(null);
+  const [lastQuestion, setLastQuestion] = useState<string | null>(null);
 
   // Use refs for stable callback references
   const analysisRef = useRef(analysis);
@@ -88,6 +89,7 @@ export default function AnalyzePage() {
   const handleSubmit = useCallback(
     async (question: string, submitMode: "query" | "analysis") => {
       const years = selectedYears.size > 0 ? Array.from(selectedYears).sort() : null;
+      setLastQuestion(question);
 
       if (submitMode === "analysis") {
         setMode("analysis");
@@ -258,7 +260,7 @@ export default function AnalyzePage() {
                       </div>
 
                       {chartType === "table" ? (
-                        <ResultsTable columns={columns} rows={rows} />
+                        <ResultsTable columns={columns} rows={rows} title={lastQuestion || undefined} />
                       ) : (
                         <ResultsChart
                           columns={columns}

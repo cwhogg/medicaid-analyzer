@@ -8,6 +8,8 @@ import { formatDateCell } from "@/lib/format";
 interface ResultsTableProps {
   columns: string[];
   rows: unknown[][];
+  /** Used to generate a descriptive CSV filename */
+  title?: string;
 }
 
 function isYearOrIdColumn(colName: string): boolean {
@@ -36,7 +38,17 @@ function formatCell(value: unknown, colName?: string): string {
   return String(value);
 }
 
-function downloadCSV(columns: string[], rows: unknown[][]) {
+function toFilename(title?: string): string {
+  if (!title) return "medicaid-data.csv";
+  const slug = title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")  // non-alphanumeric → hyphens
+    .replace(/^-|-$/g, "")         // trim leading/trailing hyphens
+    .slice(0, 60);                 // cap length
+  return (slug || "medicaid-data") + ".csv";
+}
+
+function downloadCSV(columns: string[], rows: unknown[][], title?: string) {
   const escape = (v: unknown): string => {
     if (v === null || v === undefined) return "";
     const s = String(v);
@@ -52,12 +64,12 @@ function downloadCSV(columns: string[], rows: unknown[][]) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "medicaid-data.csv";
+  a.download = toFilename(title);
   a.click();
   URL.revokeObjectURL(url);
 }
 
-export function ResultsTable({ columns, rows }: ResultsTableProps) {
+export function ResultsTable({ columns, rows, title }: ResultsTableProps) {
   const [sortCol, setSortCol] = useState<number | null>(null);
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
@@ -104,7 +116,7 @@ export function ResultsTable({ columns, rows }: ResultsTableProps) {
           {rows.length.toLocaleString()} row{rows.length !== 1 ? "s" : ""}
         </span>
         <button
-          onClick={() => downloadCSV(columns, sortedRows)}
+          onClick={() => downloadCSV(columns, sortedRows, title)}
           className="flex items-center gap-1.5 text-xs text-muted hover:text-white transition-colors"
           title="Download as CSV"
         >

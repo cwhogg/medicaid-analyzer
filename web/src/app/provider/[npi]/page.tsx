@@ -237,6 +237,7 @@ export default function ProviderPage({ params }: { params: { npi: string } }) {
                   <ResultsTable
                     columns={data.procedures.columns}
                     rows={data.procedures.rows}
+                    title={`${data.info.name || data.npi} top procedures`}
                   />
                 </div>
               )}

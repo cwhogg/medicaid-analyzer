@@ -157,7 +157,7 @@ function StepCard({ step }: { step: AnalysisStep }) {
               </div>
 
               {chartType === "table" ? (
-                <ResultsTable columns={step.columns} rows={step.rows} />
+                <ResultsTable columns={step.columns} rows={step.rows} title={step.title || undefined} />
               ) : (
                 <ResultsChart columns={step.columns} rows={step.rows} chartType={chartType} />
               )}
