@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowUpDown, ArrowUp, ArrowDown, Download } from "lucide-react";
 import { formatDateCell } from "@/lib/format";
 
 interface ResultsTableProps {
@@ -34,6 +34,27 @@ function formatCell(value: unknown, colName?: string): string {
     return value.toLocaleString();
   }
   return String(value);
+}
+
+function downloadCSV(columns: string[], rows: unknown[][]) {
+  const escape = (v: unknown): string => {
+    if (v === null || v === undefined) return "";
+    const s = String(v);
+    if (s.includes(",") || s.includes('"') || s.includes("\n")) {
+      return '"' + s.replace(/"/g, '""') + '"';
+    }
+    return s;
+  };
+  const header = columns.map(escape).join(",");
+  const body = rows.map((row) => row.map(escape).join(",")).join("\n");
+  const csv = header + "\n" + body;
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "medicaid-data.csv";
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 export function ResultsTable({ columns, rows }: ResultsTableProps) {
@@ -78,8 +99,18 @@ export function ResultsTable({ columns, rows }: ResultsTableProps) {
 
   return (
     <div className="glass-card overflow-hidden">
-      <div className="px-4 py-2 border-b border-white/[0.08] text-sm text-muted">
-        {rows.length.toLocaleString()} row{rows.length !== 1 ? "s" : ""}
+      <div className="px-3 sm:px-4 py-2 border-b border-white/[0.08] flex items-center justify-between">
+        <span className="text-sm text-muted">
+          {rows.length.toLocaleString()} row{rows.length !== 1 ? "s" : ""}
+        </span>
+        <button
+          onClick={() => downloadCSV(columns, sortedRows)}
+          className="flex items-center gap-1.5 text-xs text-muted hover:text-white transition-colors"
+          title="Download as CSV"
+        >
+          <Download className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">CSV</span>
+        </button>
       </div>
       <div className="overflow-x-auto max-h-[500px] overflow-y-auto">
         <table className="w-full text-sm">
