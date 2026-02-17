@@ -460,7 +460,6 @@ export async function POST(request: NextRequest) {
         parsed.step.rows = result.rows;
         parsed.step.resultSummary = summarizeResults(result.columns, result.rows);
 
-        recordQuery({ timestamp: Date.now(), ip, route: "/api/analyze", question, sql, status: 200, totalMs: Date.now() - requestStart, cached: false });
       } catch (execErr) {
         const errMsg = execErr instanceof Error ? execErr.message : String(execErr);
         const isSqlError = /binder error|parser error|catalog error|not implemented|no such|not found|does not have/i.test(errMsg);
@@ -507,7 +506,6 @@ export async function POST(request: NextRequest) {
                   if (retryParsed.step.title) parsed.step.title = retryParsed.step.title;
                   if (retryParsed.step.chartType) parsed.step.chartType = retryParsed.step.chartType;
 
-                  recordQuery({ timestamp: Date.now(), ip, route: "/api/analyze", question, sql: fixedSql, status: 200, totalMs: Date.now() - requestStart, cached: false });
                 }
               }
             }
@@ -516,13 +514,11 @@ export async function POST(request: NextRequest) {
             parsed.step.error = errMsg;
             parsed.step.columns = [];
             parsed.step.rows = [];
-            recordQuery({ timestamp: Date.now(), ip, route: "/api/analyze", question, sql, status: 500, totalMs: Date.now() - requestStart, cached: false, error: errMsg });
           }
         } else {
           parsed.step.error = errMsg;
           parsed.step.columns = [];
           parsed.step.rows = [];
-          recordQuery({ timestamp: Date.now(), ip, route: "/api/analyze", question, sql, status: 500, totalMs: Date.now() - requestStart, cached: false, error: errMsg });
         }
       }
     }
@@ -565,6 +561,18 @@ export async function POST(request: NextRequest) {
     }
 
     recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 200, claudeMs, railwayMs, totalMs: Date.now() - requestStart, cached: false, inputTokens: cumulativeInputTokens, outputTokens: cumulativeOutputTokens });
+
+    // Record query log once when analysis is complete (not per-step)
+    if (parsed.done) {
+      const finalSql = parsed.step?.sql || previousSteps.findLast(s => s.sql)?.sql || null;
+      const hasError = parsed.step?.error || false;
+      recordQuery({
+        timestamp: Date.now(), ip, route: "/api/analyze", question,
+        sql: finalSql, status: hasError ? 500 : 200,
+        totalMs: Date.now() - requestStart, cached: false,
+        error: hasError ? parsed.step.error : undefined,
+      });
+    }
 
     // Record to public feed when analysis is complete
     if (parsed.done && parsed.summary) {
