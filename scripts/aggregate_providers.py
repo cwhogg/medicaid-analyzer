@@ -23,12 +23,13 @@ def write_parquet(name: str, sql: str):
 
 
 # ---------------------------------------------------------------------------
-# 1. provider_stats — 1 row per provider (~617K rows)
+# 1. provider_stats — 1 row per provider per year (~2.4M rows)
 # ---------------------------------------------------------------------------
 print("\n[1/3] provider_stats")
 write_parquet("provider_stats", f"""
     SELECT
         billing_npi,
+        YEAR(claim_month) AS year,
         SUM(total_paid)::DOUBLE AS total_paid,
         SUM(total_claims)::BIGINT AS total_claims,
         SUM(unique_beneficiaries)::BIGINT AS unique_beneficiaries,
@@ -36,22 +37,23 @@ write_parquet("provider_stats", f"""
         MIN(claim_month) AS first_month,
         MAX(claim_month) AS last_month
     FROM '{RAW}'
-    GROUP BY billing_npi
+    GROUP BY billing_npi, YEAR(claim_month)
 """)
 
 # ---------------------------------------------------------------------------
-# 2. provider_hcpcs — per-provider procedure totals (~12M rows)
+# 2. provider_hcpcs — per-provider per-year procedure totals (~19M rows)
 # ---------------------------------------------------------------------------
 print("\n[2/3] provider_hcpcs")
 write_parquet("provider_hcpcs", f"""
     SELECT
         billing_npi,
+        YEAR(claim_month) AS year,
         hcpcs_code,
         SUM(total_paid)::DOUBLE AS total_paid,
         SUM(total_claims)::BIGINT AS total_claims,
         SUM(unique_beneficiaries)::BIGINT AS unique_beneficiaries
     FROM '{RAW}'
-    GROUP BY billing_npi, hcpcs_code
+    GROUP BY billing_npi, YEAR(claim_month), hcpcs_code
 """)
 
 # ---------------------------------------------------------------------------

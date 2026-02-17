@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, DollarSign, FileText, Users, Hash, Calendar, Loader2, AlertCircle, UserCheck, BarChart3, Clock, TrendingUp } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ResultsTable } from "@/components/analyze/ResultsTable";
@@ -60,12 +61,27 @@ function formatMonth(dateStr: string | null): string {
   return d.toLocaleDateString("en-US", { year: "numeric", month: "short" });
 }
 
+const ALL_YEARS = [2024, 2023, 2022, 2021, 2020, 2019, 2018];
+
 export default function ProviderPage({ params }: { params: { npi: string } }) {
   const { npi } = params;
   const router = useRouter();
   const [data, setData] = useState<ProviderData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedYears, setSelectedYears] = useState<Set<number>>(new Set());
+
+  const toggleYear = useCallback((year: number) => {
+    setSelectedYears((prev) => {
+      const next = new Set(prev);
+      if (next.has(year)) {
+        next.delete(year);
+      } else {
+        next.add(year);
+      }
+      return next;
+    });
+  }, []);
 
   useEffect(() => {
     async function fetchProvider() {
@@ -73,7 +89,10 @@ export default function ProviderPage({ params }: { params: { npi: string } }) {
       setError(null);
 
       try {
-        const res = await fetch(`/api/provider/${npi}`);
+        const yearsQuery = selectedYears.size > 0
+          ? `?years=${Array.from(selectedYears).sort().join(",")}`
+          : "";
+        const res = await fetch(`/api/provider/${npi}${yearsQuery}`);
         const json = await res.json();
 
         if (!res.ok) {
@@ -90,7 +109,7 @@ export default function ProviderPage({ params }: { params: { npi: string } }) {
     }
 
     fetchProvider();
-  }, [npi]);
+  }, [npi, selectedYears]);
 
   return (
     <>
@@ -143,6 +162,35 @@ export default function ProviderPage({ params }: { params: { npi: string } }) {
                   )}
                   <span className="text-sm text-muted-dark font-mono">NPI: {npi}</span>
                 </div>
+              </div>
+
+              {/* Year selector */}
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <button
+                  onClick={() => setSelectedYears(new Set())}
+                  className={cn(
+                    "px-3 py-2 rounded-lg text-xs font-medium transition-colors border",
+                    selectedYears.size === 0
+                      ? "bg-accent text-white border-accent"
+                      : "text-muted hover:text-white bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.08]"
+                  )}
+                >
+                  All Time
+                </button>
+                {ALL_YEARS.map((y) => (
+                  <button
+                    key={y}
+                    onClick={() => toggleYear(y)}
+                    className={cn(
+                      "px-3 py-2 rounded-lg text-xs font-medium transition-colors border",
+                      selectedYears.has(y)
+                        ? "bg-accent text-white border-accent"
+                        : "text-muted hover:text-white bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.08]"
+                    )}
+                  >
+                    {y}
+                  </button>
+                ))}
               </div>
 
               {/* Stats grid */}
