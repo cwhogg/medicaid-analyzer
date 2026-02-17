@@ -19,7 +19,7 @@ interface Metrics {
     uniqueUsers: number;
     byRoute: Record<string, number>;
     byStatus: Record<string, number>;
-    topUsers: { ip: string; count: number }[];
+    topUsers: { ip: string; city: string | null; count: number }[];
   };
   performance: {
     total: { avg: number; p95: number };
@@ -322,9 +322,12 @@ function AdminDashboard() {
             <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-3">Top Users (masked IPs)</h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2 text-sm">
               {metrics.traffic.topUsers.map((user, i) => (
-                <div key={i} className="flex justify-between bg-white/[0.02] rounded px-2 py-1">
-                  <span className="font-mono text-xs text-muted">{user.ip}</span>
-                  <span className="font-mono text-xs">{user.count}</span>
+                <div key={i} className="flex justify-between items-center bg-white/[0.02] rounded px-2 py-1 gap-2">
+                  <div className="min-w-0">
+                    <span className="font-mono text-xs text-muted">{user.ip}</span>
+                    {user.city && <span className="text-[10px] text-muted-dark ml-1.5">{user.city}</span>}
+                  </div>
+                  <span className="font-mono text-xs shrink-0">{user.count}</span>
                 </div>
               ))}
             </div>

@@ -217,6 +217,33 @@ function maskIP(ip: string): string {
   return ip;
 }
 
+// Batch IP geolocation via ip-api.com (free, no key needed, max 100 IPs)
+async function geolocateIPs(ips: string[]): Promise<Map<string, string>> {
+  const result = new Map<string, string>();
+  const validIPs = ips.filter(ip => ip !== "unknown");
+  if (validIPs.length === 0) return result;
+
+  try {
+    const response = await fetch("http://ip-api.com/batch?fields=query,city,regionName", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(validIPs),
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!response.ok) return result;
+    const data = await response.json() as { query: string; city?: string; regionName?: string }[];
+    for (const entry of data) {
+      const parts = [entry.city, entry.regionName].filter(Boolean);
+      if (parts.length > 0) {
+        result.set(entry.query, parts.join(", "));
+      }
+    }
+  } catch {
+    // Geolocation is best-effort — don't break metrics
+  }
+  return result;
+}
+
 // IPs to exclude from admin metrics (admin/testing traffic)
 const EXCLUDED_IP_PREFIXES = ["73.162.79."];
 const EXCLUDE_IP_CLAUSE = EXCLUDED_IP_PREFIXES.map(p => `ip NOT LIKE '${p}%'`).join(" AND ");
@@ -322,7 +349,14 @@ export async function getMetrics() {
       uniqueUsers: Number((uniqueUsersRow[0] as Record<string, unknown>)?.cnt ?? 0),
       byRoute: Object.fromEntries(routeRows.map((r: Record<string, unknown>) => [r.route, Number(r.count)])),
       byStatus: Object.fromEntries(statusRows.map((r: Record<string, unknown>) => [r.status, Number(r.count)])),
-      topUsers: topUsersRows.map((r: Record<string, unknown>) => ({ ip: maskIP(String(r.ip || "unknown")), count: Number(r.count) })),
+      topUsers: await (async () => {
+        const ips = topUsersRows.map((r: Record<string, unknown>) => String(r.ip || "unknown"));
+        const geoMap = await geolocateIPs(ips);
+        return topUsersRows.map((r: Record<string, unknown>) => {
+          const rawIP = String(r.ip || "unknown");
+          return { ip: maskIP(rawIP), city: geoMap.get(rawIP) || null, count: Number(r.count) };
+        });
+      })(),
     },
     performance: {
       total: { avg: Math.round(Number(perf.avg_total ?? 0)), p95: Math.round(Number(perf.p95_total ?? 0)) },
