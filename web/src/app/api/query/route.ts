@@ -168,7 +168,7 @@ Rules:
 
     const claudeStart = Date.now();
     const message = await client.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-4-6",
       max_tokens: 1024,
       temperature: 0,
       system: systemBlocks,
@@ -245,7 +245,7 @@ Rules:
 
       const retryClaudeStart = Date.now();
       const retryMessage = await client.messages.create({
-        model: "claude-sonnet-4-20250514",
+        model: "claude-sonnet-4-6",
         max_tokens: 1024,
         temperature: 0,
         system: retrySystemBlocks,
