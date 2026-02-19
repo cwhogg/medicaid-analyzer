@@ -136,23 +136,24 @@ function RetentionPage() {
             Day-over-Day Retention (D0 &ndash; D30)
           </h2>
           <div className="space-y-1">
-            {cohort.map((row) => (
-              <div key={row.dayNumber} className="flex items-center gap-3 text-sm">
-                <span className="w-8 text-right text-muted font-mono text-xs">
-                  D{row.dayNumber}
-                </span>
-                <div className="flex-1">
-                  <ProgressBar value={row.retained} max={totalUsers} />
+            {Array.from({ length: 31 }, (_, i) => {
+              const row = cohort.find((c) => c.dayNumber === i);
+              const retained = row?.retained ?? 0;
+              return (
+                <div key={i} className="flex items-center gap-3 text-sm">
+                  <span className="w-8 text-right text-muted font-mono text-xs">
+                    D{i}
+                  </span>
+                  <div className="flex-1">
+                    <ProgressBar value={retained} max={totalUsers} />
+                  </div>
+                  <span className="w-12 text-right font-mono text-xs">{retained}</span>
+                  <span className="w-14 text-right font-mono text-xs text-muted">
+                    {pct(retained, totalUsers)}
+                  </span>
                 </div>
-                <span className="w-12 text-right font-mono text-xs">{row.retained}</span>
-                <span className="w-14 text-right font-mono text-xs text-muted">
-                  {pct(row.retained, totalUsers)}
-                </span>
-              </div>
-            ))}
-            {cohort.length === 0 && (
-              <p className="text-center text-muted/40 py-4">No cohort data available</p>
-            )}
+              );
+            })}
           </div>
         </div>
       </GlassCard>
