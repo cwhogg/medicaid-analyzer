@@ -545,7 +545,7 @@ export async function getDailyQueries(day?: string): Promise<Record<string, unkn
 
   // Per-day aggregates (last 90 days)
   const rows = allToNumbers(await metricsDb.all(`
-    SELECT CAST(DATE_TRUNC('day', EPOCH_MS(timestamp)) AS DATE) as day,
+    SELECT STRFTIME(DATE_TRUNC('day', EPOCH_MS(timestamp)), '%Y-%m-%d') as day,
       COUNT(*) as query_count, COUNT(DISTINCT ip) as unique_users
     FROM query_log WHERE ${f}
     GROUP BY day ORDER BY day DESC LIMIT 90
