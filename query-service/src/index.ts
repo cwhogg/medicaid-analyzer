@@ -4,7 +4,7 @@ import { createWriteStream, createReadStream, existsSync, readdirSync, statSync,
 import { pipeline } from "stream/promises";
 import { Readable } from "stream";
 import { initDB, executeSQL, reloadViews, isReady } from "./db.js";
-import { initMetricsDB, recordMetrics, getMetrics, recordFeedItem, getFeedItems, recordFeedback, getFeedback } from "./metrics-db.js";
+import { initMetricsDB, recordMetrics, getMetrics, getDetailedUsers, getDailyQueries, getRetention, recordFeedItem, getFeedItems, recordFeedback, getFeedback } from "./metrics-db.js";
 
 const DATA_DIR = process.env.DATA_DIR || "/data";
 
@@ -338,6 +338,44 @@ app.get("/metrics", async (c) => {
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to fetch metrics";
     console.error("Metrics fetch error:", message);
+    return c.json({ error: message }, 500);
+  }
+});
+
+// Detailed users
+app.get("/metrics/users", async (c) => {
+  try {
+    const users = await getDetailedUsers();
+    return c.json({ users });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to fetch users";
+    console.error("Users fetch error:", message);
+    return c.json({ error: message }, 500);
+  }
+});
+
+// Daily queries (summary or drill-down)
+app.get("/metrics/daily-queries", async (c) => {
+  try {
+    const day = c.req.query("day");
+    const result = await getDailyQueries(day || undefined);
+    // With day param: returns individual queries; without: returns day summaries
+    return c.json(day ? { queries: result } : { days: result });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to fetch daily queries";
+    console.error("Daily queries fetch error:", message);
+    return c.json({ error: message }, 500);
+  }
+});
+
+// Retention metrics
+app.get("/metrics/retention", async (c) => {
+  try {
+    const retention = await getRetention();
+    return c.json(retention);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to fetch retention";
+    console.error("Retention fetch error:", message);
     return c.json({ error: message }, 500);
   }
 });

@@ -315,25 +315,42 @@ function AdminDashboard() {
         </GlassCard>
       </div>
 
-      {/* Top Users */}
-      {metrics.traffic.topUsers.length > 0 && (
-        <GlassCard className="mb-6">
-          <div className="p-4">
-            <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-3">Top Users (masked IPs)</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2 text-sm">
-              {metrics.traffic.topUsers.map((user, i) => (
-                <div key={i} className="flex justify-between items-start bg-white/[0.02] rounded px-2.5 py-1.5 gap-2">
-                  <div className="min-w-0">
-                    <span className="font-mono text-xs text-muted block">{user.ip}</span>
-                    {user.city && <span className="text-[10px] text-muted-dark block mt-0.5">{user.city}</span>}
-                  </div>
-                  <span className="font-mono text-xs font-semibold shrink-0">{user.count}</span>
-                </div>
-              ))}
+      {/* Navigation Links */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <a href={`/admin/users?key=${encodeURIComponent(key || "")}`}>
+          <GlassCard className="hover:bg-white/[0.06] transition-colors cursor-pointer">
+            <div className="p-4 flex items-center justify-between">
+              <div>
+                <h2 className="text-sm font-semibold text-white">Top Users</h2>
+                <p className="text-xs text-muted mt-1">{formatNumber(metrics.traffic.uniqueUsers)} unique users</p>
+              </div>
+              <span className="text-accent text-lg">&rarr;</span>
             </div>
-          </div>
-        </GlassCard>
-      )}
+          </GlassCard>
+        </a>
+        <a href={`/admin/queries?key=${encodeURIComponent(key || "")}`}>
+          <GlassCard className="hover:bg-white/[0.06] transition-colors cursor-pointer">
+            <div className="p-4 flex items-center justify-between">
+              <div>
+                <h2 className="text-sm font-semibold text-white">Daily Queries</h2>
+                <p className="text-xs text-muted mt-1">Per-day breakdown with drill-down</p>
+              </div>
+              <span className="text-accent text-lg">&rarr;</span>
+            </div>
+          </GlassCard>
+        </a>
+        <a href={`/admin/retention?key=${encodeURIComponent(key || "")}`}>
+          <GlassCard className="hover:bg-white/[0.06] transition-colors cursor-pointer">
+            <div className="p-4 flex items-center justify-between">
+              <div>
+                <h2 className="text-sm font-semibold text-white">Retention</h2>
+                <p className="text-xs text-muted mt-1">Cohorts, engagement, return rates</p>
+              </div>
+              <span className="text-accent text-lg">&rarr;</span>
+            </div>
+          </GlassCard>
+        </a>
+      </div>
 
       {/* Sentry Link */}
       <GlassCard className="mb-6">

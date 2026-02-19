@@ -121,6 +121,64 @@ export async function getFeedback(): Promise<Record<string, unknown>[]> {
   return data.items || [];
 }
 
+export async function getDetailedUsers() {
+  if (!RAILWAY_QUERY_URL) {
+    throw new Error("RAILWAY_QUERY_URL is not configured");
+  }
+
+  const response = await fetch(`${RAILWAY_QUERY_URL}/metrics/users`, {
+    headers: railwayHeaders(),
+    signal: AbortSignal.timeout(10000),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error((errorData as { error?: string }).error || `Users fetch failed: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function getDailyQueries(day?: string) {
+  if (!RAILWAY_QUERY_URL) {
+    throw new Error("RAILWAY_QUERY_URL is not configured");
+  }
+
+  const url = day
+    ? `${RAILWAY_QUERY_URL}/metrics/daily-queries?day=${encodeURIComponent(day)}`
+    : `${RAILWAY_QUERY_URL}/metrics/daily-queries`;
+
+  const response = await fetch(url, {
+    headers: railwayHeaders(),
+    signal: AbortSignal.timeout(10000),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error((errorData as { error?: string }).error || `Daily queries fetch failed: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function getRetention() {
+  if (!RAILWAY_QUERY_URL) {
+    throw new Error("RAILWAY_QUERY_URL is not configured");
+  }
+
+  const response = await fetch(`${RAILWAY_QUERY_URL}/metrics/retention`, {
+    headers: railwayHeaders(),
+    signal: AbortSignal.timeout(15000),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error((errorData as { error?: string }).error || `Retention fetch failed: ${response.status}`);
+  }
+
+  return response.json();
+}
+
 export async function getMetrics() {
   if (!RAILWAY_QUERY_URL) {
     throw new Error("RAILWAY_QUERY_URL is not configured");

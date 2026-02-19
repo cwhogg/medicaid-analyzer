@@ -481,6 +481,178 @@ export async function recordFeedback(item: FeedbackInput): Promise<void> {
   );
 }
 
+// --- Detailed Users ---
+
+export async function getDetailedUsers(): Promise<Record<string, unknown>[]> {
+  if (!metricsDb) throw new Error("Metrics DB not initialized");
+
+  const f = EXCLUDE_IP_CLAUSE;
+  const rows = allToNumbers(await metricsDb.all(`
+    SELECT ip, COUNT(*) as count,
+      MIN(timestamp) as first_seen, MAX(timestamp) as last_seen,
+      COUNT(DISTINCT CAST(DATE_TRUNC('day', EPOCH_MS(timestamp)) AS DATE)) as active_days
+    FROM requests WHERE ${f}
+    GROUP BY ip ORDER BY count DESC LIMIT 100
+  `) as Record<string, unknown>[]);
+
+  const ips = rows.map((r) => String(r.ip || "unknown"));
+  const geoMap = await geolocateIPs(ips);
+
+  return rows.map((r) => {
+    const rawIP = String(r.ip || "unknown");
+    return {
+      ip: maskIP(rawIP),
+      city: geoMap.get(rawIP) || null,
+      count: Number(r.count),
+      firstSeen: Number(r.first_seen),
+      lastSeen: Number(r.last_seen),
+      activeDays: Number(r.active_days),
+    };
+  });
+}
+
+// --- Daily Queries ---
+
+export async function getDailyQueries(day?: string): Promise<Record<string, unknown> | Record<string, unknown>[]> {
+  if (!metricsDb) throw new Error("Metrics DB not initialized");
+
+  const f = EXCLUDE_IP_CLAUSE;
+
+  if (day) {
+    // Individual queries for a specific day
+    const rows = allToNumbers(await metricsDb.all(`
+      SELECT timestamp, ip, route, question, sql_text, status, total_ms, cached, error
+      FROM query_log
+      WHERE CAST(DATE_TRUNC('day', EPOCH_MS(timestamp)) AS DATE) = ?
+        AND ${f}
+      ORDER BY timestamp DESC
+    `, day) as Record<string, unknown>[]);
+
+    const now = Date.now();
+    return rows.map((q) => ({
+      timestamp: q.timestamp,
+      ip: maskIP(String(q.ip || "unknown")),
+      route: q.route,
+      question: q.question,
+      sql: q.sql_text,
+      status: q.status,
+      totalMs: q.total_ms,
+      cached: q.cached,
+      error: q.error || undefined,
+      ago: `${Math.floor((now - Number(q.timestamp)) / 1000)}s ago`,
+    }));
+  }
+
+  // Per-day aggregates (last 90 days)
+  const rows = allToNumbers(await metricsDb.all(`
+    SELECT CAST(DATE_TRUNC('day', EPOCH_MS(timestamp)) AS DATE) as day,
+      COUNT(*) as query_count, COUNT(DISTINCT ip) as unique_users
+    FROM query_log WHERE ${f}
+    GROUP BY day ORDER BY day DESC LIMIT 90
+  `) as Record<string, unknown>[]);
+
+  return rows.map((r) => ({
+    day: String(r.day),
+    queryCount: Number(r.query_count),
+    uniqueUsers: Number(r.unique_users),
+  }));
+}
+
+// --- Retention ---
+
+export async function getRetention(): Promise<Record<string, unknown>> {
+  if (!metricsDb) throw new Error("Metrics DB not initialized");
+
+  const f = EXCLUDE_IP_CLAUSE;
+
+  // 1. Day-over-day cohort (D0-D30)
+  const cohortRows = allToNumbers(await metricsDb.all(`
+    WITH user_first AS (
+      SELECT ip, CAST(MIN(DATE_TRUNC('day', EPOCH_MS(timestamp))) AS DATE) as first_day
+      FROM requests WHERE ${f} GROUP BY ip
+    ),
+    user_days AS (
+      SELECT DISTINCT ip, CAST(DATE_TRUNC('day', EPOCH_MS(timestamp)) AS DATE) as day
+      FROM requests WHERE ${f}
+    )
+    SELECT d.day_number, COUNT(DISTINCT ud.ip) as retained,
+      (SELECT COUNT(*) FROM user_first) as total
+    FROM user_first uf
+    JOIN user_days ud ON uf.ip = ud.ip
+    CROSS JOIN (SELECT UNNEST(GENERATE_SERIES(0, 30)) as day_number) d
+    WHERE DATEDIFF('day', uf.first_day, ud.day) = d.day_number
+    GROUP BY d.day_number ORDER BY d.day_number
+  `) as Record<string, unknown>[]);
+
+  const cohort = cohortRows.map((r) => ({
+    dayNumber: Number(r.day_number),
+    retained: Number(r.retained),
+    total: Number(r.total),
+  }));
+
+  // 2. Engagement buckets
+  const engagementRows = allToNumbers(await metricsDb.all(`
+    WITH user_counts AS (
+      SELECT ip, COUNT(*) as cnt FROM requests WHERE ${f} GROUP BY ip
+    )
+    SELECT COUNT(*) as total,
+      COUNT(*) FILTER (WHERE cnt >= 2) as gte_2,
+      COUNT(*) FILTER (WHERE cnt >= 5) as gte_5,
+      COUNT(*) FILTER (WHERE cnt >= 10) as gte_10,
+      COUNT(*) FILTER (WHERE cnt >= 25) as gte_25,
+      COUNT(*) FILTER (WHERE cnt >= 50) as gte_50
+    FROM user_counts
+  `) as Record<string, unknown>[]);
+
+  const eng = engagementRows[0] || {};
+  const engagement = {
+    total: Number(eng.total ?? 0),
+    gte2: Number(eng.gte_2 ?? 0),
+    gte5: Number(eng.gte_5 ?? 0),
+    gte10: Number(eng.gte_10 ?? 0),
+    gte25: Number(eng.gte_25 ?? 0),
+    gte50: Number(eng.gte_50 ?? 0),
+  };
+
+  // 3. Return intervals
+  const returnRows = allToNumbers(await metricsDb.all(`
+    WITH user_first AS (
+      SELECT ip, MIN(timestamp) as first_ts
+      FROM requests WHERE ${f} GROUP BY ip
+    ),
+    user_returns AS (
+      SELECT uf.ip, MIN(r.timestamp) as return_ts,
+        (MIN(r.timestamp) - uf.first_ts) / 86400000.0 as days_to_return
+      FROM user_first uf
+      JOIN requests r ON uf.ip = r.ip AND r.timestamp > uf.first_ts + 3600000
+      WHERE ${f}
+      GROUP BY uf.ip, uf.first_ts
+    )
+    SELECT
+      (SELECT COUNT(*) FROM user_first) as total,
+      COUNT(*) as returned,
+      COUNT(*) FILTER (WHERE days_to_return <= 1) as within_1d,
+      COUNT(*) FILTER (WHERE days_to_return <= 2) as within_2d,
+      COUNT(*) FILTER (WHERE days_to_return <= 7) as within_7d,
+      COUNT(*) FILTER (WHERE days_to_return <= 14) as within_14d,
+      COUNT(*) FILTER (WHERE days_to_return <= 30) as within_30d
+    FROM user_returns
+  `) as Record<string, unknown>[]);
+
+  const ret = returnRows[0] || {};
+  const returnIntervals = {
+    total: Number(ret.total ?? 0),
+    returned: Number(ret.returned ?? 0),
+    within1d: Number(ret.within_1d ?? 0),
+    within2d: Number(ret.within_2d ?? 0),
+    within7d: Number(ret.within_7d ?? 0),
+    within14d: Number(ret.within_14d ?? 0),
+    within30d: Number(ret.within_30d ?? 0),
+  };
+
+  return { cohort, engagement, returnIntervals };
+}
+
 export async function getFeedback(limit = 50): Promise<Record<string, unknown>[]> {
   if (!metricsDb) throw new Error("Metrics DB not initialized");
 
