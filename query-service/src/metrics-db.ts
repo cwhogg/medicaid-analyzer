@@ -625,7 +625,6 @@ export async function getRetention(): Promise<Record<string, unknown>> {
         (MIN(r.timestamp) - uf.first_ts) / 86400000.0 as days_to_return
       FROM user_first uf
       JOIN requests r ON uf.ip = r.ip AND r.timestamp > uf.first_ts + 3600000
-      WHERE ${f}
       GROUP BY uf.ip, uf.first_ts
     )
     SELECT
