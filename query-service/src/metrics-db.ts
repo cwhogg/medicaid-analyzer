@@ -614,18 +614,20 @@ export async function getRetention(): Promise<Record<string, unknown>> {
     gte50: Number(eng.gte_50 ?? 0),
   };
 
-  // 3. Return intervals
+  // 3. Return intervals (calendar-day based)
   const returnRows = allToNumbers(await metricsDb.all(`
     WITH user_first AS (
-      SELECT ip, MIN(timestamp) as first_ts
+      SELECT ip,
+        CAST(DATE_TRUNC('day', EPOCH_MS(MIN(timestamp))) AS DATE) as first_day
       FROM requests WHERE ${f} GROUP BY ip
     ),
     user_returns AS (
-      SELECT uf.ip, MIN(r.timestamp) as return_ts,
-        (MIN(r.timestamp) - uf.first_ts) / 86400000.0 as days_to_return
+      SELECT uf.ip,
+        MIN(DATEDIFF('day', uf.first_day, CAST(DATE_TRUNC('day', EPOCH_MS(r.timestamp)) AS DATE))) as days_to_return
       FROM user_first uf
-      JOIN requests r ON uf.ip = r.ip AND r.timestamp > uf.first_ts + 3600000
-      GROUP BY uf.ip, uf.first_ts
+      JOIN requests r ON uf.ip = r.ip
+      WHERE CAST(DATE_TRUNC('day', EPOCH_MS(r.timestamp)) AS DATE) > uf.first_day
+      GROUP BY uf.ip, uf.first_day
     )
     SELECT
       (SELECT COUNT(*) FROM user_first) as total,
