@@ -614,44 +614,34 @@ export async function getRetention(): Promise<Record<string, unknown>> {
     gte50: Number(eng.gte_50 ?? 0),
   };
 
-  // 3. Return intervals (calendar-day based)
-  const returnRows = allToNumbers(await metricsDb.all(`
-    WITH user_first AS (
-      SELECT ip,
-        CAST(DATE_TRUNC('day', EPOCH_MS(MIN(timestamp))) AS DATE) as first_day
-      FROM requests WHERE ${f} GROUP BY ip
-    ),
-    user_returns AS (
-      SELECT uf.ip,
-        MIN(DATEDIFF('day', uf.first_day, CAST(DATE_TRUNC('day', EPOCH_MS(r.timestamp)) AS DATE))) as days_to_return
-      FROM user_first uf
-      JOIN requests r ON uf.ip = r.ip
-      WHERE CAST(DATE_TRUNC('day', EPOCH_MS(r.timestamp)) AS DATE) > uf.first_day
-      GROUP BY uf.ip, uf.first_day
-    )
+  // 3. User recency — how many unique users active in last N days
+  const now = Date.now();
+  const recencyRows = allToNumbers(await metricsDb.all(`
     SELECT
-      (SELECT COUNT(*) FROM user_first) as total,
-      COUNT(*) as returned,
-      COUNT(*) FILTER (WHERE days_to_return <= 1) as within_1d,
-      COUNT(*) FILTER (WHERE days_to_return <= 2) as within_2d,
-      COUNT(*) FILTER (WHERE days_to_return <= 7) as within_7d,
-      COUNT(*) FILTER (WHERE days_to_return <= 14) as within_14d,
-      COUNT(*) FILTER (WHERE days_to_return <= 30) as within_30d
-    FROM user_returns
-  `) as Record<string, unknown>[]);
+      COUNT(DISTINCT ip) as total,
+      COUNT(DISTINCT ip) FILTER (WHERE timestamp >= ?) as last_1d,
+      COUNT(DISTINCT ip) FILTER (WHERE timestamp >= ?) as last_7d,
+      COUNT(DISTINCT ip) FILTER (WHERE timestamp >= ?) as last_14d,
+      COUNT(DISTINCT ip) FILTER (WHERE timestamp >= ?) as last_30d,
+      COUNT(DISTINCT ip) FILTER (WHERE timestamp >= ?) as last_60d,
+      COUNT(DISTINCT CASE WHEN
+        ip IN (SELECT ip FROM requests WHERE ${f} GROUP BY ip HAVING COUNT(DISTINCT CAST(DATE_TRUNC('day', EPOCH_MS(timestamp)) AS DATE)) >= 2)
+        THEN ip END) as multi_day_users
+    FROM requests WHERE ${f}
+  `, now - 86400000, now - 7 * 86400000, now - 14 * 86400000, now - 30 * 86400000, now - 60 * 86400000) as Record<string, unknown>[]);
 
-  const ret = returnRows[0] || {};
-  const returnIntervals = {
-    total: Number(ret.total ?? 0),
-    returned: Number(ret.returned ?? 0),
-    within1d: Number(ret.within_1d ?? 0),
-    within2d: Number(ret.within_2d ?? 0),
-    within7d: Number(ret.within_7d ?? 0),
-    within14d: Number(ret.within_14d ?? 0),
-    within30d: Number(ret.within_30d ?? 0),
+  const rec = recencyRows[0] || {};
+  const recency = {
+    total: Number(rec.total ?? 0),
+    last1d: Number(rec.last_1d ?? 0),
+    last7d: Number(rec.last_7d ?? 0),
+    last14d: Number(rec.last_14d ?? 0),
+    last30d: Number(rec.last_30d ?? 0),
+    last60d: Number(rec.last_60d ?? 0),
+    multiDayUsers: Number(rec.multi_day_users ?? 0),
   };
 
-  return { cohort, engagement, returnIntervals };
+  return { cohort, engagement, recency };
 }
 
 export async function getFeedback(limit = 50): Promise<Record<string, unknown>[]> {

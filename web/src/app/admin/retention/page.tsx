@@ -19,20 +19,20 @@ interface Engagement {
   gte50: number;
 }
 
-interface ReturnIntervals {
+interface Recency {
   total: number;
-  returned: number;
-  within1d: number;
-  within2d: number;
-  within7d: number;
-  within14d: number;
-  within30d: number;
+  last1d: number;
+  last7d: number;
+  last14d: number;
+  last30d: number;
+  last60d: number;
+  multiDayUsers: number;
 }
 
 interface RetentionData {
   cohort: CohortRow[];
   engagement: Engagement;
-  returnIntervals: ReturnIntervals;
+  recency: Recency;
 }
 
 function pct(n: number, total: number): string {
@@ -112,7 +112,7 @@ function RetentionPage() {
     );
   }
 
-  const { cohort, engagement, returnIntervals } = data;
+  const { cohort, engagement, recency } = data;
   const d0 = cohort.find((c) => c.dayNumber === 0);
   const totalUsers = d0?.total || engagement.total || 1;
 
@@ -192,46 +192,46 @@ function RetentionPage() {
           </div>
         </GlassCard>
 
-        {/* Return intervals */}
+        {/* User recency */}
         <GlassCard>
           <div className="p-4">
             <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">
-              Return Intervals
+              User Recency
             </h2>
             <div className="flex gap-6 mb-4">
               <div>
-                <p className="text-3xl font-bold font-mono">{returnIntervals.returned}</p>
-                <p className="text-xs text-muted">returned (1h+ gap)</p>
+                <p className="text-3xl font-bold font-mono">{recency.multiDayUsers}</p>
+                <p className="text-xs text-muted">multi-day users</p>
               </div>
               <div>
                 <p className="text-3xl font-bold font-mono text-muted">
-                  {pct(returnIntervals.returned, returnIntervals.total)}
+                  {pct(recency.multiDayUsers, recency.total)}
                 </p>
-                <p className="text-xs text-muted">of {returnIntervals.total} total</p>
+                <p className="text-xs text-muted">of {recency.total} total</p>
               </div>
             </div>
 
             <div className="space-y-3">
               {[
-                { label: "Within 1 day", value: returnIntervals.within1d },
-                { label: "Within 2 days", value: returnIntervals.within2d },
-                { label: "Within 1 week", value: returnIntervals.within7d },
-                { label: "Within 2 weeks", value: returnIntervals.within14d },
-                { label: "Within 30 days", value: returnIntervals.within30d },
-              ].map((interval) => (
-                <div key={interval.label}>
+                { label: "Active today", value: recency.last1d },
+                { label: "Active last 7 days", value: recency.last7d },
+                { label: "Active last 14 days", value: recency.last14d },
+                { label: "Active last 30 days", value: recency.last30d },
+                { label: "Active last 60 days", value: recency.last60d },
+              ].map((bucket) => (
+                <div key={bucket.label}>
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="text-muted">{interval.label}</span>
+                    <span className="text-muted">{bucket.label}</span>
                     <span className="font-mono">
-                      {interval.value}{" "}
+                      {bucket.value}{" "}
                       <span className="text-muted text-xs">
-                        ({pct(interval.value, returnIntervals.total)})
+                        ({pct(bucket.value, recency.total)})
                       </span>
                     </span>
                   </div>
                   <ProgressBar
-                    value={interval.value}
-                    max={returnIntervals.total}
+                    value={bucket.value}
+                    max={recency.total}
                     color="bg-blue-500"
                   />
                 </div>
