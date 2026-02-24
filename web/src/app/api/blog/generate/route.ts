@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { generateSchemaPrompt } from "@/lib/schemas";
 import { validateSQL } from "@/lib/sqlValidation";
@@ -19,39 +19,76 @@ interface AnalysisStep {
   rows: unknown[][];
 }
 
-export async function POST(request: NextRequest) {
-  const start = Date.now();
+// Stream newline-delimited JSON events back to the client
+function streamResponse(
+  generator: (send: (event: Record<string, unknown>) => void) => Promise<void>
+) {
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(controller) {
+      const send = (event: Record<string, unknown>) => {
+        controller.enqueue(encoder.encode(JSON.stringify(event) + "\n"));
+      };
+      try {
+        await generator(send);
+      } catch (err) {
+        send({
+          phase: "error",
+          message: err instanceof Error ? err.message : "Internal server error",
+        });
+      } finally {
+        controller.close();
+      }
+    },
+  });
 
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "no-cache",
+      "Transfer-Encoding": "chunked",
+    },
+  });
+}
+
+export async function POST(request: NextRequest) {
   // Auth
   const key =
     request.nextUrl.searchParams.get("key") ||
     request.headers.get("x-admin-key");
   if (!ADMIN_SECRET || key !== ADMIN_SECRET) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    return NextResponse.json(
+    return Response.json(
       { error: "ANTHROPIC_API_KEY not configured" },
       { status: 500 }
     );
   }
   if (!GITHUB_TOKEN) {
-    return NextResponse.json(
+    return Response.json(
       { error: "GITHUB_TOKEN not configured" },
       { status: 500 }
     );
   }
 
-  const client = new Anthropic({ apiKey });
+  return streamResponse(async (send) => {
+    const start = Date.now();
+    const client = new Anthropic({ apiKey });
 
-  try {
     // Get existing post titles to avoid repetition
-    const existingPosts = getAllPosts("blog");
-    const existingTitles = existingPosts.map((p) => p.frontmatter.title);
+    let existingTitles: string[] = [];
+    try {
+      existingTitles = getAllPosts("blog").map((p) => p.frontmatter.title);
+    } catch {
+      // On Vercel runtime, content dir may not exist — that's fine
+    }
 
     // --- Phase 1: Topic Generation ---
+    send({ phase: "topic", message: "Generating topic..." });
+
     const topicResponse = await client.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 1024,
@@ -77,10 +114,8 @@ Return ONLY valid JSON, no markdown fences or explanation.`,
 
     const topicText = topicResponse.content.find((b) => b.type === "text");
     if (!topicText || topicText.type !== "text") {
-      return NextResponse.json(
-        { error: "Topic generation failed" },
-        { status: 500 }
-      );
+      send({ phase: "error", message: "Topic generation returned no text" });
+      return;
     }
 
     let topic: {
@@ -98,47 +133,94 @@ Return ONLY valid JSON, no markdown fences or explanation.`,
         .trim();
       topic = JSON.parse(cleaned);
     } catch {
-      return NextResponse.json(
-        { error: "Topic generation returned invalid JSON", raw: topicText.text },
-        { status: 500 }
-      );
+      send({
+        phase: "error",
+        message: "Topic generation returned invalid JSON",
+        raw: topicText.text,
+      });
+      return;
     }
+
+    send({
+      phase: "topic",
+      message: `Topic: ${topic.title}`,
+      title: topic.title,
+      slug: topic.slug,
+      questions: topic.analysisQuestions.length,
+    });
 
     // --- Phase 2: Analysis Execution ---
     const schemaPrompt = generateSchemaPrompt();
     const analysisSteps: AnalysisStep[] = [];
+    const totalQuestions = topic.analysisQuestions.length;
 
-    for (const question of topic.analysisQuestions) {
-      const sqlResponse = await client.messages.create({
-        model: "claude-sonnet-4-6",
-        max_tokens: 1024,
-        temperature: 0,
-        system: [
-          {
-            type: "text" as const,
-            text: `You are a SQL expert that translates natural language questions into DuckDB SQL queries for a Medicaid provider spending dataset.\n\n${schemaPrompt}\n\nRules:\n- Return ONLY the SQL query, nothing else. No markdown, no explanation, no code fences.\n- Always include a LIMIT clause (max 100 for blog data tables).\n- Only use SELECT statements.\n- Use DuckDB SQL syntax.\n- Format dollar amounts with ROUND(..., 0).\n- IMPORTANT: Oct-Dec 2024 data is incomplete. Add AND claim_month < '2024-10-01' for time series.`,
-            cache_control: { type: "ephemeral" as const },
-          },
-        ],
-        messages: [{ role: "user", content: question }],
+    for (let i = 0; i < totalQuestions; i++) {
+      const question = topic.analysisQuestions[i];
+      send({
+        phase: "analysis",
+        message: `Running analysis ${i + 1} of ${totalQuestions}...`,
+        step: i + 1,
+        total: totalQuestions,
+        question,
       });
 
-      const sqlBlock = sqlResponse.content.find((b) => b.type === "text");
-      if (!sqlBlock || sqlBlock.type !== "text") continue;
-
-      let sql = sqlBlock.text.trim();
-      if (sql.startsWith("```")) {
-        sql = sql
-          .replace(/^```(?:sql)?\n?/, "")
-          .replace(/\n?```$/, "")
-          .trim();
-      }
-      if (sql.startsWith("CANNOT_ANSWER:")) continue;
-
-      const validation = validateSQL(sql);
-      if (!validation.valid) continue;
-
       try {
+        const sqlResponse = await client.messages.create({
+          model: "claude-sonnet-4-6",
+          max_tokens: 1024,
+          temperature: 0,
+          system: [
+            {
+              type: "text" as const,
+              text: `You are a SQL expert that translates natural language questions into DuckDB SQL queries for a Medicaid provider spending dataset.\n\n${schemaPrompt}\n\nRules:\n- Return ONLY the SQL query, nothing else. No markdown, no explanation, no code fences.\n- Always include a LIMIT clause (max 100 for blog data tables).\n- Only use SELECT statements.\n- Use DuckDB SQL syntax.\n- Format dollar amounts with ROUND(..., 0).\n- IMPORTANT: Oct-Dec 2024 data is incomplete. Add AND claim_month < '2024-10-01' for time series.`,
+              cache_control: { type: "ephemeral" as const },
+            },
+          ],
+          messages: [{ role: "user", content: question }],
+        });
+
+        const sqlBlock = sqlResponse.content.find((b) => b.type === "text");
+        if (!sqlBlock || sqlBlock.type !== "text") {
+          send({
+            phase: "analysis",
+            message: `Analysis ${i + 1}: no SQL generated, skipping`,
+            step: i + 1,
+            total: totalQuestions,
+            skipped: true,
+          });
+          continue;
+        }
+
+        let sql = sqlBlock.text.trim();
+        if (sql.startsWith("```")) {
+          sql = sql
+            .replace(/^```(?:sql)?\n?/, "")
+            .replace(/\n?```$/, "")
+            .trim();
+        }
+        if (sql.startsWith("CANNOT_ANSWER:")) {
+          send({
+            phase: "analysis",
+            message: `Analysis ${i + 1}: cannot answer, skipping`,
+            step: i + 1,
+            total: totalQuestions,
+            skipped: true,
+          });
+          continue;
+        }
+
+        const validation = validateSQL(sql);
+        if (!validation.valid) {
+          send({
+            phase: "analysis",
+            message: `Analysis ${i + 1}: invalid SQL, skipping`,
+            step: i + 1,
+            total: totalQuestions,
+            skipped: true,
+          });
+          continue;
+        }
+
         const result = await executeRemoteQuery(sql);
         analysisSteps.push({
           question,
@@ -146,19 +228,37 @@ Return ONLY valid JSON, no markdown fences or explanation.`,
           columns: result.columns,
           rows: result.rows.slice(0, 50),
         });
+
+        send({
+          phase: "analysis",
+          message: `Analysis ${i + 1} complete: ${result.rows.length} rows`,
+          step: i + 1,
+          total: totalQuestions,
+          rows: result.rows.length,
+        });
       } catch (err) {
         console.error(`Blog gen: query failed for "${question}":`, err);
+        send({
+          phase: "analysis",
+          message: `Analysis ${i + 1} failed: ${err instanceof Error ? err.message : "unknown error"}`,
+          step: i + 1,
+          total: totalQuestions,
+          skipped: true,
+        });
       }
     }
 
     if (analysisSteps.length === 0) {
-      return NextResponse.json(
-        { error: "All analysis queries failed" },
-        { status: 500 }
-      );
+      send({ phase: "error", message: "All analysis queries failed" });
+      return;
     }
 
     // --- Phase 3: Blog Writing ---
+    send({
+      phase: "writing",
+      message: `Writing article from ${analysisSteps.length} analyses...`,
+    });
+
     const dataSummary = analysisSteps
       .map((step, i) => {
         const header = step.columns.join(" | ");
@@ -198,16 +298,22 @@ Rules:
 
     const writeBlock = writeResponse.content.find((b) => b.type === "text");
     if (!writeBlock || writeBlock.type !== "text") {
-      return NextResponse.json(
-        { error: "Blog writing failed" },
-        { status: 500 }
-      );
+      send({ phase: "error", message: "Blog writing returned no text" });
+      return;
     }
 
     const bodyContent = writeBlock.text.trim();
     const wordCount = bodyContent.split(/\s+/).length;
 
-    // Build full markdown file
+    send({
+      phase: "writing",
+      message: `Article written: ${wordCount} words`,
+      wordCount,
+    });
+
+    // --- Phase 4: Publish via GitHub Contents API ---
+    send({ phase: "publishing", message: "Committing to GitHub..." });
+
     const frontmatter = `---
 title: "${topic.title.replace(/"/g, '\\"')}"
 type: blog-post
@@ -224,7 +330,6 @@ canonicalUrl: "https://medicaid-analyzer.vercel.app/blog/${topic.slug}"
 ${bodyContent}
 `;
 
-    // --- Phase 4: Publish via GitHub Contents API ---
     const filePath = `content/blog/${topic.slug}.md`;
     const contentBase64 = Buffer.from(frontmatter).toString("base64");
 
@@ -248,23 +353,22 @@ ${bodyContent}
     if (!ghResponse.ok) {
       const ghError = await ghResponse.text();
       console.error("GitHub API error:", ghError);
-      return NextResponse.json(
-        { error: `GitHub commit failed: ${ghResponse.status}`, details: ghError },
-        { status: 500 }
-      );
+      send({
+        phase: "error",
+        message: `GitHub commit failed (${ghResponse.status}): ${ghError.slice(0, 200)}`,
+      });
+      return;
     }
 
-    return NextResponse.json({
-      ok: true,
+    send({
+      phase: "done",
+      message: "Published!",
       slug: topic.slug,
       title: topic.title,
+      description: topic.description,
       wordCount,
       analysisSteps: analysisSteps.length,
       generationMs: Date.now() - start,
     });
-  } catch (err) {
-    console.error("Blog generation error:", err);
-    const message = err instanceof Error ? err.message : "Internal server error";
-    return NextResponse.json({ error: message }, { status: 500 });
-  }
+  });
 }
