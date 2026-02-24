@@ -79,6 +79,24 @@ export async function initMetricsDB(): Promise<void> {
     )
   `);
 
+  // Persistent per-user per-day activity (never pruned, used for retention cohorts)
+  await metricsDb.run(`
+    CREATE TABLE IF NOT EXISTS user_daily_activity (
+      ip VARCHAR NOT NULL,
+      day VARCHAR NOT NULL,
+      first_ts BIGINT NOT NULL,
+      UNIQUE (ip, day)
+    )
+  `);
+
+  // Backfill user_daily_activity from existing requests data
+  await metricsDb.run(`
+    INSERT OR IGNORE INTO user_daily_activity (ip, day, first_ts)
+    SELECT ip, STRFTIME(DATE_TRUNC('day', EPOCH_MS(timestamp)), '%Y-%m-%d'), MIN(timestamp)
+    FROM requests
+    GROUP BY ip, STRFTIME(DATE_TRUNC('day', EPOCH_MS(timestamp)), '%Y-%m-%d')
+  `);
+
   // Add result_data column if it doesn't exist (migration for existing DBs)
   try {
     await metricsDb.run(`ALTER TABLE feed_items ADD COLUMN result_data VARCHAR`);
@@ -171,6 +189,15 @@ export async function recordMetrics(
       request.cached,
       request.inputTokens ?? 0,
       request.outputTokens ?? 0
+    );
+
+    // Track daily activity (persistent, never pruned)
+    const day = new Date(request.timestamp).toISOString().slice(0, 10);
+    await metricsDb.run(
+      `INSERT OR IGNORE INTO user_daily_activity (ip, day, first_ts) VALUES (?, ?, ?)`,
+      request.ip,
+      day,
+      request.timestamp
     );
 
     await metricsDb.run(
@@ -565,22 +592,18 @@ export async function getRetention(): Promise<Record<string, unknown>> {
 
   const f = EXCLUDE_IP_CLAUSE;
 
-  // 1. Day-over-day cohort (D0-D30)
+  // 1. Day-over-day cohort (D0-D30) — uses persistent user_daily_activity table
   const cohortRows = allToNumbers(await metricsDb.all(`
     WITH user_first AS (
-      SELECT ip, CAST(MIN(DATE_TRUNC('day', EPOCH_MS(timestamp))) AS DATE) as first_day
-      FROM requests WHERE ${f} GROUP BY ip
-    ),
-    user_days AS (
-      SELECT DISTINCT ip, CAST(DATE_TRUNC('day', EPOCH_MS(timestamp)) AS DATE) as day
-      FROM requests WHERE ${f}
+      SELECT ip, MIN(day) as first_day
+      FROM user_daily_activity WHERE ${f} GROUP BY ip
     )
-    SELECT d.day_number, COUNT(DISTINCT ud.ip) as retained,
+    SELECT d.day_number, COUNT(DISTINCT uda.ip) as retained,
       (SELECT COUNT(*) FROM user_first) as total
     FROM user_first uf
-    JOIN user_days ud ON uf.ip = ud.ip
+    JOIN user_daily_activity uda ON uf.ip = uda.ip
     CROSS JOIN (SELECT UNNEST(GENERATE_SERIES(0, 30)) as day_number) d
-    WHERE DATEDIFF('day', uf.first_day, ud.day) = d.day_number
+    WHERE DATEDIFF('day', CAST(uf.first_day AS DATE), CAST(uda.day AS DATE)) = d.day_number
     GROUP BY d.day_number ORDER BY d.day_number
   `) as Record<string, unknown>[]);
 
