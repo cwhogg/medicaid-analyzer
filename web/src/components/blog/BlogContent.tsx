@@ -7,7 +7,7 @@ import type { Components } from "react-markdown";
 const components: Components = {
   table: ({ children }) => (
     <div className="my-6 -mx-4 sm:mx-0 overflow-x-auto">
-      <div className="inline-block min-w-full align-middle sm:px-0 px-4">
+      <div className="px-4 sm:px-0 inline-block min-w-full">
         <table className="min-w-full text-sm border-collapse rounded-lg overflow-hidden">
           {children}
         </table>
@@ -18,12 +18,12 @@ const components: Components = {
     <thead className="bg-white/[0.06]">{children}</thead>
   ),
   th: ({ children }) => (
-    <th className="px-4 py-2.5 text-left text-xs font-semibold text-white uppercase tracking-wider whitespace-nowrap">
+    <th className="px-3 sm:px-4 py-2 sm:py-2.5 text-left text-xs font-semibold text-white uppercase tracking-wider whitespace-nowrap">
       {children}
     </th>
   ),
   td: ({ children }) => (
-    <td className="px-4 py-2.5 text-[#9CA3AF] border-t border-white/[0.06] whitespace-nowrap">
+    <td className="px-3 sm:px-4 py-2 sm:py-2.5 text-[#9CA3AF] border-t border-white/[0.06] text-sm">
       {children}
     </td>
   ),
@@ -36,7 +36,7 @@ const components: Components = {
     </h2>
   ),
   h3: ({ children }) => (
-    <h3 className="text-xl sm:text-lg font-bold text-white mt-8 mb-3 font-sans">
+    <h3 className="text-lg sm:text-xl font-bold text-white mt-8 mb-3 font-sans">
       {children}
     </h3>
   ),
