@@ -133,6 +133,17 @@ export function Navbar() {
               >
                 Analyze
               </Link>
+              <Link
+                href="/blog"
+                className={cn(
+                  "text-sm font-medium transition-colors",
+                  pathname.startsWith("/blog")
+                    ? "text-accent"
+                    : "text-muted hover:text-white"
+                )}
+              >
+                Blog
+              </Link>
               <button
                 onClick={() => setFeedbackOpen(true)}
                 className="btn-primary text-sm flex items-center gap-2"
@@ -180,6 +191,18 @@ export function Navbar() {
                 )}
               >
                 Analyze
+              </Link>
+              <Link
+                href="/blog"
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  "block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                  pathname.startsWith("/blog")
+                    ? "text-accent bg-accent/10"
+                    : "text-muted hover:text-white hover:bg-white/[0.05]"
+                )}
+              >
+                Blog
               </Link>
               <button
                 onClick={() => { setMobileOpen(false); setFeedbackOpen(true); }}

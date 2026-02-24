@@ -64,6 +64,14 @@ function formatNumber(n: number): string {
   return n.toLocaleString();
 }
 
+interface BlogPost {
+  slug: string;
+  title: string;
+  date: string;
+  wordCount: number;
+  keywords: string[];
+}
+
 function AdminDashboard() {
   const searchParams = useSearchParams();
   const key = searchParams.get("key");
@@ -71,6 +79,9 @@ function AdminDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [expandedSQL, setExpandedSQL] = useState<Set<number>>(new Set());
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [blogGenerating, setBlogGenerating] = useState(false);
+  const [blogResult, setBlogResult] = useState<string | null>(null);
 
   const fetchMetrics = useCallback(async () => {
     if (!key) {
@@ -96,11 +107,43 @@ function AdminDashboard() {
     }
   }, [key]);
 
+  const fetchBlogPosts = useCallback(async () => {
+    if (!key) return;
+    try {
+      const res = await fetch(`/api/admin/blog?key=${encodeURIComponent(key)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setBlogPosts(data.posts || []);
+      }
+    } catch { /* ignore */ }
+  }, [key]);
+
+  const generateBlogPost = async () => {
+    if (!key || blogGenerating) return;
+    setBlogGenerating(true);
+    setBlogResult(null);
+    try {
+      const res = await fetch(`/api/blog/generate?key=${encodeURIComponent(key)}`, { method: "POST" });
+      const data = await res.json();
+      if (data.ok) {
+        setBlogResult(`Published: "${data.title}" (${data.wordCount} words, ${Math.round(data.generationMs / 1000)}s)`);
+        fetchBlogPosts();
+      } else {
+        setBlogResult(`Error: ${data.error}`);
+      }
+    } catch (err) {
+      setBlogResult(`Error: ${err instanceof Error ? err.message : "Unknown error"}`);
+    } finally {
+      setBlogGenerating(false);
+    }
+  };
+
   useEffect(() => {
     fetchMetrics();
+    fetchBlogPosts();
     const interval = setInterval(fetchMetrics, 30000);
     return () => clearInterval(interval);
-  }, [fetchMetrics]);
+  }, [fetchMetrics, fetchBlogPosts]);
 
   if (error === "not_found") {
     return (
@@ -351,6 +394,58 @@ function AdminDashboard() {
           </GlassCard>
         </a>
       </div>
+
+      {/* Blog Management */}
+      <GlassCard className="mb-6">
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-semibold text-muted uppercase tracking-wider">Blog Posts ({blogPosts.length})</h2>
+            <button
+              onClick={generateBlogPost}
+              disabled={blogGenerating}
+              className="px-4 py-2 text-sm rounded-lg bg-accent text-white hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              {blogGenerating ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                "Generate Post"
+              )}
+            </button>
+          </div>
+          {blogResult && (
+            <p className={`text-xs mb-3 ${blogResult.startsWith("Error") ? "text-red-400" : "text-green-400"}`}>
+              {blogResult}
+            </p>
+          )}
+          {blogPosts.length > 0 ? (
+            <div className="space-y-2">
+              {blogPosts.map((post) => (
+                <div key={post.slug} className="flex items-center justify-between bg-white/[0.02] rounded-lg p-3 border border-white/[0.05]">
+                  <div>
+                    <a href={`/blog/${post.slug}`} className="text-sm text-white hover:text-accent transition-colors">
+                      {post.title}
+                    </a>
+                    <p className="text-xs text-muted/60 mt-0.5">
+                      {new Date(post.date).toLocaleDateString()} &middot; {post.wordCount} words
+                    </p>
+                  </div>
+                  <a
+                    href={`/blog/${post.slug}`}
+                    className="text-xs text-accent hover:underline shrink-0 ml-4"
+                  >
+                    View &rarr;
+                  </a>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-muted/40">No blog posts yet. Click &ldquo;Generate Post&rdquo; to create one.</p>
+          )}
+        </div>
+      </GlassCard>
 
       {/* Sentry Link */}
       <GlassCard className="mb-6">
