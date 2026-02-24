@@ -67,7 +67,7 @@ export default function BlogListPage() {
           ) : (
             <div className="space-y-4 sm:space-y-6">
               {posts.map((post) => (
-                <Link key={post.slug} href={`/blog/${post.slug}`}>
+                <Link key={post.slug} href={`/blog/${post.slug}`} className="block">
                   <GlassCard className="hover:bg-white/[0.06] transition-colors cursor-pointer">
                     <div className="p-4 sm:p-6">
                       <div className="flex items-center gap-2 text-sm text-muted-dark mb-2 sm:mb-3">
