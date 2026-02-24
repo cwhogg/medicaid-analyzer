@@ -102,6 +102,8 @@ const PHASE_ORDER = ["topic", "analysis", "writing", "publishing", "done"];
 
 function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
   const [generating, setGenerating] = useState(false);
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [topicInput, setTopicInput] = useState("");
   const [events, setEvents] = useState<GenerationEvent[]>([]);
   const [currentPhase, setCurrentPhase] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
@@ -109,6 +111,7 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const logRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const fetchBlogPosts = useCallback(async () => {
     try {
@@ -135,7 +138,16 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
     }
   }, [events]);
 
-  const generate = async () => {
+  // Focus input when prompt opens
+  useEffect(() => {
+    if (showPrompt && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [showPrompt]);
+
+  const generate = async (topic: string | null) => {
+    setShowPrompt(false);
+    setTopicInput("");
     setGenerating(true);
     setEvents([]);
     setCurrentPhase(null);
@@ -148,9 +160,15 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
     }, 1000);
 
     try {
+      const fetchOptions: RequestInit = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(topic ? { topic } : {}),
+      };
+
       const res = await fetch(
         `/api/blog/generate?key=${encodeURIComponent(adminKey)}`,
-        { method: "POST" }
+        fetchOptions
       );
 
       if (!res.ok) {
@@ -217,7 +235,6 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
     } finally {
       if (timerRef.current) clearInterval(timerRef.current);
       setGenerating(false);
-      setElapsed(Math.floor((Date.now() - Date.now()) / 1000));
       fetchBlogPosts();
     }
   };
@@ -241,7 +258,7 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
             </p>
           </div>
           <button
-            onClick={generate}
+            onClick={() => setShowPrompt(true)}
             disabled={generating}
             className="px-4 py-2 text-sm rounded-lg bg-accent text-white hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
@@ -255,6 +272,58 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
             )}
           </button>
         </div>
+
+        {/* Topic prompt */}
+        {showPrompt && !generating && (
+          <div className="mb-4 p-4 rounded-lg bg-white/[0.03] border border-white/[0.08]">
+            <p className="text-sm text-white mb-3">
+              Enter a topic or let Claude choose one automatically.
+            </p>
+            <div className="flex gap-2">
+              <input
+                ref={inputRef}
+                type="text"
+                value={topicInput}
+                onChange={(e) => setTopicInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && topicInput.trim()) {
+                    generate(topicInput.trim());
+                  } else if (e.key === "Escape") {
+                    setShowPrompt(false);
+                    setTopicInput("");
+                  }
+                }}
+                placeholder="e.g. Telehealth spending growth since 2020"
+                className="flex-1 px-3 py-2 text-sm bg-white/[0.03] border border-white/[0.08] rounded-lg text-white placeholder:text-muted-dark focus:outline-none focus:border-accent/50 transition-colors"
+              />
+            </div>
+            <div className="flex items-center gap-2 mt-3">
+              {topicInput.trim() && (
+                <button
+                  onClick={() => generate(topicInput.trim())}
+                  className="px-4 py-2 text-sm rounded-lg bg-accent text-white hover:bg-accent/90 transition-colors"
+                >
+                  Generate
+                </button>
+              )}
+              <button
+                onClick={() => generate(null)}
+                className="px-4 py-2 text-sm rounded-lg bg-white/[0.05] border border-white/[0.08] text-muted hover:text-white hover:bg-white/[0.1] transition-colors"
+              >
+                Let Claude Choose
+              </button>
+              <button
+                onClick={() => {
+                  setShowPrompt(false);
+                  setTopicInput("");
+                }}
+                className="px-3 py-2 text-sm text-muted hover:text-white transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Generation progress */}
         {(generating || events.length > 0) && (

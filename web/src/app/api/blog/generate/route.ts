@@ -74,6 +74,17 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Parse optional topic from request body
+  let userTopic: string | null = null;
+  try {
+    const body = await request.json();
+    if (body.topic && typeof body.topic === "string" && body.topic.trim()) {
+      userTopic = body.topic.trim();
+    }
+  } catch {
+    // No body or invalid JSON — that's fine, Claude will choose the topic
+  }
+
   return streamResponse(async (send) => {
     const start = Date.now();
     const client = new Anthropic({ apiKey });
@@ -87,13 +98,14 @@ export async function POST(request: NextRequest) {
     }
 
     // --- Phase 1: Topic Generation ---
-    send({ phase: "topic", message: "Generating topic..." });
+    send({
+      phase: "topic",
+      message: userTopic
+        ? `Planning post for: "${userTopic}"`
+        : "Generating topic...",
+    });
 
-    const topicResponse = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1024,
-      temperature: 0.7,
-      system: `You generate novel, SEO-optimized blog post topics for a Medicaid spending analysis site. The site has a 227-million-row dataset of Medicaid provider spending claims from Jan 2018 to Sep 2024, covering billing NPI, HCPCS/CPT procedure codes, monthly totals, claims counts, and beneficiary counts across 617K+ providers.
+    const topicSystemPrompt = `You generate SEO-optimized blog post plans for a Medicaid spending analysis site. The site has a 227-million-row dataset of Medicaid provider spending claims from Jan 2018 to Sep 2024, covering billing NPI, HCPCS/CPT procedure codes, monthly totals, claims counts, and beneficiary counts across 617K+ providers.
 
 You must return a JSON object with these fields:
 - title: SEO-optimized article title (50-70 chars)
@@ -103,13 +115,18 @@ You must return a JSON object with these fields:
 - contentGap: what gap this content fills
 - analysisQuestions: array of 2-3 specific analytical questions to investigate using SQL queries against the dataset
 
-Return ONLY valid JSON, no markdown fences or explanation.`,
-      messages: [
-        {
-          role: "user",
-          content: `Generate a novel Medicaid spending analysis topic. Avoid topics already covered:\n${existingTitles.map((t) => `- ${t}`).join("\n") || "(none yet)"}`,
-        },
-      ],
+Return ONLY valid JSON, no markdown fences or explanation.`;
+
+    const topicUserMessage = userTopic
+      ? `Create a blog post plan about this topic: "${userTopic}"\n\nGenerate an SEO-optimized title, slug, keywords, and 2-3 specific data analysis questions that can be answered with SQL queries against the Medicaid claims dataset.\n\nExisting posts to avoid overlap with:\n${existingTitles.map((t) => `- ${t}`).join("\n") || "(none yet)"}`
+      : `Generate a novel Medicaid spending analysis topic. Avoid topics already covered:\n${existingTitles.map((t) => `- ${t}`).join("\n") || "(none yet)"}`;
+
+    const topicResponse = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1024,
+      temperature: userTopic ? 0.3 : 0.7,
+      system: topicSystemPrompt,
+      messages: [{ role: "user", content: topicUserMessage }],
     });
 
     const topicText = topicResponse.content.find((b) => b.type === "text");
