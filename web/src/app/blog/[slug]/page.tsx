@@ -22,6 +22,7 @@ export function generateMetadata({ params }: Props): Metadata {
 
   const { frontmatter } = post;
   const description =
+    frontmatter.description ||
     frontmatter.contentGap ||
     `Analysis of ${frontmatter.title.toLowerCase()} from 227M+ Medicaid claims records.`;
   const canonical =
@@ -87,7 +88,7 @@ export default function BlogPostPage({ params }: Props) {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-background pt-24 pb-16">
+      <main className="min-h-screen bg-background pt-20 sm:pt-24 pb-12 sm:pb-16">
         <article className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <script
             type="application/ld+json"
@@ -97,16 +98,16 @@ export default function BlogPostPage({ params }: Props) {
           {/* Back link */}
           <Link
             href="/blog"
-            className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-accent transition-colors mb-8"
+            className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-accent transition-colors mb-6 sm:mb-8"
           >
             <ArrowLeft className="w-4 h-4" />
             All posts
           </Link>
 
           {/* Header */}
-          <header className="mb-10">
-            <div className="flex items-center gap-2 text-sm text-muted-dark mb-4">
-              <Calendar className="w-4 h-4" />
+          <header className="mb-8 sm:mb-10">
+            <div className="flex items-center gap-2 text-sm text-muted-dark mb-3 sm:mb-4">
+              <Calendar className="w-4 h-4 shrink-0" />
               <time dateTime={frontmatter.date}>
                 {formatDate(frontmatter.date)}
               </time>
@@ -119,15 +120,15 @@ export default function BlogPostPage({ params }: Props) {
                 </>
               )}
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight">
               {frontmatter.title}
             </h1>
             {frontmatter.targetKeywords?.length > 0 && (
-              <div className="flex gap-2 flex-wrap mt-4">
+              <div className="flex gap-2 flex-wrap mt-3 sm:mt-4">
                 {frontmatter.targetKeywords.map((kw) => (
                   <span
                     key={kw}
-                    className="text-xs px-2.5 py-1 rounded-full bg-white/[0.05] text-muted-dark border border-white/[0.08]"
+                    className="text-xs px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-white/[0.05] text-muted-dark border border-white/[0.08]"
                   >
                     {kw}
                   </span>
@@ -140,8 +141,8 @@ export default function BlogPostPage({ params }: Props) {
           <BlogContent content={content} />
 
           {/* CTA */}
-          <div className="mt-16 p-6 rounded-xl bg-white/[0.03] border border-white/[0.08]">
-            <h3 className="text-lg font-semibold text-white mb-2">
+          <div className="mt-12 sm:mt-16 p-4 sm:p-6 rounded-xl bg-white/[0.03] border border-white/[0.08]">
+            <h3 className="text-base sm:text-lg font-semibold text-white mb-2">
               Explore the data yourself
             </h3>
             <p className="text-sm text-muted mb-4">

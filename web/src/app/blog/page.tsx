@@ -42,13 +42,13 @@ export default function BlogListPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-background pt-24 pb-16">
+      <main className="min-h-screen bg-background pt-20 sm:pt-24 pb-12 sm:pb-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-12">
-            <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
+          <div className="mb-8 sm:mb-12">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4">
               Medicaid Spending Analysis
             </h1>
-            <p className="text-lg text-muted max-w-2xl">
+            <p className="text-base sm:text-lg text-muted max-w-2xl">
               Data-driven insights from 227 million Medicaid claims records
               spanning 2018&ndash;2024, covering $1+ trillion in provider
               spending.
@@ -57,7 +57,7 @@ export default function BlogListPage() {
 
           {posts.length === 0 ? (
             <GlassCard>
-              <div className="p-8 text-center">
+              <div className="p-6 sm:p-8 text-center">
                 <p className="text-muted">
                   No posts yet. Check back soon for data-driven Medicaid
                   spending analysis.
@@ -65,13 +65,13 @@ export default function BlogListPage() {
               </div>
             </GlassCard>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {posts.map((post) => (
                 <Link key={post.slug} href={`/blog/${post.slug}`}>
                   <GlassCard className="hover:bg-white/[0.06] transition-colors cursor-pointer">
-                    <div className="p-6">
-                      <div className="flex items-center gap-2 text-sm text-muted-dark mb-3">
-                        <Calendar className="w-4 h-4" />
+                    <div className="p-4 sm:p-6">
+                      <div className="flex items-center gap-2 text-sm text-muted-dark mb-2 sm:mb-3">
+                        <Calendar className="w-4 h-4 shrink-0" />
                         <time dateTime={post.frontmatter.date}>
                           {formatDate(post.frontmatter.date)}
                         </time>
@@ -85,19 +85,19 @@ export default function BlogListPage() {
                           </>
                         )}
                       </div>
-                      <h2 className="text-xl font-semibold text-white mb-2 group-hover:text-accent transition-colors">
+                      <h2 className="text-lg sm:text-xl font-semibold text-white mb-2">
                         {post.frontmatter.title}
                       </h2>
-                      <p className="text-muted text-sm leading-relaxed mb-4">
+                      <p className="text-muted text-sm leading-relaxed mb-3 sm:mb-4">
                         {post.frontmatter.description ||
                           getExcerpt(post.content)}
                       </p>
-                      <div className="flex items-center gap-4">
+                      <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                         <span className="text-accent text-sm font-medium flex items-center gap-1">
                           Read analysis <ArrowRight className="w-4 h-4" />
                         </span>
                         {post.frontmatter.targetKeywords?.length > 0 && (
-                          <div className="flex gap-2 flex-wrap">
+                          <div className="flex gap-1.5 sm:gap-2 flex-wrap">
                             {post.frontmatter.targetKeywords
                               .slice(0, 3)
                               .map((kw) => (
