@@ -28,7 +28,12 @@ const TABS = [
 ];
 
 const ALL_YEARS = [2024, 2023, 2022, 2021, 2020, 2019, 2018];
+const DATASETS = [
+  { key: "medicaid" as const, label: "Medicaid" },
+  { key: "brfss" as const, label: "BRFSS (beta)" },
+];
 
+type Dataset = "medicaid" | "brfss";
 type Mode = "idle" | "query" | "analysis";
 
 export default function AnalyzePage() {
@@ -50,6 +55,7 @@ export default function AnalyzePage() {
   const [activeTab, setActiveTab] = useState<"query" | "feed">("query");
   const [feedRefreshKey, setFeedRefreshKey] = useState(0);
   const [selectedYears, setSelectedYears] = useState<Set<number>>(new Set());
+  const [dataset, setDataset] = useState<Dataset>("medicaid");
   const [mode, setMode] = useState<Mode>("idle");
   const [priorContext, setPriorContext] = useState<PriorContext | null>(null);
   const [lastQuestion, setLastQuestion] = useState<string | null>(null);
@@ -57,6 +63,17 @@ export default function AnalyzePage() {
   // Use refs for stable callback references
   const analysisRef = useRef(analysis);
   analysisRef.current = analysis;
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem("analyze:lastDataset");
+    if (saved === "medicaid" || saved === "brfss") {
+      setDataset(saved);
+    }
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem("analyze:lastDataset", dataset);
+  }, [dataset]);
 
   // Accumulate prior context when analysis completes (for follow-up/refine queries)
   useEffect(() => {
@@ -92,6 +109,14 @@ export default function AnalyzePage() {
       setLastQuestion(question);
 
       if (submitMode === "analysis") {
+        if (dataset === "brfss") {
+          setMode("query");
+          analysisRef.current.clearAnalysis();
+          setPriorContext(null);
+          await submitQuestion(question, years, dataset);
+          setFeedRefreshKey((k) => k + 1);
+          return;
+        }
         setMode("analysis");
         clearResults();
         await analysisRef.current.startAnalysis(question, years, priorContext);
@@ -100,11 +125,11 @@ export default function AnalyzePage() {
         setMode("query");
         analysisRef.current.clearAnalysis();
         setPriorContext(null);
-        await submitQuestion(question, years);
+        await submitQuestion(question, years, dataset);
         setFeedRefreshKey((k) => k + 1);
       }
     },
-    [submitQuestion, selectedYears, clearResults, priorContext]
+    [submitQuestion, selectedYears, clearResults, priorContext, dataset]
   );
 
   const queryInputRef = useRef<QueryInputHandle | null>(null);
@@ -150,9 +175,29 @@ export default function AnalyzePage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white">Analyze Spending</h1>
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap mb-3">
+                {DATASETS.map((d) => (
+                  <button
+                    key={d.key}
+                    onClick={() => setDataset(d.key)}
+                    className={cn(
+                      "px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border",
+                      dataset === d.key
+                        ? "bg-accent text-white border-accent"
+                        : "text-muted hover:text-white bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.08]"
+                    )}
+                  >
+                    {d.label}
+                  </button>
+                ))}
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white">
+                {dataset === "medicaid" ? "Analyze Spending" : "Analyze Population Health"}
+              </h1>
               <p className="text-sm sm:text-base text-muted mt-1 sm:mt-2">
-                Ask questions about Medicaid provider spending in natural language
+                {dataset === "medicaid"
+                  ? "Ask questions about Medicaid provider spending in natural language"
+                  : "Ask questions about BRFSS survey data in natural language (beta)"}
               </p>
             </div>
 
@@ -185,33 +230,39 @@ export default function AnalyzePage() {
           {activeTab === "query" && (
             <div className="space-y-6">
               {/* Year filter */}
-              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                <button
-                  onClick={() => setSelectedYears(new Set())}
-                  className={cn(
-                    "px-3 py-2 rounded-lg text-xs font-medium transition-colors border",
-                    selectedYears.size === 0
-                      ? "bg-accent text-white border-accent"
-                      : "text-muted hover:text-white bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.08]"
-                  )}
-                >
-                  All
-                </button>
-                {ALL_YEARS.map((y) => (
+              {dataset === "medicaid" ? (
+                <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                   <button
-                    key={y}
-                    onClick={() => toggleYear(y)}
+                    onClick={() => setSelectedYears(new Set())}
                     className={cn(
                       "px-3 py-2 rounded-lg text-xs font-medium transition-colors border",
-                      selectedYears.has(y)
+                      selectedYears.size === 0
                         ? "bg-accent text-white border-accent"
                         : "text-muted hover:text-white bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.08]"
                     )}
                   >
-                    {y}
+                    All
                   </button>
-                ))}
-              </div>
+                  {ALL_YEARS.map((y) => (
+                    <button
+                      key={y}
+                      onClick={() => toggleYear(y)}
+                      className={cn(
+                        "px-3 py-2 rounded-lg text-xs font-medium transition-colors border",
+                        selectedYears.has(y)
+                          ? "bg-accent text-white border-accent"
+                          : "text-muted hover:text-white bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.08]"
+                      )}
+                    >
+                      {y}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-xs text-muted bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2 w-fit">
+                  BRFSS beta currently uses the latest full-year dataset (2023).
+                </div>
+              )}
 
               <QueryInput
                 ref={queryInputRef}
@@ -221,6 +272,7 @@ export default function AnalyzePage() {
                 onCancelAnalysis={analysis.cancelAnalysis}
                 followUpQuestion={priorContext?.history?.length ? priorContext.history[priorContext.history.length - 1].question : null}
                 onNewAnalysis={handleNewAnalysis}
+                dataset={dataset}
               />
 
               {/* Single query results */}

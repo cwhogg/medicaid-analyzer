@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { question, years } = body;
+    const { question, years, dataset } = body as { question?: string; years?: unknown; dataset?: "medicaid" | "brfss" };
 
     if (!question || typeof question !== "string") {
       return NextResponse.json({ error: "Question is required and must be a string." }, { status: 400 });
@@ -87,6 +87,19 @@ export async function POST(request: NextRequest) {
 
     if (question.trim().length === 0) {
       return NextResponse.json({ error: "Question cannot be empty." }, { status: 400 });
+    }
+
+    const selectedDataset = dataset === "brfss" ? "brfss" : "medicaid";
+
+    if (selectedDataset === "brfss") {
+      return NextResponse.json(
+        {
+          error: "BRFSS query backend is in beta setup. UI routing is live; query execution will be enabled in the next iteration.",
+          cannotAnswer: true,
+          dataset: "brfss",
+        },
+        { status: 501, headers: { "X-RateLimit-Remaining": String(rateCheck.remaining) } }
+      );
     }
 
     // Check if question is obviously outside dataset scope

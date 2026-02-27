@@ -23,7 +23,7 @@ export function useQuery() {
   });
 
   const submitQuestion = useCallback(
-    async (question: string, years?: number[] | null) => {
+    async (question: string, years?: number[] | null, dataset: "medicaid" | "brfss" = "medicaid") => {
       if (!question.trim()) return;
 
       setState((prev) => ({
@@ -40,7 +40,7 @@ export function useQuery() {
         const response = await fetch("/api/query", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question, years: years ?? null }),
+          body: JSON.stringify({ question, years: years ?? null, dataset }),
         });
 
         if (!response.ok) {
