@@ -3,6 +3,21 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { GlassCard } from "@/components/ui/GlassCard";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
+
+interface DaySummary {
+  day: string;
+  queryCount: number;
+  uniqueUsers: number;
+}
 
 interface FeedbackItem {
   id: string;
@@ -484,9 +499,23 @@ function AdminDashboard() {
   const searchParams = useSearchParams();
   const key = searchParams.get("key");
   const [metrics, setMetrics] = useState<Metrics | null>(null);
+  const [dailyData, setDailyData] = useState<DaySummary[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [expandedSQL, setExpandedSQL] = useState<Set<number>>(new Set());
+
+  const fetchDailyQueries = useCallback(async () => {
+    if (!key) return;
+    try {
+      const res = await fetch(`/api/admin/queries?key=${encodeURIComponent(key)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setDailyData(data.days || []);
+      }
+    } catch {
+      /* ignore — non-critical */
+    }
+  }, [key]);
 
   const fetchMetrics = useCallback(async () => {
     if (!key) {
@@ -514,9 +543,13 @@ function AdminDashboard() {
 
   useEffect(() => {
     fetchMetrics();
-    const interval = setInterval(fetchMetrics, 30000);
+    fetchDailyQueries();
+    const interval = setInterval(() => {
+      fetchMetrics();
+      fetchDailyQueries();
+    }, 30000);
     return () => clearInterval(interval);
-  }, [fetchMetrics]);
+  }, [fetchMetrics, fetchDailyQueries]);
 
   if (error === "not_found") {
     return (
@@ -646,6 +679,74 @@ function AdminDashboard() {
           </div>
         </GlassCard>
       </div>
+
+      {/* Queries by Day Chart */}
+      {dailyData.length > 0 && (
+        <GlassCard className="mb-6">
+          <div className="p-4">
+            <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">
+              Queries by Day
+            </h2>
+            <div className="h-52">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={dailyData}
+                  margin={{ top: 4, right: 4, bottom: 0, left: -12 }}
+                >
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="rgba(255,255,255,0.04)"
+                    vertical={false}
+                  />
+                  <XAxis
+                    dataKey="day"
+                    tick={{ fill: "#6B7280", fontSize: 11 }}
+                    tickLine={false}
+                    axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
+                    tickFormatter={(v: string) => {
+                      const d = new Date(v + "T00:00:00");
+                      return d.toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      });
+                    }}
+                  />
+                  <YAxis
+                    tick={{ fill: "#6B7280", fontSize: 11 }}
+                    tickLine={false}
+                    axisLine={false}
+                    allowDecimals={false}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#1a1a1a",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: "8px",
+                      fontSize: 12,
+                    }}
+                    labelFormatter={(v: string) => {
+                      const d = new Date(v + "T00:00:00");
+                      return d.toLocaleDateString("en-US", {
+                        weekday: "short",
+                        month: "short",
+                        day: "numeric",
+                      });
+                    }}
+                    formatter={(value: number) => [value, "Queries"]}
+                    cursor={{ fill: "rgba(255,255,255,0.03)" }}
+                  />
+                  <Bar
+                    dataKey="queryCount"
+                    fill="#EA580C"
+                    radius={[3, 3, 0, 0]}
+                    maxBarSize={40}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </GlassCard>
+      )}
 
       {/* Middle Row: Routes + Response Times */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
