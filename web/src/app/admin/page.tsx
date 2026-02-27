@@ -11,6 +11,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
+  LabelList,
 } from "recharts";
 
 interface DaySummary {
@@ -690,8 +691,8 @@ function AdminDashboard() {
             <div className="h-52">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
-                  data={dailyData}
-                  margin={{ top: 4, right: 4, bottom: 0, left: -12 }}
+                  data={[...dailyData].reverse()}
+                  margin={{ top: 20, right: 4, bottom: 0, left: -12 }}
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
@@ -740,7 +741,15 @@ function AdminDashboard() {
                     fill="#EA580C"
                     radius={[3, 3, 0, 0]}
                     maxBarSize={40}
-                  />
+                  >
+                    <LabelList
+                      dataKey="queryCount"
+                      position="top"
+                      fill="#9CA3AF"
+                      fontSize={11}
+                      offset={4}
+                    />
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </div>
