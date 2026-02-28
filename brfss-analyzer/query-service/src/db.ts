@@ -1,16 +1,20 @@
 import { Database } from "duckdb-async";
-import { existsSync } from "fs";
-import { mkdir, writeFile } from "fs/promises";
+import { existsSync, createWriteStream } from "fs";
+import { mkdir, unlink } from "fs/promises";
 import { dirname } from "path";
+import { Readable } from "stream";
+import { pipeline } from "stream/promises";
 
 let db: Database | null = null;
 let ready = false;
 
-const DATA_ROOT = process.env.DATA_ROOT || "/tmp";
-const PARQUET = process.env.BRFSS_PARQUET || `${DATA_ROOT}/brfss_2023.parquet`;
+// Accept DATA_DIR (standard) or DATA_ROOT (backward compat), default to /data (persistent volume)
+const DATA_DIR = process.env.DATA_DIR || process.env.DATA_ROOT || "/data";
+const PARQUET = process.env.BRFSS_PARQUET || `${DATA_DIR}/brfss_2023.parquet`;
 const PARQUET_URL = process.env.BRFSS_PARQUET_URL || "";
 const QUERY_TIMEOUT_MS = 60_000;
 const DOWNLOAD_TIMEOUT_MS = 10 * 60_000;
+const MAX_RETRIES = 3;
 
 async function ensureParquet(): Promise<void> {
   if (existsSync(PARQUET)) return;
@@ -19,17 +23,48 @@ async function ensureParquet(): Promise<void> {
   console.log(`Parquet missing. Downloading from BRFSS_PARQUET_URL -> ${PARQUET}`);
   await mkdir(dirname(PARQUET), { recursive: true });
 
-  const res = await fetch(PARQUET_URL, { signal: AbortSignal.timeout(DOWNLOAD_TIMEOUT_MS) });
-  if (!res.ok) {
-    throw new Error(`Failed to download BRFSS parquet: ${res.status} ${res.statusText}`);
-  }
-  const ab = await res.arrayBuffer();
-  if (!ab || ab.byteLength === 0) {
-    throw new Error("Downloaded BRFSS parquet is empty");
-  }
+  const partialPath = `${PARQUET}.partial`;
 
-  await writeFile(PARQUET, Buffer.from(ab));
-  console.log(`Downloaded BRFSS parquet (${ab.byteLength} bytes)`);
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const res = await fetch(PARQUET_URL, { signal: AbortSignal.timeout(DOWNLOAD_TIMEOUT_MS) });
+      if (!res.ok) {
+        throw new Error(`Failed to download BRFSS parquet: ${res.status} ${res.statusText}`);
+      }
+      if (!res.body) {
+        throw new Error("Response body is null");
+      }
+
+      // Stream download to avoid buffering entire file in memory
+      const nodeStream = Readable.fromWeb(res.body as import("stream/web").ReadableStream);
+      const fileStream = createWriteStream(partialPath);
+      await pipeline(nodeStream, fileStream);
+
+      // Verify file is non-empty
+      const { statSync } = await import("fs");
+      const stats = statSync(partialPath);
+      if (stats.size === 0) {
+        throw new Error("Downloaded BRFSS parquet is empty");
+      }
+
+      // Rename partial to final
+      const { renameSync } = await import("fs");
+      renameSync(partialPath, PARQUET);
+      console.log(`Downloaded BRFSS parquet (${stats.size} bytes)`);
+      return;
+    } catch (err) {
+      // Clean up partial file on failure
+      try { await unlink(partialPath); } catch { /* ignore */ }
+
+      if (attempt < MAX_RETRIES) {
+        const delay = Math.pow(2, attempt) * 1000; // 2s, 4s
+        console.warn(`Download attempt ${attempt}/${MAX_RETRIES} failed: ${err instanceof Error ? err.message : String(err)}. Retrying in ${delay / 1000}s...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      } else {
+        throw err;
+      }
+    }
+  }
 }
 
 export async function initDB(): Promise<void> {

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { generateSchemaPrompt } from "@/lib/schemas";
+import { getDataset } from "@/lib/datasets/index";
 import { checkRateLimit } from "@/lib/rateLimit";
-import { checkDataScope } from "@/lib/dataScope";
 import { validateSQL } from "@/lib/sqlValidation";
 import { executeRemoteQuery } from "@/lib/railway";
 import { summarizeResults } from "@/lib/summarize";
@@ -35,20 +34,11 @@ interface PriorContext {
 interface AnalyzeRequest {
   question: string;
   years?: number[] | null;
+  dataset?: string;
   sessionId: string;
   stepIndex: number;
   previousSteps?: PreviousStep[];
   priorContext?: PriorContext | null;
-}
-
-function buildYearConstraint(yearFilter: number[] | null): string {
-  if (!yearFilter) return "";
-  if (yearFilter.length === 1) {
-    const y = yearFilter[0];
-    return `\n\nIMPORTANT: The user has selected year ${y} as a filter. You MUST add a WHERE clause to filter data to only year ${y}. Use: WHERE claim_month >= '${y}-01-01' AND claim_month < '${y + 1}-01-01'.`;
-  }
-  const monthConditions = yearFilter.map((y) => `(claim_month >= '${y}-01-01' AND claim_month < '${y + 1}-01-01')`).join(" OR ");
-  return `\n\nIMPORTANT: The user has selected years ${yearFilter.join(", ")} as a filter. You MUST add a WHERE clause to filter data to only these years. Use: WHERE ${monthConditions}.`;
 }
 
 function buildConversationHistory(
@@ -109,21 +99,13 @@ function buildSystemPrompt(
   yearConstraint: string,
   stepIndex: number,
   remainingSteps: number,
+  domainKnowledge: string,
   priorContext?: PriorContext | null,
 ): SystemBlock[] {
   // Static part — cached across all requests and steps
-  const cachedPart = `You are an expert healthcare claims analyst specializing in Medicaid claims data, with deep expertise in quantitative analysis and SQL. You reason like a human analyst: you understand what the user wants to know, determine what the final answer should look like, and work backwards to figure out what queries will produce that answer.
+  const cachedPart = `You are an expert data analyst with deep expertise in quantitative analysis and SQL. You reason like a human analyst: you understand what the user wants to know, determine what the final answer should look like, and work backwards to figure out what queries will produce that answer.
 
-## Medicaid Domain Knowledge
-- Spending is highly concentrated: a small number of providers and procedures account for the majority of dollars
-- J-codes (injections/drugs) dominate high-cost procedures — J0178 (aflibercept), J9312 (rituximab), J1745 (infliximab) are common top spenders
-- T-codes (T1019, T1015, T2016) are Medicaid-specific and represent the highest-spending categories overall
-- Geographic variation is significant — states like CA, NY, TX, FL have the highest total spending but per-provider averages vary
-- Seasonal patterns exist: some procedures spike in Q1 (flu season), behavioral health utilization shows summer dips
-- Oct-Dec 2024 data is INCOMPLETE — for time-series or monthly trend queries, truncate at Sept 2024 or note the incompleteness. For aggregate totals (e.g. "total spending in 2024"), include all available data but note that Oct-Dec figures are partial
-- Remote Patient Monitoring (RPM) and Chronic Care Management (CCM) are rapidly growing categories
-- Provider types matter: Organizations vs Individual providers show different spending patterns
-- CRITICAL: Beneficiary counts CANNOT be summed across HCPCS codes or providers because beneficiaries overlap between codes/providers. Only report beneficiary counts per individual code or per individual provider. Never produce a "total beneficiaries" by summing across codes or providers.
+${domainKnowledge}
 
 ${schemaPrompt}
 
@@ -324,7 +306,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body: AnalyzeRequest = await request.json();
-    const { question, years, sessionId, stepIndex, previousSteps = [], priorContext } = body;
+    const { question, years, dataset: datasetKey, sessionId, stepIndex, previousSteps = [], priorContext } = body;
 
     if (!question || typeof question !== "string") {
       return NextResponse.json({ error: "Question is required and must be a string." }, { status: 400 });
@@ -342,9 +324,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `stepIndex must be 0-${MAX_STEPS - 1}.` }, { status: 400 });
     }
 
+    // Resolve dataset config
+    let config;
+    try {
+      config = getDataset(datasetKey || "medicaid");
+    } catch {
+      config = getDataset("medicaid");
+    }
+    const selectedDataset = config.key;
+
     // Check if question is obviously outside dataset scope (only on first step)
-    if (stepIndex === 0) {
-      const scopeError = checkDataScope(question);
+    if (stepIndex === 0 && config.checkDataScope) {
+      const scopeError = config.checkDataScope(question);
       if (scopeError) {
         recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 422, totalMs: Date.now() - requestStart, cached: false });
         recordQuery({ timestamp: Date.now(), ip, route: "/api/analyze", question, sql: null, status: 422, totalMs: Date.now() - requestStart, cached: false, error: scopeError });
@@ -355,9 +346,15 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const yearFilter: number[] | null = Array.isArray(years) && years.length > 0
-      ? years.filter((y: unknown) => typeof y === "number" && y >= 2018 && y <= 2024).sort()
-      : null;
+    // Validate years if dataset supports year filtering
+    let yearFilter: number[] | null = null;
+    if (config.yearFilter && Array.isArray(years) && years.length > 0) {
+      const validYears = config.yearFilter.years;
+      yearFilter = years
+        .filter((y: unknown) => typeof y === "number" && validYears.includes(y))
+        .sort() as number[];
+      if (yearFilter.length === 0) yearFilter = null;
+    }
 
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
@@ -365,11 +362,17 @@ export async function POST(request: NextRequest) {
     }
 
     const client = new Anthropic({ apiKey });
-    const schemaPrompt = generateSchemaPrompt();
-    const yearConstraint = buildYearConstraint(yearFilter);
-    const remainingSteps = MAX_STEPS - stepIndex;
+    const schemaPrompt = config.generateSchemaPrompt();
 
-    const systemBlocks = buildSystemPrompt(schemaPrompt, yearConstraint, stepIndex, remainingSteps, stepIndex === 0 ? priorContext : null);
+    let yearConstraint = "";
+    if (yearFilter && config.buildYearConstraint) {
+      yearConstraint = config.buildYearConstraint(yearFilter);
+    }
+
+    const remainingSteps = MAX_STEPS - stepIndex;
+    const domainKnowledge = config.domainKnowledge || "";
+
+    const systemBlocks = buildSystemPrompt(schemaPrompt, yearConstraint, stepIndex, remainingSteps, domainKnowledge, stepIndex === 0 ? priorContext : null);
     const messages = buildConversationHistory(question, stepIndex, previousSteps);
 
     let cumulativeInputTokens = 0;
@@ -454,7 +457,7 @@ export async function POST(request: NextRequest) {
       // Execute SQL via Railway
       const railwayStart = Date.now();
       try {
-        const result = await executeRemoteQuery(sql);
+        const result = await executeRemoteQuery(sql, selectedDataset);
         railwayMs = Date.now() - railwayStart;
         parsed.step.columns = result.columns;
         parsed.step.rows = result.rows;
@@ -497,7 +500,7 @@ export async function POST(request: NextRequest) {
                 }
                 const retryValidation = validateSQL(fixedSql);
                 if (retryValidation.valid) {
-                  const retryResult = await executeRemoteQuery(fixedSql);
+                  const retryResult = await executeRemoteQuery(fixedSql, selectedDataset);
                   railwayMs = Date.now() - railwayStart;
                   parsed.step.sql = fixedSql;
                   parsed.step.columns = retryResult.columns;

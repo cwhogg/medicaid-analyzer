@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { generateSchemaPrompt } from "@/lib/schemas";
-import { generateBRFSSSchemaPrompt } from "@/lib/brfssSchemas";
+import { getDataset } from "@/lib/datasets/index";
 import { checkRateLimit } from "@/lib/rateLimit";
-import { checkDataScope } from "@/lib/dataScope";
 import { validateSQL, inferChartType } from "@/lib/sqlValidation";
 import { executeRemoteQuery } from "@/lib/railway";
 import { recordRequest, recordQuery, recordFeedItem } from "@/lib/metrics";
@@ -76,7 +74,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { question, years, dataset } = body as { question?: string; years?: unknown; dataset?: "medicaid" | "brfss" };
+    const { question, years, dataset: datasetKey } = body as { question?: string; years?: unknown; dataset?: string };
 
     if (!question || typeof question !== "string") {
       return NextResponse.json({ error: "Question is required and must be a string." }, { status: 400 });
@@ -90,11 +88,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Question cannot be empty." }, { status: 400 });
     }
 
-    const selectedDataset = dataset === "brfss" ? "brfss" : "medicaid";
+    // Resolve dataset config (defaults to "medicaid" for unknown values)
+    let config;
+    try {
+      config = getDataset(datasetKey || "medicaid");
+    } catch {
+      config = getDataset("medicaid");
+    }
+    const selectedDataset = config.key;
 
-    // Check if question is obviously outside Medicaid dataset scope
-    if (selectedDataset === "medicaid") {
-      const scopeError = checkDataScope(question);
+    // Check if question is obviously outside dataset scope
+    if (config.checkDataScope) {
+      const scopeError = config.checkDataScope(question);
       if (scopeError) {
         recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 422, totalMs: Date.now() - requestStart, cached: false });
         recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql: null, status: 422, totalMs: Date.now() - requestStart, cached: false, error: scopeError });
@@ -105,10 +110,15 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Validate years if provided
-    const yearFilter: number[] | null = selectedDataset === "medicaid" && Array.isArray(years) && years.length > 0
-      ? years.filter((y: unknown) => typeof y === "number" && y >= 2018 && y <= 2024).sort()
-      : null;
+    // Validate years if dataset supports year filtering
+    let yearFilter: number[] | null = null;
+    if (config.yearFilter && Array.isArray(years) && years.length > 0) {
+      const validYears = config.yearFilter.years;
+      yearFilter = years
+        .filter((y: unknown) => typeof y === "number" && validYears.includes(y))
+        .sort() as number[];
+      if (yearFilter.length === 0) yearFilter = null;
+    }
 
     // Check cache
     const cacheQuestion = `${selectedDataset}::` + (yearFilter ? `${question} [years:${yearFilter.join(",")}]` : question);
@@ -127,15 +137,11 @@ export async function POST(request: NextRequest) {
     }
 
     const client = new Anthropic({ apiKey });
-    const schemaPrompt = selectedDataset === "brfss" ? generateBRFSSSchemaPrompt() : generateSchemaPrompt();
+    const schemaPrompt = config.generateSchemaPrompt();
 
     let yearConstraint = "";
-    if (yearFilter && yearFilter.length === 1) {
-      const y = yearFilter[0];
-      yearConstraint = `\n\nIMPORTANT: The user has selected year ${y} as a filter. You MUST add a WHERE clause to filter data to only year ${y}. Use: WHERE claim_month >= '${y}-01-01' AND claim_month < '${y + 1}-01-01'.`;
-    } else if (yearFilter && yearFilter.length > 1) {
-      const monthConditions = yearFilter.map((y) => `(claim_month >= '${y}-01-01' AND claim_month < '${y + 1}-01-01')`).join(" OR ");
-      yearConstraint = `\n\nIMPORTANT: The user has selected years ${yearFilter.join(", ")} as a filter. You MUST add a WHERE clause to filter data to only these years. Use: WHERE ${monthConditions}.`;
+    if (yearFilter && config.buildYearConstraint) {
+      yearConstraint = config.buildYearConstraint(yearFilter);
     }
 
     // Generate SQL
@@ -147,34 +153,11 @@ export async function POST(request: NextRequest) {
     let totalOutputTokens = 0;
 
     // Build system prompt with caching — schema is static and cached across requests
-    const staticSystemPrompt = selectedDataset === "brfss"
-      ? `You are a SQL expert that translates natural language questions into DuckDB SQL for BRFSS survey data.
+    const staticSystemPrompt = `${config.systemPromptPreamble}
 
 ${schemaPrompt}
 
-Rules:
-- Return ONLY SQL query text. No markdown, no explanation.
-- EXCEPTION: If the question cannot be answered from available columns, return exactly: CANNOT_ANSWER: followed by a brief reason.
-- Always include LIMIT (max 10000) unless a single-row aggregate answer is required.
-- Only use SELECT statements.
-- Use DuckDB SQL syntax.
-- Prefer weighted estimates using _LLCPWT when producing prevalence/means.`
-      : `You are a SQL expert that translates natural language questions into DuckDB SQL queries for a Medicaid provider spending dataset.
-
-${schemaPrompt}
-
-Rules:
-- Return ONLY the SQL query, nothing else. No markdown, no explanation, no code fences.
-- EXCEPTION: If the available tables cannot answer the user's question, instead of SQL return exactly: CANNOT_ANSWER: followed by a clear explanation of what data is and is not available.
-- Always include a LIMIT clause (max 10000).
-- Only use SELECT statements.
-- Use the table names exactly as defined (claims, hcpcs_lookup, npi_lookup).
-- Use DuckDB SQL syntax.
-- Format dollar amounts with ROUND(..., 0) to whole dollars (no cents).
-- When a question is ambiguous, make reasonable assumptions and use the most appropriate approach.
-- Use short, distinct table aliases (e.g. c, l, n) and ensure every alias referenced in the query is defined in a FROM or JOIN clause.
-- IMPORTANT: Oct-Dec 2024 data is incomplete. For monthly trends or time series queries, add: AND claim_month < '2024-10-01' to exclude incomplete months. For aggregate totals (e.g. "total spending in 2024"), include all available data but note that Oct-Dec figures are partial.
-- CRITICAL: Beneficiary counts CANNOT be summed across HCPCS codes or providers because beneficiaries overlap. Only report beneficiary counts per individual code or per individual provider. Never SUM(beneficiaries) across codes or providers.`;
+${config.systemPromptRules}`;
 
     const systemBlocks: Anthropic.TextBlockParam[] = [
       { type: "text", text: staticSystemPrompt, cache_control: { type: "ephemeral" } },
@@ -244,17 +227,14 @@ Rules:
       }
 
       // Retry: ask Claude to fix the SQL (reuses cached schema prompt)
-      const retrySystemBlocks: Anthropic.TextBlockParam[] = [
-        { type: "text", text: `You are a SQL expert that translates natural language questions into DuckDB SQL queries for a Medicaid provider spending dataset.
+      const retryStaticPrompt = `${config.systemPromptPreamble}
 
 ${schemaPrompt}
 
-Rules:
-- Return ONLY the SQL query, nothing else. No markdown, no explanation, no code fences.
-- Always include a LIMIT clause (max 10000).
-- Only use SELECT statements.
-- Use DuckDB SQL syntax.
-- Use short, distinct table aliases.`, cache_control: { type: "ephemeral" } },
+${config.retrySystemPromptRules}`;
+
+      const retrySystemBlocks: Anthropic.TextBlockParam[] = [
+        { type: "text", text: retryStaticPrompt, cache_control: { type: "ephemeral" } },
       ];
       if (yearConstraint) {
         retrySystemBlocks.push({ type: "text", text: yearConstraint });

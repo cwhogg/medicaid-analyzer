@@ -1,17 +1,17 @@
-const RAILWAY_QUERY_URL = process.env.RAILWAY_QUERY_URL;
-const BRFSS_QUERY_URL = process.env.BRFSS_QUERY_URL;
-const RAILWAY_API_KEY = process.env.RAILWAY_API_KEY;
-const BRFSS_API_KEY = process.env.BRFSS_API_KEY;
+import { getDataset } from "@/lib/datasets/index";
+
 const TIMEOUT_MS = 90_000;
 
 export async function executeRemoteQuery(
   sql: string,
-  dataset: "medicaid" | "brfss" = "medicaid"
+  dataset: string = "medicaid"
 ): Promise<{ columns: string[]; rows: unknown[][] }> {
-  const baseUrl = dataset === "brfss" ? BRFSS_QUERY_URL : RAILWAY_QUERY_URL;
-  const apiKey = dataset === "brfss" ? BRFSS_API_KEY : RAILWAY_API_KEY;
+  const config = getDataset(dataset);
+  const baseUrl = process.env[config.envUrlKey];
+  const apiKey = process.env[config.envApiKeyKey];
+
   if (!baseUrl) {
-    throw new Error(dataset === "brfss" ? "BRFSS_QUERY_URL is not configured" : "RAILWAY_QUERY_URL is not configured");
+    throw new Error(`${config.envUrlKey} is not configured`);
   }
 
   const controller = new AbortController();

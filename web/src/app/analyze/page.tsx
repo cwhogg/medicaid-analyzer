@@ -3,6 +3,8 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useQuery } from "@/hooks/useQuery";
 import { useAnalysis, type PriorContext } from "@/hooks/useAnalysis";
+import { getAllDatasets, getDataset } from "@/lib/datasets/index";
+import type { DatasetConfig } from "@/lib/datasets";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { QueryInput, type QueryInputHandle } from "@/components/analyze/QueryInput";
@@ -27,14 +29,18 @@ const TABS = [
   { key: "feed" as const, label: "Feed", icon: History },
 ];
 
-const ALL_YEARS = [2024, 2023, 2022, 2021, 2020, 2019, 2018];
-const DATASETS = [
-  { key: "medicaid" as const, label: "Medicaid" },
-  { key: "brfss" as const, label: "BRFSS (beta)" },
-];
+const DATASETS = getAllDatasets();
 
-type Dataset = "medicaid" | "brfss";
 type Mode = "idle" | "query" | "analysis";
+
+function isValidDatasetKey(key: string): boolean {
+  try {
+    getDataset(key);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export default function AnalyzePage() {
   const {
@@ -55,10 +61,13 @@ export default function AnalyzePage() {
   const [activeTab, setActiveTab] = useState<"query" | "feed">("query");
   const [feedRefreshKey, setFeedRefreshKey] = useState(0);
   const [selectedYears, setSelectedYears] = useState<Set<number>>(new Set());
-  const [dataset, setDataset] = useState<Dataset>("medicaid");
+  const [datasetKey, setDatasetKey] = useState<string>("medicaid");
   const [mode, setMode] = useState<Mode>("idle");
   const [priorContext, setPriorContext] = useState<PriorContext | null>(null);
   const [lastQuestion, setLastQuestion] = useState<string | null>(null);
+
+  // Resolve current config
+  const config: DatasetConfig = getDataset(datasetKey);
 
   // Use refs for stable callback references
   const analysisRef = useRef(analysis);
@@ -66,14 +75,14 @@ export default function AnalyzePage() {
 
   useEffect(() => {
     const saved = window.localStorage.getItem("analyze:lastDataset");
-    if (saved === "medicaid" || saved === "brfss") {
-      setDataset(saved);
+    if (saved && isValidDatasetKey(saved)) {
+      setDatasetKey(saved);
     }
   }, []);
 
   useEffect(() => {
-    window.localStorage.setItem("analyze:lastDataset", dataset);
-  }, [dataset]);
+    window.localStorage.setItem("analyze:lastDataset", datasetKey);
+  }, [datasetKey]);
 
   // Accumulate prior context when analysis completes (for follow-up/refine queries)
   useEffect(() => {
@@ -109,27 +118,28 @@ export default function AnalyzePage() {
       setLastQuestion(question);
 
       if (submitMode === "analysis") {
-        if (dataset === "brfss") {
+        if (!config.deepAnalysisSupported) {
+          // Fallback to simple query for datasets without deep analysis
           setMode("query");
           analysisRef.current.clearAnalysis();
           setPriorContext(null);
-          await submitQuestion(question, years, dataset);
+          await submitQuestion(question, years, datasetKey);
           setFeedRefreshKey((k) => k + 1);
           return;
         }
         setMode("analysis");
         clearResults();
-        await analysisRef.current.startAnalysis(question, years, priorContext);
+        await analysisRef.current.startAnalysis(question, years, priorContext, datasetKey);
         setFeedRefreshKey((k) => k + 1);
       } else {
         setMode("query");
         analysisRef.current.clearAnalysis();
         setPriorContext(null);
-        await submitQuestion(question, years, dataset);
+        await submitQuestion(question, years, datasetKey);
         setFeedRefreshKey((k) => k + 1);
       }
     },
-    [submitQuestion, selectedYears, clearResults, priorContext, dataset]
+    [submitQuestion, selectedYears, clearResults, priorContext, datasetKey, config.deepAnalysisSupported]
   );
 
   const queryInputRef = useRef<QueryInputHandle | null>(null);
@@ -179,10 +189,10 @@ export default function AnalyzePage() {
                 {DATASETS.map((d) => (
                   <button
                     key={d.key}
-                    onClick={() => setDataset(d.key)}
+                    onClick={() => setDatasetKey(d.key)}
                     className={cn(
                       "px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border",
-                      dataset === d.key
+                      datasetKey === d.key
                         ? "bg-accent text-white border-accent"
                         : "text-muted hover:text-white bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.08]"
                     )}
@@ -192,12 +202,10 @@ export default function AnalyzePage() {
                 ))}
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white">
-                {dataset === "medicaid" ? "Analyze Spending" : "Analyze Population Health"}
+                {config.pageTitle}
               </h1>
               <p className="text-sm sm:text-base text-muted mt-1 sm:mt-2">
-                {dataset === "medicaid"
-                  ? "Ask questions about Medicaid provider spending in natural language"
-                  : "Ask questions about BRFSS survey data in natural language (beta)"}
+                {config.pageSubtitle}
               </p>
             </div>
 
@@ -230,7 +238,7 @@ export default function AnalyzePage() {
           {activeTab === "query" && (
             <div className="space-y-6">
               {/* Year filter */}
-              {dataset === "medicaid" ? (
+              {config.yearFilter ? (
                 <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                   <button
                     onClick={() => setSelectedYears(new Set())}
@@ -243,7 +251,7 @@ export default function AnalyzePage() {
                   >
                     All
                   </button>
-                  {ALL_YEARS.map((y) => (
+                  {config.yearFilter.years.map((y) => (
                     <button
                       key={y}
                       onClick={() => toggleYear(y)}
@@ -258,11 +266,11 @@ export default function AnalyzePage() {
                     </button>
                   ))}
                 </div>
-              ) : (
+              ) : config.beta ? (
                 <div className="text-xs text-muted bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2 w-fit">
-                  BRFSS beta currently uses the latest full-year dataset (2023).
+                  {config.label} currently uses the latest full-year dataset.
                 </div>
-              )}
+              ) : null}
 
               <QueryInput
                 ref={queryInputRef}
@@ -272,18 +280,20 @@ export default function AnalyzePage() {
                 onCancelAnalysis={analysis.cancelAnalysis}
                 followUpQuestion={priorContext?.history?.length ? priorContext.history[priorContext.history.length - 1].question : null}
                 onNewAnalysis={handleNewAnalysis}
-                dataset={dataset}
+                inputHeading={config.inputHeading}
+                inputPlaceholder={config.inputPlaceholder}
+                deepAnalysisSupported={config.deepAnalysisSupported}
+                deepAnalysisDisabledReason={config.deepAnalysisDisabledReason}
               />
 
               {/* Single query results */}
               {showQueryResults && (
                 <>
-                  {dataset === "brfss" && (
-                    <div className="glass-card p-4 border-amber-500/30">
-                      <p className="text-xs text-amber-300 font-medium mb-1">BRFSS beta caveats</p>
+                  {config.resultCaveat && (
+                    <div className={`glass-card p-4 ${config.resultCaveat.borderColor}`}>
+                      <p className={`text-xs font-medium mb-1 ${config.resultCaveat.titleColor}`}>{config.resultCaveat.title}</p>
                       <p className="text-xs text-muted">
-                        Self-reported cross-sectional survey data. Use results for directional insight, not causal claims.
-                        Weighted estimates are preferred where possible.
+                        {config.resultCaveat.text}
                       </p>
                     </div>
                   )}
@@ -358,7 +368,7 @@ export default function AnalyzePage() {
                     const years = selectedYears.size > 0 ? Array.from(selectedYears).sort() : null;
                     setMode("analysis");
                     clearResults();
-                    analysisRef.current.startAnalysis(instruction, years, priorContext);
+                    analysisRef.current.startAnalysis(instruction, years, priorContext, datasetKey);
                   }}
                 />
               )}

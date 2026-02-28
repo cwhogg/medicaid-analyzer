@@ -23,7 +23,7 @@ export function useQuery() {
   });
 
   const submitQuestion = useCallback(
-    async (question: string, years?: number[] | null, dataset: "medicaid" | "brfss" = "medicaid") => {
+    async (question: string, years?: number[] | null, dataset: string = "medicaid") => {
       if (!question.trim()) return;
 
       setState((prev) => ({

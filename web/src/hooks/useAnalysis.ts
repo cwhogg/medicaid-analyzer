@@ -73,7 +73,7 @@ export function useAnalysis() {
   });
 
   const startAnalysis = useCallback(
-    async (question: string, years?: number[] | null, priorContext?: PriorContext | null) => {
+    async (question: string, years?: number[] | null, priorContext?: PriorContext | null, dataset: string = "medicaid") => {
       if (!question.trim()) return;
 
       // Cancel any in-flight analysis
@@ -143,6 +143,7 @@ export function useAnalysis() {
             body: JSON.stringify({
               question,
               years: years ?? null,
+              dataset,
               sessionId,
               stepIndex,
               previousSteps: completedSteps,

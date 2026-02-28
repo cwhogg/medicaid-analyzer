@@ -10,14 +10,17 @@ interface QueryInputProps {
   onCancelAnalysis?: () => void;
   followUpQuestion?: string | null;
   onNewAnalysis?: () => void;
-  dataset?: "medicaid" | "brfss";
+  inputHeading: string;
+  inputPlaceholder: string;
+  deepAnalysisSupported: boolean;
+  deepAnalysisDisabledReason?: string;
 }
 
 export interface QueryInputHandle {
   setQuestion: (q: string) => void;
 }
 
-export const QueryInput = forwardRef<QueryInputHandle, QueryInputProps>(function QueryInput({ onSubmit, loading, analysisRunning, onCancelAnalysis, followUpQuestion, onNewAnalysis, dataset = "medicaid" }, ref) {
+export const QueryInput = forwardRef<QueryInputHandle, QueryInputProps>(function QueryInput({ onSubmit, loading, analysisRunning, onCancelAnalysis, followUpQuestion, onNewAnalysis, inputHeading, inputPlaceholder, deepAnalysisSupported, deepAnalysisDisabledReason }, ref) {
   const [question, setQuestion] = useState("");
 
   useImperativeHandle(ref, () => ({
@@ -56,7 +59,7 @@ export const QueryInput = forwardRef<QueryInputHandle, QueryInputProps>(function
         </div>
       ) : (
         <h2 className="text-lg font-semibold text-white mb-3">
-          {dataset === "medicaid" ? "Ask a question about Medicaid spending" : "Ask a question about BRFSS population health"}
+          {inputHeading}
         </h2>
       )}
       <form onSubmit={handleSubmit}>
@@ -69,9 +72,7 @@ export const QueryInput = forwardRef<QueryInputHandle, QueryInputProps>(function
               onChange={(e) => setQuestion(e.target.value)}
               placeholder={followUpQuestion
                 ? "Ask a follow-up question..."
-                : dataset === "medicaid"
-                  ? "What are the top 10 services by total spending?"
-                  : "What is the weighted prevalence of diabetes by age group?"}
+                : inputPlaceholder}
               disabled={busy}
               className="flex-1 bg-transparent border-none outline-none text-white placeholder:text-muted-dark py-2.5 text-sm min-w-0"
               maxLength={500}
@@ -106,9 +107,9 @@ export const QueryInput = forwardRef<QueryInputHandle, QueryInputProps>(function
                 <button
                   type="button"
                   onClick={handleDeepAnalysis}
-                  disabled={!question.trim() || busy || dataset === "brfss"}
+                  disabled={!question.trim() || busy || !deepAnalysisSupported}
                   className="py-2.5 px-4 text-sm flex items-center justify-center gap-2 rounded-lg border border-accent/50 text-accent hover:bg-accent/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  title={dataset === "brfss" ? "Deep analysis path coming in BRFSS phase 2" : undefined}
+                  title={!deepAnalysisSupported ? deepAnalysisDisabledReason : undefined}
                 >
                   <Layers className="w-4 h-4" />
                   Deep Analysis

@@ -4,7 +4,7 @@ import { mkdir, writeFile } from "fs/promises";
 import { executeSQL, initDB, isReady, reloadViews } from "./db.js";
 
 const app = new Hono();
-const API_KEY = process.env.API_KEY || "";
+const API_KEY = process.env.RAILWAY_API_KEY || process.env.API_KEY || "";
 const PORT = Number(process.env.PORT || 3011);
 
 const auth = async (c: any, next: any) => {
