@@ -278,6 +278,16 @@ export default function AnalyzePage() {
               {/* Single query results */}
               {showQueryResults && (
                 <>
+                  {dataset === "brfss" && (
+                    <div className="glass-card p-4 border-amber-500/30">
+                      <p className="text-xs text-amber-300 font-medium mb-1">BRFSS beta caveats</p>
+                      <p className="text-xs text-muted">
+                        Self-reported cross-sectional survey data. Use results for directional insight, not causal claims.
+                        Weighted estimates are preferred where possible.
+                      </p>
+                    </div>
+                  )}
+
                   {/* Error display */}
                   {error && (
                     <div className="glass-card p-4 border-red-500/30 flex items-center gap-3">

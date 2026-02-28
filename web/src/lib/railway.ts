@@ -1,12 +1,15 @@
 const RAILWAY_QUERY_URL = process.env.RAILWAY_QUERY_URL;
+const BRFSS_QUERY_URL = process.env.BRFSS_QUERY_URL;
 const RAILWAY_API_KEY = process.env.RAILWAY_API_KEY;
 const TIMEOUT_MS = 90_000;
 
 export async function executeRemoteQuery(
-  sql: string
+  sql: string,
+  dataset: "medicaid" | "brfss" = "medicaid"
 ): Promise<{ columns: string[]; rows: unknown[][] }> {
-  if (!RAILWAY_QUERY_URL) {
-    throw new Error("RAILWAY_QUERY_URL is not configured");
+  const baseUrl = dataset === "brfss" ? BRFSS_QUERY_URL : RAILWAY_QUERY_URL;
+  if (!baseUrl) {
+    throw new Error(dataset === "brfss" ? "BRFSS_QUERY_URL is not configured" : "RAILWAY_QUERY_URL is not configured");
   }
 
   const controller = new AbortController();
@@ -20,7 +23,7 @@ export async function executeRemoteQuery(
       headers["Authorization"] = `Bearer ${RAILWAY_API_KEY}`;
     }
 
-    const response = await fetch(`${RAILWAY_QUERY_URL}/query`, {
+    const response = await fetch(`${baseUrl}/query`, {
       method: "POST",
       headers,
       body: JSON.stringify({ sql }),

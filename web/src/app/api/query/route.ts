@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { generateSchemaPrompt } from "@/lib/schemas";
+import { generateBRFSSSchemaPrompt } from "@/lib/brfssSchemas";
 import { checkRateLimit } from "@/lib/rateLimit";
 import { checkDataScope } from "@/lib/dataScope";
 import { validateSQL, inferChartType } from "@/lib/sqlValidation";
@@ -91,35 +92,26 @@ export async function POST(request: NextRequest) {
 
     const selectedDataset = dataset === "brfss" ? "brfss" : "medicaid";
 
-    if (selectedDataset === "brfss") {
-      return NextResponse.json(
-        {
-          error: "BRFSS query backend is in beta setup. UI routing is live; query execution will be enabled in the next iteration.",
-          cannotAnswer: true,
-          dataset: "brfss",
-        },
-        { status: 501, headers: { "X-RateLimit-Remaining": String(rateCheck.remaining) } }
-      );
-    }
-
-    // Check if question is obviously outside dataset scope
-    const scopeError = checkDataScope(question);
-    if (scopeError) {
-      recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 422, totalMs: Date.now() - requestStart, cached: false });
-      recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql: null, status: 422, totalMs: Date.now() - requestStart, cached: false, error: scopeError });
-      return NextResponse.json(
-        { error: scopeError, cannotAnswer: true },
-        { status: 422, headers: { "X-RateLimit-Remaining": String(rateCheck.remaining) } }
-      );
+    // Check if question is obviously outside Medicaid dataset scope
+    if (selectedDataset === "medicaid") {
+      const scopeError = checkDataScope(question);
+      if (scopeError) {
+        recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 422, totalMs: Date.now() - requestStart, cached: false });
+        recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql: null, status: 422, totalMs: Date.now() - requestStart, cached: false, error: scopeError });
+        return NextResponse.json(
+          { error: scopeError, cannotAnswer: true },
+          { status: 422, headers: { "X-RateLimit-Remaining": String(rateCheck.remaining) } }
+        );
+      }
     }
 
     // Validate years if provided
-    const yearFilter: number[] | null = Array.isArray(years) && years.length > 0
+    const yearFilter: number[] | null = selectedDataset === "medicaid" && Array.isArray(years) && years.length > 0
       ? years.filter((y: unknown) => typeof y === "number" && y >= 2018 && y <= 2024).sort()
       : null;
 
     // Check cache
-    const cacheQuestion = yearFilter ? `${question} [years:${yearFilter.join(",")}]` : question;
+    const cacheQuestion = `${selectedDataset}::` + (yearFilter ? `${question} [years:${yearFilter.join(",")}]` : question);
     const cached = getCached(cacheQuestion);
     if (cached) {
       recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 200, totalMs: Date.now() - requestStart, cached: true });
@@ -135,7 +127,7 @@ export async function POST(request: NextRequest) {
     }
 
     const client = new Anthropic({ apiKey });
-    const schemaPrompt = generateSchemaPrompt();
+    const schemaPrompt = selectedDataset === "brfss" ? generateBRFSSSchemaPrompt() : generateSchemaPrompt();
 
     let yearConstraint = "";
     if (yearFilter && yearFilter.length === 1) {
@@ -155,7 +147,19 @@ export async function POST(request: NextRequest) {
     let totalOutputTokens = 0;
 
     // Build system prompt with caching — schema is static and cached across requests
-    const staticSystemPrompt = `You are a SQL expert that translates natural language questions into DuckDB SQL queries for a Medicaid provider spending dataset.
+    const staticSystemPrompt = selectedDataset === "brfss"
+      ? `You are a SQL expert that translates natural language questions into DuckDB SQL for BRFSS survey data.
+
+${schemaPrompt}
+
+Rules:
+- Return ONLY SQL query text. No markdown, no explanation.
+- EXCEPTION: If the question cannot be answered from available columns, return exactly: CANNOT_ANSWER: followed by a brief reason.
+- Always include LIMIT (max 10000) unless a single-row aggregate answer is required.
+- Only use SELECT statements.
+- Use DuckDB SQL syntax.
+- Prefer weighted estimates using _LLCPWT when producing prevalence/means.`
+      : `You are a SQL expert that translates natural language questions into DuckDB SQL queries for a Medicaid provider spending dataset.
 
 ${schemaPrompt}
 
@@ -226,7 +230,7 @@ Rules:
     let rows: unknown[][];
     const railwayStart = Date.now();
     try {
-      const result = await executeRemoteQuery(sql);
+      const result = await executeRemoteQuery(sql, selectedDataset);
       columns = result.columns;
       rows = result.rows;
     } catch (execErr) {
@@ -291,7 +295,7 @@ Rules:
       }
 
       try {
-        const retryResult = await executeRemoteQuery(fixedSql);
+        const retryResult = await executeRemoteQuery(fixedSql, selectedDataset);
         sql = fixedSql;
         columns = retryResult.columns;
         rows = retryResult.rows;
