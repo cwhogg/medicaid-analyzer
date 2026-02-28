@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
-import { writeFile } from "fs/promises";
+import { mkdir, writeFile } from "fs/promises";
 import { executeSQL, initDB, isReady, reloadViews } from "./db.js";
 
 const app = new Hono();
@@ -27,6 +27,7 @@ app.post("/upload", auth, async (c) => {
   try {
     const filename = c.req.header("X-Filename") || "brfss_2023.parquet";
     const target = filename.startsWith("/") ? filename : `/tmp/${filename}`;
+    await mkdir(target.substring(0, target.lastIndexOf("/")) || "/tmp", { recursive: true });
     const ab = await c.req.arrayBuffer();
     if (!ab || ab.byteLength === 0) {
       return c.json({ error: "empty body" }, 400);
