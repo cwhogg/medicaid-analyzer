@@ -4,14 +4,19 @@ import { existsSync } from "fs";
 let db: Database | null = null;
 let ready = false;
 
-const DATA_ROOT = process.env.DATA_ROOT || "../data/processed/brfss/2023";
+const DATA_ROOT = process.env.DATA_ROOT || "/tmp";
 const PARQUET = process.env.BRFSS_PARQUET || `${DATA_ROOT}/brfss_2023.parquet`;
 const QUERY_TIMEOUT_MS = 60_000;
 
 export async function initDB(): Promise<void> {
   if (db) return;
   db = await Database.create(":memory:");
-  await reloadViews();
+  try {
+    await reloadViews();
+  } catch (err) {
+    ready = false;
+    console.warn("BRFSS data not loaded yet:", err instanceof Error ? err.message : String(err));
+  }
 }
 
 export async function reloadViews(): Promise<{ ready: boolean; parquet: string }> {

@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
+import { writeFile } from "fs/promises";
 import { executeSQL, initDB, isReady, reloadViews } from "./db.js";
 
 const app = new Hono();
@@ -17,6 +18,21 @@ app.get("/health", (c) => c.json({ ok: true, ready: isReady() }));
 app.post("/reload", auth, async (c) => {
   try {
     return c.json(await reloadViews());
+  } catch (e) {
+    return c.json({ error: e instanceof Error ? e.message : String(e) }, 500);
+  }
+});
+
+app.post("/upload", auth, async (c) => {
+  try {
+    const filename = c.req.header("X-Filename") || "brfss_2023.parquet";
+    const target = filename.startsWith("/") ? filename : `/tmp/${filename}`;
+    const ab = await c.req.arrayBuffer();
+    if (!ab || ab.byteLength === 0) {
+      return c.json({ error: "empty body" }, 400);
+    }
+    await writeFile(target, Buffer.from(ab));
+    return c.json({ ok: true, path: target, bytes: ab.byteLength });
   } catch (e) {
     return c.json({ error: e instanceof Error ? e.message : String(e) }, 500);
   }
