@@ -89,6 +89,8 @@ function useIsMobile() {
 
 export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
   const isMobile = useIsMobile();
+  const [visibleKeys, setVisibleKeys] = useState<Set<string>>(new Set());
+
   const { data, labelKey, valueKeys } = useMemo(() => {
     if (!columns.length || !rows.length) return { data: [], labelKey: "", valueKeys: [] };
 
@@ -144,16 +146,84 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
     return { data, labelKey, valueKeys };
   }, [columns, rows]);
 
+  // Reset visible keys when valueKeys change
+  useEffect(() => {
+    setVisibleKeys(new Set(valueKeys));
+  }, [valueKeys.join(",")]);
+
+  const activeKeys = useMemo(() => {
+    const filtered = valueKeys.filter((k) => visibleKeys.has(k));
+    return filtered;
+  }, [valueKeys, visibleKeys]);
+
+  const toggleKey = useCallback(
+    (key: string) => {
+      if (chartType === "pie") {
+        // Radio behavior: exactly one selected
+        setVisibleKeys(new Set([key]));
+        return;
+      }
+      setVisibleKeys((prev) => {
+        const next = new Set(prev);
+        if (next.has(key)) {
+          next.delete(key);
+        } else {
+          next.add(key);
+        }
+        return next;
+      });
+    },
+    [chartType]
+  );
+
   if (!data.length || !valueKeys.length) return null;
+
+  const showToggles = valueKeys.length >= 2;
 
   return (
     <GlassCard className="p-3 sm:p-6">
+      {showToggles && (
+        <div className="flex flex-wrap gap-2 mb-4">
+          {valueKeys.map((key, i) => {
+            const active = visibleKeys.has(key);
+            return (
+              <button
+                key={key}
+                onClick={() => toggleKey(key)}
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                  active
+                    ? "bg-white/[0.1] text-white"
+                    : "bg-white/[0.03] text-gray-500"
+                }`}
+              >
+                <span
+                  className="inline-block w-2 h-2 rounded-full flex-shrink-0"
+                  style={{
+                    backgroundColor: active
+                      ? COLORS[i % COLORS.length]
+                      : "transparent",
+                    border: active
+                      ? "none"
+                      : `1.5px solid ${COLORS[i % COLORS.length]}`,
+                  }}
+                />
+                {key.replace(/_/g, " ")}
+              </button>
+            );
+          })}
+        </div>
+      )}
+      {activeKeys.length === 0 ? (
+        <div className="flex items-center justify-center" style={{ height: isMobile ? 280 : 400 }}>
+          <p className="text-gray-500 text-sm">Select a column to chart</p>
+        </div>
+      ) : (
       <ResponsiveContainer width="100%" height={isMobile ? 280 : 400}>
         {chartType === "pie" ? (
           <PieChart>
             <Pie
               data={data.slice(0, 10)}
-              dataKey={valueKeys[0]}
+              dataKey={activeKeys[0]}
               nameKey={labelKey}
               cx="50%"
               cy="50%"
@@ -193,9 +263,10 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
               tickFormatter={(v) => formatValue(v, valueKeys[0])}
             />
             <Tooltip content={<CustomTooltip />} />
-            {valueKeys.map((key, i) => (
-              <Bar key={key} dataKey={key} fill={COLORS[i % COLORS.length]} radius={[4, 4, 0, 0]} />
-            ))}
+            {activeKeys.map((key) => {
+              const i = valueKeys.indexOf(key);
+              return <Bar key={key} dataKey={key} fill={COLORS[i % COLORS.length]} radius={[4, 4, 0, 0]} />;
+            })}
           </BarChart>
         ) : (
           <LineChart data={data}>
@@ -215,20 +286,24 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
               tickFormatter={(v) => formatValue(v, valueKeys[0])}
             />
             <Tooltip content={<CustomTooltip />} />
-            {valueKeys.map((key, i) => (
-              <Line
-                key={key}
-                type="monotone"
-                dataKey={key}
-                stroke={COLORS[i % COLORS.length]}
-                strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 4 }}
-              />
-            ))}
+            {activeKeys.map((key) => {
+              const i = valueKeys.indexOf(key);
+              return (
+                <Line
+                  key={key}
+                  type="monotone"
+                  dataKey={key}
+                  stroke={COLORS[i % COLORS.length]}
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 4 }}
+                />
+              );
+            })}
           </LineChart>
         )}
       </ResponsiveContainer>
+      )}
     </GlassCard>
   );
 }
