@@ -62,6 +62,11 @@ function shortenLabel(label: string, max: number = 20): string {
   return label.slice(0, max - 1) + "\u2026";
 }
 
+/** Strip sort-order prefixes like "1_", "2_" from category labels */
+function stripSortPrefix(label: string): string {
+  return label.replace(/^\d+_/, "");
+}
+
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ name: string; value: number; color: string; dataKey?: string }>; label?: string }) {
   if (!active || !payload || !payload.length) return null;
   return (
@@ -94,10 +99,6 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
   const { data, labelKey, valueKeys } = useMemo(() => {
     if (!columns.length || !rows.length) return { data: [], labelKey: "", valueKeys: [] };
 
-    // Find a human-readable label column (description or provider_name)
-    const descIdx = columns.findIndex(
-      (c) => c.toLowerCase() === "description" || c.toLowerCase() === "provider_name"
-    );
     const firstCol = columns[0];
 
     // Use a synthetic "_label" field that combines code + description
@@ -132,25 +133,22 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
         record[col] = val;
       });
 
-      // Build a human-readable label by combining all string columns
-      // If multiple string cols exist (e.g. "factor" + "category"), join them
+      // Build a human-readable label
+      // Combine all string columns (e.g. "factor" + "category" → "Age Group: 18-24")
       if (stringColIndices.length >= 2) {
         const parts = stringColIndices
-          .map(({ i }) => String(row[i] ?? "").trim())
+          .map(({ i }) => stripSortPrefix(String(row[i] ?? "").trim()))
           .filter(Boolean);
-        record[LABEL_KEY] = shortenLabel(parts.join(": "), 36);
-      } else if (descIdx !== -1 && row[descIdx] && String(row[descIdx]).trim()) {
-        record[LABEL_KEY] = shortenLabel(String(row[descIdx]), 28);
+        // If first part repeats across rows (grouping col), show "Group: Value"
+        record[LABEL_KEY] = shortenLabel(parts.join(": "), 40);
+      } else if (stringColIndices.length === 1) {
+        const val = String(row[stringColIndices[0].i] ?? "").trim();
+        const dateLabel = formatDateCell(val, stringColIndices[0].col);
+        record[LABEL_KEY] = dateLabel || shortenLabel(stripSortPrefix(val), 30);
       } else {
-        // Try date formatting for the first column
+        // No string columns — use first column with date formatting attempt
         const dateLabel = formatDateCell(record[firstCol], firstCol);
-        if (dateLabel) {
-          record[LABEL_KEY] = dateLabel;
-        } else if (typeof record[firstCol] === "string") {
-          record[LABEL_KEY] = shortenLabel(record[firstCol] as string, 28);
-        } else {
-          record[LABEL_KEY] = String(record[firstCol] ?? "");
-        }
+        record[LABEL_KEY] = dateLabel || String(record[firstCol] ?? "");
       }
 
       return record;
@@ -264,9 +262,9 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
               tickLine={false}
               angle={-45}
               textAnchor="end"
-              height={isMobile ? 60 : 80}
+              height={isMobile ? 80 : 100}
               interval={0}
-              tickFormatter={(v) => shortenLabel(String(v), isMobile ? 10 : 20)}
+              tickFormatter={(v) => shortenLabel(String(v), isMobile ? 14 : 28)}
             />
             <YAxis
               stroke="#6B7280"
