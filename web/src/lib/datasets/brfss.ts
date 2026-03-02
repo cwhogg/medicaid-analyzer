@@ -33,6 +33,13 @@ registerDataset({
   deepAnalysisSupported: false,
   deepAnalysisDisabledReason: "Deep analysis path coming in BRFSS phase 2",
 
+  exampleQueries: [
+    { label: "Diabetes prevalence", question: "What is the weighted prevalence of diabetes by age group?" },
+    { label: "Exercise by state", question: "Which states have the highest rates of no exercise in the past 30 days?" },
+    { label: "Mental health days", question: "What is the average number of poor mental health days by income level?" },
+    { label: "Smoking by education", question: "How does smoking prevalence vary by education level?" },
+  ],
+
   resultCaveat: {
     title: "BRFSS beta caveats",
     text: "Self-reported cross-sectional survey data. Use results for directional insight, not causal claims. Weighted estimates are preferred where possible.",

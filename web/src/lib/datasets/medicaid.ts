@@ -52,6 +52,13 @@ registerDataset({
   deepAnalysisSupported: true,
   checkDataScope,
 
+  exampleQueries: [
+    { label: "Top services by spending", question: "What are the top 10 services by total spending?" },
+    { label: "State spending comparison", question: "Which states have the highest total Medicaid spending?" },
+    { label: "Monthly spending trends", question: "What is the monthly spending trend from 2018 to 2024?" },
+    { label: "Top providers", question: "Who are the top 10 highest-paid providers?" },
+  ],
+
   domainKnowledge: `## Medicaid Domain Knowledge
 - Spending is highly concentrated: a small number of providers and procedures account for the majority of dollars
 - J-codes (injections/drugs) dominate high-cost procedures — J0178 (aflibercept), J9312 (rituximab), J1745 (infliximab) are common top spenders

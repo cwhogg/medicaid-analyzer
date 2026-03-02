@@ -43,6 +43,9 @@ export interface DatasetConfig {
 
   // Deep analysis
   domainKnowledge?: string;
+
+  // Example queries shown as chips
+  exampleQueries?: { label: string; question: string }[];
 }
 
 const registry = new Map<string, DatasetConfig>();

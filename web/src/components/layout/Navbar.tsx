@@ -105,7 +105,7 @@ export function Navbar() {
             <Link href="/" className="flex items-center gap-2 group">
               <Database className="w-6 h-6 text-accent group-hover:scale-110 transition-transform" />
               <span className="font-semibold text-base sm:text-lg text-white">
-                Medicaid Claims Analyzer
+                Public Health Data Explorer
               </span>
             </Link>
 
@@ -123,15 +123,26 @@ export function Navbar() {
                 Home
               </Link>
               <Link
-                href="/analyze"
+                href="/medicaid"
                 className={cn(
                   "text-sm font-medium transition-colors",
-                  pathname === "/analyze"
+                  pathname === "/medicaid"
                     ? "text-accent"
                     : "text-muted hover:text-white"
                 )}
               >
-                Analyze
+                Medicaid
+              </Link>
+              <Link
+                href="/brfss"
+                className={cn(
+                  "text-sm font-medium transition-colors",
+                  pathname === "/brfss"
+                    ? "text-accent"
+                    : "text-muted hover:text-white"
+                )}
+              >
+                BRFSS
               </Link>
               <Link
                 href="/blog"
@@ -181,16 +192,28 @@ export function Navbar() {
                 Home
               </Link>
               <Link
-                href="/analyze"
+                href="/medicaid"
                 onClick={() => setMobileOpen(false)}
                 className={cn(
                   "block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                  pathname === "/analyze"
+                  pathname === "/medicaid"
                     ? "text-accent bg-accent/10"
                     : "text-muted hover:text-white hover:bg-white/[0.05]"
                 )}
               >
-                Analyze
+                Medicaid
+              </Link>
+              <Link
+                href="/brfss"
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  "block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                  pathname === "/brfss"
+                    ? "text-accent bg-accent/10"
+                    : "text-muted hover:text-white hover:bg-white/[0.05]"
+                )}
+              >
+                BRFSS
               </Link>
               <Link
                 href="/blog"
