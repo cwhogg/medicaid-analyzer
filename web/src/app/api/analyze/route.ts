@@ -381,7 +381,7 @@ export async function POST(request: NextRequest) {
     const claudeStart = Date.now();
     const response = await client.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 2048,
+      max_tokens: 4096,
       temperature: 0,
       system: systemBlocks,
       messages,
@@ -420,18 +420,12 @@ export async function POST(request: NextRequest) {
         try {
           parsed = JSON.parse(responseText.slice(firstBrace, lastBrace + 1));
         } catch (e2) {
-          const preview = responseText.slice(0, 300);
-          console.error("Failed to parse analysis response. Raw text:", preview, "Error:", e2);
-          return NextResponse.json({
-            error: `Failed to parse analysis response. stop=${response.stop_reason} len=${responseText.length} preview=${preview.slice(0, 150)}`,
-          }, { status: 500 });
+          console.error("[analyze] JSON parse failed. stop_reason:", response.stop_reason, "len:", responseText.length, "preview:", responseText.slice(0, 300), e2);
+          return NextResponse.json({ error: "Failed to parse analysis response." }, { status: 500 });
         }
       } else {
-        const preview = responseText.slice(0, 300);
-        console.error("No JSON object found. Raw text:", preview, "Error:", e1);
-        return NextResponse.json({
-          error: `No JSON in response. stop=${response.stop_reason} len=${responseText.length} preview=${preview.slice(0, 150)}`,
-        }, { status: 500 });
+        console.error("[analyze] No JSON found. stop_reason:", response.stop_reason, "len:", responseText.length, "preview:", responseText.slice(0, 300), e1);
+        return NextResponse.json({ error: "Failed to parse analysis response." }, { status: 500 });
       }
     }
 
@@ -504,7 +498,7 @@ export async function POST(request: NextRequest) {
 
             const retryResponse = await client.messages.create({
               model: "claude-sonnet-4-6",
-              max_tokens: 2048,
+              max_tokens: 4096,
               temperature: 0,
               system: systemBlocks,
               messages: retryMessages,
