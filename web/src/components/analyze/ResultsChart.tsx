@@ -116,6 +116,14 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
       return typeof sample === "number" || typeof sample === "bigint";
     });
 
+    // Find all non-numeric (string) columns to use as label parts
+    const stringColIndices = columns
+      .map((col, i) => ({ col, i }))
+      .filter(({ i }) => {
+        const sample = rows[0]?.[i];
+        return typeof sample === "string";
+      });
+
     const data = rows.map((row) => {
       const record: Record<string, unknown> = {};
       columns.forEach((col, i) => {
@@ -124,8 +132,14 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
         record[col] = val;
       });
 
-      // Build a human-readable label
-      if (descIdx !== -1 && row[descIdx] && String(row[descIdx]).trim()) {
+      // Build a human-readable label by combining all string columns
+      // If multiple string cols exist (e.g. "factor" + "category"), join them
+      if (stringColIndices.length >= 2) {
+        const parts = stringColIndices
+          .map(({ i }) => String(row[i] ?? "").trim())
+          .filter(Boolean);
+        record[LABEL_KEY] = shortenLabel(parts.join(": "), 36);
+      } else if (descIdx !== -1 && row[descIdx] && String(row[descIdx]).trim()) {
         record[LABEL_KEY] = shortenLabel(String(row[descIdx]), 28);
       } else {
         // Try date formatting for the first column
@@ -133,7 +147,7 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
         if (dateLabel) {
           record[LABEL_KEY] = dateLabel;
         } else if (typeof record[firstCol] === "string") {
-          record[LABEL_KEY] = shortenLabel(record[firstCol] as string);
+          record[LABEL_KEY] = shortenLabel(record[firstCol] as string, 28);
         } else {
           record[LABEL_KEY] = String(record[firstCol] ?? "");
         }
