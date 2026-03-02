@@ -167,6 +167,63 @@ const { Database } = require('duckdb-async');
 - If curl is needed on the service: `railway ssh -- "apt-get update && apt-get install -y curl"`
 - For SAS Transport (.XPT) files that DuckDB can't read natively, you'll need to convert locally first and find an alternative upload method (temporary HTTP hosting, or pre-convert to CSV and host the CSV).
 
+### 3.3b Upload local Parquet to Railway via ngrok + DuckDB httpfs
+
+If your Parquet file was generated locally (e.g., by a Python harmonization script) and can't be produced directly from a public URL on Railway, use this method to transfer it:
+
+**Prerequisites:**
+- Install ngrok: `brew install ngrok` (macOS) — set up a free account at ngrok.com and run `ngrok config add-authtoken <token>` once.
+- Keep ngrok updated: `ngrok update` (Railway's DuckDB httpfs needs a valid HTTPS URL, and old ngrok versions may fail auth).
+
+**Step-by-step:**
+
+1. **Start a temporary HTTP server** serving the directory with your Parquet file:
+   ```bash
+   cd /path/to/data/directory
+   python3 -m http.server 8765 &
+   ```
+   Verify it works: `curl -s -o /dev/null -w "%{http_code}" http://localhost:8765/your_file.parquet` → should print `200`.
+
+2. **Start ngrok tunnel** (in a separate terminal or background):
+   ```bash
+   ngrok http 8765
+   ```
+   Or use the API to get the URL programmatically:
+   ```bash
+   ngrok http 8765 --log=stdout --log-format=json &
+   sleep 5
+   curl -s http://localhost:4040/api/tunnels | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['tunnels'][0]['public_url'])"
+   ```
+   This prints a URL like `https://abc1-98-51-246-4.ngrok-free.app`.
+
+3. **SSH into Railway and download via DuckDB httpfs:**
+   ```bash
+   railway ssh -- "node -e \"
+   const { Database } = require('duckdb-async');
+   (async () => {
+     const db = await Database.create(':memory:');
+     await db.run('INSTALL httpfs; LOAD httpfs;');
+     console.log('Downloading...');
+     await db.run('COPY (SELECT * FROM read_parquet(\\\"https://YOUR-NGROK-URL.ngrok-free.app/your_file.parquet\\\")) TO \\\"/data/your_file.parquet\\\" (FORMAT PARQUET, COMPRESSION SNAPPY)');
+     const result = await db.all('SELECT COUNT(*) as cnt FROM read_parquet(\\\"/data/your_file.parquet\\\")');
+     console.log('Done! Rows:', result[0].cnt);
+     await db.close();
+   })().catch(e => { console.error(e); process.exit(1); });
+   \""
+   ```
+
+4. **Clean up** — stop ngrok and the HTTP server when done.
+
+**When to use this method:**
+- Locally-generated Parquet from Python scripts (harmonization, merging, etc.)
+- Files that can't be produced from a single public CSV/URL
+- Any file on your local machine that needs to get to Railway's volume
+
+**Why not other methods:**
+- `railway ssh` does NOT support stdin piping for binary data (files arrive as 0 bytes)
+- Free file hosting services (transfer.sh, 0x0.st, file.io) are unreliable — often down or rate-limited for 100MB+ files
+- ngrok is fast, free, and works reliably for temporary transfers
+
 ### 3.4 Restart the service
 
 ```bash
@@ -458,7 +515,7 @@ For every new dataset, you will create or modify these files:
 | Dataset | Key | View name | Parquet file | Rows | Accent color |
 |---------|-----|-----------|-------------|------|-------------|
 | Medicaid | `medicaid` | `claims` + lookups | `medicaid-provider-spending.parquet` | 227M | `#EA580C` (orange) |
-| BRFSS | `brfss` | `brfss` | `brfss_harmonized.parquet` | 3.5M | `#0EA5E9` (sky blue) |
+| BRFSS | `brfss` | `brfss` | `brfss_harmonized.parquet` | 4M | `#0EA5E9` (sky blue) |
 | Medicare | `medicare` | `medicare` | `medicare_physician_2023.parquet` | 9.7M | `#10B981` (emerald) |
 
 Available accent colors (not yet used): `#8B5CF6` (purple), `#F59E0B` (amber), `#EC4899` (pink), `#14B8A6` (teal).
