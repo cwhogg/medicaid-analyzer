@@ -1,9 +1,9 @@
 export function generateBRFSSSchemaPrompt(): string {
-  return `## BRFSS 2023 Survey Data
+  return `## BRFSS 2014-2020, 2023 Survey Data
 
-You have ONE table: **brfss** (433,323 rows, 350 columns, one row per respondent)
+You have ONE table: **brfss** (~3.5M rows, 72 columns, one row per respondent)
 
-This is the CDC Behavioral Risk Factor Surveillance System — the largest continuously conducted telephone health survey in the world. Data is cross-sectional (single point in time, 2023).
+This is the CDC Behavioral Risk Factor Surveillance System — the largest continuously conducted telephone health survey in the world. Data spans 8 survey years: 2014, 2015, 2016, 2017, 2018, 2019, 2020, and 2023 (2021-2022 are excluded due to major variable renames).
 
 ---
 
@@ -36,6 +36,30 @@ GROUP BY <group_column>
 
 ---
 
+### CRITICAL: Multi-Year Trend Queries
+
+Use the \`survey_year\` column to analyze trends over time. Always GROUP BY survey_year for trend analysis.
+
+**Trend query pattern:**
+\`\`\`sql
+SELECT
+  survey_year,
+  ROUND(100.0 * SUM(CASE WHEN <condition_yes> THEN _LLCPWT ELSE 0 END)
+    / NULLIF(SUM(CASE WHEN <valid_response> THEN _LLCPWT ELSE 0 END), 0), 1) AS prevalence_pct,
+  COUNT(*) FILTER (WHERE <valid_response>) AS sample_n
+FROM brfss
+WHERE <valid_response>
+GROUP BY survey_year
+ORDER BY survey_year
+\`\`\`
+
+**IMPORTANT**: There is a gap — 2021 and 2022 are NOT in the data. Do not interpolate or assume values for those years. When presenting trends, note this gap.
+
+When the user asks about a specific year, filter with: \`WHERE survey_year = <year>\`
+When the user asks about a range, use: \`WHERE survey_year BETWEEN <start> AND <end>\`
+
+---
+
 ### Coding Conventions
 
 ALL values are numeric codes. NEVER assume text values exist in the data.
@@ -55,23 +79,31 @@ Days variables (PHYSHLTH, MENTHLTH): 1-30 = number of days, 88 = None, 77 = DK, 
 
 ### Core Columns (organized by topic)
 
+**Survey Year:**
+- \`survey_year\` (integer: 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2023)
+
 **Demographics:**
 - \`_STATE\` (FIPS code — see state lookup below)
 - \`SEXVAR\` (1=Male, 2=Female)
-- \`_SEX\` (calculated sex, same coding)
+- \`_SEX\` (calculated sex, same coding — available 2019+ only)
 - \`_AGEG5YR\` (5-year age groups: 1=18-24, 2=25-29, 3=30-34, 4=35-39, 5=40-44, 6=45-49, 7=50-54, 8=55-59, 9=60-64, 10=65-69, 11=70-74, 12=75-79, 13=80+, 14=DK/Refused)
 - \`_AGE80\` (imputed age, top-coded at 80)
 - \`_AGE_G\` (6 age groups: 1=18-24, 2=25-34, 3=35-44, 4=45-54, 5=55-64, 6=65+)
-- \`_IMPRACE\` (imputed race: 1=White, 2=Black, 3=Asian, 4=AI/AN, 5=Hispanic, 6=Other)
+- \`_IMPRACE\` (imputed race: 1=White, 2=Black, 3=Asian, 4=AI/AN, 5=Hispanic, 6=Other — available 2014, 2017+ only)
 - \`_RACEGR3\` (race groups: 1=White, 2=Black, 3=Other, 4=Multiracial, 5=Hispanic, 9=DK)
 - \`EDUCA\` (education: 1=Never attended, 2=Grades 1-8, 3=Grades 9-11, 4=HS grad, 5=Some college, 6=College grad, 9=Refused)
 - \`_EDUCAG\` (education grouped: 1=Did not graduate HS, 2=Graduated HS, 3=Attended college, 4=Graduated college, 9=DK)
-- \`INCOME3\` (income: 1=<$10K, 2=$10-15K, 3=$15-20K, 4=$20-25K, 5=$25-35K, 6=$35-50K, 7=$50-75K, 8=$75-100K, 9=$100-150K, 10=$150-200K, 11=$200K+, 77=DK, 99=Refused)
-- \`_INCOMG1\` (income grouped: 1=<$15K, 2=$15-25K, 3=$25-35K, 4=$35-50K, 5=$50-100K, 6=$100-200K, 7=$200K+, 9=DK)
 - \`MARITAL\` (1=Married, 2=Divorced, 3=Widowed, 4=Separated, 5=Never married, 6=Unmarried couple, 9=Refused)
 - \`EMPLOY1\` (1=Employed, 2=Self-employed, 3=Unemployed 1yr+, 4=Unemployed <1yr, 5=Homemaker, 6=Student, 7=Retired, 8=Unable to work, 9=Refused)
 - \`VETERAN3\` (1=Yes, 2=No, 7=DK, 9=Refused)
 - \`CHILDREN\` (number of children in household, 88=None, 99=Refused)
+
+**Income (IMPORTANT — coding changed between eras):**
+- \`INCOME2\` — available for 2014-2020 ONLY (8 categories: 1=<$10K, 2=$10-15K, 3=$15-20K, 4=$20-25K, 5=$25-35K, 6=$35-50K, 7=$50-75K, 8=$75K+, 77=DK, 99=Refused)
+- \`INCOME3\` — available for 2023 ONLY (11 categories: 1=<$10K, 2=$10-15K, 3=$15-20K, 4=$20-25K, 5=$25-35K, 6=$35-50K, 7=$50-75K, 8=$75-100K, 9=$100-150K, 10=$150-200K, 11=$200K+, 77=DK, 99=Refused)
+- \`_INCOMG\` — available for 2014-2020 ONLY (5 groups: 1=<$15K, 2=$15-25K, 3=$25-35K, 4=$35-50K, 5=$50K+, 9=DK)
+- \`_INCOMG1\` — available for 2023 ONLY (7 groups: 1=<$15K, 2=$15-25K, 3=$25-35K, 4=$35-50K, 5=$50-100K, 6=$100-200K, 7=$200K+, 9=DK)
+- For cross-year income analysis, use INCOME2 for 2014-2020 and INCOME3 for 2023 separately, or create comparable bins manually. DO NOT mix these columns in the same query without careful binning.
 
 **General Health:**
 - \`GENHLTH\` (1=Excellent, 2=Very good, 3=Good, 4=Fair, 5=Poor, 7=DK, 9=Refused)
@@ -79,31 +111,31 @@ Days variables (PHYSHLTH, MENTHLTH): 1-30 = number of days, 88 = None, 77 = DK, 
 - \`MENTHLTH\` (days of poor mental health in past 30, 88=None, 77=DK, 99=Refused)
 - \`POORHLTH\` (days poor health prevented activities, 88=None, 77=DK, 99=Refused)
 - \`_RFHLTH\` (calculated: 1=Good or better health, 2=Fair or poor, 9=DK)
-- \`_PHYS14D\` (calculated: 1=0-13 days poor physical health, 2=14+ days, 9=DK)
-- \`_MENT14D\` (calculated: 1=0-13 days poor mental health, 2=14+ days, 9=DK)
+- \`_PHYS14D\` (calculated: 1=0-13 days poor physical health, 2=14+ days, 9=DK — available 2015+ only)
+- \`_MENT14D\` (calculated: 1=0-13 days poor mental health, 2=14+ days, 9=DK — available 2015+ only)
 
-**Chronic Conditions (all: 1=Yes, 2=No, 7=DK, 9=Refused):**
-- \`BPHIGH6\` (told high BP — special: 1=Yes, 2=Yes but only during pregnancy, 3=No, 4=Borderline, 7=DK, 9=Refused)
+**Chronic Conditions (all: 1=Yes, 2=No, 7=DK, 9=Refused unless noted):**
+- \`BPHIGH6\` (told high BP — special: 1=Yes, 2=Yes but only during pregnancy, 3=No, 4=Borderline, 7=DK, 9=Refused — available 2015, 2017, 2019, 2023 only)
 - \`CVDINFR4\` (heart attack)
 - \`CVDCRHD4\` (coronary heart disease)
 - \`CVDSTRK3\` (stroke)
 - \`ASTHMA3\` (ever told asthma)
 - \`ASTHNOW\` (still have asthma)
 - \`DIABETE4\` (diabetes: 1=Yes, 2=Yes only during pregnancy, 3=No, 4=Pre-diabetes, 7=DK, 9=Refused)
-- \`CHCCOPD3\` (COPD/emphysema/chronic bronchitis)
-- \`ADDEPEV3\` (depressive disorder)
-- \`CHCKDNY2\` (kidney disease)
+- \`CHCCOPD3\` (COPD/emphysema/chronic bronchitis — available 2019+ only)
+- \`ADDEPEV3\` (depressive disorder — available 2019+ only)
+- \`CHCKDNY2\` (kidney disease — available 2019+ only)
 - \`HAVARTH4\` (arthritis)
 - \`CHCSCNC1\` (skin cancer)
 - \`CHCOCNC1\` (other cancer)
-- \`_MICHD\` (calculated: myocardial infarction or CHD: 1=Yes, 2=No)
+- \`_MICHD\` (calculated: myocardial infarction or CHD: 1=Yes, 2=No — available 2017+ only)
 
 **Health Care Access:**
-- \`PRIMINS1\` (primary insurance: 1-10 various types, 88=No coverage)
+- \`PRIMINS1\` (primary insurance: 1-10 various types, 88=No coverage — 2023 ONLY)
 - \`PERSDOC3\` (personal doctor: 1=Yes one, 2=Yes more than one, 3=No, 7=DK, 9=Refused)
 - \`MEDCOST1\` (couldn't see doctor due to cost: 1=Yes, 2=No, 7=DK, 9=Refused)
 - \`CHECKUP1\` (last routine checkup: 1=Within past year, 2=1-2 years, 3=2-5 years, 4=5+ years, 7=DK, 8=Never, 9=Refused)
-- \`_HLTHPL1\` (calculated: has any health plan: 1=Yes, 2=No, 9=DK)
+- \`_HLTHPL1\` (calculated: has any health plan: 1=Yes, 2=No, 9=DK — available 2019+ only)
 - \`_HCVU653\` (calculated: health care coverage 18-64: 1=Yes, 2=No, 9=DK)
 
 **Behavioral Risk Factors:**
@@ -111,11 +143,11 @@ Days variables (PHYSHLTH, MENTHLTH): 1-30 = number of days, 88 = None, 77 = DK, 
 - \`_TOTINDA\` (calculated: leisure time physical activity: 1=Had activity, 2=No activity, 9=DK)
 - \`SMOKE100\` (smoked 100+ cigarettes ever: 1=Yes, 2=No, 7=DK, 9=Refused)
 - \`_SMOKER3\` (calculated: 1=Current daily, 2=Current some days, 3=Former, 4=Never, 9=DK)
-- \`_CURECI2\` (calculated current e-cigarette user: 1=Current daily, 2=Current some days, 3=Former, 4=Never, 9=DK)
+- \`_CURECI2\` (calculated current e-cigarette user: 1=Current daily, 2=Current some days, 3=Former, 4=Never, 9=DK — 2023 ONLY)
 - \`ALCDAY4\` (days per week/month: 101-199=days/week, 201-299=days/month, 888=None past 30, 777=DK, 999=Refused)
 - \`_RFBING6\` (calculated binge drinker: 1=No, 2=Yes, 9=DK)
-- \`_RFDRHV8\` (calculated heavy drinker: 1=No, 2=Yes, 9=DK)
-- \`_DRNKWK2\` (calculated drinks per week, continuous, 99900=DK)
+- \`_RFDRHV8\` (calculated heavy drinker: 1=No, 2=Yes, 9=DK — available 2015+ only)
+- \`_DRNKWK2\` (calculated drinks per week, continuous, 99900=DK — available 2015+ only)
 
 **BMI:**
 - \`_BMI5\` (calculated BMI * 100, e.g. 2500 = 25.00)
@@ -124,12 +156,12 @@ Days variables (PHYSHLTH, MENTHLTH): 1-30 = number of days, 88 = None, 77 = DK, 
 
 **Preventive Care:**
 - \`FLUSHOT7\` (flu shot past 12 months: 1=Yes, 2=No, 7=DK, 9=Refused)
-- \`PNEUVAC4\` (pneumonia vaccine ever: 1=Yes, 2=No, 7=DK, 9=Refused)
+- \`PNEUVAC4\` (pneumonia vaccine ever: 1=Yes, 2=No, 7=DK, 9=Refused — available 2018+ only)
 - \`HIVTST7\` (ever tested for HIV: 1=Yes, 2=No, 7=DK, 9=Refused)
 - \`_FLSHOT7\` (calculated flu shot: 1=Yes, 2=No, 9=DK)
 
 **Disability:**
-- \`DEAF\` (deaf or serious hearing difficulty: 1=Yes, 2=No, 7=DK, 9=Refused)
+- \`DEAF\` (deaf or serious hearing difficulty: 1=Yes, 2=No, 7=DK, 9=Refused — available 2015+ only)
 - \`BLIND\` (blind or serious vision difficulty: 1=Yes, 2=No, 7=DK, 9=Refused)
 - \`DIFFWALK\` (serious difficulty walking: 1=Yes, 2=No, 7=DK, 9=Refused)
 - \`DIFFDRES\` (difficulty dressing: 1=Yes, 2=No, 7=DK, 9=Refused)
@@ -137,7 +169,7 @@ Days variables (PHYSHLTH, MENTHLTH): 1-30 = number of days, 88 = None, 77 = DK, 
 - \`DECIDE\` (difficulty concentrating: 1=Yes, 2=No, 7=DK, 9=Refused)
 
 **Seatbelt:**
-- \`SEATBELT\` (1=Always, 2=Nearly always, 3=Sometimes, 4=Seldom, 5=Never, 7=DK, 8=Never drive/ride, 9=Refused)
+- \`SEATBELT\` (1=Always, 2=Nearly always, 3=Sometimes, 4=Seldom, 5=Never, 7=DK, 8=Never drive/ride, 9=Refused — not available in 2019)
 
 **Survey Design:**
 - \`_LLCPWT\` (final weight — ALWAYS use for estimates)
@@ -199,6 +231,18 @@ GROUP BY _AGE_G
 ORDER BY _AGE_G
 \`\`\`
 
+**Obesity rate trend by year:**
+\`\`\`sql
+SELECT
+  survey_year,
+  ROUND(100.0 * SUM(CASE WHEN _BMI5CAT = 4 THEN _LLCPWT ELSE 0 END)
+    / NULLIF(SUM(CASE WHEN _BMI5CAT BETWEEN 1 AND 4 THEN _LLCPWT ELSE 0 END), 0), 1) AS obesity_pct,
+  COUNT(*) FILTER (WHERE _BMI5CAT BETWEEN 1 AND 4) AS sample_n
+FROM brfss
+GROUP BY survey_year
+ORDER BY survey_year
+\`\`\`
+
 **States with highest obesity rates:**
 \`\`\`sql
 SELECT
@@ -215,15 +259,15 @@ LIMIT 10
 **Poor mental health days by income:**
 \`\`\`sql
 SELECT
-  CASE _INCOMG1 WHEN 1 THEN '<$15K' WHEN 2 THEN '$15-25K' WHEN 3 THEN '$25-35K'
-    WHEN 4 THEN '$35-50K' WHEN 5 THEN '$50-100K' WHEN 6 THEN '$100-200K' WHEN 7 THEN '$200K+' END AS income_group,
+  CASE _INCOMG WHEN 1 THEN '<$15K' WHEN 2 THEN '$15-25K' WHEN 3 THEN '$25-35K'
+    WHEN 4 THEN '$35-50K' WHEN 5 THEN '$50K+' END AS income_group,
   ROUND(SUM(CASE WHEN MENTHLTH BETWEEN 1 AND 30 THEN MENTHLTH * _LLCPWT
     WHEN MENTHLTH = 88 THEN 0 ELSE NULL END)
     / NULLIF(SUM(CASE WHEN MENTHLTH BETWEEN 0 AND 30 OR MENTHLTH = 88 THEN _LLCPWT ELSE NULL END), 0), 1) AS avg_poor_mental_health_days
 FROM brfss
-WHERE _INCOMG1 BETWEEN 1 AND 7
-GROUP BY _INCOMG1
-ORDER BY _INCOMG1
+WHERE _INCOMG BETWEEN 1 AND 5 AND survey_year BETWEEN 2014 AND 2020
+GROUP BY _INCOMG
+ORDER BY _INCOMG
 \`\`\`
 
 ---
@@ -238,5 +282,9 @@ ORDER BY _INCOMG1
 - ALWAYS add readable labels via CASE WHEN — never return raw numeric codes.
 - Prefer calculated variables (prefixed with _) when available — they are pre-cleaned by CDC.
 - For days variables (PHYSHLTH, MENTHLTH, POORHLTH), treat 88 as 0 days and exclude 77/99.
-- For ALCDAY4, decode: values 101-107 mean 1-7 days/week, 201-230 mean 1-30 days/month, 888=None.`;
+- For ALCDAY4, decode: values 101-107 mean 1-7 days/week, 201-230 mean 1-30 days/month, 888=None.
+- When the user asks about trends over time, GROUP BY survey_year. Note the 2021-2022 gap.
+- When a column is only available in certain years (e.g., INCOME3 is 2023 only), filter to those years or return CANNOT_ANSWER if the user's question requires cross-year comparison with that variable.
+- For income analysis across all years, use INCOME2/\`_INCOMG\` for 2014-2020 and INCOME3/\`_INCOMG1\` for 2023. Do NOT use both in the same query without careful binning.
+- When the user asks about a specific year, always add \`WHERE survey_year = <year>\`.`;
 }

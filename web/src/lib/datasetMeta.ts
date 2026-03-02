@@ -41,16 +41,17 @@ export const DATASET_METAS: DatasetMeta[] = [
     subtitle: "CDC Behavioral Risk Factor Survey",
     icon: BarChart3,
     stats: [
-      { label: "Respondents", value: "433K" },
-      { label: "Survey year", value: "2023" },
-      { label: "Columns", value: "350" },
+      { label: "Respondents", value: "~3.5M" },
+      { label: "Years", value: "2014-2020, 2023" },
+      { label: "Columns", value: "72" },
     ],
     description:
-      "Explore population health behaviors, risk factors, chronic conditions, and demographics across all 50 states and DC.",
+      "Explore population health trends, risk factors, chronic conditions, and demographics across all 50 states and DC over 8 survey years.",
     limitations: [
       "Self-reported survey data",
       "Phone-based sample",
-      "2023 only (single year)",
+      "2021-2022 not included",
+      "Income categories changed in 2023",
     ],
     href: "/brfss",
     accentColor: "#0EA5E9",
