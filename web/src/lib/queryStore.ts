@@ -33,7 +33,7 @@ export interface StoredAnalysis {
 }
 
 const DB_NAME = "medicaid-analyzer";
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 const QUERIES_STORE = "queries";
 const ANALYSES_STORE = "analyses";
 
@@ -53,6 +53,38 @@ function openDB(): Promise<IDBDatabase> {
       if (oldVersion < 2) {
         const store = db.createObjectStore(ANALYSES_STORE, { keyPath: "id" });
         store.createIndex("timestamp", "timestamp", { unique: false });
+      }
+      if (oldVersion < 3) {
+        // Backfill dataset="medicaid" on all existing queries/analyses (pre-filtering era)
+        const tx = request.transaction!;
+
+        const qStore = tx.objectStore(QUERIES_STORE);
+        const qCursor = qStore.openCursor();
+        qCursor.onsuccess = () => {
+          const cursor = qCursor.result;
+          if (cursor) {
+            const record = cursor.value;
+            if (!record.dataset) {
+              record.dataset = "medicaid";
+              cursor.update(record);
+            }
+            cursor.continue();
+          }
+        };
+
+        const aStore = tx.objectStore(ANALYSES_STORE);
+        const aCursor = aStore.openCursor();
+        aCursor.onsuccess = () => {
+          const cursor = aCursor.result;
+          if (cursor) {
+            const record = cursor.value;
+            if (!record.dataset) {
+              record.dataset = "medicaid";
+              cursor.update(record);
+            }
+            cursor.continue();
+          }
+        };
       }
     };
   });

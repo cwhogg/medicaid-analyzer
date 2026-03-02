@@ -126,6 +126,11 @@ export async function initMetricsDB(): Promise<void> {
     // Column already exists — ignore
   }
 
+  // Backfill dataset='medicaid' on all NULL rows (pre-filtering era, before 2026-03-02)
+  await metricsDb.run(`UPDATE feed_items SET dataset = 'medicaid' WHERE dataset IS NULL`);
+  await metricsDb.run(`UPDATE query_log SET dataset = 'medicaid' WHERE dataset IS NULL`);
+  await metricsDb.run(`UPDATE requests SET dataset = 'medicaid' WHERE dataset IS NULL`);
+
   // Initialize totals row if not exists
   const existing = await metricsDb.all(`SELECT 1 FROM totals WHERE id = 1`);
   if (existing.length === 0) {
