@@ -7,7 +7,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Database className="w-5 h-5 text-accent" />
-            <span className="font-medium text-white">Public Health Data Explorer</span>
+            <span className="font-medium text-white">Open Health Data Hub</span>
           </div>
           <div className="text-sm text-muted-dark text-right space-y-1">
             <p>

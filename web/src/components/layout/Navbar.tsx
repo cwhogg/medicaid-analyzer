@@ -105,7 +105,7 @@ export function Navbar() {
             <Link href="/" className="flex items-center gap-2 group">
               <Database className="w-6 h-6 text-accent group-hover:scale-110 transition-transform" />
               <span className="font-semibold text-base sm:text-lg text-white">
-                Public Health Data Explorer
+                Open Health Data Hub
               </span>
             </Link>
 

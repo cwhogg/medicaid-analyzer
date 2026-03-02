@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getAllPosts } from "@/lib/content";
 
-const BASE_URL = "https://medicaid-analyzer.vercel.app";
+const BASE_URL = "https://www.openhealthdatahub.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes: MetadataRoute.Sitemap = [

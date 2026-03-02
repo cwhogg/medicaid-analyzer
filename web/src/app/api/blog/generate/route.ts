@@ -338,10 +338,10 @@ targetKeywords: ${JSON.stringify(topic.targetKeywords)}
 contentGap: "${topic.contentGap.replace(/"/g, '\\"')}"
 date: "${new Date().toISOString()}"
 description: "${topic.description.replace(/"/g, '\\"')}"
-ideaName: "Medicaid Claims Analyzer"
+ideaName: "Open Health Data Hub"
 status: published
 wordCount: ${wordCount}
-canonicalUrl: "https://medicaid-analyzer.vercel.app/blog/${topic.slug}"
+canonicalUrl: "https://www.openhealthdatahub.com/blog/${topic.slug}"
 ---
 
 ${bodyContent}

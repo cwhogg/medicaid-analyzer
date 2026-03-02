@@ -15,21 +15,21 @@ const jetbrainsMono = JetBrains_Mono({
 
 export function generateMetadata(): Metadata {
   return {
-    metadataBase: new URL("https://medicaid-analyzer.vercel.app"),
-    title: "Medicaid Claims Analyzer",
+    metadataBase: new URL("https://www.openhealthdatahub.com"),
+    title: "Open Health Data Hub",
     description:
-      "Explore 227M+ rows of Medicaid provider spending data with natural language queries powered by AI.",
+      "Explore public health datasets with natural language queries powered by AI. Medicaid claims, BRFSS survey data, and more.",
     openGraph: {
-      title: "Medicaid Claims Analyzer",
+      title: "Open Health Data Hub",
       description:
-        "Query $1+ trillion in Medicaid provider spending across 617K+ providers. Ask questions in plain English — AI generates SQL and returns results with visualizations.",
+        "Query 230M+ rows of public health data in plain English. Medicaid provider spending, CDC BRFSS population health surveys — AI generates SQL and returns results with visualizations.",
       images: [{ url: "/og.png", width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
-      title: "Medicaid Claims Analyzer",
+      title: "Open Health Data Hub",
       description:
-        "Query $1+ trillion in Medicaid provider spending across 617K+ providers. AI-powered natural language to SQL.",
+        "Query 230M+ rows of public health data in plain English. AI-powered natural language to SQL.",
       images: ["/og.png"],
     },
     other: {

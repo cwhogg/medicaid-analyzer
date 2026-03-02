@@ -7,7 +7,7 @@ import { getAllPosts } from "@/lib/content";
 import { Calendar, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Medicaid Spending Analysis Blog | Medicaid Claims Analyzer",
+  title: "Health Data Analysis Blog | Open Health Data Hub",
   description:
     "Data-driven analysis of Medicaid provider spending trends, top procedures, state comparisons, and more — powered by 227M+ claims records.",
   openGraph: {

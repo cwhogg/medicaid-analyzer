@@ -27,10 +27,10 @@ export function generateMetadata({ params }: Props): Metadata {
     `Analysis of ${frontmatter.title.toLowerCase()} from 227M+ Medicaid claims records.`;
   const canonical =
     frontmatter.canonicalUrl ||
-    `https://medicaid-analyzer.vercel.app/blog/${params.slug}`;
+    `https://www.openhealthdatahub.com/blog/${params.slug}`;
 
   return {
-    title: `${frontmatter.title} | Medicaid Claims Analyzer`,
+    title: `${frontmatter.title} | Open Health Data Hub`,
     description,
     keywords: frontmatter.targetKeywords,
     alternates: { canonical },
@@ -64,7 +64,7 @@ export default function BlogPostPage({ params }: Props) {
   const { frontmatter, content } = post;
   const canonical =
     frontmatter.canonicalUrl ||
-    `https://medicaid-analyzer.vercel.app/blog/${params.slug}`;
+    `https://www.openhealthdatahub.com/blog/${params.slug}`;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -73,12 +73,12 @@ export default function BlogPostPage({ params }: Props) {
     datePublished: frontmatter.date,
     author: {
       "@type": "Organization",
-      name: "Medicaid Claims Analyzer",
-      url: "https://medicaid-analyzer.vercel.app",
+      name: "Open Health Data Hub",
+      url: "https://www.openhealthdatahub.com",
     },
     publisher: {
       "@type": "Organization",
-      name: "Medicaid Claims Analyzer",
+      name: "Open Health Data Hub",
     },
     url: canonical,
     wordCount: frontmatter.wordCount,
