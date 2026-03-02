@@ -20,6 +20,8 @@ interface DaySummary {
   uniqueUsers: number;
   medicaid: number;
   brfss: number;
+  medicare: number;
+  nhanes: number;
 }
 
 interface FeedbackItem {
@@ -751,10 +753,26 @@ function AdminDashboard() {
                     maxBarSize={40}
                   />
                   <Bar
+                    dataKey="medicare"
+                    name="Medicare"
+                    stackId="queries"
+                    fill="#10B981"
+                    radius={[0, 0, 0, 0]}
+                    maxBarSize={40}
+                  />
+                  <Bar
                     dataKey="brfss"
                     name="BRFSS"
                     stackId="queries"
                     fill="#0EA5E9"
+                    radius={[0, 0, 0, 0]}
+                    maxBarSize={40}
+                  />
+                  <Bar
+                    dataKey="nhanes"
+                    name="NHANES"
+                    stackId="queries"
+                    fill="#8B5CF6"
                     radius={[3, 3, 0, 0]}
                     maxBarSize={40}
                   />

@@ -8,6 +8,10 @@ interface DaySummary {
   day: string;
   queryCount: number;
   uniqueUsers: number;
+  medicaid: number;
+  brfss: number;
+  medicare: number;
+  nhanes: number;
 }
 
 interface Query {
@@ -145,7 +149,10 @@ function QueriesPage() {
                 <th className="pb-2 pr-4">Date</th>
                 <th className="pb-2 pr-4 text-right">Queries</th>
                 <th className="pb-2 pr-4 text-right">Unique Users</th>
-                <th className="pb-2 pr-4 text-right">Queries/User</th>
+                <th className="pb-2 pr-3 text-right" style={{ color: "#EA580C" }}>Med&apos;caid</th>
+                <th className="pb-2 pr-3 text-right" style={{ color: "#10B981" }}>Med&apos;care</th>
+                <th className="pb-2 pr-3 text-right" style={{ color: "#0EA5E9" }}>BRFSS</th>
+                <th className="pb-2 pr-3 text-right" style={{ color: "#8B5CF6" }}>NHANES</th>
                 <th className="pb-2"></th>
               </tr>
             </thead>
@@ -165,8 +172,17 @@ function QueriesPage() {
                   <td className="py-2 pr-4 text-right font-mono">
                     {formatNumber(d.uniqueUsers)}
                   </td>
-                  <td className="py-2 pr-4 text-right font-mono text-muted">
-                    {d.uniqueUsers > 0 ? (d.queryCount / d.uniqueUsers).toFixed(1) : "—"}
+                  <td className="py-2 pr-3 text-right font-mono text-muted">
+                    {d.medicaid || 0}
+                  </td>
+                  <td className="py-2 pr-3 text-right font-mono text-muted">
+                    {d.medicare || 0}
+                  </td>
+                  <td className="py-2 pr-3 text-right font-mono text-muted">
+                    {d.brfss || 0}
+                  </td>
+                  <td className="py-2 pr-3 text-right font-mono text-muted">
+                    {d.nhanes || 0}
                   </td>
                   <td className="py-2 text-right">
                     <span className="text-accent text-xs">
@@ -177,7 +193,7 @@ function QueriesPage() {
               ))}
               {days.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-muted/40">
+                  <td colSpan={9} className="py-8 text-center text-muted/40">
                     No query data available
                   </td>
                 </tr>

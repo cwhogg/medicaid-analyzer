@@ -616,7 +616,9 @@ export async function getDailyQueries(day?: string): Promise<Record<string, unkn
     SELECT STRFTIME(DATE_TRUNC('day', EPOCH_MS(timestamp)), '%Y-%m-%d') as day,
       COUNT(*) as query_count, COUNT(DISTINCT ip) as unique_users,
       COUNT(*) FILTER (WHERE dataset = 'medicaid' OR dataset IS NULL) as medicaid,
-      COUNT(*) FILTER (WHERE dataset = 'brfss') as brfss
+      COUNT(*) FILTER (WHERE dataset = 'brfss') as brfss,
+      COUNT(*) FILTER (WHERE dataset = 'medicare') as medicare,
+      COUNT(*) FILTER (WHERE dataset = 'nhanes') as nhanes
     FROM query_log WHERE ${f}
     GROUP BY day ORDER BY day DESC LIMIT 90
   `) as Record<string, unknown>[]);
@@ -627,6 +629,8 @@ export async function getDailyQueries(day?: string): Promise<Record<string, unkn
     uniqueUsers: Number(r.unique_users),
     medicaid: Number(r.medicaid),
     brfss: Number(r.brfss),
+    medicare: Number(r.medicare),
+    nhanes: Number(r.nhanes),
   }));
 }
 
