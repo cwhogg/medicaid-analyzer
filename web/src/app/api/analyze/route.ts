@@ -390,9 +390,16 @@ export async function POST(request: NextRequest) {
     cumulativeInputTokens += response.usage.input_tokens;
     cumulativeOutputTokens += response.usage.output_tokens;
 
+    console.log(`[analyze] step=${stepIndex} stop_reason=${response.stop_reason} blocks=${response.content.map(b => b.type).join(",")}`);
+
     const textBlock = response.content.find((block) => block.type === "text");
     if (!textBlock || textBlock.type !== "text") {
+      console.error("[analyze] No text block. Content types:", response.content.map(b => b.type));
       return NextResponse.json({ error: "No response generated." }, { status: 500 });
+    }
+
+    if (response.stop_reason === "max_tokens") {
+      console.warn("[analyze] Response truncated at max_tokens");
     }
 
     let responseText = textBlock.text.trim();
@@ -405,20 +412,26 @@ export async function POST(request: NextRequest) {
     let parsed;
     try {
       parsed = JSON.parse(responseText);
-    } catch {
+    } catch (e1) {
       // Try to extract JSON object from surrounding text
       const firstBrace = responseText.indexOf("{");
       const lastBrace = responseText.lastIndexOf("}");
       if (firstBrace !== -1 && lastBrace > firstBrace) {
         try {
           parsed = JSON.parse(responseText.slice(firstBrace, lastBrace + 1));
-        } catch {
-          console.error("Failed to parse analysis response. Raw text:", responseText.slice(0, 500));
-          return NextResponse.json({ error: "Failed to parse analysis response." }, { status: 500 });
+        } catch (e2) {
+          const preview = responseText.slice(0, 300);
+          console.error("Failed to parse analysis response. Raw text:", preview, "Error:", e2);
+          return NextResponse.json({
+            error: `Failed to parse analysis response. stop=${response.stop_reason} len=${responseText.length} preview=${preview.slice(0, 150)}`,
+          }, { status: 500 });
         }
       } else {
-        console.error("No JSON object found in analysis response. Raw text:", responseText.slice(0, 500));
-        return NextResponse.json({ error: "Failed to parse analysis response." }, { status: 500 });
+        const preview = responseText.slice(0, 300);
+        console.error("No JSON object found. Raw text:", preview, "Error:", e1);
+        return NextResponse.json({
+          error: `No JSON in response. stop=${response.stop_reason} len=${responseText.length} preview=${preview.slice(0, 150)}`,
+        }, { status: 500 });
       }
     }
 
