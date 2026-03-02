@@ -1,9 +1,9 @@
 export function generateBRFSSSchemaPrompt(): string {
-  return `## BRFSS 2014-2020, 2023 Survey Data
+  return `## BRFSS 2014-2020, 2023-2024 Survey Data
 
-You have ONE table: **brfss** (~3.5M rows, 72 columns, one row per respondent)
+You have ONE table: **brfss** (~4M rows, 99 columns, one row per respondent)
 
-This is the CDC Behavioral Risk Factor Surveillance System — the largest continuously conducted telephone health survey in the world. Data spans 8 survey years: 2014, 2015, 2016, 2017, 2018, 2019, 2020, and 2023 (2021-2022 are excluded due to major variable renames).
+This is the CDC Behavioral Risk Factor Surveillance System — the largest continuously conducted telephone health survey in the world. Data spans 9 survey years: 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2023, and 2024 (2021-2022 are excluded due to major variable renames).
 
 ---
 
@@ -80,7 +80,7 @@ Days variables (PHYSHLTH, MENTHLTH): 1-30 = number of days, 88 = None, 77 = DK, 
 ### Core Columns (organized by topic)
 
 **Survey Year:**
-- \`survey_year\` (integer: 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2023)
+- \`survey_year\` (integer: 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2023, 2024)
 
 **Demographics:**
 - \`_STATE\` (FIPS code — see state lookup below)
@@ -100,10 +100,10 @@ Days variables (PHYSHLTH, MENTHLTH): 1-30 = number of days, 88 = None, 77 = DK, 
 
 **Income (IMPORTANT — coding changed between eras):**
 - \`INCOME2\` — available for 2014-2020 ONLY (8 categories: 1=<$10K, 2=$10-15K, 3=$15-20K, 4=$20-25K, 5=$25-35K, 6=$35-50K, 7=$50-75K, 8=$75K+, 77=DK, 99=Refused)
-- \`INCOME3\` — available for 2023 ONLY (11 categories: 1=<$10K, 2=$10-15K, 3=$15-20K, 4=$20-25K, 5=$25-35K, 6=$35-50K, 7=$50-75K, 8=$75-100K, 9=$100-150K, 10=$150-200K, 11=$200K+, 77=DK, 99=Refused)
+- \`INCOME3\` — available for 2023-2024 (11 categories: 1=<$10K, 2=$10-15K, 3=$15-20K, 4=$20-25K, 5=$25-35K, 6=$35-50K, 7=$50-75K, 8=$75-100K, 9=$100-150K, 10=$150-200K, 11=$200K+, 77=DK, 99=Refused)
 - \`_INCOMG\` — available for 2014-2020 ONLY (5 groups: 1=<$15K, 2=$15-25K, 3=$25-35K, 4=$35-50K, 5=$50K+, 9=DK)
-- \`_INCOMG1\` — available for 2023 ONLY (7 groups: 1=<$15K, 2=$15-25K, 3=$25-35K, 4=$35-50K, 5=$50-100K, 6=$100-200K, 7=$200K+, 9=DK)
-- For cross-year income analysis, use INCOME2 for 2014-2020 and INCOME3 for 2023 separately, or create comparable bins manually. DO NOT mix these columns in the same query without careful binning.
+- \`_INCOMG1\` — available for 2023-2024 (7 groups: 1=<$15K, 2=$15-25K, 3=$25-35K, 4=$35-50K, 5=$50-100K, 6=$100-200K, 7=$200K+, 9=DK)
+- For cross-year income analysis, use INCOME2 for 2014-2020 and INCOME3 for 2023-2024 separately, or create comparable bins manually. DO NOT mix these columns in the same query without careful binning.
 
 **General Health:**
 - \`GENHLTH\` (1=Excellent, 2=Very good, 3=Good, 4=Fair, 5=Poor, 7=DK, 9=Refused)
@@ -131,7 +131,7 @@ Days variables (PHYSHLTH, MENTHLTH): 1-30 = number of days, 88 = None, 77 = DK, 
 - \`_MICHD\` (calculated: myocardial infarction or CHD: 1=Yes, 2=No — available 2017+ only)
 
 **Health Care Access:**
-- \`PRIMINS1\` (primary insurance: 1-10 various types, 88=No coverage — 2023 ONLY)
+- \`PRIMINS1\` (primary insurance: 1-10 various types, 88=No coverage — 2023-2024)
 - \`PERSDOC3\` (personal doctor: 1=Yes one, 2=Yes more than one, 3=No, 7=DK, 9=Refused)
 - \`MEDCOST1\` (couldn't see doctor due to cost: 1=Yes, 2=No, 7=DK, 9=Refused)
 - \`CHECKUP1\` (last routine checkup: 1=Within past year, 2=1-2 years, 3=2-5 years, 4=5+ years, 7=DK, 8=Never, 9=Refused)
@@ -143,7 +143,7 @@ Days variables (PHYSHLTH, MENTHLTH): 1-30 = number of days, 88 = None, 77 = DK, 
 - \`_TOTINDA\` (calculated: leisure time physical activity: 1=Had activity, 2=No activity, 9=DK)
 - \`SMOKE100\` (smoked 100+ cigarettes ever: 1=Yes, 2=No, 7=DK, 9=Refused)
 - \`_SMOKER3\` (calculated: 1=Current daily, 2=Current some days, 3=Former, 4=Never, 9=DK)
-- \`_CURECI2\` (calculated current e-cigarette user: 1=Current daily, 2=Current some days, 3=Former, 4=Never, 9=DK — 2023 ONLY)
+- \`_CURECI2\` (calculated current e-cigarette user: 1=Current daily, 2=Current some days, 3=Former, 4=Never, 9=DK — 2023-2024)
 - \`ALCDAY4\` (days per week/month: 101-199=days/week, 201-299=days/month, 888=None past 30, 777=DK, 999=Refused)
 - \`_RFBING6\` (calculated binge drinker: 1=No, 2=Yes, 9=DK)
 - \`_RFDRHV8\` (calculated heavy drinker: 1=No, 2=Yes, 9=DK — available 2015+ only)
@@ -169,7 +169,44 @@ Days variables (PHYSHLTH, MENTHLTH): 1-30 = number of days, 88 = None, 77 = DK, 
 - \`DECIDE\` (difficulty concentrating: 1=Yes, 2=No, 7=DK, 9=Refused)
 
 **Seatbelt:**
-- \`SEATBELT\` (1=Always, 2=Nearly always, 3=Sometimes, 4=Seldom, 5=Never, 7=DK, 8=Never drive/ride, 9=Refused — not available in 2019)
+- \`SEATBELT\` (1=Always, 2=Nearly always, 3=Sometimes, 4=Seldom, 5=Never, 7=DK, 8=Never drive/ride, 9=Refused — not available in 2019 or 2024)
+
+**Social Determinants of Health (2024 only):**
+- \`SDHBILLS\` (Unable to pay mortgage/rent/utilities in past 12 months: 1=Yes, 2=No, 7=DK, 9=Refused)
+- \`SDHEMPLY\` (Lost employment or had hours/income reduced in past 12 months: 1=Yes, 2=No, 7=DK, 9=Refused)
+- \`SDHFOOD1\` (How often food didn't last: 1=Always, 2=Usually, 3=Sometimes, 4=Rarely, 5=Never, 7=DK, 9=Refused)
+- \`SDHTRNSP\` (Lack of reliable transportation kept you from appointments, work, etc.: 1=Yes, 2=No, 7=DK, 9=Refused)
+- \`SDHUTILS\` (Threatened with utility shutoff in past 12 months: 1=Yes, 2=No, 7=DK, 9=Refused)
+- \`SDLONELY\` (How often feel lonely: 1=Always, 2=Usually, 3=Sometimes, 4=Rarely, 5=Never, 7=DK, 9=Refused)
+
+**Adverse Childhood Experiences — ACEs (2024 only):**
+- \`ACEADNED\` (Before age 18, how often did an adult in household meet basic needs: 1=Always, 2=Usually, 3=Sometimes, 4=Rarely, 5=Never, 7=DK, 9=Refused — PROTECTIVE factor, higher=worse)
+- \`ACEADSAF\` (Before age 18, how often did an adult make you feel safe/protected: 1=Always, 2=Usually, 3=Sometimes, 4=Rarely, 5=Never, 7=DK, 9=Refused — PROTECTIVE factor, higher=worse)
+- \`ACEDEPRS\` (Lived with anyone depressed or mentally ill: 1=Yes, 2=No, 7=DK, 9=Refused)
+- \`ACEDIVRC\` (Parents separated or divorced: 1=Yes, 2=No, 7=DK, 8=Parents never married, 9=Refused)
+- \`ACEDRINK\` (Lived with problem drinker/alcoholic: 1=Yes, 2=No, 7=DK, 9=Refused)
+- \`ACEDRUGS\` (Lived with anyone who used illegal drugs or abused prescriptions: 1=Yes, 2=No, 7=DK, 9=Refused)
+- \`ACEHURT1\` (How often did parent physically hurt you: 1=Never, 2=Once, 3=More than once, 7=DK, 9=Refused)
+- \`ACEHVSEX\` (How often were you forced to have sex: 1=Never, 2=Once, 3=More than once, 7=DK, 9=Refused)
+- \`ACEPRISN\` (Lived with anyone who served time in prison/jail: 1=Yes, 2=No, 7=DK, 9=Refused)
+- \`ACEPUNCH\` (How often did parents beat each other up: 1=Never, 2=Once, 3=More than once, 7=DK, 9=Refused)
+- \`ACESWEAR\` (How often did parent swear at/insult/put you down: 1=Never, 2=Once, 3=More than once, 7=DK, 9=Refused)
+- \`ACETOUCH\` (How often did anyone touch you sexually: 1=Never, 2=Once, 3=More than once, 7=DK, 9=Refused)
+- \`ACETTHEM\` (How often were you made to touch someone sexually: 1=Never, 2=Once, 3=More than once, 7=DK, 9=Refused)
+- For ACE score, count adverse experiences (yes for binary, "once" or "more than once" for frequency vars, "sometimes"/"rarely"/"never" for protective vars). Typical count is 0-11.
+
+**Marijuana Use (2024 optional module — limited state coverage):**
+- \`MARIJAN1\` (Days of marijuana use in past 30: 1-30 days, 88=None, 77=DK, 99=Refused)
+- \`MARJSMOK\` (Smoked marijuana: 1=Yes, 2=No, 7=DK, 9=Refused)
+- \`MARJEAT\` (Ate or drank marijuana products: 1=Yes, 2=No, 7=DK, 9=Refused)
+- \`MARJVAPE\` (Vaped marijuana: 1=Yes, 2=No, 7=DK, 9=Refused)
+- \`MARJDAB\` (Dabbed marijuana: 1=Yes, 2=No, 7=DK, 9=Refused)
+- \`MARJOTHR\` (Used marijuana in some other way: 1=Yes, 2=No, 7=DK, 9=Refused)
+- Note: MARIJAN1 is also available in some earlier years (2018-2019). Method-of-use vars (MARJSMOK etc.) are 2024 only. This is an optional module with limited state coverage — always note sample size.
+
+**Emotional Support / Life Satisfaction (2024 only):**
+- \`EMTSUPRT\` (How often get social/emotional support needed: 1=Always, 2=Usually, 3=Sometimes, 4=Rarely, 5=Never, 7=DK, 9=Refused)
+- \`LSATISFY\` (Overall life satisfaction: 1=Very satisfied, 2=Satisfied, 3=Dissatisfied, 4=Very dissatisfied, 7=DK, 9=Refused)
 
 **Survey Design:**
 - \`_LLCPWT\` (final weight — ALWAYS use for estimates)
@@ -285,6 +322,8 @@ ORDER BY _INCOMG
 - For ALCDAY4, decode: values 101-107 mean 1-7 days/week, 201-230 mean 1-30 days/month, 888=None.
 - When the user asks about trends over time, GROUP BY survey_year. Note the 2021-2022 gap.
 - When a column is only available in certain years (e.g., INCOME3 is 2023 only), filter to those years or return CANNOT_ANSWER if the user's question requires cross-year comparison with that variable.
-- For income analysis across all years, use INCOME2/\`_INCOMG\` for 2014-2020 and INCOME3/\`_INCOMG1\` for 2023. Do NOT use both in the same query without careful binning.
-- When the user asks about a specific year, always add \`WHERE survey_year = <year>\`.`;
+- For income analysis across all years, use INCOME2/\`_INCOMG\` for 2014-2020 and INCOME3/\`_INCOMG1\` for 2023-2024. Do NOT use both in the same query without careful binning.
+- When the user asks about a specific year, always add \`WHERE survey_year = <year>\`.
+- SDOH, ACE, marijuana method-of-use, and emotional support variables are 2024 only. If the user asks about these topics without specifying a year, filter to 2024. If they ask for trends, return CANNOT_ANSWER explaining these are 2024-only modules.
+- For ACE analysis, use CASE WHEN to create readable labels. Count adverse experiences for an ACE score.`;
 }

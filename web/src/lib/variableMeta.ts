@@ -61,7 +61,7 @@ export const brfssVariableGroups: VariableGroup[] = [
     name: "Survey Year",
     description: "Year identifier for multi-year analysis",
     variables: [
-      { name: "survey_year", type: "INTEGER", description: "Survey year", codes: "2014–2020, 2023 (2021-2022 excluded)" },
+      { name: "survey_year", type: "INTEGER", description: "Survey year", codes: "2014–2020, 2023–2024 (2021-2022 excluded)" },
     ],
   },
   {
@@ -89,9 +89,9 @@ export const brfssVariableGroups: VariableGroup[] = [
     description: "Household income — coding changed between survey eras",
     variables: [
       { name: "INCOME2", type: "INTEGER", description: "Household income (8 categories)", codes: "1=<$10K, 2=$10-15K, 3=$15-20K, 4=$20-25K, 5=$25-35K, 6=$35-50K, 7=$50-75K, 8=$75K+", note: "2014-2020 only" },
-      { name: "INCOME3", type: "INTEGER", description: "Household income (11 categories)", codes: "1=<$10K, … 8=$75-100K, 9=$100-150K, 10=$150-200K, 11=$200K+", note: "2023 only" },
+      { name: "INCOME3", type: "INTEGER", description: "Household income (11 categories)", codes: "1=<$10K, … 8=$75-100K, 9=$100-150K, 10=$150-200K, 11=$200K+", note: "2023-2024" },
       { name: "_INCOMG", type: "INTEGER", description: "Income grouped (5 categories)", codes: "1=<$15K, 2=$15-25K, 3=$25-35K, 4=$35-50K, 5=$50K+", note: "2014-2020 only" },
-      { name: "_INCOMG1", type: "INTEGER", description: "Income grouped (7 categories)", codes: "1=<$15K, 2=$15-25K, 3=$25-35K, 4=$35-50K, 5=$50-100K, 6=$100-200K, 7=$200K+", note: "2023 only" },
+      { name: "_INCOMG1", type: "INTEGER", description: "Income grouped (7 categories)", codes: "1=<$15K, 2=$15-25K, 3=$25-35K, 4=$35-50K, 5=$50-100K, 6=$100-200K, 7=$200K+", note: "2023-2024" },
     ],
   },
   {
@@ -131,7 +131,7 @@ export const brfssVariableGroups: VariableGroup[] = [
     name: "Health Care Access",
     description: "Insurance, doctor access, and preventive checkups",
     variables: [
-      { name: "PRIMINS1", type: "INTEGER", description: "Primary insurance type", codes: "1-10 various types, 88=No coverage", note: "2023 only" },
+      { name: "PRIMINS1", type: "INTEGER", description: "Primary insurance type", codes: "1-10 various types, 88=No coverage", note: "2023-2024" },
       { name: "PERSDOC3", type: "INTEGER", description: "Has personal doctor", codes: "1=Yes one, 2=Yes more than one, 3=No" },
       { name: "MEDCOST1", type: "INTEGER", description: "Couldn't see doctor due to cost", codes: "1=Yes, 2=No" },
       { name: "CHECKUP1", type: "INTEGER", description: "Last routine checkup", codes: "1=Past year, 2=1-2 yrs, 3=2-5 yrs, 4=5+ yrs, 8=Never" },
@@ -147,7 +147,7 @@ export const brfssVariableGroups: VariableGroup[] = [
       { name: "_TOTINDA", type: "INTEGER", description: "Leisure time physical activity (calculated)", codes: "1=Had activity, 2=No activity" },
       { name: "SMOKE100", type: "INTEGER", description: "Smoked 100+ cigarettes ever", codes: "1=Yes, 2=No" },
       { name: "_SMOKER3", type: "INTEGER", description: "Smoking status (calculated)", codes: "1=Current daily, 2=Current some days, 3=Former, 4=Never" },
-      { name: "_CURECI2", type: "INTEGER", description: "E-cigarette use (calculated)", codes: "1=Current daily, 2=Current some days, 3=Former, 4=Never", note: "2023 only" },
+      { name: "_CURECI2", type: "INTEGER", description: "E-cigarette use (calculated)", codes: "1=Current daily, 2=Current some days, 3=Former, 4=Never", note: "2023-2024" },
       { name: "ALCDAY4", type: "INTEGER", description: "Alcohol drinking days per week/month", codes: "101-107=days/week, 201-230=days/month, 888=None" },
       { name: "_RFBING6", type: "INTEGER", description: "Binge drinker (calculated)", codes: "1=No, 2=Yes" },
       { name: "_RFDRHV8", type: "INTEGER", description: "Heavy drinker (calculated)", codes: "1=No, 2=Yes", note: "2015+ only" },
@@ -186,9 +186,60 @@ export const brfssVariableGroups: VariableGroup[] = [
     ],
   },
   {
+    name: "Social Determinants of Health",
+    description: "Economic hardship, food insecurity, transportation, and loneliness (2024 only)",
+    variables: [
+      { name: "SDHBILLS", type: "INTEGER", description: "Unable to pay mortgage/rent/utilities in past 12 months", codes: "1=Yes, 2=No", note: "2024 only" },
+      { name: "SDHEMPLY", type: "INTEGER", description: "Lost employment or had hours/income reduced in past 12 months", codes: "1=Yes, 2=No", note: "2024 only" },
+      { name: "SDHFOOD1", type: "INTEGER", description: "How often food didn't last", codes: "1=Always, 2=Usually, 3=Sometimes, 4=Rarely, 5=Never", note: "2024 only" },
+      { name: "SDHTRNSP", type: "INTEGER", description: "Lack of reliable transportation affected appointments/work", codes: "1=Yes, 2=No", note: "2024 only" },
+      { name: "SDHUTILS", type: "INTEGER", description: "Threatened with utility shutoff in past 12 months", codes: "1=Yes, 2=No", note: "2024 only" },
+      { name: "SDLONELY", type: "INTEGER", description: "How often feel lonely", codes: "1=Always, 2=Usually, 3=Sometimes, 4=Rarely, 5=Never", note: "2024 only" },
+    ],
+  },
+  {
+    name: "Adverse Childhood Experiences (ACEs)",
+    description: "Childhood trauma and adversity before age 18 (2024 only)",
+    variables: [
+      { name: "ACEADNED", type: "INTEGER", description: "Adult met basic needs (protective)", codes: "1=Always, 2=Usually, 3=Sometimes, 4=Rarely, 5=Never", note: "2024 only" },
+      { name: "ACEADSAF", type: "INTEGER", description: "Adult made you feel safe (protective)", codes: "1=Always, 2=Usually, 3=Sometimes, 4=Rarely, 5=Never", note: "2024 only" },
+      { name: "ACEDEPRS", type: "INTEGER", description: "Lived with depressed/mentally ill person", codes: "1=Yes, 2=No", note: "2024 only" },
+      { name: "ACEDIVRC", type: "INTEGER", description: "Parents separated or divorced", codes: "1=Yes, 2=No, 8=Never married", note: "2024 only" },
+      { name: "ACEDRINK", type: "INTEGER", description: "Lived with problem drinker/alcoholic", codes: "1=Yes, 2=No", note: "2024 only" },
+      { name: "ACEDRUGS", type: "INTEGER", description: "Lived with drug user", codes: "1=Yes, 2=No", note: "2024 only" },
+      { name: "ACEHURT1", type: "INTEGER", description: "Physically hurt by parent", codes: "1=Never, 2=Once, 3=More than once", note: "2024 only" },
+      { name: "ACEHVSEX", type: "INTEGER", description: "Forced to have sex", codes: "1=Never, 2=Once, 3=More than once", note: "2024 only" },
+      { name: "ACEPRISN", type: "INTEGER", description: "Lived with someone who served time", codes: "1=Yes, 2=No", note: "2024 only" },
+      { name: "ACEPUNCH", type: "INTEGER", description: "Parents beat each other", codes: "1=Never, 2=Once, 3=More than once", note: "2024 only" },
+      { name: "ACESWEAR", type: "INTEGER", description: "Sworn at/insulted by parent", codes: "1=Never, 2=Once, 3=More than once", note: "2024 only" },
+      { name: "ACETOUCH", type: "INTEGER", description: "Touched sexually", codes: "1=Never, 2=Once, 3=More than once", note: "2024 only" },
+      { name: "ACETTHEM", type: "INTEGER", description: "Made to touch someone sexually", codes: "1=Never, 2=Once, 3=More than once", note: "2024 only" },
+    ],
+  },
+  {
+    name: "Marijuana Use",
+    description: "Cannabis use frequency and methods (2024 optional module — limited state coverage)",
+    variables: [
+      { name: "MARIJAN1", type: "INTEGER", description: "Days of marijuana use in past 30", codes: "1-30 days, 88=None", note: "2024 (also some 2018-2019)" },
+      { name: "MARJSMOK", type: "INTEGER", description: "Smoked marijuana", codes: "1=Yes, 2=No", note: "2024 only" },
+      { name: "MARJEAT", type: "INTEGER", description: "Ate or drank marijuana products", codes: "1=Yes, 2=No", note: "2024 only" },
+      { name: "MARJVAPE", type: "INTEGER", description: "Vaped marijuana", codes: "1=Yes, 2=No", note: "2024 only" },
+      { name: "MARJDAB", type: "INTEGER", description: "Dabbed marijuana", codes: "1=Yes, 2=No", note: "2024 only" },
+      { name: "MARJOTHR", type: "INTEGER", description: "Used marijuana in some other way", codes: "1=Yes, 2=No", note: "2024 only" },
+    ],
+  },
+  {
+    name: "Emotional Support / Life Satisfaction",
+    description: "Social support and overall life satisfaction (2024 only)",
+    variables: [
+      { name: "EMTSUPRT", type: "INTEGER", description: "How often get social/emotional support needed", codes: "1=Always, 2=Usually, 3=Sometimes, 4=Rarely, 5=Never", note: "2024 only" },
+      { name: "LSATISFY", type: "INTEGER", description: "Overall life satisfaction", codes: "1=Very satisfied, 2=Satisfied, 3=Dissatisfied, 4=Very dissatisfied", note: "2024 only" },
+    ],
+  },
+  {
     name: "Seatbelt",
     variables: [
-      { name: "SEATBELT", type: "INTEGER", description: "Seatbelt use frequency", codes: "1=Always, 2=Nearly always, 3=Sometimes, 4=Seldom, 5=Never, 8=Never drive", note: "Not in 2019" },
+      { name: "SEATBELT", type: "INTEGER", description: "Seatbelt use frequency", codes: "1=Always, 2=Nearly always, 3=Sometimes, 4=Seldom, 5=Never, 8=Never drive", note: "Not in 2019 or 2024" },
     ],
   },
   {

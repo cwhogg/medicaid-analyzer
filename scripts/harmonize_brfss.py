@@ -21,7 +21,7 @@ import pyreadstat
 
 # ── Configuration ──────────────────────────────────────────────────────
 
-YEARS = [2014, 2015, 2016, 2017, 2018, 2019, 2020, 2023]
+YEARS = [2014, 2015, 2016, 2017, 2018, 2019, 2020, 2023, 2024]
 DOWNLOAD_DIR = Path("data/brfss_xpt")
 OUTPUT_PATH = Path("data/brfss_harmonized.parquet")
 BRFSS_2023_PATH = Path("/Users/cwhogg/Downloads/brfss_2023.parquet")
@@ -87,23 +87,23 @@ COLUMN_RENAMES: dict[str, list[str]] = {
     "_MICHD": [],
 
     # Health Care Access
-    "PRIMINS1": [],  # 2023 only
+    "PRIMINS1": ["PRIMINS2"],  # 2023+, renamed to PRIMINS2 in 2024
     "PERSDOC3": ["PERSDOC2"],
     "MEDCOST1": ["MEDCOST"],
     "CHECKUP1": [],
-    "_HLTHPL1": [],
-    "_HCVU653": ["_HCVU652", "_HCVU651"],
+    "_HLTHPL1": ["_HLTHPL2"],  # renamed in 2024
+    "_HCVU653": ["_HCVU654", "_HCVU652", "_HCVU651"],  # _HCVU654 in 2024
 
     # Behavioral Risk Factors
     "EXERANY2": [],
     "_TOTINDA": [],
     "SMOKE100": [],
     "_SMOKER3": [],
-    "_CURECI2": [],  # e-cigarette — 2023+ only
+    "_CURECI2": ["_CURECI3"],  # e-cigarette — 2023+, renamed _CURECI3 in 2024
     "ALCDAY4": ["ALCDAY5"],
     "_RFBING6": ["_RFBING5"],
-    "_RFDRHV8": ["_RFDRHV7", "_RFDRHV6", "_RFDRHV5"],
-    "_DRNKWK2": ["_DRNKWK1", "_DRNKWEK"],
+    "_RFDRHV8": ["_RFDRHV9", "_RFDRHV7", "_RFDRHV6", "_RFDRHV5"],  # _RFDRHV9 in 2024
+    "_DRNKWK2": ["_DRNKWK3", "_DRNKWK1", "_DRNKWEK"],  # _DRNKWK3 in 2024
 
     # BMI
     "_BMI5": [],
@@ -126,6 +126,41 @@ COLUMN_RENAMES: dict[str, list[str]] = {
 
     # Seatbelt
     "SEATBELT": [],
+
+    # Social Determinants of Health (2024 module)
+    "SDHBILLS": [],   # Unable to pay mortgage/rent/utilities
+    "SDHEMPLY": [],   # Lost employment or reduced hours
+    "SDHFOOD1": [],   # Food didn't last (frequency)
+    "SDHTRNSP": [],   # Lack of reliable transportation
+    "SDHUTILS": [],   # Utility shutoff threatened
+    "SDLONELY": [],   # How often feel lonely (frequency)
+
+    # Adverse Childhood Experiences (2024 module)
+    "ACEADNED": [],   # Adult met basic needs (frequency)
+    "ACEADSAF": [],   # Adult made you feel safe (frequency)
+    "ACEDEPRS": [],   # Lived with depressed/mentally ill person
+    "ACEDIVRC": [],   # Parents separated/divorced
+    "ACEDRINK": [],   # Lived with problem drinker
+    "ACEDRUGS": [],   # Lived with drug user
+    "ACEHURT1": [],   # Physically hurt by parent (frequency)
+    "ACEHVSEX": [],   # Forced to have sex (frequency)
+    "ACEPRISN": [],   # Lived with someone who served time
+    "ACEPUNCH": [],   # Parents beat each other (frequency)
+    "ACESWEAR": [],   # Sworn at/insulted by parent (frequency)
+    "ACETOUCH": [],   # Touched sexually (frequency)
+    "ACETTHEM": [],   # Made to touch someone sexually (frequency)
+
+    # Marijuana Use (2024 optional module)
+    "MARIJAN1": [],   # Days of marijuana use in past 30
+    "MARJSMOK": [],   # Smoked marijuana
+    "MARJEAT": [],    # Ate/drank marijuana
+    "MARJVAPE": [],   # Vaped marijuana
+    "MARJDAB": [],    # Dabbed marijuana
+    "MARJOTHR": [],   # Other marijuana use
+
+    # Emotional Support / Life Satisfaction
+    "EMTSUPRT": [],   # How often get social/emotional support
+    "LSATISFY": [],   # Life satisfaction
 
     # Survey Design
     "_LLCPWT": [],
@@ -225,7 +260,7 @@ def load_year(year: int) -> pd.DataFrame:
 
 
 def main():
-    print("BRFSS Multi-Year Harmonization (2014-2020, 2023)")
+    print("BRFSS Multi-Year Harmonization (2014-2020, 2023-2024)")
     print("=" * 60)
 
     frames = []
