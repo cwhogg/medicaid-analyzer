@@ -406,7 +406,20 @@ export async function POST(request: NextRequest) {
     try {
       parsed = JSON.parse(responseText);
     } catch {
-      return NextResponse.json({ error: "Failed to parse analysis response." }, { status: 500 });
+      // Try to extract JSON object from surrounding text
+      const firstBrace = responseText.indexOf("{");
+      const lastBrace = responseText.lastIndexOf("}");
+      if (firstBrace !== -1 && lastBrace > firstBrace) {
+        try {
+          parsed = JSON.parse(responseText.slice(firstBrace, lastBrace + 1));
+        } catch {
+          console.error("Failed to parse analysis response. Raw text:", responseText.slice(0, 500));
+          return NextResponse.json({ error: "Failed to parse analysis response." }, { status: 500 });
+        }
+      } else {
+        console.error("No JSON object found in analysis response. Raw text:", responseText.slice(0, 500));
+        return NextResponse.json({ error: "Failed to parse analysis response." }, { status: 500 });
+      }
     }
 
     // Step 0: plan-only — convert rich plan to string[] for UI
@@ -492,7 +505,13 @@ export async function POST(request: NextRequest) {
               if (retryText.startsWith("```")) {
                 retryText = retryText.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "").trim();
               }
-              const retryParsed = JSON.parse(retryText);
+              let retryJson = retryText;
+              try { JSON.parse(retryJson); } catch {
+                const fb = retryText.indexOf("{");
+                const lb = retryText.lastIndexOf("}");
+                if (fb !== -1 && lb > fb) retryJson = retryText.slice(fb, lb + 1);
+              }
+              const retryParsed = JSON.parse(retryJson);
               if (retryParsed.step?.sql) {
                 let fixedSql = retryParsed.step.sql.trim();
                 if (fixedSql.startsWith("```")) {
