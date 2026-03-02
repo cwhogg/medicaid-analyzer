@@ -6,3 +6,6 @@ scripts/
 __pycache__/
 *.pyc
 .git/
+data/
+query-service/node_modules/
+query-service/dist/
