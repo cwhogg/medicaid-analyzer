@@ -18,19 +18,17 @@ export function generateMetadata(): Metadata {
     metadataBase: new URL("https://www.openhealthdatahub.com"),
     title: "Open Health Data Hub",
     description:
-      "Explore public health datasets with natural language queries powered by AI. Medicaid claims, BRFSS survey data, and more.",
+      "Explore Medicaid, Medicare, BRFSS, and NHANES datasets with natural language queries powered by AI. 240M+ rows of public health data.",
     openGraph: {
       title: "Open Health Data Hub",
       description:
-        "Query 230M+ rows of public health data in plain English. Medicaid provider spending, CDC BRFSS population health surveys — AI generates SQL and returns results with visualizations.",
-      images: [{ url: "/og.png", width: 1200, height: 630 }],
+        "Query 240M+ rows of public health data in plain English. Medicaid claims, Medicare physician spending, BRFSS surveys, NHANES clinical labs — AI generates SQL and returns results with visualizations.",
     },
     twitter: {
       card: "summary_large_image",
       title: "Open Health Data Hub",
       description:
-        "Query 230M+ rows of public health data in plain English. AI-powered natural language to SQL.",
-      images: ["/og.png"],
+        "Query 240M+ rows of public health data in plain English. Medicaid, Medicare, BRFSS, NHANES — AI-powered natural language to SQL.",
     },
     other: {
       ...Sentry.getTraceData(),

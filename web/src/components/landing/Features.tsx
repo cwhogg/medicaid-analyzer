@@ -6,7 +6,7 @@ const features = [
     icon: MessageSquare,
     title: "Natural Language Queries",
     description:
-      "Ask questions in plain English. AI converts your question into optimized SQL, executes it against 227M rows, and returns results in seconds.",
+      "Ask questions in plain English. AI converts your question into optimized SQL, executes it across 240M+ rows of health data, and returns results in seconds.",
     example: '"What are the top 10 services by total spending?"',
   },
   {

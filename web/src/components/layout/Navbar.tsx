@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Database, Menu, X, MessageSquare, Loader2, Check } from "lucide-react";
+import { Database, Menu, X, MessageSquare, Loader2, Check, ChevronDown } from "lucide-react";
+import { DATASET_METAS } from "@/lib/datasetMeta";
 import { cn } from "@/lib/utils";
 
 function FeedbackModal({ onClose }: { onClose: () => void }) {
@@ -92,10 +93,35 @@ function FeedbackModal({ onClose }: { onClose: () => void }) {
   );
 }
 
+const datasetPaths = DATASET_METAS.map((m) => m.href);
+
 export function Navbar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [datasetsOpen, setDatasetsOpen] = useState(false);
+  const [mobileDatasetsOpen, setMobileDatasetsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const isDatasetActive = datasetPaths.some((p) => pathname === p) || pathname === "/datasets";
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDatasetsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Close dropdown on route change
+  useEffect(() => {
+    setDatasetsOpen(false);
+    setMobileOpen(false);
+    setMobileDatasetsOpen(false);
+  }, [pathname]);
 
   return (
     <>
@@ -122,50 +148,64 @@ export function Navbar() {
               >
                 Home
               </Link>
-              <Link
-                href="/medicaid"
-                className={cn(
-                  "text-sm font-medium transition-colors",
-                  pathname === "/medicaid"
-                    ? "text-accent"
-                    : "text-muted hover:text-white"
-                )}
+
+              {/* Datasets dropdown */}
+              <div
+                ref={dropdownRef}
+                className="relative"
+                onMouseEnter={() => setDatasetsOpen(true)}
+                onMouseLeave={() => setDatasetsOpen(false)}
               >
-                Medicaid
-              </Link>
-              <Link
-                href="/medicare"
-                className={cn(
-                  "text-sm font-medium transition-colors",
-                  pathname === "/medicare"
-                    ? "text-accent"
-                    : "text-muted hover:text-white"
+                <button
+                  onClick={() => setDatasetsOpen(!datasetsOpen)}
+                  className={cn(
+                    "text-sm font-medium transition-colors inline-flex items-center gap-1",
+                    isDatasetActive
+                      ? "text-accent"
+                      : "text-muted hover:text-white"
+                  )}
+                >
+                  Datasets
+                  <ChevronDown className={cn(
+                    "w-3.5 h-3.5 transition-transform",
+                    datasetsOpen && "rotate-180"
+                  )} />
+                </button>
+
+                {datasetsOpen && (
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2">
+                    <div className="bg-[#141414] border border-white/[0.08] rounded-xl shadow-2xl py-2 min-w-[200px]">
+                      {DATASET_METAS.map((meta) => {
+                        const Icon = meta.icon;
+                        return (
+                          <Link
+                            key={meta.key}
+                            href={meta.href}
+                            className={cn(
+                              "flex items-center gap-3 px-4 py-2.5 text-sm transition-colors",
+                              pathname === meta.href
+                                ? "text-white bg-white/[0.05]"
+                                : "text-muted hover:text-white hover:bg-white/[0.05]"
+                            )}
+                          >
+                            <Icon className="w-4 h-4" style={{ color: meta.accentColor }} />
+                            {meta.title.split(" ").slice(0, 2).join(" ")}
+                          </Link>
+                        );
+                      })}
+                      <div className="border-t border-white/[0.08] mt-1 pt-1">
+                        <Link
+                          href="/datasets"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-muted hover:text-white hover:bg-white/[0.05] transition-colors"
+                        >
+                          View All Datasets
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
                 )}
-              >
-                Medicare
-              </Link>
-              <Link
-                href="/brfss"
-                className={cn(
-                  "text-sm font-medium transition-colors",
-                  pathname === "/brfss"
-                    ? "text-accent"
-                    : "text-muted hover:text-white"
-                )}
-              >
-                BRFSS
-              </Link>
-              <Link
-                href="/nhanes"
-                className={cn(
-                  "text-sm font-medium transition-colors",
-                  pathname === "/nhanes"
-                    ? "text-accent"
-                    : "text-muted hover:text-white"
-                )}
-              >
-                NHANES
-              </Link>
+              </div>
+
               <Link
                 href="/blog"
                 className={cn(
@@ -213,54 +253,59 @@ export function Navbar() {
               >
                 Home
               </Link>
-              <Link
-                href="/medicaid"
-                onClick={() => setMobileOpen(false)}
+
+              {/* Mobile datasets expandable */}
+              <button
+                onClick={() => setMobileDatasetsOpen(!mobileDatasetsOpen)}
                 className={cn(
-                  "block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                  pathname === "/medicaid"
+                  "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                  isDatasetActive
                     ? "text-accent bg-accent/10"
                     : "text-muted hover:text-white hover:bg-white/[0.05]"
                 )}
               >
-                Medicaid
-              </Link>
-              <Link
-                href="/medicare"
-                onClick={() => setMobileOpen(false)}
-                className={cn(
-                  "block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                  pathname === "/medicare"
-                    ? "text-accent bg-accent/10"
-                    : "text-muted hover:text-white hover:bg-white/[0.05]"
-                )}
-              >
-                Medicare
-              </Link>
-              <Link
-                href="/brfss"
-                onClick={() => setMobileOpen(false)}
-                className={cn(
-                  "block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                  pathname === "/brfss"
-                    ? "text-accent bg-accent/10"
-                    : "text-muted hover:text-white hover:bg-white/[0.05]"
-                )}
-              >
-                BRFSS
-              </Link>
-              <Link
-                href="/nhanes"
-                onClick={() => setMobileOpen(false)}
-                className={cn(
-                  "block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                  pathname === "/nhanes"
-                    ? "text-accent bg-accent/10"
-                    : "text-muted hover:text-white hover:bg-white/[0.05]"
-                )}
-              >
-                NHANES
-              </Link>
+                Datasets
+                <ChevronDown className={cn(
+                  "w-4 h-4 transition-transform",
+                  mobileDatasetsOpen && "rotate-180"
+                )} />
+              </button>
+              {mobileDatasetsOpen && (
+                <div className="pl-4 space-y-1">
+                  {DATASET_METAS.map((meta) => {
+                    const Icon = meta.icon;
+                    return (
+                      <Link
+                        key={meta.key}
+                        href={meta.href}
+                        onClick={() => setMobileOpen(false)}
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
+                          pathname === meta.href
+                            ? "text-accent bg-accent/10"
+                            : "text-muted hover:text-white hover:bg-white/[0.05]"
+                        )}
+                      >
+                        <Icon className="w-4 h-4" style={{ color: meta.accentColor }} />
+                        {meta.title.split(" ").slice(0, 2).join(" ")}
+                      </Link>
+                    );
+                  })}
+                  <Link
+                    href="/datasets"
+                    onClick={() => setMobileOpen(false)}
+                    className={cn(
+                      "block px-3 py-2 rounded-lg text-sm transition-colors",
+                      pathname === "/datasets"
+                        ? "text-accent bg-accent/10"
+                        : "text-muted hover:text-white hover:bg-white/[0.05]"
+                    )}
+                  >
+                    View All Datasets
+                  </Link>
+                </div>
+              )}
+
               <Link
                 href="/blog"
                 onClick={() => setMobileOpen(false)}

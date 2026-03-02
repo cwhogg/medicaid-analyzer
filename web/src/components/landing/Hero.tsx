@@ -95,24 +95,24 @@ export function Hero() {
         <div className="text-center max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-card text-sm text-muted mb-6">
             <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-            227M+ records analyzed
+            240M+ records across 4 datasets
           </div>
 
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-tight tracking-tight">
-            Explore Medicaid
+            Explore Public
             <br />
-            <span className="text-accent">Spending Data</span>
+            <span className="text-accent">Health Data</span>
           </h1>
 
           <p className="mt-6 text-base sm:text-lg text-muted max-w-2xl mx-auto leading-relaxed">
-            Query $1+ trillion in Medicaid provider and procedure spending across 617K+ providers
-            and 10K+ HCPCS/CPT codes. Ask questions in plain English — AI generates
-            SQL, executes it against 227M rows, and returns results with visualizations.
+            Query Medicaid claims, Medicare physician spending, BRFSS population health surveys,
+            and NHANES clinical labs. Ask questions in plain English — AI generates SQL,
+            executes it, and returns results with visualizations.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-            <Link href="/analyze" className="btn-primary inline-flex items-center justify-center gap-2 text-base w-full sm:w-auto">
-              Start Analyzing
+            <Link href="/datasets" className="btn-primary inline-flex items-center justify-center gap-2 text-base w-full sm:w-auto">
+              Explore Datasets
               <ArrowRight className="w-4 h-4" />
             </Link>
             <a href="#features" className="btn-secondary inline-flex items-center justify-center gap-2 text-base w-full sm:w-auto">
