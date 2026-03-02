@@ -2,6 +2,7 @@
 import "./medicaid";
 import "./brfss";
 import "./medicare";
+import "./nhanes";
 
 // Re-export registry API
 export { getDataset, getAllDatasets, getDefaultDatasetKey } from "@/lib/datasets";

@@ -78,18 +78,23 @@ export const DATASET_METAS: DatasetMeta[] = [
   },
   {
     key: "nhanes",
-    title: "NHANES",
-    subtitle: "National Health & Nutrition Survey",
+    title: "NHANES Clinical Survey",
+    subtitle: "National Health & Nutrition Examination Survey",
     icon: FlaskConical,
     stats: [
-      { label: "Participants", value: "—" },
-      { label: "Period", value: "—" },
+      { label: "Participants", value: "~12K" },
+      { label: "Cycle", value: "2021-2023" },
+      { label: "Lab Values", value: "94 vars" },
     ],
     description:
-      "Lab results, physical exams, dietary intake, and demographics from nationally representative samples.",
-    limitations: [],
-    href: "#",
+      "Explore clinical lab results, blood pressure, BMI, depression scores, and health questionnaires from a nationally representative in-person survey.",
+    limitations: [
+      "Single cycle (no time trends)",
+      "No geographic identifiers (state/ZIP)",
+      "Fasting labs available for subsample only",
+      "~12K participants (smaller than BRFSS)",
+    ],
+    href: "/nhanes",
     accentColor: "#8B5CF6",
-    comingSoon: true,
   },
 ];

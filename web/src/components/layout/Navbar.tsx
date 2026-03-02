@@ -156,6 +156,17 @@ export function Navbar() {
                 BRFSS
               </Link>
               <Link
+                href="/nhanes"
+                className={cn(
+                  "text-sm font-medium transition-colors",
+                  pathname === "/nhanes"
+                    ? "text-accent"
+                    : "text-muted hover:text-white"
+                )}
+              >
+                NHANES
+              </Link>
+              <Link
                 href="/blog"
                 className={cn(
                   "text-sm font-medium transition-colors",
@@ -237,6 +248,18 @@ export function Navbar() {
                 )}
               >
                 BRFSS
+              </Link>
+              <Link
+                href="/nhanes"
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  "block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                  pathname === "/nhanes"
+                    ? "text-accent bg-accent/10"
+                    : "text-muted hover:text-white hover:bg-white/[0.05]"
+                )}
+              >
+                NHANES
               </Link>
               <Link
                 href="/blog"

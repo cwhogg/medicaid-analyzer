@@ -19,6 +19,9 @@ export function Footer() {
             <p>
               <a href="https://www.cdc.gov/brfss/index.html" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">CDC BRFSS</a> (2014–2020, 2023). 3.5M+ survey respondents.
             </p>
+            <p>
+              <a href="https://wwwn.cdc.gov/nchs/nhanes/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">CDC NHANES</a> (2021–2023). ~12K participants with clinical lab data.
+            </p>
           </div>
         </div>
       </div>
