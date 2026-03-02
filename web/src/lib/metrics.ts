@@ -15,6 +15,7 @@ export interface RequestRecord {
   cached: boolean;
   inputTokens?: number;
   outputTokens?: number;
+  dataset?: string;
 }
 
 export interface QueryLogEntry {
@@ -27,6 +28,7 @@ export interface QueryLogEntry {
   totalMs: number;
   cached: boolean;
   error?: string;
+  dataset?: string;
 }
 
 function railwayHeaders(): Record<string, string> {
@@ -54,6 +56,7 @@ function sendToRailway(request?: RequestRecord, query?: QueryLogEntry): void {
       cached: request.cached,
       inputTokens: request.inputTokens,
       outputTokens: request.outputTokens,
+      dataset: request.dataset,
     };
   }
   if (query) {
@@ -67,6 +70,7 @@ function sendToRailway(request?: RequestRecord, query?: QueryLogEntry): void {
       totalMs: query.totalMs,
       cached: query.cached,
       error: query.error,
+      dataset: query.dataset,
     };
   }
 

@@ -11,13 +11,15 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
-  LabelList,
+  Legend,
 } from "recharts";
 
 interface DaySummary {
   day: string;
   queryCount: number;
   uniqueUsers: number;
+  medicaid: number;
+  brfss: number;
 }
 
 interface FeedbackItem {
@@ -733,23 +735,29 @@ function AdminDashboard() {
                         day: "numeric",
                       });
                     }}
-                    formatter={(value: number) => [value, "Queries"]}
                     cursor={{ fill: "rgba(255,255,255,0.03)" }}
                   />
+                  <Legend
+                    wrapperStyle={{ fontSize: 11, color: "#9CA3AF" }}
+                    iconType="square"
+                    iconSize={10}
+                  />
                   <Bar
-                    dataKey="queryCount"
+                    dataKey="medicaid"
+                    name="Medicaid"
+                    stackId="queries"
                     fill="#EA580C"
+                    radius={[0, 0, 0, 0]}
+                    maxBarSize={40}
+                  />
+                  <Bar
+                    dataKey="brfss"
+                    name="BRFSS"
+                    stackId="queries"
+                    fill="#0EA5E9"
                     radius={[3, 3, 0, 0]}
                     maxBarSize={40}
-                  >
-                    <LabelList
-                      dataKey="queryCount"
-                      position="top"
-                      fill="#9CA3AF"
-                      fontSize={11}
-                      offset={4}
-                    />
-                  </Bar>
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </div>

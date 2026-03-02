@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     const rateCheck = checkRateLimit(ip);
     if (!rateCheck.allowed) {
-      recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 429, totalMs: Date.now() - requestStart, cached: false });
+      recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 429, totalMs: Date.now() - requestStart, cached: false, dataset: "unknown" });
       return NextResponse.json(
         { error: `Rate limit exceeded. Try again in ${rateCheck.retryAfterSec} seconds.` },
         {
@@ -101,8 +101,8 @@ export async function POST(request: NextRequest) {
     if (config.checkDataScope) {
       const scopeError = config.checkDataScope(question);
       if (scopeError) {
-        recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 422, totalMs: Date.now() - requestStart, cached: false });
-        recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql: null, status: 422, totalMs: Date.now() - requestStart, cached: false, error: scopeError });
+        recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 422, totalMs: Date.now() - requestStart, cached: false, dataset: selectedDataset });
+        recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql: null, status: 422, totalMs: Date.now() - requestStart, cached: false, error: scopeError, dataset: selectedDataset });
         return NextResponse.json(
           { error: scopeError, cannotAnswer: true },
           { status: 422, headers: { "X-RateLimit-Remaining": String(rateCheck.remaining) } }
@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
     const cacheQuestion = `${selectedDataset}::` + (yearFilter ? `${question} [years:${yearFilter.join(",")}]` : question);
     const cached = getCached(cacheQuestion);
     if (cached) {
-      recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 200, totalMs: Date.now() - requestStart, cached: true });
+      recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 200, totalMs: Date.now() - requestStart, cached: true, dataset: selectedDataset });
       return NextResponse.json(
         { sql: cached.sql, chartType: cached.chartType, columns: cached.columns, rows: cached.rows, cached: true },
         { headers: { "X-RateLimit-Remaining": String(rateCheck.remaining), "X-Cache": "HIT" } }
@@ -188,8 +188,8 @@ ${config.systemPromptRules}`;
     // Handle CANNOT_ANSWER refusals
     if (sql.startsWith("CANNOT_ANSWER:")) {
       const explanation = sql.slice("CANNOT_ANSWER:".length).trim();
-      recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 422, claudeMs, totalMs: Date.now() - requestStart, cached: false, inputTokens: totalInputTokens, outputTokens: totalOutputTokens });
-      recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql: null, status: 422, totalMs: Date.now() - requestStart, cached: false, error: explanation });
+      recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 422, claudeMs, totalMs: Date.now() - requestStart, cached: false, inputTokens: totalInputTokens, outputTokens: totalOutputTokens, dataset: selectedDataset });
+      recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql: null, status: 422, totalMs: Date.now() - requestStart, cached: false, error: explanation, dataset: selectedDataset });
       return NextResponse.json(
         { error: explanation, cannotAnswer: true },
         { status: 422, headers: { "X-RateLimit-Remaining": String(rateCheck.remaining) } }
@@ -221,8 +221,8 @@ ${config.systemPromptRules}`;
       const isSqlError = /binder error|parser error|catalog error|not implemented|no such|not found|does not have/i.test(errMsg);
 
       if (!isSqlError) {
-        recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 500, claudeMs, railwayMs: Date.now() - railwayStart, totalMs: Date.now() - requestStart, cached: false, inputTokens: totalInputTokens, outputTokens: totalOutputTokens });
-        recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql, status: 500, totalMs: Date.now() - requestStart, cached: false, error: errMsg });
+        recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 500, claudeMs, railwayMs: Date.now() - railwayStart, totalMs: Date.now() - requestStart, cached: false, inputTokens: totalInputTokens, outputTokens: totalOutputTokens, dataset: selectedDataset });
+        recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql, status: 500, totalMs: Date.now() - requestStart, cached: false, error: errMsg, dataset: selectedDataset });
         return NextResponse.json({ error: errMsg }, { status: 500 });
       }
 
@@ -258,7 +258,7 @@ ${config.retrySystemPromptRules}`;
       const retryBlock = retryMessage.content.find((block) => block.type === "text");
       if (!retryBlock || retryBlock.type !== "text") {
         recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 500, claudeMs: claudeMs + (Date.now() - retryClaudeStart), railwayMs: Date.now() - railwayStart, totalMs: Date.now() - requestStart, cached: false, inputTokens: totalInputTokens, outputTokens: totalOutputTokens });
-        recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql, status: 500, totalMs: Date.now() - requestStart, cached: false, error: errMsg });
+        recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql, status: 500, totalMs: Date.now() - requestStart, cached: false, error: errMsg, dataset: selectedDataset });
         return NextResponse.json({ error: errMsg }, { status: 500 });
       }
 
@@ -270,7 +270,7 @@ ${config.retrySystemPromptRules}`;
       const retryValidation = validateSQL(fixedSql);
       if (!retryValidation.valid) {
         recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 500, claudeMs: claudeMs + (Date.now() - retryClaudeStart), railwayMs: Date.now() - railwayStart, totalMs: Date.now() - requestStart, cached: false, inputTokens: totalInputTokens, outputTokens: totalOutputTokens });
-        recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql, status: 500, totalMs: Date.now() - requestStart, cached: false, error: errMsg });
+        recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql, status: 500, totalMs: Date.now() - requestStart, cached: false, error: errMsg, dataset: selectedDataset });
         return NextResponse.json({ error: errMsg }, { status: 500 });
       }
 
@@ -281,7 +281,7 @@ ${config.retrySystemPromptRules}`;
         rows = retryResult.rows;
       } catch {
         recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 500, claudeMs: claudeMs + (Date.now() - retryClaudeStart), railwayMs: Date.now() - railwayStart, totalMs: Date.now() - requestStart, cached: false, inputTokens: totalInputTokens, outputTokens: totalOutputTokens });
-        recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql, status: 500, totalMs: Date.now() - requestStart, cached: false, error: errMsg });
+        recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql, status: 500, totalMs: Date.now() - requestStart, cached: false, error: errMsg, dataset: selectedDataset });
         return NextResponse.json({ error: errMsg }, { status: 500 });
       }
     }
@@ -290,8 +290,8 @@ ${config.retrySystemPromptRules}`;
     // Cache the result
     setCache(cacheQuestion, { sql, chartType, columns, rows });
 
-    recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 200, claudeMs, railwayMs, totalMs: Date.now() - requestStart, cached: false, inputTokens: totalInputTokens, outputTokens: totalOutputTokens });
-    recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql, status: 200, totalMs: Date.now() - requestStart, cached: false });
+    recordRequest({ timestamp: Date.now(), route: "/api/query", ip, status: 200, claudeMs, railwayMs, totalMs: Date.now() - requestStart, cached: false, inputTokens: totalInputTokens, outputTokens: totalOutputTokens, dataset: selectedDataset });
+    recordQuery({ timestamp: Date.now(), ip, route: "/api/query", question, sql, status: 200, totalMs: Date.now() - requestStart, cached: false, dataset: selectedDataset });
     recordFeedItem({
       id: crypto.randomUUID(),
       question,

@@ -292,7 +292,7 @@ export async function POST(request: NextRequest) {
 
     const rateCheck = checkRateLimit(ip);
     if (!rateCheck.allowed) {
-      recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 429, totalMs: Date.now() - requestStart, cached: false });
+      recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 429, totalMs: Date.now() - requestStart, cached: false, dataset: "unknown" });
       return NextResponse.json(
         { error: `Rate limit exceeded. Try again in ${rateCheck.retryAfterSec} seconds.` },
         {
@@ -337,8 +337,8 @@ export async function POST(request: NextRequest) {
     if (stepIndex === 0 && config.checkDataScope) {
       const scopeError = config.checkDataScope(question);
       if (scopeError) {
-        recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 422, totalMs: Date.now() - requestStart, cached: false });
-        recordQuery({ timestamp: Date.now(), ip, route: "/api/analyze", question, sql: null, status: 422, totalMs: Date.now() - requestStart, cached: false, error: scopeError });
+        recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 422, totalMs: Date.now() - requestStart, cached: false, dataset: selectedDataset });
+        recordQuery({ timestamp: Date.now(), ip, route: "/api/analyze", question, sql: null, status: 422, totalMs: Date.now() - requestStart, cached: false, error: scopeError, dataset: selectedDataset });
         return NextResponse.json(
           { error: scopeError, cannotAnswer: true },
           { status: 422, headers: { "X-RateLimit-Remaining": String(rateCheck.remaining) } }
@@ -419,7 +419,7 @@ export async function POST(request: NextRequest) {
         );
       }
       // Plan-only step — no SQL to execute, return immediately
-      recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 200, claudeMs, totalMs: Date.now() - requestStart, cached: false, inputTokens: cumulativeInputTokens, outputTokens: cumulativeOutputTokens });
+      recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 200, claudeMs, totalMs: Date.now() - requestStart, cached: false, inputTokens: cumulativeInputTokens, outputTokens: cumulativeOutputTokens, dataset: selectedDataset });
       return NextResponse.json(parsed, {
         headers: { "X-RateLimit-Remaining": String(rateCheck.remaining) },
       });
@@ -450,7 +450,7 @@ export async function POST(request: NextRequest) {
 
       const validation = validateSQL(sql);
       if (!validation.valid) {
-        recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 400, claudeMs, totalMs: Date.now() - requestStart, cached: false, inputTokens: cumulativeInputTokens, outputTokens: cumulativeOutputTokens });
+        recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 400, claudeMs, totalMs: Date.now() - requestStart, cached: false, inputTokens: cumulativeInputTokens, outputTokens: cumulativeOutputTokens, dataset: selectedDataset });
         return NextResponse.json({ error: validation.error }, { status: 400 });
       }
 
@@ -563,7 +563,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 200, claudeMs, railwayMs, totalMs: Date.now() - requestStart, cached: false, inputTokens: cumulativeInputTokens, outputTokens: cumulativeOutputTokens });
+    recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 200, claudeMs, railwayMs, totalMs: Date.now() - requestStart, cached: false, inputTokens: cumulativeInputTokens, outputTokens: cumulativeOutputTokens, dataset: selectedDataset });
 
     // Record query log once when analysis is complete (not per-step)
     if (parsed.done) {
@@ -574,6 +574,7 @@ export async function POST(request: NextRequest) {
         sql: finalSql, status: hasError ? 500 : 200,
         totalMs: Date.now() - requestStart, cached: false,
         error: hasError ? parsed.step.error : undefined,
+        dataset: selectedDataset,
       });
     }
 
