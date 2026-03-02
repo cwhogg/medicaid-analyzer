@@ -602,6 +602,7 @@ export async function POST(request: NextRequest) {
           summary: parsed.summary,
           lastStep: stepResult,
         },
+        dataset: selectedDataset,
       });
     }
 

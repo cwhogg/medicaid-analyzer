@@ -101,6 +101,7 @@ export function recordFeedItem(item: {
   stepCount?: number;
   rowCount?: number;
   resultData?: unknown;
+  dataset?: string;
 }): void {
   if (!RAILWAY_QUERY_URL) return;
 

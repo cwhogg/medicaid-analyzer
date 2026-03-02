@@ -17,9 +17,16 @@ export async function GET(request: NextRequest) {
   }
 
   const limit = request.nextUrl.searchParams.get("limit") || "50";
+  const dataset = request.nextUrl.searchParams.get("dataset") || "";
 
   try {
-    const response = await fetch(`${RAILWAY_QUERY_URL}/feed?limit=${limit}`, {
+    const url = new URL(`${RAILWAY_QUERY_URL}/feed`);
+    url.searchParams.set("limit", limit);
+    if (dataset) {
+      url.searchParams.set("dataset", dataset);
+    }
+
+    const response = await fetch(url.toString(), {
       signal: AbortSignal.timeout(10000),
     });
 

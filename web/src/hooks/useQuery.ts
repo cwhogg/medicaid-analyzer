@@ -69,6 +69,7 @@ export function useQuery() {
           rows,
           rowCount: rows.length,
           timestamp: Date.now(),
+          dataset,
         };
         await saveQuery(stored).catch(console.error);
       } catch (err) {

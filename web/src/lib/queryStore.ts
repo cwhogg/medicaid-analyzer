@@ -7,6 +7,7 @@ export interface StoredQuery {
   rows: unknown[][];
   rowCount: number;
   timestamp: number;
+  dataset?: string;
 }
 
 export interface StoredAnalysisStep {
@@ -28,6 +29,7 @@ export interface StoredAnalysis {
   summary: string | null;
   stepCount: number;
   timestamp: number;
+  dataset?: string;
 }
 
 const DB_NAME = "medicaid-analyzer";

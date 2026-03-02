@@ -299,6 +299,7 @@ ${config.retrySystemPromptRules}`;
       timestamp: Date.now(),
       rowCount: rows.length,
       resultData: { sql, chartType, columns, rows: rows.slice(0, 200) },
+      dataset: selectedDataset,
     });
 
     return NextResponse.json(

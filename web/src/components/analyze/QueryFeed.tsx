@@ -12,6 +12,7 @@ interface ServerFeedItem {
   summary: string | null;
   stepCount: number;
   rowCount: number;
+  dataset: string | null;
   resultData: unknown | null;
 }
 
@@ -23,6 +24,7 @@ type FeedItem =
 interface QueryFeedProps {
   onSelect: (item: StoredQuery | StoredAnalysis | null, question?: string) => void;
   refreshKey: number;
+  dataset?: string;
 }
 
 function timeAgo(timestamp: number): string {
@@ -36,26 +38,38 @@ function timeAgo(timestamp: number): string {
   return `${days}d ago`;
 }
 
-export function QueryFeed({ onSelect, refreshKey }: QueryFeedProps) {
+export function QueryFeed({ onSelect, refreshKey, dataset }: QueryFeedProps) {
   const [items, setItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const feedUrl = dataset
+      ? `/api/feed?limit=50&dataset=${encodeURIComponent(dataset)}`
+      : "/api/feed?limit=50";
+
     Promise.all([
       getAllQueries().catch(() => [] as StoredQuery[]),
       getAllAnalyses().catch(() => [] as StoredAnalysis[]),
-      fetch("/api/feed?limit=50").then((r) => r.json()).then((d) => d.items || []).catch(() => [] as ServerFeedItem[]),
+      fetch(feedUrl).then((r) => r.json()).then((d) => d.items || []).catch(() => [] as ServerFeedItem[]),
     ])
       .then(([localQueries, localAnalyses, serverItems]) => {
         // Build a set of local question strings for deduplication
         const localQuestions = new Set<string>();
         const tagged: FeedItem[] = [];
 
-        for (const q of localQueries) {
+        // Filter local items by dataset if specified
+        const filteredQueries = dataset
+          ? localQueries.filter((q) => q.dataset === dataset)
+          : localQueries;
+        const filteredAnalyses = dataset
+          ? localAnalyses.filter((a) => a.dataset === dataset)
+          : localAnalyses;
+
+        for (const q of filteredQueries) {
           localQuestions.add(q.question.toLowerCase().trim());
           tagged.push({ ...q, _type: "query", _source: "local" });
         }
-        for (const a of localAnalyses) {
+        for (const a of filteredAnalyses) {
           localQuestions.add(a.question.toLowerCase().trim());
           tagged.push({ ...a, _type: "analysis", _source: "local" });
         }
@@ -75,7 +89,7 @@ export function QueryFeed({ onSelect, refreshKey }: QueryFeedProps) {
         setItems(tagged);
       })
       .finally(() => setLoading(false));
-  }, [refreshKey]);
+  }, [refreshKey, dataset]);
 
   const handleClick = (item: FeedItem) => {
     if (item._source === "local") {

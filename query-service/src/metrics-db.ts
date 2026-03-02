@@ -79,7 +79,8 @@ export async function initMetricsDB(): Promise<void> {
       summary VARCHAR,
       step_count INTEGER DEFAULT 0,
       row_count INTEGER DEFAULT 0,
-      result_data VARCHAR
+      result_data VARCHAR,
+      dataset VARCHAR DEFAULT 'medicaid'
     )
   `);
 
@@ -114,6 +115,13 @@ export async function initMetricsDB(): Promise<void> {
   // Add result_data column if it doesn't exist (migration for existing DBs)
   try {
     await metricsDb.run(`ALTER TABLE feed_items ADD COLUMN result_data VARCHAR`);
+  } catch {
+    // Column already exists — ignore
+  }
+
+  // Add dataset column to feed_items (migration for existing DBs)
+  try {
+    await metricsDb.run(`ALTER TABLE feed_items ADD COLUMN dataset VARCHAR DEFAULT 'medicaid'`);
   } catch {
     // Column already exists — ignore
   }
@@ -434,6 +442,7 @@ export interface FeedItemInput {
   stepCount?: number;
   rowCount?: number;
   resultData?: unknown;
+  dataset?: string;
 }
 
 export async function recordFeedItem(item: FeedItemInput): Promise<void> {
@@ -456,8 +465,8 @@ export async function recordFeedItem(item: FeedItemInput): Promise<void> {
   }
 
   await metricsDb.run(
-    `INSERT INTO feed_items (id, question, route, timestamp, summary, step_count, row_count, result_data)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO feed_items (id, question, route, timestamp, summary, step_count, row_count, result_data, dataset)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     item.id,
     item.question,
     item.route,
@@ -465,7 +474,8 @@ export async function recordFeedItem(item: FeedItemInput): Promise<void> {
     item.summary ?? null,
     item.stepCount ?? 0,
     item.rowCount ?? 0,
-    item.resultData ? JSON.stringify(item.resultData) : null
+    item.resultData ? JSON.stringify(item.resultData) : null,
+    item.dataset ?? "medicaid"
   );
 
   // Prune old items
@@ -479,12 +489,19 @@ export async function recordFeedItem(item: FeedItemInput): Promise<void> {
   }
 }
 
-export async function getFeedItems(limit = 50): Promise<Record<string, unknown>[]> {
+export async function getFeedItems(limit = 50, dataset?: string): Promise<Record<string, unknown>[]> {
   if (!metricsDb) throw new Error("Metrics DB not initialized");
 
-  const rows = allToNumbers(await metricsDb.all(
-    `SELECT * FROM feed_items ORDER BY timestamp DESC LIMIT ?`, limit
-  ) as Record<string, unknown>[]);
+  let rows: Record<string, unknown>[];
+  if (dataset) {
+    rows = allToNumbers(await metricsDb.all(
+      `SELECT * FROM feed_items WHERE dataset = ? ORDER BY timestamp DESC LIMIT ?`, dataset, limit
+    ) as Record<string, unknown>[]);
+  } else {
+    rows = allToNumbers(await metricsDb.all(
+      `SELECT * FROM feed_items ORDER BY timestamp DESC LIMIT ?`, limit
+    ) as Record<string, unknown>[]);
+  }
 
   return rows.map((r) => {
     let resultData = null;
@@ -499,6 +516,7 @@ export async function getFeedItems(limit = 50): Promise<Record<string, unknown>[
       summary: r.summary || null,
       stepCount: r.step_count ?? 0,
       rowCount: r.row_count ?? 0,
+      dataset: r.dataset || "medicaid",
       resultData,
     };
   });

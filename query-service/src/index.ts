@@ -248,7 +248,8 @@ app.post("/query", async (c) => {
 app.get("/feed", async (c) => {
   try {
     const limit = parseInt(c.req.query("limit") || "50", 10);
-    const items = await getFeedItems(Math.min(limit, 100));
+    const dataset = c.req.query("dataset") || undefined;
+    const items = await getFeedItems(Math.min(limit, 100), dataset);
     return c.json({ items });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to fetch feed";

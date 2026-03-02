@@ -194,7 +194,7 @@ export default function DatasetAnalyzePage({ datasetKey }: DatasetAnalyzePagePro
 
           {/* Feed tab */}
           {activeTab === "feed" && (
-            <QueryFeed onSelect={handleFeedSelect} refreshKey={feedRefreshKey} />
+            <QueryFeed onSelect={handleFeedSelect} refreshKey={feedRefreshKey} dataset={datasetKey} />
           )}
 
           {/* Data tab */}

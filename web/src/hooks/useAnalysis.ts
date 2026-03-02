@@ -230,6 +230,7 @@ export function useAnalysis() {
                 plan: planRef.current || data.plan || null,
                 steps: completedSteps,
                 summary: data.summary || data.step.cannotAnswer,
+                dataset,
               });
               return;
             }
@@ -252,6 +253,7 @@ export function useAnalysis() {
               plan: planRef.current || data.plan || null,
               steps: completedSteps,
               summary: data.summary,
+              dataset,
             });
             return;
           }
@@ -312,6 +314,7 @@ export function useAnalysis() {
               plan: planRef.current || data.plan || null,
               steps: completedSteps,
               summary: data.summary,
+              dataset,
             });
             return;
           }
@@ -330,6 +333,7 @@ export function useAnalysis() {
           plan: planRef.current,
           steps: completedSteps,
           summary: "Analysis reached the maximum number of steps.",
+          dataset,
         });
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") {
@@ -411,6 +415,7 @@ async function saveToStore(data: {
   plan: string[] | null;
   steps: CompletedStep[];
   summary: string | null | undefined;
+  dataset?: string;
 }) {
   const filteredSteps = data.steps
     .filter((s) => s.stepIndex > 0) // Don't store the plan-only step
@@ -433,6 +438,7 @@ async function saveToStore(data: {
     summary: data.summary || null,
     stepCount: filteredSteps.length,
     timestamp: Date.now(),
+    dataset: data.dataset,
   };
   await saveAnalysis(stored).catch(console.error);
 
@@ -447,6 +453,7 @@ async function saveToStore(data: {
       timestamp: Date.now(),
       summary: data.summary || null,
       stepCount: filteredSteps.length,
+      dataset: data.dataset,
       resultData: {
         plan: data.plan || [],
         steps: filteredSteps.map((s) => ({
