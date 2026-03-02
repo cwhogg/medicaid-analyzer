@@ -13,7 +13,8 @@ import { ResultsTable } from "@/components/analyze/ResultsTable";
 import { ResultsChart } from "@/components/analyze/ResultsChart";
 import { QueryFeed } from "@/components/analyze/QueryFeed";
 import { AnalysisSteps } from "@/components/analyze/AnalysisSteps";
-import { Table, LineChart, BarChart3, PieChart, AlertCircle, Loader2, Search, History } from "lucide-react";
+import { Table, LineChart, BarChart3, PieChart, AlertCircle, Loader2, Search, History, BookOpen } from "lucide-react";
+import { DataDictionary } from "@/components/analyze/DataDictionary";
 import { cn } from "@/lib/utils";
 import type { StoredQuery, StoredAnalysis } from "@/lib/queryStore";
 
@@ -27,6 +28,7 @@ const VIEW_MODES = [
 const TABS = [
   { key: "query" as const, label: "Query", icon: Search },
   { key: "feed" as const, label: "Feed", icon: History },
+  { key: "data" as const, label: "Data", icon: BookOpen },
 ];
 
 type Mode = "idle" | "query" | "analysis";
@@ -51,7 +53,7 @@ export default function DatasetAnalyzePage({ datasetKey }: DatasetAnalyzePagePro
 
   const analysis = useAnalysis();
 
-  const [activeTab, setActiveTab] = useState<"query" | "feed">("query");
+  const [activeTab, setActiveTab] = useState<"query" | "feed" | "data">("query");
   const [feedRefreshKey, setFeedRefreshKey] = useState(0);
   const [selectedYears, setSelectedYears] = useState<Set<number>>(new Set());
   const [mode, setMode] = useState<Mode>("idle");
@@ -193,6 +195,11 @@ export default function DatasetAnalyzePage({ datasetKey }: DatasetAnalyzePagePro
           {/* Feed tab */}
           {activeTab === "feed" && (
             <QueryFeed onSelect={handleFeedSelect} refreshKey={feedRefreshKey} />
+          )}
+
+          {/* Data tab */}
+          {activeTab === "data" && (
+            <DataDictionary groups={config.variableGroups} />
           )}
 
           {/* Query tab */}

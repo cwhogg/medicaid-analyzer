@@ -1,6 +1,7 @@
 import { registerDataset } from "@/lib/datasets";
 import { generateSchemaPrompt } from "@/lib/schemas";
 import { checkDataScope } from "@/lib/dataScope";
+import { medicaidVariableGroups } from "@/lib/variableMeta";
 
 const ALL_YEARS = [2024, 2023, 2022, 2021, 2020, 2019, 2018];
 
@@ -58,6 +59,8 @@ registerDataset({
     { label: "Monthly spending trends", question: "What is the monthly spending trend from 2018 to 2024?" },
     { label: "Top providers", question: "Who are the top 10 highest-paid providers?" },
   ],
+
+  variableGroups: medicaidVariableGroups,
 
   domainKnowledge: `## Medicaid Domain Knowledge
 - Spending is highly concentrated: a small number of providers and procedures account for the majority of dollars

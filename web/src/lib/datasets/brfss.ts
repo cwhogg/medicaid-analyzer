@@ -1,5 +1,6 @@
 import { registerDataset } from "@/lib/datasets";
 import { generateBRFSSSchemaPrompt } from "@/lib/brfssSchemas";
+import { brfssVariableGroups } from "@/lib/variableMeta";
 
 const BRFSS_YEARS = [2023, 2020, 2019, 2018, 2017, 2016, 2015, 2014];
 
@@ -79,6 +80,8 @@ registerDataset({
     }
     return null;
   },
+
+  variableGroups: brfssVariableGroups,
 
   domainKnowledge: `## BRFSS Domain Knowledge
 - BRFSS is the world's largest continuously conducted telephone health survey (CDC, annual since 1984)

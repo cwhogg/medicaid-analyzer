@@ -1,3 +1,5 @@
+import type { VariableGroup } from "@/lib/variableMeta";
+
 export interface YearFilterConfig {
   years: number[];
   dateColumn: string;
@@ -46,6 +48,9 @@ export interface DatasetConfig {
 
   // Example queries shown as chips
   exampleQueries?: { label: string; question: string }[];
+
+  // Data dictionary
+  variableGroups?: VariableGroup[];
 }
 
 const registry = new Map<string, DatasetConfig>();
