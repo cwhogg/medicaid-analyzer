@@ -201,3 +201,64 @@ export const brfssVariableGroups: VariableGroup[] = [
     ],
   },
 ];
+
+export const medicareVariableGroups: VariableGroup[] = [
+  {
+    name: "Provider Identity",
+    description: "NPI, name, credentials, specialty, and entity type",
+    variables: [
+      { name: "Rndrng_NPI", type: "VARCHAR", description: "National Provider Identifier (10-digit)" },
+      { name: "Rndrng_Prvdr_Last_Org_Name", type: "VARCHAR", description: "Last name or organization name" },
+      { name: "Rndrng_Prvdr_First_Name", type: "VARCHAR", description: "First name (NULL for organizations)" },
+      { name: "Rndrng_Prvdr_MI", type: "VARCHAR", description: "Middle initial" },
+      { name: "Rndrng_Prvdr_Crdntls", type: "VARCHAR", description: "Credentials (e.g. M.D., D.O., N.P.)" },
+      { name: "Rndrng_Prvdr_Ent_Cd", type: "VARCHAR", description: "Entity type", codes: "I=Individual, O=Organization" },
+      { name: "Rndrng_Prvdr_Type", type: "VARCHAR", description: "Provider specialty (e.g. Internal Medicine, Cardiology)" },
+      { name: "Rndrng_Prvdr_Mdcr_Prtcptg_Ind", type: "VARCHAR", description: "Medicare participating provider", codes: "Y=Yes, N=No" },
+    ],
+  },
+  {
+    name: "Provider Location",
+    description: "Address, state, ZIP, and rural/urban classification",
+    variables: [
+      { name: "Rndrng_Prvdr_St1", type: "VARCHAR", description: "Street address line 1" },
+      { name: "Rndrng_Prvdr_St2", type: "VARCHAR", description: "Street address line 2" },
+      { name: "Rndrng_Prvdr_City", type: "VARCHAR", description: "City" },
+      { name: "Rndrng_Prvdr_State_Abrvtn", type: "VARCHAR", description: "State abbreviation (e.g. CA, NY)" },
+      { name: "Rndrng_Prvdr_State_FIPS", type: "VARCHAR", description: "State FIPS code" },
+      { name: "Rndrng_Prvdr_Zip5", type: "VARCHAR", description: "5-digit ZIP code" },
+      { name: "Rndrng_Prvdr_RUCA", type: "VARCHAR", description: "Rural-Urban Commuting Area code" },
+      { name: "Rndrng_Prvdr_RUCA_Desc", type: "VARCHAR", description: "RUCA description (Metropolitan, Micropolitan, Small town, Rural)" },
+      { name: "Rndrng_Prvdr_Cntry", type: "VARCHAR", description: "Country code (mostly US)" },
+    ],
+  },
+  {
+    name: "Service",
+    description: "HCPCS procedure code, description, and place of service",
+    variables: [
+      { name: "HCPCS_Cd", type: "VARCHAR", description: "HCPCS/CPT procedure code" },
+      { name: "HCPCS_Desc", type: "VARCHAR", description: "Procedure description" },
+      { name: "HCPCS_Drug_Ind", type: "VARCHAR", description: "Drug/biological indicator", codes: "Y=Drug, N=Non-drug" },
+      { name: "Place_Of_Srvc", type: "VARCHAR", description: "Place of service", codes: "F=Facility (hospital outpatient), O=Office" },
+    ],
+  },
+  {
+    name: "Volume & Payment",
+    description: "Service counts and per-service payment averages (multiply by Tot_Srvcs for totals)",
+    variables: [
+      { name: "Tot_Benes", type: "INTEGER", description: "Unique Medicare beneficiaries (minimum 11 per row)" },
+      { name: "Tot_Srvcs", type: "DOUBLE", description: "Total number of services rendered" },
+      { name: "Tot_Bene_Day_Srvcs", type: "DOUBLE", description: "Total distinct beneficiary/day services" },
+      { name: "Avg_Sbmtd_Chrg", type: "DOUBLE", description: "Average submitted charge per service (provider billed amount)" },
+      { name: "Avg_Mdcr_Alowd_Amt", type: "DOUBLE", description: "Average Medicare allowed amount per service (negotiated rate)" },
+      { name: "Avg_Mdcr_Pymt_Amt", type: "DOUBLE", description: "Average Medicare payment per service (actual payment)" },
+      { name: "Avg_Mdcr_Stdzd_Amt", type: "DOUBLE", description: "Average standardized payment (geographic adjustment removed)" },
+    ],
+  },
+  {
+    name: "Data Year",
+    variables: [
+      { name: "data_year", type: "INTEGER", description: "Year of data (2023)" },
+    ],
+  },
+];

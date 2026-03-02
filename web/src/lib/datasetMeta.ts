@@ -1,4 +1,4 @@
-import { Pill, BarChart3, FlaskConical } from "lucide-react";
+import { Pill, BarChart3, FlaskConical, Stethoscope } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export interface DatasetMeta {
@@ -55,6 +55,26 @@ export const DATASET_METAS: DatasetMeta[] = [
     ],
     href: "/brfss",
     accentColor: "#0EA5E9",
+  },
+  {
+    key: "medicare",
+    title: "Medicare Physician Spending",
+    subtitle: "Part B Physician & Other Practitioner Payments",
+    icon: Stethoscope,
+    stats: [
+      { label: "Rows", value: "~9.7M" },
+      { label: "Year", value: "2023" },
+      { label: "Providers", value: "1.2M" },
+    ],
+    description:
+      "Analyze Medicare Part B fee-for-service physician spending by provider, specialty, procedure, state, and place of service.",
+    limitations: [
+      "Part B only (no hospital inpatient, Part C, or Part D)",
+      "Providers with <11 beneficiaries per code excluded",
+      "2023 data only (single year)",
+    ],
+    href: "/medicare",
+    accentColor: "#10B981",
   },
   {
     key: "nhanes",

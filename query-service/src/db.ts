@@ -16,6 +16,7 @@ const VIEWS: [string, string][] = [
   ["provider_hcpcs", "provider_hcpcs.parquet"],
   ["provider_monthly", "provider_monthly.parquet"],
   ["brfss", "brfss_harmonized.parquet"],
+  ["medicare", "medicare_physician_2023.parquet"],
 ];
 
 export async function initDB(): Promise<void> {

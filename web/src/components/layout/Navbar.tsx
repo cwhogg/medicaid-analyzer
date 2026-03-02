@@ -134,6 +134,17 @@ export function Navbar() {
                 Medicaid
               </Link>
               <Link
+                href="/medicare"
+                className={cn(
+                  "text-sm font-medium transition-colors",
+                  pathname === "/medicare"
+                    ? "text-accent"
+                    : "text-muted hover:text-white"
+                )}
+              >
+                Medicare
+              </Link>
+              <Link
                 href="/brfss"
                 className={cn(
                   "text-sm font-medium transition-colors",
@@ -202,6 +213,18 @@ export function Navbar() {
                 )}
               >
                 Medicaid
+              </Link>
+              <Link
+                href="/medicare"
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  "block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                  pathname === "/medicare"
+                    ? "text-accent bg-accent/10"
+                    : "text-muted hover:text-white hover:bg-white/[0.05]"
+                )}
+              >
+                Medicare
               </Link>
               <Link
                 href="/brfss"

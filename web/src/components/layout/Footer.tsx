@@ -14,6 +14,9 @@ export function Footer() {
               <a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-physician-other-practitioners/medicaid-provider-utilization-and-spending" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">CMS Medicaid Provider Utilization and Spending</a> (2018–2024). 227M+ claims records.
             </p>
             <p>
+              <a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-physician-other-practitioners/medicare-physician-other-practitioners-by-provider-and-service" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">CMS Medicare Physician Spending</a> (2023). 9.7M+ service records.
+            </p>
+            <p>
               <a href="https://www.cdc.gov/brfss/index.html" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">CDC BRFSS</a> (2014–2020, 2023). 3.5M+ survey respondents.
             </p>
           </div>
