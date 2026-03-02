@@ -27,7 +27,8 @@ export async function initMetricsDB(): Promise<void> {
       total_ms INTEGER,
       cached BOOLEAN DEFAULT false,
       input_tokens INTEGER DEFAULT 0,
-      output_tokens INTEGER DEFAULT 0
+      output_tokens INTEGER DEFAULT 0,
+      dataset VARCHAR DEFAULT 'medicaid'
     )
   `);
 
@@ -41,9 +42,22 @@ export async function initMetricsDB(): Promise<void> {
       status INTEGER,
       total_ms INTEGER,
       cached BOOLEAN DEFAULT false,
-      error VARCHAR
+      error VARCHAR,
+      dataset VARCHAR DEFAULT 'medicaid'
     )
   `);
+
+  // Add dataset column to existing tables (migration for existing DBs)
+  try {
+    await metricsDb.run(`ALTER TABLE requests ADD COLUMN dataset VARCHAR DEFAULT 'medicaid'`);
+  } catch {
+    // Column already exists — ignore
+  }
+  try {
+    await metricsDb.run(`ALTER TABLE query_log ADD COLUMN dataset VARCHAR DEFAULT 'medicaid'`);
+  } catch {
+    // Column already exists — ignore
+  }
 
   await metricsDb.run(`
     CREATE TABLE IF NOT EXISTS totals (
@@ -155,6 +169,7 @@ export interface RecordRequestInput {
   cached: boolean;
   inputTokens?: number;
   outputTokens?: number;
+  dataset?: string;
 }
 
 export interface RecordQueryInput {
@@ -167,6 +182,7 @@ export interface RecordQueryInput {
   totalMs: number;
   cached: boolean;
   error?: string;
+  dataset?: string;
 }
 
 export async function recordMetrics(
@@ -177,8 +193,8 @@ export async function recordMetrics(
 
   if (request) {
     await metricsDb.run(
-      `INSERT INTO requests (timestamp, route, ip, status, claude_ms, railway_ms, total_ms, cached, input_tokens, output_tokens)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO requests (timestamp, route, ip, status, claude_ms, railway_ms, total_ms, cached, input_tokens, output_tokens, dataset)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       request.timestamp,
       request.route,
       request.ip,
@@ -188,7 +204,8 @@ export async function recordMetrics(
       request.totalMs,
       request.cached,
       request.inputTokens ?? 0,
-      request.outputTokens ?? 0
+      request.outputTokens ?? 0,
+      request.dataset ?? "medicaid"
     );
 
     // Track daily activity (persistent, never pruned)
@@ -213,8 +230,8 @@ export async function recordMetrics(
 
   if (query) {
     await metricsDb.run(
-      `INSERT INTO query_log (timestamp, ip, route, question, sql_text, status, total_ms, cached, error)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO query_log (timestamp, ip, route, question, sql_text, status, total_ms, cached, error, dataset)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       query.timestamp,
       query.ip,
       query.route,
@@ -223,7 +240,8 @@ export async function recordMetrics(
       query.status,
       query.totalMs,
       query.cached,
-      query.error ?? null
+      query.error ?? null,
+      query.dataset ?? "medicaid"
     );
   }
 
@@ -570,10 +588,12 @@ export async function getDailyQueries(day?: string): Promise<Record<string, unkn
     }));
   }
 
-  // Per-day aggregates (last 90 days)
+  // Per-day aggregates (last 90 days) with per-dataset breakdown
   const rows = allToNumbers(await metricsDb.all(`
     SELECT STRFTIME(DATE_TRUNC('day', EPOCH_MS(timestamp)), '%Y-%m-%d') as day,
-      COUNT(*) as query_count, COUNT(DISTINCT ip) as unique_users
+      COUNT(*) as query_count, COUNT(DISTINCT ip) as unique_users,
+      COUNT(*) FILTER (WHERE dataset = 'medicaid' OR dataset IS NULL) as medicaid,
+      COUNT(*) FILTER (WHERE dataset = 'brfss') as brfss
     FROM query_log WHERE ${f}
     GROUP BY day ORDER BY day DESC LIMIT 90
   `) as Record<string, unknown>[]);
@@ -582,6 +602,8 @@ export async function getDailyQueries(day?: string): Promise<Record<string, unkn
     day: String(r.day),
     queryCount: Number(r.query_count),
     uniqueUsers: Number(r.unique_users),
+    medicaid: Number(r.medicaid),
+    brfss: Number(r.brfss),
   }));
 }
 

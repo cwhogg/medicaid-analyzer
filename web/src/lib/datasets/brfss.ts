@@ -6,8 +6,8 @@ registerDataset({
   label: "BRFSS (beta)",
   beta: true,
 
-  envUrlKey: "BRFSS_QUERY_URL",
-  envApiKeyKey: "BRFSS_API_KEY",
+  envUrlKey: "RAILWAY_QUERY_URL",
+  envApiKeyKey: "RAILWAY_API_KEY",
 
   generateSchemaPrompt: generateBRFSSSchemaPrompt,
   systemPromptPreamble: "You are a SQL expert that translates natural language questions into DuckDB SQL for BRFSS survey data.",

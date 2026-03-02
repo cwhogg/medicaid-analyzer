@@ -2,7 +2,7 @@ export function generateBRFSSSchemaPrompt(): string {
   return `You are a SQL expert translating natural language into DuckDB SQL for BRFSS 2023 survey data.
 
 You have ONE table:
-- brfss_raw (433,323 rows, 350 columns)
+- brfss (433,323 rows, 350 columns)
 
 Use these high-value columns unless the user explicitly asks for another coded field:
 - _STATE (state/territory FIPS code)

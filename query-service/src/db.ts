@@ -15,6 +15,7 @@ const VIEWS: [string, string][] = [
   ["provider_stats", "provider_stats.parquet"],
   ["provider_hcpcs", "provider_hcpcs.parquet"],
   ["provider_monthly", "provider_monthly.parquet"],
+  ["brfss", "brfss_2023.parquet"],
 ];
 
 export async function initDB(): Promise<void> {
@@ -55,7 +56,8 @@ async function tryCreateViews(): Promise<void> {
     console.warn("Upload files to", DATA_DIR, "and call POST /reload to register them.");
   }
 
-  viewsReady = created.length === VIEWS.length;
+  // Ready if at least the core Medicaid view is loaded
+  viewsReady = created.includes("claims");
 }
 
 export async function reloadViews(): Promise<{ created: string[]; missing: string[] }> {
@@ -79,7 +81,7 @@ export async function reloadViews(): Promise<{ created: string[]; missing: strin
     }
   }
 
-  viewsReady = created.length === VIEWS.length;
+  viewsReady = created.includes("claims");
   return { created, missing };
 }
 
