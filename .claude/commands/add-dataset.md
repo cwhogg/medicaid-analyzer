@@ -33,6 +33,9 @@ For every new dataset, you will create or modify these files:
 | `web/src/app/<slug>/page.tsx` | **Create** | Page route |
 | `web/src/components/layout/Footer.tsx` | **Modify** | Add data source link |
 | `web/src/app/sitemap.ts` | **Modify** | Add route to sitemap |
+| `query-service/src/metrics-db.ts` | **Modify** | Add dataset FILTER to getDailyQueries() |
+| `web/src/app/admin/page.tsx` | **Modify** | Add dataset to DaySummary + chart bars |
+| `web/src/app/admin/queries/page.tsx` | **Modify** | Add dataset column to daily queries table |
 
 **Note:** Navbar does NOT need manual editing — it dynamically renders from DATASET_METAS.
 
@@ -634,7 +637,51 @@ Edit `web/src/app/sitemap.ts` — add to `staticRoutes` array:
 
 ---
 
-## Step 14: Build
+## Step 14: Admin Analytics
+
+Update the admin dashboard to track queries for the new dataset.
+
+### 14a. Backend — `query-service/src/metrics-db.ts`
+
+In the `getDailyQueries()` function, find the SQL query that aggregates per-dataset counts. Add a new FILTER line and a new field in the return mapping:
+
+```sql
+COUNT(*) FILTER (WHERE dataset = '<dataset-key>') as <dataset_key>
+```
+
+And in the return `rows.map(...)`:
+```typescript
+<dataset_key>: Number(r.<dataset_key>),
+```
+
+### 14b. Frontend — `web/src/app/admin/page.tsx`
+
+1. Add the new field to the `DaySummary` interface:
+   ```typescript
+   <dataset_key>: number;
+   ```
+
+2. Add a new `<Bar>` in the "Queries by Day" stacked chart (use the dataset's accent color):
+   ```tsx
+   <Bar
+     dataKey="<dataset_key>"
+     name="<Dataset Label>"
+     stackId="queries"
+     fill="<accentColor>"
+     radius={[0, 0, 0, 0]}
+     maxBarSize={40}
+   />
+   ```
+   The **last** Bar in the stack should have `radius={[3, 3, 0, 0]}` for rounded top corners.
+
+### 14c. Frontend — `web/src/app/admin/queries/page.tsx`
+
+1. Add the new field to the `DaySummary` interface.
+2. Add a color-coded `<th>` header and a `<td>` cell showing `{d.<dataset_key> || 0}` in the daily summary table.
+
+---
+
+## Step 15: Build
 
 ```bash
 cd /Users/cwhogg/medicaid-analysis/web && npm run build
@@ -648,13 +695,13 @@ If build fails, fix the error and retry (up to 3 times with different approaches
 
 ---
 
-## Step 15: Deploy
+## Step 16: Deploy
 
 Commit all changes, push, and deploy:
 
 ```bash
 cd /Users/cwhogg/medicaid-analysis
-git add scripts/ingest_<dataset>.py web/src/lib/<dataset>Schemas.ts web/src/lib/variableMeta.ts web/src/lib/datasets/<dataset>.ts web/src/lib/datasets/index.ts web/src/lib/datasetMeta.ts web/src/app/<slug>/page.tsx web/src/components/layout/Footer.tsx web/src/app/sitemap.ts query-service/src/db.ts
+git add scripts/ingest_<dataset>.py web/src/lib/<dataset>Schemas.ts web/src/lib/variableMeta.ts web/src/lib/datasets/<dataset>.ts web/src/lib/datasets/index.ts web/src/lib/datasetMeta.ts web/src/app/<slug>/page.tsx web/src/components/layout/Footer.tsx web/src/app/sitemap.ts query-service/src/db.ts query-service/src/metrics-db.ts web/src/app/admin/page.tsx web/src/app/admin/queries/page.tsx
 git commit -m "Add <Dataset Name> dataset (<year>, ~<N> rows)"
 git push origin main
 vercel --prod --yes
