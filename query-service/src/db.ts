@@ -1,5 +1,5 @@
 import { Database } from "duckdb-async";
-import { existsSync } from "fs";
+import { existsSync, readdirSync } from "fs";
 
 let db: Database | null = null;
 let viewsReady = false;
@@ -16,7 +16,7 @@ const VIEWS: [string, string][] = [
   ["provider_hcpcs", "provider_hcpcs.parquet"],
   ["provider_monthly", "provider_monthly.parquet"],
   ["brfss", "brfss_harmonized.parquet"],
-  ["medicare", "medicare_physician_all_years.parquet"],
+  ["medicare", "medicare_*.parquet"],
   ["nhanes", "nhanes_2021_2023.parquet"],
 ];
 
@@ -37,6 +37,27 @@ async function tryCreateViews(): Promise<void> {
 
   for (const [viewName, fileName] of VIEWS) {
     const filePath = `${DATA_DIR}/${fileName}`;
+    const isGlob = fileName.includes("*");
+
+    // For glob patterns, check if any files match
+    if (isGlob) {
+      const pattern = new RegExp("^" + fileName.replace(/\*/g, ".*") + "$");
+      const matches = readdirSync(DATA_DIR).filter((f) => pattern.test(f));
+      if (matches.length === 0) {
+        missing.push(fileName);
+        continue;
+      }
+      try {
+        await db.run(`CREATE OR REPLACE VIEW ${viewName} AS SELECT CAST(Rndrng_NPI AS VARCHAR) AS Rndrng_NPI, Rndrng_Prvdr_Last_Org_Name, Rndrng_Prvdr_First_Name, Rndrng_Prvdr_MI, Rndrng_Prvdr_Crdntls, Rndrng_Prvdr_Ent_Cd, Rndrng_Prvdr_St1, Rndrng_Prvdr_St2, Rndrng_Prvdr_City, Rndrng_Prvdr_State_Abrvtn, Rndrng_Prvdr_State_FIPS, Rndrng_Prvdr_Zip5, Rndrng_Prvdr_RUCA, Rndrng_Prvdr_RUCA_Desc, Rndrng_Prvdr_Cntry, Rndrng_Prvdr_Type, Rndrng_Prvdr_Mdcr_Prtcptg_Ind, HCPCS_Cd, HCPCS_Desc, HCPCS_Drug_Ind, Place_Of_Srvc, Tot_Benes, Tot_Srvcs, Tot_Bene_Day_Srvcs, Avg_Sbmtd_Chrg, Avg_Mdcr_Alowd_Amt, Avg_Mdcr_Pymt_Amt, Avg_Mdcr_Stdzd_Amt, data_year FROM read_parquet('${filePath}', union_by_name=true)`);
+        created.push(viewName);
+        console.log(`  ${viewName}: ${matches.length} files matched glob`);
+      } catch (err) {
+        console.error(`Failed to create view ${viewName}:`, err);
+        missing.push(fileName);
+      }
+      continue;
+    }
+
     if (!existsSync(filePath)) {
       missing.push(fileName);
       continue;
@@ -70,6 +91,26 @@ export async function reloadViews(): Promise<{ created: string[]; missing: strin
 
   for (const [viewName, fileName] of VIEWS) {
     const filePath = `${DATA_DIR}/${fileName}`;
+    const isGlob = fileName.includes("*");
+
+    if (isGlob) {
+      const pattern = new RegExp("^" + fileName.replace(/\*/g, ".*") + "$");
+      const matches = readdirSync(DATA_DIR).filter((f) => pattern.test(f));
+      if (matches.length === 0) {
+        missing.push(fileName);
+        continue;
+      }
+      try {
+        await db.run(`CREATE OR REPLACE VIEW ${viewName} AS SELECT CAST(Rndrng_NPI AS VARCHAR) AS Rndrng_NPI, Rndrng_Prvdr_Last_Org_Name, Rndrng_Prvdr_First_Name, Rndrng_Prvdr_MI, Rndrng_Prvdr_Crdntls, Rndrng_Prvdr_Ent_Cd, Rndrng_Prvdr_St1, Rndrng_Prvdr_St2, Rndrng_Prvdr_City, Rndrng_Prvdr_State_Abrvtn, Rndrng_Prvdr_State_FIPS, Rndrng_Prvdr_Zip5, Rndrng_Prvdr_RUCA, Rndrng_Prvdr_RUCA_Desc, Rndrng_Prvdr_Cntry, Rndrng_Prvdr_Type, Rndrng_Prvdr_Mdcr_Prtcptg_Ind, HCPCS_Cd, HCPCS_Desc, HCPCS_Drug_Ind, Place_Of_Srvc, Tot_Benes, Tot_Srvcs, Tot_Bene_Day_Srvcs, Avg_Sbmtd_Chrg, Avg_Mdcr_Alowd_Amt, Avg_Mdcr_Pymt_Amt, Avg_Mdcr_Stdzd_Amt, data_year FROM read_parquet('${filePath}', union_by_name=true)`);
+        created.push(viewName);
+        console.log(`  ${viewName}: ${matches.length} files matched glob`);
+      } catch (err) {
+        console.error(`Failed to create view ${viewName}:`, err);
+        missing.push(fileName);
+      }
+      continue;
+    }
+
     if (!existsSync(filePath)) {
       missing.push(fileName);
       continue;
