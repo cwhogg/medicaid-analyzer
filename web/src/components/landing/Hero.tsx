@@ -28,23 +28,23 @@ export function Hero() {
         <div className="grid grid-cols-2 sm:grid-cols-4 border-t-2 border-foreground border-b border-rule">
           <div className="stat-cell">
             <div className="font-headline text-[2.375rem] font-bold text-foreground leading-[1.1] tracking-tight">227M</div>
-            <div className="text-[0.8125rem] font-semibold tracking-[0.04em] uppercase text-body mt-1">Claims Analyzed</div>
+            <div className="text-[0.8125rem] font-semibold tracking-[0.04em] uppercase text-body mt-1">Spending Records</div>
             <div className="text-[0.6875rem] text-muted mt-0.5 tracking-wide">Medicaid 2018&ndash;2024</div>
           </div>
           <div className="stat-cell">
             <div className="font-headline text-[2.375rem] font-bold text-foreground leading-[1.1] tracking-tight">9.7M</div>
-            <div className="text-[0.8125rem] font-semibold tracking-[0.04em] uppercase text-body mt-1">Service Records</div>
+            <div className="text-[0.8125rem] font-semibold tracking-[0.04em] uppercase text-body mt-1">Physician Records</div>
             <div className="text-[0.6875rem] text-muted mt-0.5 tracking-wide">Medicare 2023</div>
           </div>
           <div className="stat-cell border-b-0 sm:border-b-0">
             <div className="font-headline text-[2.375rem] font-bold text-foreground leading-[1.1] tracking-tight">4.0M</div>
-            <div className="text-[0.8125rem] font-semibold tracking-[0.04em] uppercase text-body mt-1">Survey Responses</div>
+            <div className="text-[0.8125rem] font-semibold tracking-[0.04em] uppercase text-body mt-1">Survey Respondents</div>
             <div className="text-[0.6875rem] text-muted mt-0.5 tracking-wide">BRFSS 2014&ndash;2024</div>
           </div>
           <div className="stat-cell border-r-0">
-            <div className="font-headline text-[2.375rem] font-bold text-foreground leading-[1.1] tracking-tight">7+</div>
-            <div className="text-[0.8125rem] font-semibold tracking-[0.04em] uppercase text-body mt-1">Years of Data</div>
-            <div className="text-[0.6875rem] text-muted mt-0.5 tracking-wide">Continuously Updated</div>
+            <div className="font-headline text-[2.375rem] font-bold text-foreground leading-[1.1] tracking-tight">12K</div>
+            <div className="text-[0.8125rem] font-semibold tracking-[0.04em] uppercase text-body mt-1">Clinical Exams</div>
+            <div className="text-[0.6875rem] text-muted mt-0.5 tracking-wide">NHANES 2021&ndash;2023</div>
           </div>
         </div>
       </div>
