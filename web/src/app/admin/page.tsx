@@ -119,10 +119,18 @@ const PHASE_LABELS: Record<string, string> = {
 
 const PHASE_ORDER = ["topic", "analysis", "writing", "publishing", "done"];
 
+const DATASET_OPTIONS = [
+  { key: "medicaid", label: "Medicaid", color: "#B91C1C" },
+  { key: "medicare", label: "Medicare", color: "#0F766E" },
+  { key: "brfss", label: "BRFSS", color: "#1D4ED8" },
+  { key: "nhanes", label: "NHANES", color: "#7C3AED" },
+];
+
 function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
   const [generating, setGenerating] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
   const [topicInput, setTopicInput] = useState("");
+  const [selectedDataset, setSelectedDataset] = useState("medicaid");
   const [events, setEvents] = useState<GenerationEvent[]>([]);
   const [currentPhase, setCurrentPhase] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
@@ -182,7 +190,7 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
       const fetchOptions: RequestInit = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(topic ? { topic } : {}),
+        body: JSON.stringify({ ...(topic ? { topic } : {}), dataset: selectedDataset }),
       };
 
       const res = await fetch(
@@ -273,7 +281,7 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
               Blog Posts ({blogPosts.length})
             </h2>
             <p className="text-xs text-muted mt-0.5">
-              Generate data-driven posts from 227M claims
+              Generate data-driven posts from any dataset
             </p>
           </div>
           <button
@@ -295,6 +303,23 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
         {/* Topic prompt */}
         {showPrompt && !generating && (
           <div className="mb-4 p-4 rounded-sm bg-[#F5F5F0] border border-rule-light">
+            {/* Dataset selector pills */}
+            <div className="flex gap-2 mb-3">
+              {DATASET_OPTIONS.map((ds) => (
+                <button
+                  key={ds.key}
+                  onClick={() => setSelectedDataset(ds.key)}
+                  className="px-3 py-1.5 text-xs font-medium rounded-sm border transition-colors"
+                  style={
+                    selectedDataset === ds.key
+                      ? { backgroundColor: ds.color + "15", borderColor: ds.color, color: ds.color }
+                      : { backgroundColor: "white", borderColor: "#D6D3D1", color: "#78716C" }
+                  }
+                >
+                  {ds.label}
+                </button>
+              ))}
+            </div>
             <p className="text-sm text-foreground mb-3">
               Enter a topic or let Claude choose one automatically.
             </p>

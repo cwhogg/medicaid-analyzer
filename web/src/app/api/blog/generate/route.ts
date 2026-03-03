@@ -1,8 +1,8 @@
 import { NextRequest } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { generateSchemaPrompt } from "@/lib/schemas";
 import { validateSQL } from "@/lib/sqlValidation";
 import { executeRemoteQuery } from "@/lib/railway";
+import { getDataset, getAllDatasets } from "@/lib/datasets/index";
 import { getAllPosts } from "@/lib/content";
 
 export const maxDuration = 300;
@@ -74,12 +74,19 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Parse optional topic from request body
+  // Parse optional topic and dataset from request body
   let userTopic: string | null = null;
+  let datasetKey = "medicaid";
   try {
     const body = await request.json();
     if (body.topic && typeof body.topic === "string" && body.topic.trim()) {
       userTopic = body.topic.trim();
+    }
+    if (body.dataset && typeof body.dataset === "string") {
+      const validKeys = getAllDatasets().map((d) => d.key);
+      if (validKeys.includes(body.dataset)) {
+        datasetKey = body.dataset;
+      }
     }
   } catch {
     // No body or invalid JSON — that's fine, Claude will choose the topic
@@ -88,6 +95,7 @@ export async function POST(request: NextRequest) {
   return streamResponse(async (send) => {
     const start = Date.now();
     const client = new Anthropic({ apiKey });
+    const dsConfig = getDataset(datasetKey);
 
     // Get existing post titles to avoid repetition
     let existingTitles: string[] = [];
@@ -105,7 +113,7 @@ export async function POST(request: NextRequest) {
         : "Generating topic...",
     });
 
-    const topicSystemPrompt = `You generate SEO-optimized blog post plans for a Medicaid spending analysis site. The site has a 227-million-row dataset of Medicaid provider spending claims from Jan 2018 to Sep 2024, covering billing NPI, HCPCS/CPT procedure codes, monthly totals, claims counts, and beneficiary counts across 617K+ providers.
+    const topicSystemPrompt = `You generate SEO-optimized blog post plans for a public health data analysis site called Open Health Data Hub. You are writing about the ${dsConfig.label} dataset. ${dsConfig.pageSubtitle}.
 
 You must return a JSON object with these fields:
 - title: SEO-optimized article title (50-70 chars)
@@ -118,8 +126,8 @@ You must return a JSON object with these fields:
 Return ONLY valid JSON, no markdown fences or explanation.`;
 
     const topicUserMessage = userTopic
-      ? `Create a blog post plan about this topic: "${userTopic}"\n\nGenerate an SEO-optimized title, slug, keywords, and 2-3 specific data analysis questions that can be answered with SQL queries against the Medicaid claims dataset.\n\nExisting posts to avoid overlap with:\n${existingTitles.map((t) => `- ${t}`).join("\n") || "(none yet)"}`
-      : `Generate a novel Medicaid spending analysis topic. Avoid topics already covered:\n${existingTitles.map((t) => `- ${t}`).join("\n") || "(none yet)"}`;
+      ? `Create a blog post plan about this topic: "${userTopic}"\n\nGenerate an SEO-optimized title, slug, keywords, and 2-3 specific data analysis questions that can be answered with SQL queries against the ${dsConfig.label} dataset.\n\nExisting posts to avoid overlap with:\n${existingTitles.map((t) => `- ${t}`).join("\n") || "(none yet)"}`
+      : `Generate a novel ${dsConfig.label} data analysis topic. Avoid topics already covered:\n${existingTitles.map((t) => `- ${t}`).join("\n") || "(none yet)"}`;
 
     const topicResponse = await client.messages.create({
       model: "claude-sonnet-4-6",
@@ -167,7 +175,7 @@ Return ONLY valid JSON, no markdown fences or explanation.`;
     });
 
     // --- Phase 2: Analysis Execution ---
-    const schemaPrompt = generateSchemaPrompt();
+    const schemaPrompt = dsConfig.generateSchemaPrompt();
     const analysisSteps: AnalysisStep[] = [];
     const totalQuestions = topic.analysisQuestions.length;
 
@@ -189,7 +197,7 @@ Return ONLY valid JSON, no markdown fences or explanation.`;
           system: [
             {
               type: "text" as const,
-              text: `You are a SQL expert that translates natural language questions into DuckDB SQL queries for a Medicaid provider spending dataset.\n\n${schemaPrompt}\n\nRules:\n- Return ONLY the SQL query, nothing else. No markdown, no explanation, no code fences.\n- Always include a LIMIT clause (max 100 for blog data tables).\n- Only use SELECT statements.\n- Use DuckDB SQL syntax.\n- Format dollar amounts with ROUND(..., 0).\n- IMPORTANT: Oct-Dec 2024 data is incomplete. Add AND claim_month < '2024-10-01' for time series.`,
+              text: `${dsConfig.systemPromptPreamble}\n\n${schemaPrompt}\n\n${dsConfig.systemPromptRules}\n\nAdditional rule for blog queries:\n- Always include a LIMIT clause (max 100 for blog data tables).`,
               cache_control: { type: "ephemeral" as const },
             },
           ],
@@ -238,7 +246,7 @@ Return ONLY valid JSON, no markdown fences or explanation.`;
           continue;
         }
 
-        const result = await executeRemoteQuery(sql);
+        const result = await executeRemoteQuery(sql, datasetKey);
         analysisSteps.push({
           question,
           sql,
@@ -293,7 +301,7 @@ Return ONLY valid JSON, no markdown fences or explanation.`;
       model: "claude-sonnet-4-6",
       max_tokens: 4096,
       temperature: 0.3,
-      system: `You are a data journalist writing for a Medicaid spending analysis blog. Write engaging, authoritative articles backed by real data. Your audience includes healthcare policy researchers, analysts, and journalists.
+      system: `You are a data journalist writing for a public health data analysis blog called Open Health Data Hub. This article is about ${dsConfig.label} data. Write engaging, authoritative articles backed by real data. Your audience includes healthcare policy researchers, analysts, and journalists.
 
 Rules:
 - Write 1500-2500 words
