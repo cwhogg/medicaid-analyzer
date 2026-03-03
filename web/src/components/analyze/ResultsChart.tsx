@@ -286,7 +286,11 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `chart-${Date.now()}.png`;
+        const slug = chartTitle
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "");
+        a.download = `${slug || "chart"}.png`;
         a.click();
         URL.revokeObjectURL(url);
       }, "image/png");
