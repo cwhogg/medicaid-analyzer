@@ -4,11 +4,14 @@ import type { DatasetMeta } from "@/lib/datasetMeta";
 export function DatasetCard({ meta }: { meta: DatasetMeta }) {
   const card = (
     <div
-      className={`group card p-6 sm:p-7 flex flex-col h-full transition-all duration-200 ${
+      className={`group card p-6 sm:p-7 flex flex-col h-full transition-all duration-200 cursor-pointer ${
         meta.comingSoon
           ? "opacity-60 cursor-default"
-          : "hover:shadow-lg hover:-translate-y-0.5"
+          : "hover:shadow-lg hover:-translate-y-1 hover:border-rule"
       }`}
+      style={{
+        borderLeft: meta.comingSoon ? undefined : `3px solid ${meta.accentColor}`,
+      }}
     >
       {/* Tag */}
       <div className="flex items-start justify-between mb-2">
@@ -58,10 +61,11 @@ export function DatasetCard({ meta }: { meta: DatasetMeta }) {
       {/* CTA */}
       {!meta.comingSoon && (
         <div
-          className="flex items-center gap-2 text-sm font-semibold transition-colors"
+          className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wider transition-colors"
           style={{ color: meta.accentColor }}
         >
-          Explore &rarr;
+          Explore
+          <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
         </div>
       )}
     </div>
