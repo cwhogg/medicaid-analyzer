@@ -8,7 +8,7 @@ interface GlassCardProps {
 
 export function GlassCard({ children, className, hover = false }: GlassCardProps) {
   return (
-    <div className={cn(hover ? "glass-card-hover" : "glass-card", className)}>
+    <div className={cn(hover ? "card-hover" : "card", className)}>
       {children}
     </div>
   );

@@ -17,28 +17,19 @@ export default function Home() {
       <Navbar />
       <main className="min-h-screen">
         <Hero />
-        <Features />
 
         {/* Dataset highlights */}
-        <section className="py-24">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl sm:text-4xl font-bold text-white">
-                Available Datasets
-              </h2>
-              <p className="mt-4 text-muted max-w-xl mx-auto">
-                Federal health data from CMS, CDC, and NIH — ready to query
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {DATASET_METAS.map((meta) => (
-                <DatasetCard key={meta.key} meta={meta} />
-              ))}
-            </div>
+        <section className="max-w-[1080px] mx-auto px-4 sm:px-8">
+          <div className="section-label">Available Datasets</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {DATASET_METAS.map((meta) => (
+              <DatasetCard key={meta.key} meta={meta} />
+            ))}
           </div>
         </section>
 
         <LiveDemo />
+        <Features />
       </main>
       <Footer />
     </>

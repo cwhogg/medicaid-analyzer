@@ -2,7 +2,6 @@
 
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { GlassCard } from "@/components/ui/GlassCard";
 import {
   BarChart,
   Bar,
@@ -266,21 +265,21 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
   };
 
   return (
-    <GlassCard className="mb-6">
+    <div className="card mb-6">
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-sm font-semibold text-muted uppercase tracking-wider">
               Blog Posts ({blogPosts.length})
             </h2>
-            <p className="text-xs text-muted/60 mt-0.5">
+            <p className="text-xs text-muted mt-0.5">
               Generate data-driven posts from 227M claims
             </p>
           </div>
           <button
             onClick={() => setShowPrompt(true)}
             disabled={generating}
-            className="px-4 py-2 text-sm rounded-lg bg-accent text-white hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="btn-primary px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {generating ? (
               <>
@@ -295,8 +294,8 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
 
         {/* Topic prompt */}
         {showPrompt && !generating && (
-          <div className="mb-4 p-4 rounded-lg bg-white/[0.03] border border-white/[0.08]">
-            <p className="text-sm text-white mb-3">
+          <div className="mb-4 p-4 rounded-sm bg-[#F5F5F0] border border-rule-light">
+            <p className="text-sm text-foreground mb-3">
               Enter a topic or let Claude choose one automatically.
             </p>
             <div className="flex gap-2">
@@ -314,21 +313,21 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
                   }
                 }}
                 placeholder="e.g. Telehealth spending growth since 2020"
-                className="flex-1 px-3 py-2 text-sm bg-white/[0.03] border border-white/[0.08] rounded-lg text-white placeholder:text-muted-dark focus:outline-none focus:border-accent/50 transition-colors"
+                className="flex-1 px-3 py-2 text-sm bg-white border border-rule rounded-sm text-foreground placeholder:text-muted focus:outline-none focus:border-accent transition-colors"
               />
             </div>
             <div className="flex items-center gap-2 mt-3">
               {topicInput.trim() && (
                 <button
                   onClick={() => generate(topicInput.trim())}
-                  className="px-4 py-2 text-sm rounded-lg bg-accent text-white hover:bg-accent/90 transition-colors"
+                  className="btn-primary px-4 py-2 text-sm"
                 >
                   Generate
                 </button>
               )}
               <button
                 onClick={() => generate(null)}
-                className="px-4 py-2 text-sm rounded-lg bg-white/[0.05] border border-white/[0.08] text-muted hover:text-white hover:bg-white/[0.1] transition-colors"
+                className="px-4 py-2 text-sm rounded-sm bg-surface border border-rule text-muted hover:text-foreground transition-colors"
               >
                 Let Claude Choose
               </button>
@@ -337,7 +336,7 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
                   setShowPrompt(false);
                   setTopicInput("");
                 }}
-                className="px-3 py-2 text-sm text-muted hover:text-white transition-colors"
+                className="px-3 py-2 text-sm text-muted hover:text-foreground transition-colors"
               >
                 Cancel
               </button>
@@ -365,27 +364,27 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
                 return (
                   <div key={phase} className="flex items-center gap-1">
                     <div
-                      className={`px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-colors ${
+                      className={`px-2.5 py-1 rounded-sm text-xs font-medium whitespace-nowrap transition-colors ${
                         isError
-                          ? "bg-red-500/20 text-red-400 border border-red-500/30"
+                          ? "bg-red-50 text-red-700 border border-red-200"
                           : isActive
-                          ? "bg-accent/20 text-accent border border-accent/30"
+                          ? "bg-red-50 text-accent border border-red-200"
                           : isDone
-                          ? "bg-green-500/10 text-green-400/80 border border-green-500/20"
-                          : "bg-white/[0.03] text-muted/40 border border-white/[0.05]"
+                          ? "bg-green-50 text-green-700 border border-green-200"
+                          : "bg-[#F5F5F0] text-muted border border-rule-light"
                       }`}
                     >
                       {isDone && !isActive ? "\u2713 " : ""}
                       {PHASE_LABELS[phase]}
                     </div>
                     {i < PHASE_ORDER.length - 2 && (
-                      <span className="text-white/20 text-xs">&rarr;</span>
+                      <span className="text-rule text-xs">&rarr;</span>
                     )}
                   </div>
                 );
               })}
               {generating && (
-                <span className="text-xs text-muted/60 ml-2 font-mono whitespace-nowrap">
+                <span className="text-xs text-muted ml-2 font-mono whitespace-nowrap">
                   {formatElapsed(elapsed)}
                 </span>
               )}
@@ -394,36 +393,36 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
             {/* Event log */}
             <div
               ref={logRef}
-              className="bg-white/[0.02] rounded-lg border border-white/[0.05] p-3 max-h-48 overflow-y-auto font-mono text-xs space-y-1"
+              className="bg-[#F5F5F0] rounded-sm border border-rule-light p-3 max-h-48 overflow-y-auto font-mono text-xs space-y-1"
             >
               {events.map((ev, i) => (
                 <div
                   key={i}
                   className={`flex gap-2 ${
                     ev.phase === "error"
-                      ? "text-red-400"
+                      ? "text-red-700"
                       : ev.phase === "done"
-                      ? "text-green-400"
-                      : "text-muted/80"
+                      ? "text-green-700"
+                      : "text-body"
                   }`}
                 >
-                  <span className="text-muted/40 shrink-0 w-[3.5rem] text-right">
+                  <span className="text-muted shrink-0 w-[3.5rem] text-right">
                     {PHASE_LABELS[ev.phase]?.slice(0, 5) || ev.phase}
                   </span>
                   <span>{ev.message}</span>
                 </div>
               ))}
               {generating && events.length === 0 && (
-                <div className="text-muted/40">Starting generation...</div>
+                <div className="text-muted">Starting generation...</div>
               )}
             </div>
 
             {/* Result card */}
             {result && (
-              <div className="mt-3 p-3 rounded-lg bg-green-500/[0.06] border border-green-500/20">
+              <div className="mt-3 p-3 rounded-sm bg-green-50 border border-green-200">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-white">
+                    <p className="text-sm font-semibold text-foreground">
                       {result.title}
                     </p>
                     <p className="text-xs text-muted mt-1">
@@ -431,7 +430,7 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
                       {result.analysisSteps} analyses &middot;{" "}
                       {Math.round((result.generationMs || 0) / 1000)}s
                     </p>
-                    <p className="text-xs text-muted/60 mt-1">
+                    <p className="text-xs text-muted mt-1">
                       Committed to GitHub. Vercel will auto-deploy in ~60s.
                     </p>
                   </div>
@@ -439,7 +438,7 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
                     href={`/blog/${result.slug}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-accent hover:underline shrink-0 mt-1"
+                    className="text-xs text-teal hover:underline shrink-0 mt-1"
                   >
                     View post &rarr;
                   </a>
@@ -448,8 +447,8 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
             )}
 
             {currentPhase === "error" && (
-              <div className="mt-3 p-3 rounded-lg bg-red-500/[0.06] border border-red-500/20">
-                <p className="text-xs text-red-400">
+              <div className="mt-3 p-3 rounded-sm bg-red-50 border border-red-200">
+                <p className="text-xs text-red-700">
                   Generation failed. Check the log above for details.
                 </p>
               </div>
@@ -463,23 +462,23 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
             {blogPosts.map((post) => (
               <div
                 key={post.slug}
-                className="flex items-center justify-between bg-white/[0.02] rounded-lg p-3 border border-white/[0.05]"
+                className="flex items-center justify-between bg-[#F5F5F0] rounded-sm p-3 border border-rule-light"
               >
                 <div className="min-w-0">
                   <a
                     href={`/blog/${post.slug}`}
-                    className="text-sm text-white hover:text-accent transition-colors block truncate"
+                    className="text-sm text-foreground hover:text-teal transition-colors block truncate"
                   >
                     {post.title}
                   </a>
-                  <p className="text-xs text-muted/60 mt-0.5">
+                  <p className="text-xs text-muted mt-0.5">
                     {new Date(post.date).toLocaleDateString()} &middot;{" "}
                     {post.wordCount} words
                   </p>
                 </div>
                 <a
                   href={`/blog/${post.slug}`}
-                  className="text-xs text-accent hover:underline shrink-0 ml-4"
+                  className="text-xs text-teal hover:underline shrink-0 ml-4"
                 >
                   View &rarr;
                 </a>
@@ -489,14 +488,14 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
         ) : (
           !generating &&
           events.length === 0 && (
-            <p className="text-xs text-muted/40">
+            <p className="text-xs text-muted">
               No blog posts yet. Click &ldquo;Generate Post&rdquo; to create
               one.
             </p>
           )
         )}
       </div>
-    </GlassCard>
+    </div>
   );
 }
 
@@ -567,7 +566,7 @@ function AdminDashboard() {
   if (error) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-red-400">{error}</p>
+        <p className="text-red-700">{error}</p>
       </div>
     );
   }
@@ -581,14 +580,14 @@ function AdminDashboard() {
   }
 
   const budgetColor =
-    metrics.costs.budgetPercent >= 80 ? "bg-red-500" : "bg-accent";
+    metrics.costs.budgetPercent >= 80 ? "bg-red-600" : "bg-accent";
 
   return (
-    <div className="min-h-screen bg-background text-white p-6 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-background text-foreground p-6 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold font-heading">Admin Dashboard</h1>
+          <h1 className="text-2xl font-headline font-bold">Admin Dashboard</h1>
           <p className="text-sm text-muted mt-1">
             Tracking since{" "}
             {new Date(metrics.uptime.startTime).toLocaleDateString()} (
@@ -603,7 +602,7 @@ function AdminDashboard() {
           )}
           <button
             onClick={fetchMetrics}
-            className="px-3 py-1.5 text-sm rounded-lg bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.1] transition-colors"
+            className="px-3 py-1.5 text-sm rounded-sm bg-surface border border-rule hover:bg-[#F5F5F0] transition-colors"
           >
             Refresh
           </button>
@@ -612,342 +611,322 @@ function AdminDashboard() {
 
       {/* Top Stats Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <GlassCard>
-          <div className="p-4">
-            <p className="text-xs text-muted uppercase tracking-wider">
-              Total Requests
-            </p>
-            <p className="text-3xl font-bold font-mono mt-1">
-              {formatNumber(metrics.traffic.totalRequests)}
-            </p>
-            <p className="text-xs text-muted mt-1">
-              {metrics.performance.sampleSize} in rolling window
-            </p>
-          </div>
-        </GlassCard>
-        <GlassCard>
-          <div className="p-4">
-            <p className="text-xs text-muted uppercase tracking-wider">
-              Unique Users
-            </p>
-            <p className="text-3xl font-bold font-mono mt-1">
-              {formatNumber(metrics.traffic.uniqueUsers)}
-            </p>
-            <p className="text-xs text-muted mt-1">by IP address</p>
-          </div>
-        </GlassCard>
-        <GlassCard>
-          <div className="p-4">
-            <p className="text-xs text-muted uppercase tracking-wider">
-              Queries / User
-            </p>
-            <p className="text-3xl font-bold font-mono mt-1">
-              {metrics.traffic.uniqueUsers > 0
-                ? (
-                    metrics.traffic.totalRequests / metrics.traffic.uniqueUsers
-                  ).toFixed(1)
-                : "0"}
-            </p>
-            <p className="text-xs text-muted mt-1">avg requests per user</p>
-          </div>
-        </GlassCard>
-        <GlassCard>
-          <div className="p-4">
-            <p className="text-xs text-muted uppercase tracking-wider">
-              Est. Cost
-            </p>
-            <p className="text-3xl font-bold font-mono mt-1">
-              <span
-                className={
-                  metrics.costs.budgetPercent >= 80
-                    ? "text-red-400"
-                    : "text-accent"
-                }
-              >
-                ${metrics.costs.estimatedUSD.toFixed(2)}
-              </span>
-            </p>
-            <div className="mt-2">
-              <div className="w-full h-2 rounded-full bg-white/[0.05]">
-                <div
-                  className={`h-2 rounded-full transition-all ${budgetColor}`}
-                  style={{
-                    width: `${Math.min(metrics.costs.budgetPercent, 100)}%`,
-                  }}
-                />
-              </div>
-              <p className="text-xs text-muted mt-1">
-                {metrics.costs.budgetPercent}% of ${metrics.costs.budgetLimit}{" "}
-                limit
-              </p>
+        <div className="card p-4">
+          <p className="text-xs text-muted uppercase tracking-wider">
+            Total Requests
+          </p>
+          <p className="text-3xl font-bold font-mono mt-1">
+            {formatNumber(metrics.traffic.totalRequests)}
+          </p>
+          <p className="text-xs text-muted mt-1">
+            {metrics.performance.sampleSize} in rolling window
+          </p>
+        </div>
+        <div className="card p-4">
+          <p className="text-xs text-muted uppercase tracking-wider">
+            Unique Users
+          </p>
+          <p className="text-3xl font-bold font-mono mt-1">
+            {formatNumber(metrics.traffic.uniqueUsers)}
+          </p>
+          <p className="text-xs text-muted mt-1">by IP address</p>
+        </div>
+        <div className="card p-4">
+          <p className="text-xs text-muted uppercase tracking-wider">
+            Queries / User
+          </p>
+          <p className="text-3xl font-bold font-mono mt-1">
+            {metrics.traffic.uniqueUsers > 0
+              ? (
+                  metrics.traffic.totalRequests / metrics.traffic.uniqueUsers
+                ).toFixed(1)
+              : "0"}
+          </p>
+          <p className="text-xs text-muted mt-1">avg requests per user</p>
+        </div>
+        <div className="card p-4">
+          <p className="text-xs text-muted uppercase tracking-wider">
+            Est. Cost
+          </p>
+          <p className="text-3xl font-bold font-mono mt-1">
+            <span
+              className={
+                metrics.costs.budgetPercent >= 80
+                  ? "text-red-700"
+                  : "text-accent"
+              }
+            >
+              ${metrics.costs.estimatedUSD.toFixed(2)}
+            </span>
+          </p>
+          <div className="mt-2">
+            <div className="w-full h-2 rounded-full bg-rule-light">
+              <div
+                className={`h-2 rounded-full transition-all ${budgetColor}`}
+                style={{
+                  width: `${Math.min(metrics.costs.budgetPercent, 100)}%`,
+                }}
+              />
             </div>
+            <p className="text-xs text-muted mt-1">
+              {metrics.costs.budgetPercent}% of ${metrics.costs.budgetLimit}{" "}
+              limit
+            </p>
           </div>
-        </GlassCard>
+        </div>
       </div>
 
       {/* Queries by Day Chart */}
       {dailyData.length > 0 && (
-        <GlassCard className="mb-6">
-          <div className="p-4">
-            <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">
-              Queries by Day
-            </h2>
-            <div className="h-52">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={[...dailyData].reverse()}
-                  margin={{ top: 20, right: 4, bottom: 0, left: -12 }}
-                >
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="rgba(255,255,255,0.04)"
-                    vertical={false}
-                  />
-                  <XAxis
-                    dataKey="day"
-                    tick={{ fill: "#6B7280", fontSize: 11 }}
-                    tickLine={false}
-                    axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
-                    tickFormatter={(v: string) => {
-                      const d = new Date(v + "T00:00:00");
-                      return d.toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                      });
-                    }}
-                  />
-                  <YAxis
-                    tick={{ fill: "#6B7280", fontSize: 11 }}
-                    tickLine={false}
-                    axisLine={false}
-                    allowDecimals={false}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#1a1a1a",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      borderRadius: "8px",
-                      fontSize: 12,
-                    }}
-                    labelFormatter={(v: string) => {
-                      const d = new Date(v + "T00:00:00");
-                      return d.toLocaleDateString("en-US", {
-                        weekday: "short",
-                        month: "short",
-                        day: "numeric",
-                      });
-                    }}
-                    cursor={{ fill: "rgba(255,255,255,0.03)" }}
-                  />
-                  <Legend
-                    wrapperStyle={{ fontSize: 11, color: "#9CA3AF" }}
-                    iconType="square"
-                    iconSize={10}
-                  />
-                  <Bar
-                    dataKey="medicaid"
-                    name="Medicaid"
-                    stackId="queries"
-                    fill="#EA580C"
-                    radius={[0, 0, 0, 0]}
-                    maxBarSize={40}
-                  />
-                  <Bar
-                    dataKey="medicare"
-                    name="Medicare"
-                    stackId="queries"
-                    fill="#10B981"
-                    radius={[0, 0, 0, 0]}
-                    maxBarSize={40}
-                  />
-                  <Bar
-                    dataKey="brfss"
-                    name="BRFSS"
-                    stackId="queries"
-                    fill="#0EA5E9"
-                    radius={[0, 0, 0, 0]}
-                    maxBarSize={40}
-                  />
-                  <Bar
-                    dataKey="nhanes"
-                    name="NHANES"
-                    stackId="queries"
-                    fill="#8B5CF6"
-                    radius={[3, 3, 0, 0]}
-                    maxBarSize={40}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+        <div className="card mb-6 p-4">
+          <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">
+            Queries by Day
+          </h2>
+          <div className="h-52">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={[...dailyData].reverse()}
+                margin={{ top: 20, right: 4, bottom: 0, left: -12 }}
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#E7E5E4"
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="day"
+                  tick={{ fill: "#78716C", fontSize: 11 }}
+                  tickLine={false}
+                  axisLine={{ stroke: "#D6D3D1" }}
+                  tickFormatter={(v: string) => {
+                    const d = new Date(v + "T00:00:00");
+                    return d.toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                    });
+                  }}
+                />
+                <YAxis
+                  tick={{ fill: "#78716C", fontSize: 11 }}
+                  tickLine={false}
+                  axisLine={false}
+                  allowDecimals={false}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#FFFFFF",
+                    border: "1px solid #D6D3D1",
+                    borderRadius: "2px",
+                    fontSize: 12,
+                  }}
+                  labelFormatter={(v: string) => {
+                    const d = new Date(v + "T00:00:00");
+                    return d.toLocaleDateString("en-US", {
+                      weekday: "short",
+                      month: "short",
+                      day: "numeric",
+                    });
+                  }}
+                  cursor={{ fill: "rgba(28,25,23,0.03)" }}
+                />
+                <Legend
+                  wrapperStyle={{ fontSize: 11, color: "#78716C" }}
+                  iconType="square"
+                  iconSize={10}
+                />
+                <Bar
+                  dataKey="medicaid"
+                  name="Medicaid"
+                  stackId="queries"
+                  fill="#B91C1C"
+                  radius={[0, 0, 0, 0]}
+                  maxBarSize={40}
+                />
+                <Bar
+                  dataKey="medicare"
+                  name="Medicare"
+                  stackId="queries"
+                  fill="#0F766E"
+                  radius={[0, 0, 0, 0]}
+                  maxBarSize={40}
+                />
+                <Bar
+                  dataKey="brfss"
+                  name="BRFSS"
+                  stackId="queries"
+                  fill="#1D4ED8"
+                  radius={[0, 0, 0, 0]}
+                  maxBarSize={40}
+                />
+                <Bar
+                  dataKey="nhanes"
+                  name="NHANES"
+                  stackId="queries"
+                  fill="#7C3AED"
+                  radius={[2, 2, 0, 0]}
+                  maxBarSize={40}
+                />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
-        </GlassCard>
+        </div>
       )}
 
       {/* Middle Row: Routes + Response Times */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-        <GlassCard>
-          <div className="p-4">
-            <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-3">
-              Requests by Route
-            </h2>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-muted/60">
-                  <th className="pb-2">Route</th>
-                  <th className="pb-2 text-right">Count</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(metrics.traffic.byRoute)
-                  .sort(([, a], [, b]) => b - a)
-                  .map(([route, count]) => (
-                    <tr
-                      key={route}
-                      className="border-t border-white/[0.05]"
-                    >
-                      <td className="py-1.5 font-mono text-xs">{route}</td>
-                      <td className="py-1.5 text-right font-mono">
-                        {formatNumber(count)}
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-        </GlassCard>
-
-        <GlassCard>
-          <div className="p-4">
-            <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-3">
-              Response Times (ms)
-            </h2>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-muted/60">
-                  <th className="pb-2">Component</th>
-                  <th className="pb-2 text-right">Avg</th>
-                  <th className="pb-2 text-right">P95</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  { name: "Total", ...metrics.performance.total },
-                  { name: "Claude API", ...metrics.performance.claude },
-                  { name: "Railway DB", ...metrics.performance.railway },
-                ].map((row) => (
+        <div className="card p-4">
+          <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-3">
+            Requests by Route
+          </h2>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-muted">
+                <th className="pb-2">Route</th>
+                <th className="pb-2 text-right">Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(metrics.traffic.byRoute)
+                .sort(([, a], [, b]) => b - a)
+                .map(([route, count]) => (
                   <tr
-                    key={row.name}
-                    className="border-t border-white/[0.05]"
+                    key={route}
+                    className="border-t border-rule-light"
                   >
-                    <td className="py-1.5">{row.name}</td>
+                    <td className="py-1.5 font-mono text-xs">{route}</td>
                     <td className="py-1.5 text-right font-mono">
-                      {formatNumber(row.avg)}
-                    </td>
-                    <td className="py-1.5 text-right font-mono">
-                      {formatNumber(row.p95)}
+                      {formatNumber(count)}
                     </td>
                   </tr>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        </GlassCard>
+            </tbody>
+          </table>
+        </div>
+
+        <div className="card p-4">
+          <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-3">
+            Response Times (ms)
+          </h2>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-muted">
+                <th className="pb-2">Component</th>
+                <th className="pb-2 text-right">Avg</th>
+                <th className="pb-2 text-right">P95</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { name: "Total", ...metrics.performance.total },
+                { name: "Claude API", ...metrics.performance.claude },
+                { name: "Railway DB", ...metrics.performance.railway },
+              ].map((row) => (
+                <tr
+                  key={row.name}
+                  className="border-t border-rule-light"
+                >
+                  <td className="py-1.5">{row.name}</td>
+                  <td className="py-1.5 text-right font-mono">
+                    {formatNumber(row.avg)}
+                  </td>
+                  <td className="py-1.5 text-right font-mono">
+                    {formatNumber(row.p95)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Third Row: Cost Details + Rate Limit + Status Codes */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-        <GlassCard>
-          <div className="p-4">
-            <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-3">
-              Token Usage
-            </h2>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted">Input tokens</span>
-                <span className="font-mono">
-                  {formatNumber(metrics.costs.inputTokens)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted">Output tokens</span>
-                <span className="font-mono">
-                  {formatNumber(metrics.costs.outputTokens)}
-                </span>
-              </div>
-              <div className="flex justify-between pt-2 border-t border-white/[0.05]">
-                <span className="text-muted">Raw token cost</span>
-                <span className="font-mono">
-                  $
-                  {(
-                    (metrics.costs.inputTokens * 3) / 1_000_000 +
-                    (metrics.costs.outputTokens * 15) / 1_000_000
-                  ).toFixed(4)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted">Est. actual (5x)</span>
-                <span className="font-mono">
-                  $
-                  {(
-                    ((metrics.costs.inputTokens * 3) / 1_000_000 +
-                      (metrics.costs.outputTokens * 15) / 1_000_000) *
-                    5
-                  ).toFixed(4)}
-                </span>
-              </div>
+        <div className="card p-4">
+          <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-3">
+            Token Usage
+          </h2>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted">Input tokens</span>
+              <span className="font-mono">
+                {formatNumber(metrics.costs.inputTokens)}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted">Output tokens</span>
+              <span className="font-mono">
+                {formatNumber(metrics.costs.outputTokens)}
+              </span>
+            </div>
+            <div className="flex justify-between pt-2 border-t border-rule-light">
+              <span className="text-muted">Raw token cost</span>
+              <span className="font-mono">
+                $
+                {(
+                  (metrics.costs.inputTokens * 3) / 1_000_000 +
+                  (metrics.costs.outputTokens * 15) / 1_000_000
+                ).toFixed(4)}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted">Est. actual (5x)</span>
+              <span className="font-mono">
+                $
+                {(
+                  ((metrics.costs.inputTokens * 3) / 1_000_000 +
+                    (metrics.costs.outputTokens * 15) / 1_000_000) *
+                  5
+                ).toFixed(4)}
+              </span>
             </div>
           </div>
-        </GlassCard>
+        </div>
 
-        <GlassCard>
-          <div className="p-4">
-            <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-3">
-              Rate Limiting
-            </h2>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted">Tracked IPs</span>
-                <span className="font-mono">
-                  {metrics.rateLimit.trackedIPs}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted">Limit per hour</span>
-                <span className="font-mono">
-                  {metrics.rateLimit.limitPerHour}
-                </span>
-              </div>
+        <div className="card p-4">
+          <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-3">
+            Rate Limiting
+          </h2>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted">Tracked IPs</span>
+              <span className="font-mono">
+                {metrics.rateLimit.trackedIPs}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted">Limit per hour</span>
+              <span className="font-mono">
+                {metrics.rateLimit.limitPerHour}
+              </span>
             </div>
           </div>
-        </GlassCard>
+        </div>
 
-        <GlassCard>
-          <div className="p-4">
-            <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-3">
-              Status Codes
-            </h2>
-            <div className="space-y-1.5 text-sm">
-              {Object.entries(metrics.traffic.byStatus)
-                .sort(([a], [b]) => Number(a) - Number(b))
-                .map(([code, count]) => (
-                  <div key={code} className="flex justify-between">
-                    <span
-                      className={`font-mono ${
-                        code.startsWith("2")
-                          ? "text-green-400"
-                          : code.startsWith("4")
-                          ? "text-yellow-400"
-                          : "text-red-400"
-                      }`}
-                    >
-                      {code}
-                    </span>
-                    <span className="font-mono">{formatNumber(count)}</span>
-                  </div>
-                ))}
-            </div>
+        <div className="card p-4">
+          <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-3">
+            Status Codes
+          </h2>
+          <div className="space-y-1.5 text-sm">
+            {Object.entries(metrics.traffic.byStatus)
+              .sort(([a], [b]) => Number(a) - Number(b))
+              .map(([code, count]) => (
+                <div key={code} className="flex justify-between">
+                  <span
+                    className={`font-mono ${
+                      code.startsWith("2")
+                        ? "text-green-700"
+                        : code.startsWith("4")
+                        ? "text-amber-700"
+                        : "text-red-700"
+                    }`}
+                  >
+                    {code}
+                  </span>
+                  <span className="font-mono">{formatNumber(count)}</span>
+                </div>
+              ))}
           </div>
-        </GlassCard>
+        </div>
       </div>
 
       {/* Navigation Links */}
@@ -955,49 +934,43 @@ function AdminDashboard() {
         <a
           href={`/admin/users?key=${encodeURIComponent(key || "")}`}
         >
-          <GlassCard className="hover:bg-white/[0.06] transition-colors cursor-pointer">
-            <div className="p-4 flex items-center justify-between">
-              <div>
-                <h2 className="text-sm font-semibold text-white">Top Users</h2>
-                <p className="text-xs text-muted mt-1">
-                  {formatNumber(metrics.traffic.uniqueUsers)} unique users
-                </p>
-              </div>
-              <span className="text-accent text-lg">&rarr;</span>
+          <div className="card-hover p-4 flex items-center justify-between cursor-pointer">
+            <div>
+              <h2 className="text-sm font-semibold text-foreground">Top Users</h2>
+              <p className="text-xs text-muted mt-1">
+                {formatNumber(metrics.traffic.uniqueUsers)} unique users
+              </p>
             </div>
-          </GlassCard>
+            <span className="text-accent text-lg">&rarr;</span>
+          </div>
         </a>
         <a
           href={`/admin/queries?key=${encodeURIComponent(key || "")}`}
         >
-          <GlassCard className="hover:bg-white/[0.06] transition-colors cursor-pointer">
-            <div className="p-4 flex items-center justify-between">
-              <div>
-                <h2 className="text-sm font-semibold text-white">
-                  Daily Queries
-                </h2>
-                <p className="text-xs text-muted mt-1">
-                  Per-day breakdown with drill-down
-                </p>
-              </div>
-              <span className="text-accent text-lg">&rarr;</span>
+          <div className="card-hover p-4 flex items-center justify-between cursor-pointer">
+            <div>
+              <h2 className="text-sm font-semibold text-foreground">
+                Daily Queries
+              </h2>
+              <p className="text-xs text-muted mt-1">
+                Per-day breakdown with drill-down
+              </p>
             </div>
-          </GlassCard>
+            <span className="text-accent text-lg">&rarr;</span>
+          </div>
         </a>
         <a
           href={`/admin/retention?key=${encodeURIComponent(key || "")}`}
         >
-          <GlassCard className="hover:bg-white/[0.06] transition-colors cursor-pointer">
-            <div className="p-4 flex items-center justify-between">
-              <div>
-                <h2 className="text-sm font-semibold text-white">Retention</h2>
-                <p className="text-xs text-muted mt-1">
-                  Cohorts, engagement, return rates
-                </p>
-              </div>
-              <span className="text-accent text-lg">&rarr;</span>
+          <div className="card-hover p-4 flex items-center justify-between cursor-pointer">
+            <div>
+              <h2 className="text-sm font-semibold text-foreground">Retention</h2>
+              <p className="text-xs text-muted mt-1">
+                Cohorts, engagement, return rates
+              </p>
             </div>
-          </GlassCard>
+            <span className="text-accent text-lg">&rarr;</span>
+          </div>
         </a>
       </div>
 
@@ -1005,160 +978,154 @@ function AdminDashboard() {
       {key && <BlogGenerationPanel adminKey={key} />}
 
       {/* Sentry Link */}
-      <GlassCard className="mb-6">
-        <div className="p-4 flex items-center justify-between">
-          <div>
-            <h2 className="text-sm font-semibold text-muted uppercase tracking-wider">
-              Error Monitoring
-            </h2>
-            <p className="text-xs text-muted/60 mt-1">
-              View errors and performance in Sentry
-            </p>
-          </div>
-          <a
-            href="https://woggner-llc.sentry.io/projects/medicaid-analyzer/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-4 py-2 text-sm rounded-lg bg-accent/10 text-accent border border-accent/20 hover:bg-accent/20 transition-colors"
-          >
-            Open Sentry &rarr;
-          </a>
+      <div className="card mb-6 p-4 flex items-center justify-between">
+        <div>
+          <h2 className="text-sm font-semibold text-muted uppercase tracking-wider">
+            Error Monitoring
+          </h2>
+          <p className="text-xs text-muted mt-1">
+            View errors and performance in Sentry
+          </p>
         </div>
-      </GlassCard>
+        <a
+          href="https://woggner-llc.sentry.io/projects/medicaid-analyzer/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="px-4 py-2 text-sm rounded-sm bg-red-50 text-accent border border-red-200 hover:bg-red-100 transition-colors"
+        >
+          Open Sentry &rarr;
+        </a>
+      </div>
 
       {/* Feedback */}
       {metrics.feedback && metrics.feedback.length > 0 && (
-        <GlassCard className="mb-6">
-          <div className="p-4">
-            <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-3">
-              User Feedback ({metrics.feedback.length})
-            </h2>
-            <div className="space-y-3">
-              {metrics.feedback.map((fb) => (
-                <div
-                  key={fb.id}
-                  className="bg-white/[0.02] rounded-lg p-3 border border-white/[0.05]"
-                >
-                  <p className="text-sm text-white whitespace-pre-wrap">
-                    {fb.message}
-                  </p>
-                  <div className="flex items-center gap-3 mt-2 text-xs text-muted/60">
-                    <span>
-                      {new Date(fb.timestamp).toLocaleString()}
-                    </span>
-                    {fb.page && (
-                      <span className="font-mono">{fb.page}</span>
-                    )}
-                    {fb.ip && (
-                      <span className="font-mono">{fb.ip}</span>
-                    )}
-                  </div>
+        <div className="card mb-6 p-4">
+          <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-3">
+            User Feedback ({metrics.feedback.length})
+          </h2>
+          <div className="space-y-3">
+            {metrics.feedback.map((fb) => (
+              <div
+                key={fb.id}
+                className="bg-[#F5F5F0] rounded-sm p-3 border border-rule-light"
+              >
+                <p className="text-sm text-foreground whitespace-pre-wrap">
+                  {fb.message}
+                </p>
+                <div className="flex items-center gap-3 mt-2 text-xs text-muted">
+                  <span>
+                    {new Date(fb.timestamp).toLocaleString()}
+                  </span>
+                  {fb.page && (
+                    <span className="font-mono">{fb.page}</span>
+                  )}
+                  {fb.ip && (
+                    <span className="font-mono">{fb.ip}</span>
+                  )}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
-        </GlassCard>
+        </div>
       )}
 
       {/* Recent Queries */}
-      <GlassCard>
-        <div className="p-4">
-          <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-3">
-            Recent Queries ({metrics.recentQueries.length})
-          </h2>
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="text-left text-muted/60">
-                  <th className="pb-2 pr-3">Time</th>
-                  <th className="pb-2 pr-3">Route</th>
-                  <th className="pb-2 pr-3">Question</th>
-                  <th className="pb-2 pr-3">SQL</th>
-                  <th className="pb-2 pr-3 text-right">Status</th>
-                  <th className="pb-2 pr-3 text-right">Latency</th>
-                  <th className="pb-2">Cache</th>
-                </tr>
-              </thead>
-              <tbody>
-                {metrics.recentQueries.map((q, i) => (
-                  <tr
-                    key={i}
-                    className="border-t border-white/[0.05] align-top"
+      <div className="card p-4">
+        <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-3">
+          Recent Queries ({metrics.recentQueries.length})
+        </h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="text-left text-muted">
+                <th className="pb-2 pr-3">Time</th>
+                <th className="pb-2 pr-3">Route</th>
+                <th className="pb-2 pr-3">Question</th>
+                <th className="pb-2 pr-3">SQL</th>
+                <th className="pb-2 pr-3 text-right">Status</th>
+                <th className="pb-2 pr-3 text-right">Latency</th>
+                <th className="pb-2">Cache</th>
+              </tr>
+            </thead>
+            <tbody>
+              {metrics.recentQueries.map((q, i) => (
+                <tr
+                  key={i}
+                  className="border-t border-rule-light align-top"
+                >
+                  <td className="py-2 pr-3 text-muted whitespace-nowrap">
+                    {q.ago}
+                  </td>
+                  <td className="py-2 pr-3 font-mono text-muted">
+                    {q.route.replace("/api/", "")}
+                  </td>
+                  <td className="py-2 pr-3 max-w-[300px] truncate">
+                    {q.question}
+                  </td>
+                  <td className="py-2 pr-3 max-w-[200px]">
+                    {q.sql ? (
+                      <button
+                        onClick={() => {
+                          const next = new Set(expandedSQL);
+                          if (next.has(i)) next.delete(i);
+                          else next.add(i);
+                          setExpandedSQL(next);
+                        }}
+                        className="text-teal hover:underline text-left"
+                      >
+                        {expandedSQL.has(i) ? (
+                          <pre className="whitespace-pre-wrap font-mono text-xs text-body max-w-[400px]">
+                            {q.sql}
+                          </pre>
+                        ) : (
+                          "Show SQL"
+                        )}
+                      </button>
+                    ) : (
+                      <span className="text-muted">&mdash;</span>
+                    )}
+                  </td>
+                  <td
+                    className={`py-2 pr-3 text-right font-mono ${
+                      q.status < 300
+                        ? "text-green-700"
+                        : q.status < 500
+                        ? "text-amber-700"
+                        : "text-red-700"
+                    }`}
                   >
-                    <td className="py-2 pr-3 text-muted whitespace-nowrap">
-                      {q.ago}
-                    </td>
-                    <td className="py-2 pr-3 font-mono text-muted">
-                      {q.route.replace("/api/", "")}
-                    </td>
-                    <td className="py-2 pr-3 max-w-[300px] truncate">
-                      {q.question}
-                    </td>
-                    <td className="py-2 pr-3 max-w-[200px]">
-                      {q.sql ? (
-                        <button
-                          onClick={() => {
-                            const next = new Set(expandedSQL);
-                            if (next.has(i)) next.delete(i);
-                            else next.add(i);
-                            setExpandedSQL(next);
-                          }}
-                          className="text-accent hover:underline text-left"
-                        >
-                          {expandedSQL.has(i) ? (
-                            <pre className="whitespace-pre-wrap font-mono text-xs text-white/80 max-w-[400px]">
-                              {q.sql}
-                            </pre>
-                          ) : (
-                            "Show SQL"
-                          )}
-                        </button>
-                      ) : (
-                        <span className="text-muted/40">&mdash;</span>
-                      )}
-                    </td>
-                    <td
-                      className={`py-2 pr-3 text-right font-mono ${
-                        q.status < 300
-                          ? "text-green-400"
-                          : q.status < 500
-                          ? "text-yellow-400"
-                          : "text-red-400"
-                      }`}
-                    >
-                      {q.status}
-                    </td>
-                    <td className="py-2 pr-3 text-right font-mono">
-                      {formatNumber(q.totalMs)}ms
-                    </td>
-                    <td className="py-2">
-                      {q.cached ? (
-                        <span className="px-1.5 py-0.5 rounded bg-green-500/10 text-green-400 text-xs">
-                          HIT
-                        </span>
-                      ) : (
-                        <span className="px-1.5 py-0.5 rounded bg-white/[0.03] text-muted text-xs">
-                          MISS
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-                {metrics.recentQueries.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan={7}
-                      className="py-8 text-center text-muted/40"
-                    >
-                      No queries recorded yet
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                    {q.status}
+                  </td>
+                  <td className="py-2 pr-3 text-right font-mono">
+                    {formatNumber(q.totalMs)}ms
+                  </td>
+                  <td className="py-2">
+                    {q.cached ? (
+                      <span className="px-1.5 py-0.5 rounded-sm bg-green-50 text-green-700 text-xs border border-green-200">
+                        HIT
+                      </span>
+                    ) : (
+                      <span className="px-1.5 py-0.5 rounded-sm bg-[#F5F5F0] text-muted text-xs border border-rule-light">
+                        MISS
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+              {metrics.recentQueries.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={7}
+                    className="py-8 text-center text-muted"
+                  >
+                    No queries recorded yet
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
-      </GlassCard>
+      </div>
     </div>
   );
 }

@@ -98,7 +98,7 @@ export default function BlogPostPage({ params }: Props) {
           {/* Back link */}
           <Link
             href="/blog"
-            className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-accent transition-colors mb-6 sm:mb-8"
+            className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-teal transition-colors mb-6 sm:mb-8"
           >
             <ArrowLeft className="w-4 h-4" />
             All posts
@@ -106,21 +106,21 @@ export default function BlogPostPage({ params }: Props) {
 
           {/* Header */}
           <header className="mb-8 sm:mb-10">
-            <div className="flex items-center gap-2 text-sm text-muted-dark mb-3 sm:mb-4">
+            <div className="flex items-center gap-2 text-sm text-muted mb-3 sm:mb-4">
               <Calendar className="w-4 h-4 shrink-0" />
               <time dateTime={frontmatter.date}>
                 {formatDate(frontmatter.date)}
               </time>
               {frontmatter.wordCount > 0 && (
                 <>
-                  <span className="text-white/20">|</span>
+                  <span className="text-rule">|</span>
                   <span>
                     {Math.ceil(frontmatter.wordCount / 250)} min read
                   </span>
                 </>
               )}
             </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-headline font-bold text-foreground leading-tight">
               {frontmatter.title}
             </h1>
             {frontmatter.targetKeywords?.length > 0 && (
@@ -128,7 +128,7 @@ export default function BlogPostPage({ params }: Props) {
                 {frontmatter.targetKeywords.map((kw) => (
                   <span
                     key={kw}
-                    className="text-xs px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-white/[0.05] text-muted-dark border border-white/[0.08]"
+                    className="text-xs px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-sm bg-[#F5F5F0] text-muted border border-rule-light"
                   >
                     {kw}
                   </span>
@@ -141,17 +141,17 @@ export default function BlogPostPage({ params }: Props) {
           <BlogContent content={content} />
 
           {/* CTA */}
-          <div className="mt-12 sm:mt-16 p-4 sm:p-6 rounded-xl bg-white/[0.03] border border-white/[0.08]">
-            <h3 className="text-base sm:text-lg font-semibold text-white mb-2">
+          <div className="mt-12 sm:mt-16 p-4 sm:p-6 rounded-sm card border-l-[3px] border-l-accent">
+            <h3 className="text-base sm:text-lg font-headline font-semibold text-foreground mb-2">
               Explore the data yourself
             </h3>
-            <p className="text-sm text-muted mb-4">
+            <p className="text-sm text-muted mb-4 font-serif">
               Run your own queries against 227M+ Medicaid claims records using
               natural language — powered by AI.
             </p>
             <Link
               href="/analyze"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent/90 transition-colors"
+              className="btn-primary inline-flex items-center gap-2 px-4 py-2 text-sm"
             >
               Start analyzing <ArrowRight className="w-4 h-4" />
             </Link>

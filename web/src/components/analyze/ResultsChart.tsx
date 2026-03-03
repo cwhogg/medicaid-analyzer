@@ -16,7 +16,6 @@ import {
   CartesianGrid,
   Legend,
 } from "recharts";
-import { GlassCard } from "@/components/ui/GlassCard";
 import { formatDateCell } from "@/lib/format";
 
 interface ResultsChartProps {
@@ -26,16 +25,16 @@ interface ResultsChartProps {
 }
 
 const COLORS = [
-  "#EA580C",
-  "#F97316",
-  "#FB923C",
-  "#FDBA74",
-  "#FED7AA",
+  "#B91C1C",
+  "#0F766E",
+  "#1D4ED8",
+  "#7C3AED",
+  "#D97706",
+  "#059669",
+  "#DC2626",
+  "#2563EB",
   "#9333EA",
-  "#A855F7",
-  "#C084FC",
-  "#3B82F6",
-  "#60A5FA",
+  "#C2410C",
 ];
 
 function isDollarColumn(colName: string): boolean {
@@ -70,7 +69,6 @@ function shortenLabel(label: string, max: number = 20): string {
   return label.slice(0, max - 1) + "\u2026";
 }
 
-/** Strip sort-order prefixes like "1_", "2_" from category labels */
 function stripSortPrefix(label: string): string {
   return label.replace(/^\d+_/, "");
 }
@@ -78,8 +76,8 @@ function stripSortPrefix(label: string): string {
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ name: string; value: number; color: string; dataKey?: string }>; label?: string }) {
   if (!active || !payload || !payload.length) return null;
   return (
-    <div className="glass-card p-3 text-sm">
-      <p className="text-white font-medium mb-1">{label}</p>
+    <div className="bg-surface border border-rule rounded-sm p-3 text-sm" style={{ boxShadow: "0 2px 8px rgba(28,25,23,0.1)" }}>
+      <p className="text-foreground font-semibold mb-1">{label}</p>
       {payload.map((entry, i) => (
         <p key={i} style={{ color: entry.color }} className="text-xs">
           {entry.name}: {formatValue(entry.value, entry.dataKey || entry.name)}
@@ -108,24 +106,18 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
     if (!columns.length || !rows.length) return { data: [], labelKey: "", valueKeys: [] };
 
     const firstCol = columns[0];
-
-    // Use a synthetic "_label" field that combines code + description
     const LABEL_KEY = "_label";
-
-    // Columns that are identifiers/labels, not metrics — never chart these as values
     const EXCLUDED_COLS = /^(hcpcs_code|billing_npi|provider_name|description|city|state|provider_type|claim_month|first_month|last_month)$/i;
 
     const valueKeys = columns.filter((col, i) => {
       if (EXCLUDED_COLS.test(col)) return false;
       const sample = rows[0]?.[i];
-      // Exclude year-like values (4-digit numbers that look like years)
       if ((typeof sample === "number" || typeof sample === "bigint") && Number(sample) >= 1900 && Number(sample) <= 2100) {
         return false;
       }
       return typeof sample === "number" || typeof sample === "bigint";
     });
 
-    // Find all non-numeric (string) columns to use as label parts
     const stringColIndices = columns
       .map((col, i) => ({ col, i }))
       .filter(({ i }) => {
@@ -141,20 +133,16 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
         record[col] = val;
       });
 
-      // Build a human-readable label
-      // Combine all string columns (e.g. "factor" + "category" → "Age Group: 18-24")
       if (stringColIndices.length >= 2) {
         const parts = stringColIndices
           .map(({ i }) => stripSortPrefix(String(row[i] ?? "").trim()))
           .filter(Boolean);
-        // If first part repeats across rows (grouping col), show "Group: Value"
         record[LABEL_KEY] = shortenLabel(parts.join(": "), 40);
       } else if (stringColIndices.length === 1) {
         const val = String(row[stringColIndices[0].i] ?? "").trim();
         const dateLabel = formatDateCell(val, stringColIndices[0].col);
         record[LABEL_KEY] = dateLabel || shortenLabel(stripSortPrefix(val), 30);
       } else {
-        // No string columns — use first column with date formatting attempt
         const dateLabel = formatDateCell(record[firstCol], firstCol);
         record[LABEL_KEY] = dateLabel || String(record[firstCol] ?? "");
       }
@@ -179,7 +167,6 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
   const toggleKey = useCallback(
     (key: string) => {
       if (chartType === "pie") {
-        // Radio behavior: exactly one selected
         setVisibleKeys(new Set([key]));
         return;
       }
@@ -201,7 +188,7 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
   const showToggles = valueKeys.length >= 2;
 
   return (
-    <GlassCard className="p-3 sm:p-6">
+    <div className="card p-3 sm:p-6">
       {showToggles && (
         <div className="flex flex-wrap gap-2 mb-4">
           {valueKeys.map((key, i) => {
@@ -210,10 +197,10 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
               <button
                 key={key}
                 onClick={() => toggleKey(key)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-sm text-xs font-medium transition-colors border ${
                   active
-                    ? "bg-white/[0.1] text-white"
-                    : "bg-white/[0.03] text-gray-500"
+                    ? "bg-surface border-rule text-foreground"
+                    : "bg-background border-rule-light text-muted"
                 }`}
               >
                 <span
@@ -235,7 +222,7 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
       )}
       {activeKeys.length === 0 ? (
         <div className="flex items-center justify-center" style={{ height: isMobile ? 280 : 400 }}>
-          <p className="text-gray-500 text-sm">Select a column to chart</p>
+          <p className="text-muted text-sm">Select a column to chart</p>
         </div>
       ) : (
       <ResponsiveContainer width="100%" height={isMobile ? 280 : 400}>
@@ -262,10 +249,10 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
           </PieChart>
         ) : chartType === "bar" ? (
           <BarChart data={data.slice(0, isMobile ? 10 : 20)}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#E7E5E4" />
             <XAxis
               dataKey={labelKey}
-              stroke="#6B7280"
+              stroke="#78716C"
               fontSize={isMobile ? 9 : 11}
               tickLine={false}
               angle={-45}
@@ -275,7 +262,7 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
               tickFormatter={(v) => shortenLabel(String(v), isMobile ? 14 : 28)}
             />
             <YAxis
-              stroke="#6B7280"
+              stroke="#78716C"
               fontSize={isMobile ? 9 : 11}
               tickLine={false}
               axisLine={false}
@@ -285,20 +272,20 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
             <Tooltip content={<CustomTooltip />} />
             {activeKeys.map((key) => {
               const i = valueKeys.indexOf(key);
-              return <Bar key={key} dataKey={key} fill={COLORS[i % COLORS.length]} radius={[4, 4, 0, 0]} />;
+              return <Bar key={key} dataKey={key} fill={COLORS[i % COLORS.length]} radius={[2, 2, 0, 0]} />;
             })}
           </BarChart>
         ) : (
           <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#E7E5E4" />
             <XAxis
               dataKey={labelKey}
-              stroke="#6B7280"
+              stroke="#78716C"
               fontSize={isMobile ? 9 : 11}
               tickLine={false}
             />
             <YAxis
-              stroke="#6B7280"
+              stroke="#78716C"
               fontSize={isMobile ? 9 : 11}
               tickLine={false}
               axisLine={false}
@@ -324,6 +311,6 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
         )}
       </ResponsiveContainer>
       )}
-    </GlassCard>
+    </div>
   );
 }

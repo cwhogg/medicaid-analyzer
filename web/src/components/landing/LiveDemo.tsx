@@ -10,8 +10,6 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
-import { ExternalLink } from "lucide-react";
-import { GlassCard } from "@/components/ui/GlassCard";
 import { formatCurrency } from "@/lib/format";
 
 interface MonthlyTrend {
@@ -28,8 +26,8 @@ function formatMonth(dateStr: string): string {
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) {
   if (!active || !payload || !payload.length || !label) return null;
   return (
-    <div className="glass-card p-3 text-sm">
-      <p className="text-white font-medium">{formatMonth(label)}</p>
+    <div className="bg-surface border border-rule rounded-sm p-3 text-sm" style={{ boxShadow: "0 2px 8px rgba(28,25,23,0.1)" }}>
+      <p className="text-foreground font-semibold">{formatMonth(label)}</p>
       <p className="text-accent">{formatCurrency(payload[0].value)}</p>
     </div>
   );
@@ -51,7 +49,6 @@ export function LiveDemo() {
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    // Oct-Dec 2024 data is incomplete — always truncate at Sept 2024
     const CUTOFF = "2024-10-01";
     fetch("/data/monthly_trend.json")
       .then((r) => r.json())
@@ -62,84 +59,49 @@ export function LiveDemo() {
   if (!data.length) return null;
 
   return (
-    <section className="py-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white">
-            Monthly Spending Trends
-          </h2>
-          <p className="mt-4 text-muted max-w-xl mx-auto">
-            Medicaid provider spending from January 2018 to September 2024
-          </p>
-        </div>
+    <section className="max-w-[1080px] mx-auto px-4 sm:px-8 pb-12">
+      <div className="section-label">Monthly Medicaid Spending Trends</div>
+      <div className="card p-4 sm:p-6 md:p-8 max-w-[760px] mx-auto">
+        <h3 className="font-headline text-[1.1875rem] font-bold text-foreground mb-1 leading-tight">
+          Annual Medicaid Provider Spending, 2018&ndash;2024
+        </h3>
+        <p className="font-subhead italic text-[0.875rem] text-muted mb-6">
+          Total payments to Medicaid providers by month, in dollars
+        </p>
 
-        <GlassCard className="p-4 sm:p-6 md:p-8">
-          <ResponsiveContainer width="100%" height={isMobile ? 260 : 400}>
-            <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis
-                dataKey="month"
-                tickFormatter={formatMonth}
-                stroke="#6B7280"
-                fontSize={isMobile ? 10 : 12}
-                tickLine={false}
-                interval={isMobile ? 17 : 11}
-              />
-              <YAxis
-                tickFormatter={(v) => formatCurrency(v)}
-                stroke="#6B7280"
-                fontSize={isMobile ? 10 : 12}
-                tickLine={false}
-                axisLine={false}
-                width={isMobile ? 55 : 80}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Line
-                type="monotone"
-                dataKey="total_paid"
-                stroke="#EA580C"
-                strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 4, fill: "#EA580C" }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </GlassCard>
+        <ResponsiveContainer width="100%" height={isMobile ? 260 : 400}>
+          <LineChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#E7E5E4" />
+            <XAxis
+              dataKey="month"
+              tickFormatter={formatMonth}
+              stroke="#78716C"
+              fontSize={isMobile ? 10 : 12}
+              tickLine={false}
+              interval={isMobile ? 17 : 11}
+            />
+            <YAxis
+              tickFormatter={(v) => formatCurrency(v)}
+              stroke="#78716C"
+              fontSize={isMobile ? 10 : 12}
+              tickLine={false}
+              axisLine={false}
+              width={isMobile ? 55 : 80}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Line
+              type="monotone"
+              dataKey="total_paid"
+              stroke="#B91C1C"
+              strokeWidth={2}
+              dot={false}
+              activeDot={{ r: 4, fill: "#B91C1C" }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
 
-        <GlassCard className="mt-6 p-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <p className="text-sm font-medium text-white">Data Source</p>
-              <p className="text-sm text-muted mt-1">
-                CMS Medicaid Provider Utilization and Spending dataset. 227M+ claims records covering 617K+ providers and 10K+ procedure codes, January 2018 through September 2024.
-              </p>
-            </div>
-            <a
-              href="https://opendata.hhs.gov/datasets/medicaid-provider-spending/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="shrink-0 inline-flex items-center gap-1.5 text-sm text-accent hover:underline"
-            >
-              View on HHS Open Data
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          </div>
-        </GlassCard>
-
-        <div className="mt-8 text-center space-y-2">
-          <p className="text-sm font-medium text-accent">Government Open Data FTW</p>
-          <p className="text-xs text-muted-dark">
-            Made by Claude Code (with guidance from{" "}
-            <a
-              href="https://x.com/cwhogg"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted hover:text-white transition-colors"
-            >
-              Chris Hogg
-            </a>
-            )
-          </p>
+        <div className="text-[0.75rem] text-muted mt-5 pt-3 border-t border-rule-light leading-relaxed">
+          <strong className="text-body font-semibold">Data Source:</strong> CMS Medicaid Provider Utilization and Payment Data, 2018&ndash;2024. Figures represent total monthly Medicaid provider payments.
         </div>
       </div>
     </section>

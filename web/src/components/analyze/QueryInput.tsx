@@ -47,25 +47,25 @@ export const QueryInput = forwardRef<QueryInputHandle, QueryInputProps>(function
           <div className="flex items-center gap-2 text-sm">
             <CornerDownRight className="w-4 h-4 text-accent shrink-0" />
             <span className="text-muted">Refined from:</span>
-            <span className="text-white font-medium truncate max-w-[300px] sm:max-w-[400px]">{followUpQuestion}</span>
+            <span className="text-foreground font-medium truncate max-w-[300px] sm:max-w-[400px]">{followUpQuestion}</span>
           </div>
           <button
             onClick={onNewAnalysis}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg text-muted hover:text-white bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.08] transition-colors shrink-0"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-sm text-muted hover:text-foreground bg-surface border border-rule hover:border-muted transition-colors shrink-0"
           >
             <RotateCcw className="w-3 h-3" />
             Start Fresh
           </button>
         </div>
       ) : (
-        <h2 className="text-lg font-semibold text-white mb-3">
+        <div className="text-[0.6875rem] font-bold tracking-[0.14em] uppercase text-accent mb-3">
           {inputHeading}
-        </h2>
+        </div>
       )}
       <form onSubmit={handleSubmit}>
-        <div className="glass-card p-2 sm:pr-3">
+        <div className="card p-4 sm:p-5">
           <div className="flex items-center gap-2 sm:gap-3">
-            <Search className="w-5 h-5 text-muted-dark ml-2 sm:ml-3 shrink-0" />
+            <Search className="w-5 h-5 text-muted shrink-0" />
             <input
               type="text"
               value={question}
@@ -74,16 +74,16 @@ export const QueryInput = forwardRef<QueryInputHandle, QueryInputProps>(function
                 ? "Ask a follow-up question..."
                 : inputPlaceholder}
               disabled={busy}
-              className="flex-1 bg-transparent border-none outline-none text-white placeholder:text-muted-dark py-2.5 text-sm min-w-0"
+              className="flex-1 bg-transparent border-none outline-none text-foreground placeholder:text-muted py-2.5 text-sm font-subhead italic min-w-0"
               maxLength={500}
             />
           </div>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mt-2 sm:mt-0 sm:justify-end">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mt-3 sm:mt-2 sm:justify-end">
             {analysisRunning ? (
               <button
                 type="button"
                 onClick={onCancelAnalysis}
-                className="py-2.5 px-4 text-sm flex items-center justify-center gap-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors"
+                className="py-2.5 px-4 text-sm flex items-center justify-center gap-2 rounded-sm bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors"
               >
                 <X className="w-4 h-4" />
                 Cancel
@@ -108,7 +108,7 @@ export const QueryInput = forwardRef<QueryInputHandle, QueryInputProps>(function
                   type="button"
                   onClick={handleDeepAnalysis}
                   disabled={!question.trim() || busy || !deepAnalysisSupported}
-                  className="py-2.5 px-4 text-sm flex items-center justify-center gap-2 rounded-lg border border-accent/50 text-accent hover:bg-accent/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="py-2.5 px-4 text-sm flex items-center justify-center gap-2 rounded-sm border border-accent text-accent hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold uppercase tracking-wider"
                   title={!deepAnalysisSupported ? deepAnalysisDisabledReason : undefined}
                 >
                   <Layers className="w-4 h-4" />

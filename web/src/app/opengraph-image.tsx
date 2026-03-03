@@ -6,10 +6,10 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 const datasets = [
-  { name: "Medicaid", color: "#EA580C" },
-  { name: "Medicare", color: "#10B981" },
-  { name: "BRFSS", color: "#0EA5E9" },
-  { name: "NHANES", color: "#8B5CF6" },
+  { name: "Medicaid", color: "#B91C1C" },
+  { name: "Medicare", color: "#0F766E" },
+  { name: "BRFSS", color: "#1D4ED8" },
+  { name: "NHANES", color: "#7C3AED" },
 ];
 
 export default async function Image() {
@@ -23,10 +23,22 @@ export default async function Image() {
           justifyContent: "center",
           width: "100%",
           height: "100%",
-          backgroundColor: "#0A0A0A",
+          backgroundColor: "#FAFAF5",
           padding: "60px 80px",
         }}
       >
+        {/* Top accent line */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 4,
+            backgroundColor: "#B91C1C",
+          }}
+        />
+
         {/* Database icon */}
         <div
           style={{
@@ -35,8 +47,8 @@ export default async function Image() {
             justifyContent: "center",
             width: 72,
             height: 72,
-            borderRadius: 16,
-            backgroundColor: "rgba(234, 88, 12, 0.15)",
+            borderRadius: 4,
+            backgroundColor: "rgba(185, 28, 28, 0.08)",
             marginBottom: 32,
           }}
         >
@@ -45,7 +57,7 @@ export default async function Image() {
             height="36"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#EA580C"
+            stroke="#B91C1C"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -61,7 +73,7 @@ export default async function Image() {
           style={{
             fontSize: 56,
             fontWeight: 700,
-            color: "#FFFFFF",
+            color: "#1C1917",
             lineHeight: 1.1,
             textAlign: "center",
             marginBottom: 16,
@@ -74,7 +86,7 @@ export default async function Image() {
         <div
           style={{
             fontSize: 24,
-            color: "#9CA3AF",
+            color: "#78716C",
             textAlign: "center",
             marginBottom: 40,
             maxWidth: 700,
@@ -98,9 +110,9 @@ export default async function Image() {
                 alignItems: "center",
                 gap: 8,
                 padding: "10px 20px",
-                borderRadius: 9999,
+                borderRadius: 4,
                 border: `1px solid ${ds.color}40`,
-                backgroundColor: `${ds.color}15`,
+                backgroundColor: `${ds.color}10`,
               }}
             >
               <div
@@ -126,7 +138,7 @@ export default async function Image() {
             left: 0,
             right: 0,
             height: 4,
-            background: "linear-gradient(to right, #EA580C, #10B981, #0EA5E9, #8B5CF6)",
+            background: "linear-gradient(to right, #B91C1C, #0F766E, #1D4ED8, #7C3AED)",
           }}
         />
       </div>

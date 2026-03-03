@@ -53,11 +53,9 @@ export function QueryFeed({ onSelect, refreshKey, dataset }: QueryFeedProps) {
       fetch(feedUrl).then((r) => r.json()).then((d) => d.items || []).catch(() => [] as ServerFeedItem[]),
     ])
       .then(([localQueries, localAnalyses, serverItems]) => {
-        // Build a set of local question strings for deduplication
         const localQuestions = new Set<string>();
         const tagged: FeedItem[] = [];
 
-        // Filter local items by dataset if specified
         const filteredQueries = dataset
           ? localQueries.filter((q) => q.dataset === dataset)
           : localQueries;
@@ -74,7 +72,6 @@ export function QueryFeed({ onSelect, refreshKey, dataset }: QueryFeedProps) {
           tagged.push({ ...a, _type: "analysis", _source: "local" });
         }
 
-        // Add server items that aren't already in local storage
         for (const s of serverItems as ServerFeedItem[]) {
           if (!localQuestions.has(s.question.toLowerCase().trim())) {
             tagged.push({
@@ -98,12 +95,10 @@ export function QueryFeed({ onSelect, refreshKey, dataset }: QueryFeedProps) {
       void _source;
       onSelect(rest as StoredQuery | StoredAnalysis);
     } else {
-      // Server item — try to load stored results, otherwise pre-fill question
       const serverItem = item as ServerFeedItem & { _type: string; _source: string };
       const rd = serverItem.resultData as Record<string, unknown> | null;
 
       if (rd && serverItem.route === "query" && rd.sql && rd.columns) {
-        // Reconstruct a StoredQuery from server result data
         const storedQuery: StoredQuery = {
           id: serverItem.id,
           question: serverItem.question,
@@ -116,7 +111,6 @@ export function QueryFeed({ onSelect, refreshKey, dataset }: QueryFeedProps) {
         };
         onSelect(storedQuery);
       } else if (rd && serverItem.route === "analyze" && rd.steps) {
-        // Reconstruct a StoredAnalysis from server result data
         const storedAnalysis: StoredAnalysis = {
           id: serverItem.id,
           question: serverItem.question,
@@ -137,7 +131,6 @@ export function QueryFeed({ onSelect, refreshKey, dataset }: QueryFeedProps) {
         };
         onSelect(storedAnalysis);
       } else {
-        // No stored results — pre-fill question for re-run
         onSelect(null, serverItem.question);
       }
     }
@@ -146,7 +139,7 @@ export function QueryFeed({ onSelect, refreshKey, dataset }: QueryFeedProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="text-muted-dark text-sm">Loading feed...</div>
+        <div className="text-muted text-sm">Loading feed...</div>
       </div>
     );
   }
@@ -154,9 +147,9 @@ export function QueryFeed({ onSelect, refreshKey, dataset }: QueryFeedProps) {
   if (!items.length) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <Database className="w-12 h-12 text-muted-dark mb-4" />
-        <h3 className="text-lg font-medium text-white mb-1">No queries yet</h3>
-        <p className="text-sm text-muted-dark max-w-sm">
+        <Database className="w-12 h-12 text-muted mb-4" />
+        <h3 className="font-headline text-lg font-bold text-foreground mb-1">No queries yet</h3>
+        <p className="text-sm text-muted max-w-sm">
           Switch to the Query tab and ask a question. All queries will appear here.
         </p>
       </div>
@@ -169,27 +162,27 @@ export function QueryFeed({ onSelect, refreshKey, dataset }: QueryFeedProps) {
         <button
           key={item.id}
           onClick={() => handleClick(item)}
-          className="w-full text-left glass-card-hover p-4 group"
+          className="w-full text-left card-hover p-4 group"
         >
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 {(item._type === "analysis" || (item._source === "server" && item.route === "analyze")) ? (
-                  <span className="shrink-0 flex items-center gap-1 text-xs text-accent bg-accent/10 border border-accent/20 rounded px-1.5 py-0.5">
+                  <span className="shrink-0 flex items-center gap-1 text-xs text-accent bg-red-50 border border-red-200 rounded-sm px-1.5 py-0.5 font-semibold uppercase tracking-wider">
                     <Layers className="w-3 h-3" />
                     Deep
                   </span>
                 ) : (
-                  <span className="shrink-0 flex items-center gap-1 text-xs text-blue-400 bg-blue-400/10 border border-blue-400/20 rounded px-1.5 py-0.5">
+                  <span className="shrink-0 flex items-center gap-1 text-xs text-teal bg-emerald-50 border border-emerald-200 rounded-sm px-1.5 py-0.5 font-semibold uppercase tracking-wider">
                     <Search className="w-3 h-3" />
                     Query
                   </span>
                 )}
-                <p className="text-sm font-medium text-white leading-snug line-clamp-2">
+                <p className="text-sm font-medium text-foreground leading-snug line-clamp-2">
                   {item.question}
                 </p>
               </div>
-              <div className="flex items-center gap-3 mt-2 text-xs text-muted-dark">
+              <div className="flex items-center gap-3 mt-2 text-xs text-muted">
                 <span className="flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   {timeAgo(item.timestamp)}
@@ -208,23 +201,23 @@ export function QueryFeed({ onSelect, refreshKey, dataset }: QueryFeedProps) {
                 )}
               </div>
               {item._source === "local" && item._type === "analysis" && (item as StoredAnalysis).summary && (
-                <p className="text-xs text-muted-dark mt-1.5 line-clamp-2">
+                <p className="text-xs text-muted mt-1.5 line-clamp-2">
                   {(item as StoredAnalysis).summary}
                 </p>
               )}
               {item._source === "server" && (item as ServerFeedItem).summary && (
-                <p className="text-xs text-muted-dark mt-1.5 line-clamp-2">
+                <p className="text-xs text-muted mt-1.5 line-clamp-2">
                   {(item as ServerFeedItem).summary}
                 </p>
               )}
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <ChevronRight className="w-4 h-4 text-muted-dark group-hover:text-accent transition-colors" />
+              <ChevronRight className="w-4 h-4 text-muted group-hover:text-accent transition-colors" />
             </div>
           </div>
         </button>
       ))}
-      <p className="text-center text-xs text-muted-dark pt-2">
+      <p className="text-center text-xs text-muted pt-2">
         {items.length} {items.length === 1 ? "query" : "queries"} in feed
       </p>
     </div>

@@ -65,7 +65,6 @@ export default function DatasetAnalyzePage({ datasetKey }: DatasetAnalyzePagePro
   const analysisRef = useRef(analysis);
   analysisRef.current = analysis;
 
-  // Accumulate prior context when analysis completes
   useEffect(() => {
     if (analysis.status === "complete" && analysis.question && analysis.summary) {
       setPriorContext((prev) => ({
@@ -160,29 +159,33 @@ export default function DatasetAnalyzePage({ datasetKey }: DatasetAnalyzePagePro
   return (
     <>
       <Navbar />
-      <main className="min-h-screen pt-24 pb-12">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+      <main className="min-h-screen pb-12">
+        <div className="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+          {/* Page header */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white">
+              <div className="text-[0.6875rem] font-bold tracking-[0.14em] uppercase text-accent mb-1">
+                {datasetKey.toUpperCase()}
+              </div>
+              <h1 className="font-headline text-[1.875rem] font-bold text-foreground leading-tight">
                 {config.pageTitle}
               </h1>
-              <p className="text-sm sm:text-base text-muted mt-1 sm:mt-2">
+              <p className="font-serif text-[0.9375rem] text-body mt-1 leading-relaxed max-w-[560px]">
                 {config.pageSubtitle}
               </p>
             </div>
 
             {/* Tab switcher */}
-            <div className="flex items-center gap-1 glass-card p-1 self-start sm:self-auto">
+            <div className="flex items-center gap-0 border-b border-rule-light self-start sm:self-auto">
               {TABS.map((tab) => (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
                   className={cn(
-                    "flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                    "flex items-center gap-1.5 px-3 py-2 text-[0.8125rem] font-medium transition-colors border-b-2 -mb-px",
                     activeTab === tab.key
-                      ? "bg-accent text-white"
-                      : "text-muted hover:text-white"
+                      ? "text-foreground border-accent font-semibold"
+                      : "text-muted border-transparent hover:text-foreground"
                   )}
                 >
                   <tab.icon className="w-4 h-4" />
@@ -191,6 +194,8 @@ export default function DatasetAnalyzePage({ datasetKey }: DatasetAnalyzePagePro
               ))}
             </div>
           </div>
+
+          <hr className="rule mb-6" />
 
           {/* Feed tab */}
           {activeTab === "feed" && (
@@ -211,10 +216,10 @@ export default function DatasetAnalyzePage({ datasetKey }: DatasetAnalyzePagePro
                   <button
                     onClick={() => setSelectedYears(new Set())}
                     className={cn(
-                      "px-3 py-2 rounded-lg text-xs font-medium transition-colors border",
+                      "px-3 py-2 rounded-sm text-xs font-medium transition-colors border",
                       selectedYears.size === 0
                         ? "bg-accent text-white border-accent"
-                        : "text-muted hover:text-white bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.08]"
+                        : "text-muted hover:text-foreground bg-surface border-rule hover:border-muted"
                     )}
                   >
                     All
@@ -224,10 +229,10 @@ export default function DatasetAnalyzePage({ datasetKey }: DatasetAnalyzePagePro
                       key={y}
                       onClick={() => toggleYear(y)}
                       className={cn(
-                        "px-3 py-2 rounded-lg text-xs font-medium transition-colors border",
+                        "px-3 py-2 rounded-sm text-xs font-medium transition-colors border",
                         selectedYears.has(y)
                           ? "bg-accent text-white border-accent"
-                          : "text-muted hover:text-white bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.08]"
+                          : "text-muted hover:text-foreground bg-surface border-rule hover:border-muted"
                       )}
                     >
                       {y}
@@ -245,7 +250,7 @@ export default function DatasetAnalyzePage({ datasetKey }: DatasetAnalyzePagePro
                       onClick={() => {
                         queryInputRef.current?.setQuestion(eq.question);
                       }}
-                      className="px-3 py-1.5 rounded-lg text-xs font-medium text-muted hover:text-white bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.08] transition-colors"
+                      className="px-3 py-1.5 rounded-sm text-xs font-medium text-teal hover:text-teal-hover border border-rule hover:border-teal transition-colors"
                     >
                       {eq.label}
                     </button>
@@ -271,7 +276,7 @@ export default function DatasetAnalyzePage({ datasetKey }: DatasetAnalyzePagePro
               {showQueryResults && (
                 <>
                   {config.resultCaveat && (
-                    <div className={`glass-card p-4 ${config.resultCaveat.borderColor}`}>
+                    <div className={`card p-4 ${config.resultCaveat.borderColor}`}>
                       <p className={`text-xs font-medium mb-1 ${config.resultCaveat.titleColor}`}>{config.resultCaveat.title}</p>
                       <p className="text-xs text-muted">
                         {config.resultCaveat.text}
@@ -281,9 +286,9 @@ export default function DatasetAnalyzePage({ datasetKey }: DatasetAnalyzePagePro
 
                   {/* Error display */}
                   {error && (
-                    <div className="glass-card p-4 border-red-500/30 flex items-center gap-3">
-                      <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
-                      <p className="text-sm text-red-400">{error}</p>
+                    <div className="card p-4 border-red-300 flex items-center gap-3">
+                      <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
+                      <p className="text-sm text-red-700">{error}</p>
                     </div>
                   )}
 
@@ -294,16 +299,16 @@ export default function DatasetAnalyzePage({ datasetKey }: DatasetAnalyzePagePro
                   {rows.length > 0 && (
                     <>
                       {/* View mode toggle */}
-                      <div className="flex items-center gap-1 glass-card p-1 w-fit">
+                      <div className="flex items-center gap-0 border-b border-rule-light w-fit">
                         {VIEW_MODES.map((viewMode) => (
                           <button
                             key={viewMode.key}
                             onClick={() => setChartType(viewMode.key)}
                             className={cn(
-                              "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
+                              "flex items-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors border-b-2 -mb-px",
                               chartType === viewMode.key
-                                ? "bg-accent text-white"
-                                : "text-muted hover:text-white"
+                                ? "text-foreground border-accent font-semibold"
+                                : "text-muted border-transparent hover:text-foreground"
                             )}
                           >
                             <viewMode.icon className="w-3.5 h-3.5" />
@@ -326,7 +331,7 @@ export default function DatasetAnalyzePage({ datasetKey }: DatasetAnalyzePagePro
 
                   {/* Loading state */}
                   {loading && (
-                    <div className="glass-card p-12 flex flex-col items-center gap-3">
+                    <div className="card p-12 flex flex-col items-center gap-3">
                       <Loader2 className="w-8 h-8 text-accent animate-spin" />
                       <p className="text-sm text-muted">
                         Generating and executing query...

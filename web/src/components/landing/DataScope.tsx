@@ -1,5 +1,4 @@
 import { CheckCircle2, XCircle, HelpCircle } from "lucide-react";
-import { GlassCard } from "@/components/ui/GlassCard";
 
 const included = [
   "Physician & professional fees (office visits, surgery, hospital rounds)",
@@ -42,84 +41,82 @@ const cannotAsk = [
 
 export function DataScope() {
   return (
-    <section className="py-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white">
+    <section className="py-16">
+      <div className="max-w-[1080px] mx-auto px-4 sm:px-8">
+        <div className="text-center mb-12">
+          <h2 className="font-headline text-[1.875rem] sm:text-[2.25rem] font-bold text-foreground">
             About the Data
           </h2>
-          <p className="mt-4 text-muted max-w-2xl mx-auto">
+          <p className="mt-4 font-serif text-body max-w-2xl mx-auto leading-relaxed">
             This tool analyzes the{" "}
-            <span className="text-white">CMS Medicaid Provider Utilization and Spending</span>{" "}
+            <span className="text-foreground font-semibold">CMS Medicaid Provider Utilization and Spending</span>{" "}
             dataset — 227M+ HCPCS/CPT-coded claims from January 2018 through September 2024.
             It covers what providers billed Medicaid, not total program costs.
           </p>
         </div>
 
-        {/* What's included vs not */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          <GlassCard className="p-5 sm:p-8">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="card p-5 sm:p-8">
+            <h3 className="text-base font-bold text-foreground mb-4 flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600" />
               What&apos;s in the dataset
             </h3>
             <ul className="space-y-2.5">
               {included.map((item) => (
-                <li key={item} className="flex items-start gap-2.5 text-sm text-muted leading-relaxed">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/60 mt-1.5 shrink-0" />
+                <li key={item} className="flex items-start gap-2.5 text-sm text-body leading-relaxed font-serif">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600/60 mt-2 shrink-0" />
                   {item}
                 </li>
               ))}
             </ul>
-          </GlassCard>
+          </div>
 
-          <GlassCard className="p-5 sm:p-8">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <XCircle className="w-5 h-5 text-red-400" />
+          <div className="card p-5 sm:p-8">
+            <h3 className="text-base font-bold text-foreground mb-4 flex items-center gap-2">
+              <XCircle className="w-5 h-5 text-accent" />
               What&apos;s NOT in the dataset
             </h3>
             <ul className="space-y-2.5">
               {notIncluded.map((item) => (
-                <li key={item} className="flex items-start gap-2.5 text-sm text-muted leading-relaxed">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-400/60 mt-1.5 shrink-0" />
+                <li key={item} className="flex items-start gap-2.5 text-sm text-body leading-relaxed font-serif">
+                  <span className="w-1.5 h-1.5 rounded-full bg-accent/60 mt-2 shrink-0" />
                   {item}
                 </li>
               ))}
             </ul>
-          </GlassCard>
+          </div>
         </div>
 
-        {/* Example queries */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <GlassCard className="p-5 sm:p-8">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <HelpCircle className="w-5 h-5 text-accent" />
+          <div className="card p-5 sm:p-8">
+            <h3 className="text-base font-bold text-foreground mb-4 flex items-center gap-2">
+              <HelpCircle className="w-5 h-5 text-teal" />
               Questions you can ask
             </h3>
             <ul className="space-y-2.5">
               {canAsk.map((item) => (
-                <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed">
-                  <span className="text-accent mt-0.5 shrink-0">&ldquo;</span>
-                  <span className="text-muted">{item}<span className="text-accent">&rdquo;</span></span>
+                <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed font-serif">
+                  <span className="text-teal mt-0.5 shrink-0">&ldquo;</span>
+                  <span className="text-body">{item}<span className="text-teal">&rdquo;</span></span>
                 </li>
               ))}
             </ul>
-          </GlassCard>
+          </div>
 
-          <GlassCard className="p-5 sm:p-8">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <XCircle className="w-5 h-5 text-muted-dark" />
+          <div className="card p-5 sm:p-8">
+            <h3 className="text-base font-bold text-foreground mb-4 flex items-center gap-2">
+              <XCircle className="w-5 h-5 text-muted" />
               Questions that won&apos;t work
             </h3>
             <ul className="space-y-2.5">
               {cannotAsk.map((item) => (
-                <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed">
-                  <span className="text-muted-dark mt-0.5 shrink-0">&ldquo;</span>
-                  <span className="text-muted-dark">{item}<span className="text-muted-dark">&rdquo;</span></span>
+                <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed font-serif">
+                  <span className="text-muted mt-0.5 shrink-0">&ldquo;</span>
+                  <span className="text-muted">{item}<span className="text-muted">&rdquo;</span></span>
                 </li>
               ))}
             </ul>
-          </GlassCard>
+          </div>
         </div>
       </div>
     </section>

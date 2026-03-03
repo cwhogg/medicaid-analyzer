@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { GlassCard } from "@/components/ui/GlassCard";
 import { getAllPosts } from "@/lib/content";
 import { Calendar, ArrowRight } from "lucide-react";
 
@@ -45,10 +44,10 @@ export default function BlogListPage() {
       <main className="min-h-screen bg-background pt-20 sm:pt-24 pb-12 sm:pb-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8 sm:mb-12">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-headline font-bold text-foreground mb-3 sm:mb-4">
               Medicaid Spending Analysis
             </h1>
-            <p className="text-base sm:text-lg text-muted max-w-2xl">
+            <p className="text-base sm:text-lg text-muted max-w-2xl font-serif">
               Data-driven insights from 227 million Medicaid claims records
               spanning 2018&ndash;2024, covering $1+ trillion in provider
               spending.
@@ -56,63 +55,59 @@ export default function BlogListPage() {
           </div>
 
           {posts.length === 0 ? (
-            <GlassCard>
-              <div className="p-6 sm:p-8 text-center">
-                <p className="text-muted">
-                  No posts yet. Check back soon for data-driven Medicaid
-                  spending analysis.
-                </p>
-              </div>
-            </GlassCard>
+            <div className="card p-6 sm:p-8 text-center">
+              <p className="text-muted font-serif">
+                No posts yet. Check back soon for data-driven Medicaid
+                spending analysis.
+              </p>
+            </div>
           ) : (
             <div className="space-y-4 sm:space-y-6">
               {posts.map((post) => (
                 <Link key={post.slug} href={`/blog/${post.slug}`} className="block">
-                  <GlassCard className="hover:bg-white/[0.06] transition-colors cursor-pointer">
-                    <div className="p-4 sm:p-6">
-                      <div className="flex items-center gap-2 text-sm text-muted-dark mb-2 sm:mb-3">
-                        <Calendar className="w-4 h-4 shrink-0" />
-                        <time dateTime={post.frontmatter.date}>
-                          {formatDate(post.frontmatter.date)}
-                        </time>
-                        {post.frontmatter.wordCount > 0 && (
-                          <>
-                            <span className="text-white/20">|</span>
-                            <span>
-                              {Math.ceil(post.frontmatter.wordCount / 250)} min
-                              read
-                            </span>
-                          </>
-                        )}
-                      </div>
-                      <h2 className="text-lg sm:text-xl font-semibold text-white mb-2">
-                        {post.frontmatter.title}
-                      </h2>
-                      <p className="text-muted text-sm leading-relaxed mb-3 sm:mb-4">
-                        {post.frontmatter.description ||
-                          getExcerpt(post.content)}
-                      </p>
-                      <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-                        <span className="text-accent text-sm font-medium flex items-center gap-1">
-                          Read analysis <ArrowRight className="w-4 h-4" />
-                        </span>
-                        {post.frontmatter.targetKeywords?.length > 0 && (
-                          <div className="flex gap-1.5 sm:gap-2 flex-wrap">
-                            {post.frontmatter.targetKeywords
-                              .slice(0, 3)
-                              .map((kw) => (
-                                <span
-                                  key={kw}
-                                  className="text-xs px-2 py-0.5 rounded-full bg-white/[0.05] text-muted-dark"
-                                >
-                                  {kw}
-                                </span>
-                              ))}
-                          </div>
-                        )}
-                      </div>
+                  <div className="card-hover p-4 sm:p-6 cursor-pointer">
+                    <div className="flex items-center gap-2 text-sm text-muted mb-2 sm:mb-3">
+                      <Calendar className="w-4 h-4 shrink-0" />
+                      <time dateTime={post.frontmatter.date}>
+                        {formatDate(post.frontmatter.date)}
+                      </time>
+                      {post.frontmatter.wordCount > 0 && (
+                        <>
+                          <span className="text-rule">|</span>
+                          <span>
+                            {Math.ceil(post.frontmatter.wordCount / 250)} min
+                            read
+                          </span>
+                        </>
+                      )}
                     </div>
-                  </GlassCard>
+                    <h2 className="text-lg sm:text-xl font-headline font-semibold text-foreground mb-2">
+                      {post.frontmatter.title}
+                    </h2>
+                    <p className="text-muted text-sm leading-relaxed mb-3 sm:mb-4 font-serif">
+                      {post.frontmatter.description ||
+                        getExcerpt(post.content)}
+                    </p>
+                    <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+                      <span className="text-teal text-sm font-medium flex items-center gap-1">
+                        Read analysis <ArrowRight className="w-4 h-4" />
+                      </span>
+                      {post.frontmatter.targetKeywords?.length > 0 && (
+                        <div className="flex gap-1.5 sm:gap-2 flex-wrap">
+                          {post.frontmatter.targetKeywords
+                            .slice(0, 3)
+                            .map((kw) => (
+                              <span
+                                key={kw}
+                                className="text-xs px-2 py-0.5 rounded-sm bg-[#F5F5F0] text-muted border border-rule-light"
+                              >
+                                {kw}
+                              </span>
+                            ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </Link>
               ))}
             </div>

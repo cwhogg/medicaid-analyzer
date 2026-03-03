@@ -33,7 +33,7 @@ export const DATASET_METAS: DatasetMeta[] = [
       "Oct–Dec 2024 data incomplete",
     ],
     href: "/medicaid",
-    accentColor: "#EA580C",
+    accentColor: "#B91C1C",
   },
   {
     key: "medicare",
@@ -53,7 +53,7 @@ export const DATASET_METAS: DatasetMeta[] = [
       "2023 data only (single year)",
     ],
     href: "/medicare",
-    accentColor: "#10B981",
+    accentColor: "#0F766E",
   },
   {
     key: "brfss",
@@ -75,7 +75,7 @@ export const DATASET_METAS: DatasetMeta[] = [
       "SDOH/ACE/marijuana modules are 2024 only",
     ],
     href: "/brfss",
-    accentColor: "#0EA5E9",
+    accentColor: "#1D4ED8",
   },
   {
     key: "nhanes",
@@ -96,6 +96,6 @@ export const DATASET_METAS: DatasetMeta[] = [
       "~12K participants (smaller than BRFSS)",
     ],
     href: "/nhanes",
-    accentColor: "#8B5CF6",
+    accentColor: "#7C3AED",
   },
 ];

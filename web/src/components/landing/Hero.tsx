@@ -1,144 +1,52 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, TrendingUp, Users, FileText } from "lucide-react";
-import { GlassCard } from "@/components/ui/GlassCard";
-import { formatCurrency, formatCompactNumber } from "@/lib/format";
-
-interface Stats {
-  total_rows: number;
-  total_spending: number;
-  unique_providers: number;
-  unique_hcpcs_codes: number;
-  total_claims: number;
-  earliest_month: string;
-  latest_month: string;
-}
-
-function AnimatedCounter({ end, prefix = "", suffix = "" }: { end: string; prefix?: string; suffix?: string }) {
-  const [display, setDisplay] = useState("");
-
-  useEffect(() => {
-    const duration = 1500;
-    const start = Date.now();
-
-    function step() {
-      const elapsed = Date.now() - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-
-      if (progress < 1) {
-        // Show scrambled version while animating
-        const chars = end.split("");
-        const revealed = Math.floor(chars.length * eased);
-        const display = chars
-          .map((c, i) => {
-            if (i < revealed) return c;
-            if (/\d/.test(c)) return String(Math.floor(Math.random() * 10));
-            return c;
-          })
-          .join("");
-        setDisplay(prefix + display + suffix);
-        requestAnimationFrame(step);
-      } else {
-        setDisplay(prefix + end + suffix);
-      }
-    }
-
-    requestAnimationFrame(step);
-  }, [end, prefix, suffix]);
-
-  return <span>{display}</span>;
-}
+import { ArrowRight } from "lucide-react";
 
 export function Hero() {
-  const [stats, setStats] = useState<Stats | null>(null);
-
-  useEffect(() => {
-    fetch("/data/stats.json")
-      .then((r) => r.json())
-      .then((data) => setStats(data[0]))
-      .catch(console.error);
-  }, []);
-
-  const statCards = stats
-    ? [
-        {
-          label: "Total Spending",
-          value: formatCurrency(stats.total_spending),
-          icon: TrendingUp,
-          delay: "0s",
-        },
-        {
-          label: "Claims Processed",
-          value: formatCompactNumber(stats.total_claims),
-          icon: FileText,
-          delay: "0.1s",
-        },
-        {
-          label: "Unique Providers",
-          value: formatCompactNumber(stats.unique_providers),
-          icon: Users,
-          delay: "0.2s",
-        },
-      ]
-    : [];
 
   return (
-    <section className="relative pt-32 pb-20 overflow-hidden">
-      {/* Background gradient orbs */}
-      <div className="absolute top-20 left-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-orange-500/5 rounded-full blur-3xl" />
+    <section className="text-center py-12 sm:py-16">
+      <div className="max-w-[820px] mx-auto px-4 sm:px-8">
+        <h2 className="font-headline text-[2.5rem] sm:text-[2.75rem] font-bold leading-[1.15] text-foreground mb-6 animate-fade-in-up">
+          Making Public Health<br />Data Accessible
+        </h2>
+        <p className="font-subhead italic text-[1.0625rem] leading-[1.7] text-body max-w-[640px] mx-auto mb-10 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
+          Ask questions in plain English about Medicaid claims, Medicare physician spending,
+          and population health surveys. AI translates your words into SQL and returns real
+          answers from federal datasets.
+        </p>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div className="text-center max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-card text-sm text-muted mb-6">
-            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-            240M+ records across 4 datasets
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10 animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
+          <Link href="/datasets" className="btn-primary inline-flex items-center justify-center gap-2 w-full sm:w-auto">
+            Explore Datasets
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </div>
+
+      {/* Stats row */}
+      <div className="max-w-[760px] mx-auto px-4 sm:px-8 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+        <div className="grid grid-cols-2 sm:grid-cols-4 border-t-2 border-foreground border-b border-rule">
+          <div className="stat-cell">
+            <div className="font-headline text-[2.375rem] font-bold text-foreground leading-[1.1] tracking-tight">227M</div>
+            <div className="text-[0.8125rem] font-semibold tracking-[0.04em] uppercase text-body mt-1">Claims Analyzed</div>
+            <div className="text-[0.6875rem] text-muted mt-0.5 tracking-wide">Medicaid 2018&ndash;2024</div>
           </div>
-
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-tight tracking-tight">
-            Explore Public
-            <br />
-            <span className="text-accent">Health Data</span>
-          </h1>
-
-          <p className="mt-6 text-base sm:text-lg text-muted max-w-2xl mx-auto leading-relaxed">
-            Query Medicaid claims, Medicare physician spending, BRFSS population health surveys,
-            and NHANES clinical labs. Ask questions in plain English — AI generates SQL,
-            executes it, and returns results with visualizations.
-          </p>
-
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-            <Link href="/datasets" className="btn-primary inline-flex items-center justify-center gap-2 text-base w-full sm:w-auto">
-              Explore Datasets
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-            <a href="#features" className="btn-secondary inline-flex items-center justify-center gap-2 text-base w-full sm:w-auto">
-              Learn More
-            </a>
+          <div className="stat-cell">
+            <div className="font-headline text-[2.375rem] font-bold text-foreground leading-[1.1] tracking-tight">9.7M</div>
+            <div className="text-[0.8125rem] font-semibold tracking-[0.04em] uppercase text-body mt-1">Service Records</div>
+            <div className="text-[0.6875rem] text-muted mt-0.5 tracking-wide">Medicare 2023</div>
+          </div>
+          <div className="stat-cell border-b-0 sm:border-b-0">
+            <div className="font-headline text-[2.375rem] font-bold text-foreground leading-[1.1] tracking-tight">4.0M</div>
+            <div className="text-[0.8125rem] font-semibold tracking-[0.04em] uppercase text-body mt-1">Survey Responses</div>
+            <div className="text-[0.6875rem] text-muted mt-0.5 tracking-wide">BRFSS 2014&ndash;2024</div>
+          </div>
+          <div className="stat-cell border-r-0">
+            <div className="font-headline text-[2.375rem] font-bold text-foreground leading-[1.1] tracking-tight">7+</div>
+            <div className="text-[0.8125rem] font-semibold tracking-[0.04em] uppercase text-body mt-1">Years of Data</div>
+            <div className="text-[0.6875rem] text-muted mt-0.5 tracking-wide">Continuously Updated</div>
           </div>
         </div>
-
-        {/* Animated stat cards */}
-        {stats && (
-          <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
-            {statCards.map((stat) => (
-              <GlassCard
-                key={stat.label}
-                hover
-                className="p-6 text-center animate-fade-in-up"
-              >
-                <stat.icon className="w-5 h-5 text-accent mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white font-mono">
-                  <AnimatedCounter end={stat.value} />
-                </div>
-                <div className="text-sm text-muted mt-1">{stat.label}</div>
-              </GlassCard>
-            ))}
-          </div>
-        )}
       </div>
     </section>
   );

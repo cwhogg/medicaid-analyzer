@@ -8,7 +8,6 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ResultsTable } from "@/components/analyze/ResultsTable";
 import { ResultsChart } from "@/components/analyze/ResultsChart";
-import { GlassCard } from "@/components/ui/GlassCard";
 import { formatCurrency, formatFullNumber } from "@/lib/format";
 
 interface ProviderData {
@@ -41,17 +40,17 @@ function StatCard({
   value: string;
 }) {
   return (
-    <GlassCard className="p-3 sm:p-4">
+    <div className="card p-3 sm:p-4">
       <div className="flex items-center gap-2.5 sm:gap-3">
-        <div className="p-1.5 sm:p-2 rounded-lg bg-accent/10 shrink-0">
+        <div className="p-1.5 sm:p-2 rounded-sm bg-red-50 shrink-0">
           <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />
         </div>
         <div className="min-w-0">
-          <p className="text-[10px] sm:text-xs text-muted-dark uppercase tracking-wider truncate">{label}</p>
-          <p className="text-sm sm:text-lg font-semibold text-white font-mono truncate">{value}</p>
+          <p className="text-[10px] sm:text-xs text-muted uppercase tracking-wider truncate">{label}</p>
+          <p className="text-sm sm:text-lg font-semibold text-foreground font-mono truncate">{value}</p>
         </div>
       </div>
-    </GlassCard>
+    </div>
   );
 }
 
@@ -119,7 +118,7 @@ export default function ProviderPage({ params }: { params: { npi: string } }) {
           {/* Back button */}
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-1.5 text-sm text-muted hover:text-white transition-colors mb-6"
+            className="flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors mb-6"
           >
             <ArrowLeft className="w-4 h-4" />
             Back
@@ -127,7 +126,7 @@ export default function ProviderPage({ params }: { params: { npi: string } }) {
 
           {/* Loading state */}
           {loading && (
-            <div className="glass-card p-16 flex flex-col items-center gap-3">
+            <div className="card p-16 flex flex-col items-center gap-3">
               <Loader2 className="w-8 h-8 text-accent animate-spin" />
               <p className="text-sm text-muted">Loading provider data...</p>
             </div>
@@ -135,9 +134,9 @@ export default function ProviderPage({ params }: { params: { npi: string } }) {
 
           {/* Error state */}
           {error && !loading && (
-            <div className="glass-card p-8 flex flex-col items-center gap-3">
-              <AlertCircle className="w-8 h-8 text-red-400" />
-              <p className="text-sm text-red-400">{error}</p>
+            <div className="card p-8 flex flex-col items-center gap-3">
+              <AlertCircle className="w-8 h-8 text-red-600" />
+              <p className="text-sm text-red-700">{error}</p>
             </div>
           )}
 
@@ -146,12 +145,12 @@ export default function ProviderPage({ params }: { params: { npi: string } }) {
             <div className="space-y-8">
               {/* Header */}
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-white">
+                <h1 className="text-2xl sm:text-3xl font-headline font-bold text-foreground">
                   {data.info.name || `Provider ${npi}`}
                 </h1>
                 <div className="flex items-center gap-3 mt-2 flex-wrap">
                   {data.info.type && (
-                    <span className="px-2.5 py-0.5 rounded-md bg-accent/10 text-accent text-xs font-medium">
+                    <span className="px-2.5 py-0.5 rounded-sm bg-red-50 text-accent text-xs font-medium border border-red-200">
                       {data.info.type}
                     </span>
                   )}
@@ -160,7 +159,7 @@ export default function ProviderPage({ params }: { params: { npi: string } }) {
                       {[data.info.city, data.info.state].filter(Boolean).join(", ")}
                     </span>
                   )}
-                  <span className="text-sm text-muted-dark font-mono">NPI: {npi}</span>
+                  <span className="text-sm text-muted font-mono">NPI: {npi}</span>
                 </div>
               </div>
 
@@ -169,10 +168,10 @@ export default function ProviderPage({ params }: { params: { npi: string } }) {
                 <button
                   onClick={() => setSelectedYears(new Set())}
                   className={cn(
-                    "px-3 py-2 rounded-lg text-xs font-medium transition-colors border",
+                    "px-3 py-2 rounded-sm text-xs font-medium transition-colors border",
                     selectedYears.size === 0
                       ? "bg-accent text-white border-accent"
-                      : "text-muted hover:text-white bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.08]"
+                      : "text-muted hover:text-foreground bg-surface border-rule hover:bg-[#F5F5F0]"
                   )}
                 >
                   All Time
@@ -182,10 +181,10 @@ export default function ProviderPage({ params }: { params: { npi: string } }) {
                     key={y}
                     onClick={() => toggleYear(y)}
                     className={cn(
-                      "px-3 py-2 rounded-lg text-xs font-medium transition-colors border",
+                      "px-3 py-2 rounded-sm text-xs font-medium transition-colors border",
                       selectedYears.has(y)
                         ? "bg-accent text-white border-accent"
-                        : "text-muted hover:text-white bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.08]"
+                        : "text-muted hover:text-foreground bg-surface border-rule hover:bg-[#F5F5F0]"
                     )}
                   >
                     {y}
@@ -259,7 +258,7 @@ export default function ProviderPage({ params }: { params: { npi: string } }) {
               {/* Active period */}
               {(data.summary.first_month || data.summary.last_month) && (
                 <div className="flex items-center gap-2 text-sm text-muted">
-                  <Calendar className="w-4 h-4 text-muted-dark" />
+                  <Calendar className="w-4 h-4 text-muted" />
                   <span>
                     Active: {formatMonth(data.summary.first_month)} &mdash; {formatMonth(data.summary.last_month)}
                   </span>
@@ -269,7 +268,7 @@ export default function ProviderPage({ params }: { params: { npi: string } }) {
               {/* Monthly Trend */}
               {data.trend.rows.length > 0 && (
                 <div>
-                  <h2 className="text-lg font-semibold text-white mb-4">Monthly Spending Trend</h2>
+                  <h2 className="text-lg font-headline font-semibold text-foreground mb-4">Monthly Spending Trend</h2>
                   <ResultsChart
                     columns={data.trend.columns}
                     rows={data.trend.rows}
@@ -281,7 +280,7 @@ export default function ProviderPage({ params }: { params: { npi: string } }) {
               {/* Top Procedures */}
               {data.procedures.rows.length > 0 && (
                 <div>
-                  <h2 className="text-lg font-semibold text-white mb-4">Top Procedures</h2>
+                  <h2 className="text-lg font-headline font-semibold text-foreground mb-4">Top Procedures</h2>
                   <ResultsTable
                     columns={data.procedures.columns}
                     rows={data.procedures.rows}

@@ -3,8 +3,19 @@
 @tailwind utilities;
 
 :root {
-  --background: #0A0A0A;
-  --foreground: #FFFFFF;
+  --background: #FAFAF5;
+  --foreground: #1C1917;
+  --surface: #FFFFFF;
+  --body: #57534E;
+  --muted: #78716C;
+  --accent-red: #B91C1C;
+  --accent-red-hover: #991B1B;
+  --accent-teal: #0F766E;
+  --accent-teal-hover: #0D6560;
+  --rule: #D6D3D1;
+  --rule-light: #E7E5E4;
+  --warm-shadow: rgba(28, 25, 23, 0.06);
+  --warm-shadow-lg: rgba(28, 25, 23, 0.1);
 }
 
 body {
@@ -20,32 +31,101 @@ body {
 }
 
 @layer components {
-  .glass-card {
-    @apply bg-white/[0.03] backdrop-blur-md border border-white/[0.08] rounded-xl;
+  .card {
+    @apply bg-surface border border-rule rounded-sm;
+    box-shadow: 0 1px 4px var(--warm-shadow);
   }
 
-  .glass-card-hover {
-    @apply glass-card transition-all duration-300 hover:-translate-y-0.5 hover:border-white/[0.15] hover:bg-white/[0.05];
+  .card-hover {
+    @apply card transition-all duration-200;
   }
 
-  .glass-nav {
-    @apply backdrop-blur-lg border-b border-white/[0.08];
-    background: rgba(10, 10, 10, 0.8);
+  .card-hover:hover {
+    box-shadow: 0 4px 16px var(--warm-shadow-lg);
+    transform: translateY(-1px);
+  }
+
+  .nav-bar {
+    @apply bg-surface border-b border-rule;
   }
 
   .code-block {
-    @apply bg-white/[0.05] rounded-lg p-4 font-mono text-sm overflow-x-auto;
-  }
-
-  .accent-gradient {
-    @apply bg-gradient-to-r from-accent to-orange-400;
+    @apply rounded-sm p-4 font-mono text-sm overflow-x-auto border border-rule-light;
+    background: #F5F5F0;
   }
 
   .btn-primary {
-    @apply bg-accent hover:bg-orange-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-200;
+    @apply bg-accent hover:bg-accent-hover text-white font-sans font-semibold py-2.5 px-6 rounded-sm transition-colors duration-200 uppercase tracking-wider text-sm;
   }
 
   .btn-secondary {
-    @apply glass-card hover:bg-white/[0.08] text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-200;
+    @apply bg-surface border border-rule text-foreground font-sans font-medium py-2.5 px-6 rounded-sm transition-all duration-200 hover:border-muted hover:shadow-sm;
+  }
+
+  .section-label {
+    @apply font-sans text-xs font-semibold tracking-[0.12em] uppercase text-accent flex items-center gap-4;
+    margin: 3.5rem 0 2rem;
+  }
+
+  .section-label::before,
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .rule {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 0;
+  }
+
+  .rule-thick {
+    border: none;
+    border-top: 3px solid var(--foreground);
+    margin: 0;
+  }
+
+  .rule-thin {
+    border: none;
+    border-top: 1px solid var(--rule-light);
+    margin: 0;
+  }
+
+  .font-headline {
+    font-family: var(--font-playfair), Georgia, serif;
+    font-feature-settings: 'kern' 1, 'liga' 1;
+  }
+
+  .font-subhead {
+    font-family: var(--font-lora), Georgia, serif;
+  }
+
+  .font-body {
+    font-family: var(--font-merriweather), Georgia, serif;
+  }
+
+  .font-ui {
+    font-family: var(--font-dm-sans), 'Helvetica Neue', Arial, sans-serif;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  .stat-cell {
+    @apply py-6 px-4 text-center border-r border-rule-light;
+  }
+
+  .stat-cell:nth-child(2n) {
+    @apply sm:border-r;
+  }
+
+  /* On mobile (2-col), first two cells get bottom border */
+  @media (max-width: 639px) {
+    .stat-cell:nth-child(-n+2) {
+      @apply border-b border-rule-light;
+    }
+    .stat-cell:nth-child(2n) {
+      @apply border-r-0;
+    }
   }
 }

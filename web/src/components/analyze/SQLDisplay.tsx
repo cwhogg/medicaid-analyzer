@@ -23,12 +23,12 @@ export function SQLDisplay({ sql }: SQLDisplayProps) {
   };
 
   return (
-    <div className="glass-card overflow-hidden">
+    <div className="border border-rule rounded-sm overflow-hidden">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center justify-between w-full px-4 py-2.5 text-left hover:bg-white/[0.02] transition-colors"
+        className="flex items-center justify-between w-full px-4 py-2.5 text-left hover:bg-background transition-colors"
       >
-        <div className="flex items-center gap-2 text-sm text-muted">
+        <div className="flex items-center gap-2 text-[0.8125rem] font-semibold text-body">
           <ChevronRight
             className={`w-4 h-4 transition-transform duration-200 ${open ? "rotate-90" : ""}`}
           />
@@ -37,11 +37,11 @@ export function SQLDisplay({ sql }: SQLDisplayProps) {
         </div>
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1.5 text-xs text-muted hover:text-white transition-colors"
+          className="flex items-center gap-1.5 text-xs text-muted hover:text-foreground transition-colors border border-rule px-2 py-1 rounded-sm"
         >
           {copied ? (
             <>
-              <Check className="w-3.5 h-3.5 text-green-400" />
+              <Check className="w-3.5 h-3.5 text-green-600" />
               Copied
             </>
           ) : (
@@ -53,7 +53,7 @@ export function SQLDisplay({ sql }: SQLDisplayProps) {
         </button>
       </button>
       {open && (
-        <pre className="px-4 pb-4 pt-2 text-sm font-mono text-muted overflow-x-auto leading-relaxed border-t border-white/[0.08]">
+        <pre className="px-4 pb-4 pt-2 text-[0.8125rem] font-mono text-[#44403C] overflow-x-auto leading-relaxed border-t border-rule-light" style={{ background: "#F5F5F0" }}>
           <code>{sql}</code>
         </pre>
       )}

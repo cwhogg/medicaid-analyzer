@@ -50,7 +50,7 @@ export function DataDictionary({ groups }: DataDictionaryProps) {
 
   if (!groups || groups.length === 0) {
     return (
-      <div className="glass-card p-8 text-center">
+      <div className="card p-8 text-center">
         <p className="text-muted text-sm">No variable metadata available for this dataset.</p>
       </div>
     );
@@ -66,7 +66,7 @@ export function DataDictionary({ groups }: DataDictionaryProps) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search variables by name, description, or codes..."
-          className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-white/[0.05] border border-white/[0.08] text-white text-sm placeholder:text-gray-500 focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/30 transition-colors"
+          className="w-full pl-10 pr-4 py-2.5 rounded-sm bg-background border border-rule text-foreground text-sm placeholder:text-muted focus:outline-none focus:border-accent transition-colors font-subhead italic"
         />
       </div>
 
@@ -79,7 +79,7 @@ export function DataDictionary({ groups }: DataDictionaryProps) {
 
       {/* Groups */}
       {filtered.length === 0 ? (
-        <div className="glass-card p-8 text-center">
+        <div className="card p-8 text-center">
           <p className="text-muted text-sm">No variables match &ldquo;{search}&rdquo;</p>
         </div>
       ) : (
@@ -88,21 +88,21 @@ export function DataDictionary({ groups }: DataDictionaryProps) {
             const isCollapsed = query ? false : collapsed.has(group.name);
 
             return (
-              <div key={group.name} className="glass-card overflow-hidden">
+              <div key={group.name} className="card overflow-hidden">
                 {/* Group header */}
                 <button
                   onClick={() => toggleGroup(group.name)}
-                  className="w-full flex items-center gap-2 px-4 py-3 text-left hover:bg-white/[0.02] transition-colors"
+                  className="w-full flex items-center gap-2 px-4 py-3 text-left hover:bg-background transition-colors"
                 >
                   {isCollapsed ? (
                     <ChevronRight className="w-4 h-4 text-muted shrink-0" />
                   ) : (
                     <ChevronDown className="w-4 h-4 text-muted shrink-0" />
                   )}
-                  <span className="text-sm font-semibold text-white">{group.name}</span>
+                  <span className="text-sm font-semibold text-foreground">{group.name}</span>
                   <span className="text-xs text-muted">({group.variables.length})</span>
                   {group.description && (
-                    <span className="text-xs text-gray-500 ml-2 hidden sm:inline truncate">
+                    <span className="text-xs text-muted ml-2 hidden sm:inline truncate">
                       {group.description}
                     </span>
                   )}
@@ -110,32 +110,32 @@ export function DataDictionary({ groups }: DataDictionaryProps) {
 
                 {/* Variables */}
                 {!isCollapsed && (
-                  <div className="border-t border-white/[0.06]">
+                  <div className="border-t border-rule-light">
                     {group.variables.map((v) => (
                       <div
                         key={v.name}
-                        className="px-4 py-2.5 border-b border-white/[0.04] last:border-b-0 hover:bg-white/[0.02] transition-colors"
+                        className="px-4 py-2.5 border-b border-rule-light last:border-b-0 hover:bg-[#F5F5F0] transition-colors"
                       >
                         <div className="flex items-start gap-3">
                           {/* Name + type */}
                           <div className="shrink-0 min-w-[140px]">
                             <code className="text-xs font-mono text-accent">{v.name}</code>
                             {v.type && (
-                              <span className="text-[10px] text-gray-500 ml-1.5 uppercase">{v.type}</span>
+                              <span className="text-[10px] text-teal ml-1.5 uppercase bg-emerald-50 px-1 py-0.5 rounded-sm">{v.type}</span>
                             )}
                           </div>
 
                           {/* Description + codes + note */}
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm text-gray-300">{v.description}</p>
+                            <p className="text-sm text-body">{v.description}</p>
                             {v.codes && (
-                              <p className="text-xs text-gray-500 mt-0.5 font-mono">{v.codes}</p>
+                              <p className="text-xs text-muted mt-0.5 font-mono">{v.codes}</p>
                             )}
                           </div>
 
                           {/* Note badge */}
                           {v.note && (
-                            <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                            <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
                               <Info className="w-3 h-3" />
                               {v.note}
                             </span>

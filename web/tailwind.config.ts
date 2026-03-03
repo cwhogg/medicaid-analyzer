@@ -9,33 +9,36 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#0A0A0A",
-        foreground: "#FFFFFF",
-        muted: "#9CA3AF",
-        "muted-dark": "#6B7280",
-        accent: "#EA580C",
+        background: "#FAFAF5",
+        surface: "#FFFFFF",
+        foreground: "#1C1917",
+        body: "#57534E",
+        muted: "#78716C",
+        "muted-dark": "#57534E",
+        accent: "#B91C1C",
+        "accent-hover": "#991B1B",
+        teal: "#0F766E",
+        "teal-hover": "#0D6560",
+        rule: "#D6D3D1",
+        "rule-light": "#E7E5E4",
       },
       fontFamily: {
-        sans: ["var(--font-outfit)", "system-ui", "sans-serif"],
-        mono: ["var(--font-jetbrains)", "monospace"],
+        sans: ["var(--font-dm-sans)", "Helvetica Neue", "Arial", "sans-serif"],
+        serif: ["var(--font-merriweather)", "Georgia", "Times New Roman", "serif"],
+        headline: ["var(--font-playfair)", "Georgia", "serif"],
+        subhead: ["var(--font-lora)", "Georgia", "serif"],
+        mono: ["var(--font-jetbrains)", "Menlo", "monospace"],
+      },
+      borderRadius: {
+        DEFAULT: "2px",
       },
       animation: {
-        "fade-in-up": "fadeInUp 0.6s ease-out forwards",
-        float: "float 6s ease-in-out infinite",
-        "counter-up": "counterUp 2s ease-out forwards",
+        "fade-in-up": "fadeInUp 0.5s ease-out forwards",
       },
       keyframes: {
         fadeInUp: {
-          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "0%": { opacity: "0", transform: "translateY(16px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-        float: {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-10px)" },
-        },
-        counterUp: {
-          "0%": { opacity: "0" },
-          "100%": { opacity: "1" },
         },
       },
     },
