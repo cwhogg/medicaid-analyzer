@@ -146,8 +146,8 @@ export default function BlogPostPage({ params }: Props) {
               Explore the data yourself
             </h3>
             <p className="text-sm text-muted mb-4 font-serif">
-              Run your own queries against 227M+ Medicaid claims records using
-              natural language — powered by AI.
+              Run your own queries against 240M+ rows of federal health data
+              using natural language — powered by AI.
             </p>
             <Link
               href="/analyze"

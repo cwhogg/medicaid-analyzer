@@ -8,11 +8,11 @@ import { Calendar, ArrowRight } from "lucide-react";
 export const metadata: Metadata = {
   title: "Health Data Analysis Blog | Open Health Data Hub",
   description:
-    "Data-driven analysis of Medicaid provider spending trends, top procedures, state comparisons, and more — powered by 227M+ claims records.",
+    "Data-driven analysis of public health trends across Medicaid, Medicare, BRFSS, and NHANES — powered by 240M+ rows of federal data.",
   openGraph: {
-    title: "Medicaid Spending Analysis Blog",
+    title: "Health Data Analysis Blog",
     description:
-      "Data-driven analysis of Medicaid provider spending trends, top procedures, state comparisons, and more.",
+      "Data-driven analysis of public health trends across Medicaid, Medicare, BRFSS, and NHANES.",
   },
 };
 
@@ -45,12 +45,12 @@ export default function BlogListPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8 sm:mb-12">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-headline font-bold text-foreground mb-3 sm:mb-4">
-              Medicaid Spending Analysis
+              Health Data Analysis
             </h1>
             <p className="text-base sm:text-lg text-muted max-w-2xl font-serif">
-              Data-driven insights from 227 million Medicaid claims records
-              spanning 2018&ndash;2024, covering $1+ trillion in provider
-              spending.
+              Data-driven insights from 240M+ rows of federal health data
+              &mdash; Medicaid claims, Medicare physician spending, BRFSS
+              surveys, and NHANES clinical results.
             </p>
           </div>
 
