@@ -43,16 +43,24 @@ function isDollarColumn(colName: string): boolean {
   return /paid|spending|cost|amount|payment|charge|price/.test(lower);
 }
 
+function isDecimalColumn(colName: string): boolean {
+  const lower = colName.toLowerCase();
+  return /avg|mean|average|rate|pct|percent|prevalence|ratio|proportion|per_/.test(lower);
+}
+
 function formatValue(value: unknown, colName?: string): string {
   if (typeof value === "number") {
     const dollar = colName ? isDollarColumn(colName) : false;
+    const decimal = colName ? isDecimalColumn(colName) : false;
     const prefix = dollar ? "$" : "";
     if (Math.abs(value) >= 1e9) return `${prefix}${(value / 1e9).toFixed(1)}B`;
     if (Math.abs(value) >= 1e6) return `${prefix}${(value / 1e6).toFixed(1)}M`;
-    if (Math.abs(value) >= 1e3) return `${prefix}${(value / 1e3).toFixed(0)}K`;
-    return dollar
-      ? `$${Math.round(value).toLocaleString()}`
-      : Math.round(value).toLocaleString();
+    if (Math.abs(value) >= 1e3) return `${prefix}${(value / 1e3).toFixed(decimal ? 1 : 0)}K`;
+    if (dollar) return `$${Math.round(value).toLocaleString()}`;
+    if (decimal || !Number.isInteger(value)) {
+      return value.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    }
+    return value.toLocaleString();
   }
   return String(value);
 }

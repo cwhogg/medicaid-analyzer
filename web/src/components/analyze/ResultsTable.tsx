@@ -17,6 +17,11 @@ function isYearOrIdColumn(colName: string): boolean {
   return /^year$|_year$|^month$|_month$|^date$|_date$|npi|code|_id$|^id$|zip/.test(lower);
 }
 
+function isDecimalColumn(colName: string): boolean {
+  const lower = colName.toLowerCase();
+  return /avg|mean|average|rate|pct|percent|prevalence|ratio|proportion|per_/.test(lower);
+}
+
 function formatCell(value: unknown, colName?: string): string {
   if (value === null || value === undefined) return "—";
   // Try date formatting first for string values
@@ -28,8 +33,12 @@ function formatCell(value: unknown, colName?: string): string {
     if (colName && /paid|spending|cost|amount|payment|charge|price/i.test(colName)) {
       return "$" + Math.round(value).toLocaleString();
     }
+    // Show 1 decimal for averages, rates, percentages, etc.
+    if (colName && isDecimalColumn(colName)) {
+      return value.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    }
     if (Number.isInteger(value)) return value.toLocaleString();
-    return Math.round(value).toLocaleString();
+    return value.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   }
   if (typeof value === "bigint") {
     if (colName && isYearOrIdColumn(colName)) return String(value);
