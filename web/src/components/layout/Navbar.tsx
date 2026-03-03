@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, MessageSquare, Loader2, Check } from "lucide-react";
+import { Menu, X, MessageSquare, Loader2, Check, ChevronDown } from "lucide-react";
 import { DATASET_METAS } from "@/lib/datasetMeta";
 import { cn } from "@/lib/utils";
 
@@ -101,16 +101,46 @@ export function Navbar() {
     setMobileOpen(false);
   }, [pathname]);
 
-  const navLinks = [
+  const [datasetsOpen, setDatasetsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const isDatasetPage = DATASET_METAS.some((m) => pathname === m.href);
+
+  const topLinks = [
     { href: "/", label: "Home", active: pathname === "/" },
-    ...DATASET_METAS.map((m) => ({
-      href: m.href,
-      label: m.key === "brfss" || m.key === "nhanes" ? m.key.toUpperCase() : m.title.split(" ")[0],
-      active: pathname === m.href,
-    })),
-    { href: "/datasets", label: "Datasets", active: pathname === "/datasets" },
+  ];
+  const bottomLinks = [
     { href: "/blog", label: "Blog", active: pathname.startsWith("/blog") },
   ];
+
+  const datasetLinks = DATASET_METAS.map((m) => ({
+    href: m.href,
+    label: m.key === "brfss" || m.key === "nhanes" ? m.key.toUpperCase() : m.title.split(" ")[0],
+    active: pathname === m.href,
+    subtitle: m.subtitle,
+  }));
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setDatasetsOpen(true);
+  };
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => setDatasetsOpen(false), 200);
+  };
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDatasetsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const linkClass = "text-[0.8125rem] font-semibold tracking-[0.06em] uppercase px-2.5 py-1 transition-colors";
 
   return (
     <>
@@ -129,24 +159,93 @@ export function Navbar() {
 
           {/* Desktop nav */}
           <nav className="hidden sm:flex justify-center items-center gap-1 py-3 flex-wrap" aria-label="Main navigation">
-            {navLinks.map((link, i) => (
+            {topLinks.map((link, i) => (
               <span key={link.href} className="flex items-center gap-1">
                 {i > 0 && <span className="text-rule text-xs select-none">&middot;</span>}
                 <Link
                   href={link.href}
-                  className={cn(
-                    "text-[0.8125rem] font-semibold tracking-[0.06em] uppercase px-2.5 py-1 transition-colors",
-                    link.active ? "text-accent" : "text-foreground hover:text-accent"
-                  )}
+                  className={cn(linkClass, link.active ? "text-accent" : "text-foreground hover:text-accent")}
                 >
                   {link.label}
                 </Link>
               </span>
             ))}
+
+            <span className="text-rule text-xs select-none">&middot;</span>
+
+            {/* Datasets dropdown */}
+            <div
+              ref={dropdownRef}
+              className="relative"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              <button
+                onClick={() => setDatasetsOpen(!datasetsOpen)}
+                className={cn(
+                  linkClass,
+                  "flex items-center gap-1",
+                  isDatasetPage || pathname === "/datasets" ? "text-accent" : "text-foreground hover:text-accent"
+                )}
+              >
+                Datasets
+                <ChevronDown className={cn("w-3 h-3 transition-transform", datasetsOpen && "rotate-180")} />
+              </button>
+
+              {datasetsOpen && (
+                <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 z-50">
+                  <div className="bg-surface border border-rule rounded-sm shadow-lg min-w-[220px] py-1.5">
+                    {datasetLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setDatasetsOpen(false)}
+                        className={cn(
+                          "block px-4 py-2 text-left transition-colors",
+                          link.active
+                            ? "text-accent bg-red-50/60"
+                            : "text-foreground hover:text-accent hover:bg-background"
+                        )}
+                      >
+                        <span className="block text-[0.8125rem] font-semibold tracking-wide">{link.label}</span>
+                        <span className="block text-[0.6875rem] text-muted leading-tight mt-0.5">{link.subtitle}</span>
+                      </Link>
+                    ))}
+                    <hr className="rule my-1.5" />
+                    <Link
+                      href="/datasets"
+                      onClick={() => setDatasetsOpen(false)}
+                      className={cn(
+                        "block px-4 py-2 text-left transition-colors",
+                        pathname === "/datasets"
+                          ? "text-accent bg-red-50/60"
+                          : "text-foreground hover:text-accent hover:bg-background"
+                      )}
+                    >
+                      <span className="block text-[0.8125rem] font-semibold tracking-wide">All Datasets</span>
+                      <span className="block text-[0.6875rem] text-muted leading-tight mt-0.5">Overview &amp; documentation</span>
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {bottomLinks.map((link) => (
+              <span key={link.href} className="flex items-center gap-1">
+                <span className="text-rule text-xs select-none">&middot;</span>
+                <Link
+                  href={link.href}
+                  className={cn(linkClass, link.active ? "text-accent" : "text-foreground hover:text-accent")}
+                >
+                  {link.label}
+                </Link>
+              </span>
+            ))}
+
             <span className="text-rule text-xs select-none">&middot;</span>
             <button
               onClick={() => setFeedbackOpen(true)}
-              className="text-[0.8125rem] font-semibold tracking-[0.06em] uppercase px-2.5 py-1 transition-colors text-accent hover:text-accent-hover flex items-center gap-1.5"
+              className={cn(linkClass, "text-accent hover:text-accent-hover flex items-center gap-1.5")}
             >
               <MessageSquare className="w-3.5 h-3.5" />
               Feedback
@@ -171,19 +270,70 @@ export function Navbar() {
         {mobileOpen && (
           <div className="sm:hidden bg-surface border-b border-rule">
             <div className="px-4 py-3 space-y-1">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
+              <Link
+                href="/"
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  "block px-3 py-2.5 rounded-sm text-sm font-semibold uppercase tracking-wider transition-colors",
+                  pathname === "/" ? "text-accent bg-red-50" : "text-foreground hover:text-accent hover:bg-background"
+                )}
+              >
+                Home
+              </Link>
+
+              {/* Mobile datasets section */}
+              <div>
+                <button
+                  onClick={() => setDatasetsOpen(!datasetsOpen)}
                   className={cn(
-                    "block px-3 py-2.5 rounded-sm text-sm font-semibold uppercase tracking-wider transition-colors",
-                    link.active ? "text-accent bg-red-50" : "text-foreground hover:text-accent hover:bg-background"
+                    "w-full flex items-center justify-between px-3 py-2.5 rounded-sm text-sm font-semibold uppercase tracking-wider transition-colors",
+                    isDatasetPage || pathname === "/datasets"
+                      ? "text-accent bg-red-50"
+                      : "text-foreground hover:text-accent hover:bg-background"
                   )}
                 >
-                  {link.label}
-                </Link>
-              ))}
+                  Datasets
+                  <ChevronDown className={cn("w-4 h-4 transition-transform", datasetsOpen && "rotate-180")} />
+                </button>
+                {datasetsOpen && (
+                  <div className="ml-3 border-l-2 border-rule pl-3 mt-1 space-y-0.5">
+                    {datasetLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setMobileOpen(false)}
+                        className={cn(
+                          "block px-3 py-2 rounded-sm text-sm font-semibold tracking-wider transition-colors",
+                          link.active ? "text-accent bg-red-50" : "text-foreground hover:text-accent hover:bg-background"
+                        )}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                    <Link
+                      href="/datasets"
+                      onClick={() => setMobileOpen(false)}
+                      className={cn(
+                        "block px-3 py-2 rounded-sm text-sm tracking-wider transition-colors text-muted hover:text-accent hover:bg-background"
+                      )}
+                    >
+                      All Datasets
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              <Link
+                href="/blog"
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  "block px-3 py-2.5 rounded-sm text-sm font-semibold uppercase tracking-wider transition-colors",
+                  pathname.startsWith("/blog") ? "text-accent bg-red-50" : "text-foreground hover:text-accent hover:bg-background"
+                )}
+              >
+                Blog
+              </Link>
+
               <button
                 onClick={() => { setMobileOpen(false); setFeedbackOpen(true); }}
                 className="w-full text-center btn-primary text-sm mt-2 flex items-center justify-center gap-2"
