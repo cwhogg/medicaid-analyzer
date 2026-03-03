@@ -113,7 +113,13 @@ export async function POST(request: NextRequest) {
         : "Generating topic...",
     });
 
+    const schemaPrompt = dsConfig.generateSchemaPrompt();
+
     const topicSystemPrompt = `You generate SEO-optimized blog post plans for a public health data analysis site called Open Health Data Hub. You are writing about the ${dsConfig.label} dataset. ${dsConfig.pageSubtitle}.
+
+CRITICAL: Your analysisQuestions MUST be answerable using ONLY the columns listed in the schema below. Do NOT propose questions about data that isn't in the schema.
+
+${schemaPrompt}
 
 You must return a JSON object with these fields:
 - title: SEO-optimized article title (50-70 chars)
@@ -121,7 +127,7 @@ You must return a JSON object with these fields:
 - description: Meta description for SEO (120-160 chars)
 - targetKeywords: array of 3-5 SEO keywords
 - contentGap: what gap this content fills
-- analysisQuestions: array of 2-3 specific analytical questions to investigate using SQL queries against the dataset
+- analysisQuestions: array of 2-3 specific analytical questions to investigate using SQL queries against the dataset (MUST use only columns from the schema above)
 
 Return ONLY valid JSON, no markdown fences or explanation.`;
 
@@ -175,7 +181,6 @@ Return ONLY valid JSON, no markdown fences or explanation.`;
     });
 
     // --- Phase 2: Analysis Execution ---
-    const schemaPrompt = dsConfig.generateSchemaPrompt();
     const analysisSteps: AnalysisStep[] = [];
     const totalQuestions = topic.analysisQuestions.length;
 
