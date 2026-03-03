@@ -2,17 +2,26 @@ import { registerDataset } from "@/lib/datasets";
 import { generateMedicareSchemaPrompt } from "@/lib/medicareSchemas";
 import { medicareVariableGroups } from "@/lib/variableMeta";
 
+const MEDICARE_YEARS = [2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013];
+
+function buildYearConstraint(years: number[]): string {
+  if (years.length === 1) {
+    return `\n\nIMPORTANT: The user has selected year ${years[0]} as a filter. You MUST add WHERE data_year = ${years[0]} to all queries.`;
+  }
+  return `\n\nIMPORTANT: The user has selected years ${years.join(", ")} as a filter. You MUST add WHERE data_year IN (${years.join(", ")}) to all queries.`;
+}
+
 registerDataset({
   key: "medicare",
   label: "Medicare",
-  beta: true,
+  beta: false,
 
   envUrlKey: "RAILWAY_QUERY_URL",
   envApiKeyKey: "RAILWAY_API_KEY",
 
   generateSchemaPrompt: generateMedicareSchemaPrompt,
   systemPromptPreamble:
-    "You are a SQL expert that translates natural language questions into DuckDB SQL queries for a Medicare physician/provider spending dataset (Part B fee-for-service, 2023).",
+    "You are a SQL expert that translates natural language questions into DuckDB SQL queries for a Medicare physician/provider spending dataset (Part B fee-for-service, 2013-2023).",
   systemPromptRules: `Rules:
 - Return ONLY the SQL query, nothing else. No markdown, no explanation, no code fences.
 - EXCEPTION: If the question cannot be answered from the available columns, return exactly: CANNOT_ANSWER: followed by a clear explanation.
@@ -25,6 +34,7 @@ registerDataset({
 - HCPCS descriptions are inline: use HCPCS_Desc directly. No JOINs needed.
 - Use Rndrng_Prvdr_State_Abrvtn for state analysis.
 - Use Rndrng_Prvdr_Type for specialty analysis.
+- Use data_year to filter by year or analyze trends over time (2013-2023).
 - CRITICAL: Tot_Benes CANNOT be summed across HCPCS codes or providers because beneficiaries overlap. Only report beneficiary counts per individual code or per individual provider.
 - Providers with <11 beneficiaries per HCPCS code are excluded from the data (privacy suppression).
 - When the user asks about "top providers" or individual providers, show Rndrng_Prvdr_Last_Org_Name + Rndrng_Prvdr_First_Name + Rndrng_Prvdr_Crdntls + state for readability.`,
@@ -32,15 +42,17 @@ registerDataset({
 - Return ONLY the SQL query. No markdown.
 - Always include LIMIT (max 10000). Only SELECT. DuckDB SQL.
 - Total spending = SUM(Avg_Mdcr_Pymt_Amt * Tot_Srvcs).
-- Provider info and HCPCS descriptions are inline — no JOINs needed.`,
+- Provider info and HCPCS descriptions are inline — no JOINs needed.
+- Use data_year to filter by year (2013-2023).`,
 
   pageTitle: "Analyze Medicare Spending",
   pageSubtitle:
-    "Ask questions about Medicare physician spending (2023) in natural language",
+    "Ask questions about Medicare physician spending (2013-2023) in natural language",
   inputHeading: "Ask a question about Medicare spending",
   inputPlaceholder: "What are the top 10 specialties by total Medicare spending?",
 
-  yearFilter: null,
+  yearFilter: { years: MEDICARE_YEARS, dateColumn: "data_year" },
+  buildYearConstraint,
   deepAnalysisSupported: true,
 
   checkDataScope: (question: string) => {
@@ -74,7 +86,7 @@ registerDataset({
   },
 
   resultCaveat: {
-    title: "Medicare Part B physician data (2023)",
+    title: "Medicare Part B physician data (2013-2023)",
     text: "Fee-for-service Medicare Part B claims. Providers with fewer than 11 beneficiaries per service are excluded for privacy.",
     borderColor: "border-emerald-500/30",
     titleColor: "text-emerald-300",
@@ -86,6 +98,11 @@ registerDataset({
       question: "What are the top 10 specialties by total Medicare spending?",
     },
     {
+      label: "Spending over time",
+      question:
+        "What is the total Medicare spending by year from 2013 to 2023?",
+    },
+    {
       label: "State comparison",
       question:
         "Which states have the highest total Medicare physician spending?",
@@ -95,24 +112,19 @@ registerDataset({
       question: "Who are the top 20 highest-paid individual providers?",
     },
     {
-      label: "Drug vs non-drug",
+      label: "COVID impact",
       question:
-        "What percentage of total spending is on drugs vs non-drug services?",
-    },
-    {
-      label: "Charge vs payment",
-      question:
-        "Which HCPCS codes have the biggest gap between submitted charges and Medicare payments?",
+        "How did total Medicare spending change between 2019 and 2021?",
     },
   ],
 
   variableGroups: medicareVariableGroups,
 
   domainKnowledge: `## Medicare Part B Domain Knowledge
-- This dataset covers Medicare Part B (physician/professional services) fee-for-service claims for calendar year 2023
+- This dataset covers Medicare Part B (physician/professional services) fee-for-service claims for calendar years 2013-2023 (11 years)
 - Does NOT include: Part A (hospital inpatient DRG), Part C (Medicare Advantage), Part D (prescription drugs)
-- ~9.7M rows, ~1.2M unique providers, ~6,500 unique HCPCS codes
-- Data is annual — one row per provider + HCPCS + place of service
+- ~107M total rows across all years (~9.7M per year), ~1.2M unique providers per year, ~6,500 unique HCPCS codes
+- Data is annual — one row per provider + HCPCS + place of service + year
 - Payment amounts are AVERAGES per service — multiply by Tot_Srvcs to get totals
 - Avg_Mdcr_Stdzd_Amt removes geographic wage index adjustments for fair comparison across regions
 - Rndrng_Prvdr_Type contains ~100 specialty categories (e.g., Internal Medicine, Family Practice, Cardiology)
@@ -122,5 +134,6 @@ registerDataset({
 - Top specialties by volume: Internal Medicine, Family Practice, Nurse Practitioner, Cardiology, Orthopedic Surgery
 - E/M office visit codes (99211-99215) dominate by volume; J-codes and surgical codes dominate by spending
 - The "charge-to-payment ratio" (submitted charges vs actual payment) reveals provider billing patterns — typical ratio is 3-5x
+- COVID-19 impact visible in 2020 data (telehealth surge, procedure volume dips)
 - CRITICAL: Tot_Benes CANNOT be summed across HCPCS codes or providers because beneficiaries overlap between codes/providers. Only report beneficiary counts per individual code or per individual provider.`,
 });

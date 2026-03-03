@@ -1,9 +1,9 @@
 export function generateMedicareSchemaPrompt(): string {
-  return `## Medicare Physician & Other Practitioners — 2023
+  return `## Medicare Physician & Other Practitioners — 2013-2023
 
-You have ONE table: **medicare** (~9.7M rows, 30 columns)
+You have ONE table: **medicare** (~107M rows, 29 columns)
 
-This is the CMS Medicare Provider Utilization and Payment dataset for Part B fee-for-service claims. Each row represents one provider (NPI) + one HCPCS procedure code + one place of service for the 2023 calendar year.
+This is the CMS Medicare Provider Utilization and Payment dataset for Part B fee-for-service claims. Each row represents one provider (NPI) + one HCPCS procedure code + one place of service for a single calendar year. Data spans 11 years (2013-2023).
 
 ---
 
@@ -73,7 +73,7 @@ ROUND(SUM(Avg_Mdcr_Alowd_Amt * Tot_Srvcs), 0) AS total_allowed
 **Year:**
 | Column | Type | Description |
 |--------|------|-------------|
-| data_year | INTEGER | Year of data (2023) |
+| data_year | INTEGER | Year of data (2013-2023) |
 
 ---
 
@@ -121,6 +121,30 @@ FROM medicare
 GROUP BY specialty
 ORDER BY total_payment DESC
 LIMIT 20
+\`\`\`
+
+**Year-over-year spending trend:**
+\`\`\`sql
+SELECT
+  data_year,
+  ROUND(SUM(Avg_Mdcr_Pymt_Amt * Tot_Srvcs), 0) AS total_payment,
+  SUM(Tot_Srvcs) AS total_services,
+  COUNT(DISTINCT Rndrng_NPI) AS providers
+FROM medicare
+GROUP BY data_year
+ORDER BY data_year
+\`\`\`
+
+**Spending trend by specialty over time:**
+\`\`\`sql
+SELECT
+  data_year,
+  Rndrng_Prvdr_Type AS specialty,
+  ROUND(SUM(Avg_Mdcr_Pymt_Amt * Tot_Srvcs), 0) AS total_payment
+FROM medicare
+WHERE Rndrng_Prvdr_Type IN ('Internal Medicine', 'Cardiology', 'Orthopedic Surgery', 'Family Practice')
+GROUP BY data_year, specialty
+ORDER BY data_year, total_payment DESC
 \`\`\`
 
 **State-level analysis:**
@@ -187,12 +211,13 @@ ORDER BY total_payment DESC
 
 ---
 
-### Performance Rules (CRITICAL — 9.7M rows)
+### Performance Rules (CRITICAL — ~107M rows)
 - ALWAYS use GROUP BY to aggregate. Never SELECT * FROM medicare without aggregation.
 - ALWAYS include a LIMIT clause (max 10000 rows).
 - For "top N" queries, use ORDER BY ... DESC LIMIT N.
 - Keep queries simple — prefer a single scan with GROUP BY.
 - Avoid subqueries when a single GROUP BY suffices.
+- For year-specific queries, always filter with WHERE data_year = <year> to reduce scan size.
 
 ### Data Integrity Rules
 - NEVER fabricate, hardcode, or invent data values.
@@ -204,6 +229,7 @@ ORDER BY total_payment DESC
 ### Important Notes
 - This is Medicare Part B (physician/professional services) fee-for-service claims ONLY.
 - It does NOT include: Part A (hospital inpatient DRG), Part C (Medicare Advantage), Part D (prescription drugs).
+- Data spans 2013-2023 (11 years). Use data_year to filter by year or analyze trends.
 - Provider info is inline — no need to JOIN a separate lookup table. Use Rndrng_Prvdr_Last_Org_Name directly.
 - HCPCS descriptions are inline — use HCPCS_Desc directly, no separate lookup needed.
 - Use Rndrng_Prvdr_State_Abrvtn for state-level analysis (no JOIN needed).

@@ -490,7 +490,7 @@ export const medicareVariableGroups: VariableGroup[] = [
   {
     name: "Data Year",
     variables: [
-      { name: "data_year", type: "INTEGER", description: "Year of data (2023)" },
+      { name: "data_year", type: "INTEGER", description: "Year of data (2013-2023)" },
     ],
   },
 ];

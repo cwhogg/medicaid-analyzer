@@ -41,16 +41,15 @@ export const DATASET_METAS: DatasetMeta[] = [
     subtitle: "Part B Physician & Other Practitioner Payments",
     icon: Stethoscope,
     stats: [
-      { label: "Rows", value: "~9.7M" },
-      { label: "Year", value: "2023" },
+      { label: "Rows", value: "~107M" },
+      { label: "Period", value: "2013-2023" },
       { label: "Providers", value: "1.2M" },
     ],
     description:
-      "Analyze Medicare Part B fee-for-service physician spending by provider, specialty, procedure, state, and place of service.",
+      "Analyze Medicare Part B fee-for-service physician spending by provider, specialty, procedure, state, and place of service across 11 years.",
     limitations: [
       "Part B only (no hospital inpatient, Part C, or Part D)",
       "Providers with <11 beneficiaries per code excluded",
-      "2023 data only (single year)",
     ],
     href: "/medicare",
     accentColor: "#0F766E",

@@ -17,7 +17,7 @@ export function Footer() {
           </div>
         </div>
         <p className="text-center text-[0.6875rem] text-muted mt-3 opacity-70">
-          Built with Next.js, DuckDB, and Claude by Chris Hogg
+          Built with Next.js, DuckDB, and Claude by <a href="https://x.com/cwhogg" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Chris Hogg</a>
         </p>
       </div>
     </footer>

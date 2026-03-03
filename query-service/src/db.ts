@@ -16,7 +16,7 @@ const VIEWS: [string, string][] = [
   ["provider_hcpcs", "provider_hcpcs.parquet"],
   ["provider_monthly", "provider_monthly.parquet"],
   ["brfss", "brfss_harmonized.parquet"],
-  ["medicare", "medicare_physician_2023.parquet"],
+  ["medicare", "medicare_physician_all_years.parquet"],
   ["nhanes", "nhanes_2021_2023.parquet"],
 ];
 
