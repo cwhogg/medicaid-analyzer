@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect, useCallback } from "react";
+import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import {
   LineChart,
   Line,
@@ -16,6 +16,7 @@ import {
   CartesianGrid,
   Legend,
 } from "recharts";
+import { Download } from "lucide-react";
 import { formatDateCell } from "@/lib/format";
 
 interface ResultsChartProps {
@@ -73,6 +74,10 @@ function stripSortPrefix(label: string): string {
   return label.replace(/^\d+_/, "");
 }
 
+function formatColumnLabel(col: string): string {
+  return col.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ name: string; value: number; color: string; dataKey?: string }>; label?: string }) {
   if (!active || !payload || !payload.length) return null;
   return (
@@ -101,6 +106,7 @@ function useIsMobile() {
 export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
   const isMobile = useIsMobile();
   const [visibleKeys, setVisibleKeys] = useState<Set<string>>(new Set());
+  const chartRef = useRef<HTMLDivElement>(null);
 
   const { data, labelKey, valueKeys } = useMemo(() => {
     if (!columns.length || !rows.length) return { data: [], labelKey: "", valueKeys: [] };
@@ -164,6 +170,28 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
     return filtered;
   }, [valueKeys, visibleKeys]);
 
+  // Label dimension: name of the category axis (first string column)
+  const labelDimension = useMemo(() => {
+    if (!columns.length || !rows.length) return "";
+    const firstStringCol = columns.find((_, i) => typeof rows[0]?.[i] === "string");
+    return firstStringCol ? formatColumnLabel(firstStringCol) : formatColumnLabel(columns[0]);
+  }, [columns, rows]);
+
+  // Dynamic chart title
+  const chartTitle = useMemo(() => {
+    if (activeKeys.length === 0) return "";
+    const values = activeKeys.map(formatColumnLabel);
+    if (chartType === "pie") return `${values[0]} Distribution`;
+    if (values.length === 1) return `${values[0]} by ${labelDimension}`;
+    return `${values.join(", ")} by ${labelDimension}`;
+  }, [activeKeys, labelDimension, chartType]);
+
+  // Y-axis label (first active key, formatted)
+  const yAxisLabel = useMemo(() => {
+    if (activeKeys.length === 0) return "";
+    return formatColumnLabel(activeKeys[0]);
+  }, [activeKeys]);
+
   const toggleKey = useCallback(
     (key: string) => {
       if (chartType === "pie") {
@@ -182,6 +210,91 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
     },
     [chartType]
   );
+
+  // Download chart as PNG
+  const downloadChart = useCallback(async () => {
+    const container = chartRef.current;
+    if (!container) return;
+
+    const svgEl = container.querySelector(".recharts-wrapper svg");
+    if (!svgEl) return;
+
+    try {
+      const svgRect = svgEl.getBoundingClientRect();
+      const scale = 2;
+      const pad = 24;
+      const titleH = chartTitle ? 36 : 0;
+      const wmH = 28;
+      const canvasW = svgRect.width + pad * 2;
+      const canvasH = svgRect.height + titleH + wmH + pad * 2;
+
+      // Clone SVG and ensure proper attributes
+      const svgClone = svgEl.cloneNode(true) as SVGSVGElement;
+      svgClone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+      svgClone.setAttribute("width", String(svgRect.width));
+      svgClone.setAttribute("height", String(svgRect.height));
+
+      // Serialize SVG to data URL
+      const serializer = new XMLSerializer();
+      const svgStr = serializer.serializeToString(svgClone);
+      const svgDataUrl =
+        "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgStr);
+
+      // Load SVG as image
+      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const i = new Image();
+        i.onload = () => resolve(i);
+        i.onerror = reject;
+        i.src = svgDataUrl;
+      });
+
+      // Create canvas and draw
+      const canvas = document.createElement("canvas");
+      canvas.width = canvasW * scale;
+      canvas.height = canvasH * scale;
+      const ctx = canvas.getContext("2d")!;
+      ctx.scale(scale, scale);
+
+      // Background
+      ctx.fillStyle = "#FAFAF9";
+      ctx.fillRect(0, 0, canvasW, canvasH);
+
+      // Title
+      if (chartTitle) {
+        ctx.fillStyle = "#1C1917";
+        ctx.font = "600 14px system-ui, -apple-system, sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText(chartTitle, pad, pad + 20);
+      }
+
+      // Chart SVG
+      ctx.drawImage(img, pad, pad + titleH, svgRect.width, svgRect.height);
+
+      // Watermark
+      ctx.fillStyle = "#A8A29E";
+      ctx.font = "10px system-ui, -apple-system, sans-serif";
+      ctx.textAlign = "right";
+      ctx.fillText(
+        "Open Health Data Hub \u00B7 openhealthdatahub.com",
+        canvasW - pad,
+        canvasH - pad / 2 + 2
+      );
+
+      // Download
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `chart-${Date.now()}.png`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }, "image/png");
+    } catch {
+      // Fallback: open chart SVG in new tab
+      console.warn("Chart export failed");
+    }
+  }, [chartTitle]);
 
   if (!data.length || !valueKeys.length) return null;
 
@@ -225,91 +338,127 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
           <p className="text-muted text-sm">Select a column to chart</p>
         </div>
       ) : (
-      <ResponsiveContainer width="100%" height={isMobile ? 280 : 400}>
-        {chartType === "pie" ? (
-          <PieChart>
-            <Pie
-              data={data.slice(0, 10)}
-              dataKey={activeKeys[0]}
-              nameKey={labelKey}
-              cx="50%"
-              cy="50%"
-              outerRadius={isMobile ? 90 : 150}
-              label={isMobile ? false : ({ name, percent }) =>
-                `${shortenLabel(String(name), 15)} ${(percent * 100).toFixed(0)}%`
-              }
-              labelLine={false}
-            >
-              {data.slice(0, 10).map((_, i) => (
-                <Cell key={i} fill={COLORS[i % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip content={<CustomTooltip />} />
-            <Legend />
-          </PieChart>
-        ) : chartType === "bar" ? (
-          <BarChart data={data.slice(0, isMobile ? 10 : 20)}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#E7E5E4" />
-            <XAxis
-              dataKey={labelKey}
-              stroke="#78716C"
-              fontSize={isMobile ? 9 : 11}
-              tickLine={false}
-              angle={-45}
-              textAnchor="end"
-              height={isMobile ? 80 : 100}
-              interval={0}
-              tickFormatter={(v) => shortenLabel(String(v), isMobile ? 14 : 28)}
-            />
-            <YAxis
-              stroke="#78716C"
-              fontSize={isMobile ? 9 : 11}
-              tickLine={false}
-              axisLine={false}
-              width={isMobile ? 45 : undefined}
-              tickFormatter={(v) => formatValue(v, valueKeys[0])}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            {activeKeys.map((key) => {
-              const i = valueKeys.indexOf(key);
-              return <Bar key={key} dataKey={key} fill={COLORS[i % COLORS.length]} radius={[2, 2, 0, 0]} />;
-            })}
-          </BarChart>
-        ) : (
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#E7E5E4" />
-            <XAxis
-              dataKey={labelKey}
-              stroke="#78716C"
-              fontSize={isMobile ? 9 : 11}
-              tickLine={false}
-            />
-            <YAxis
-              stroke="#78716C"
-              fontSize={isMobile ? 9 : 11}
-              tickLine={false}
-              axisLine={false}
-              width={isMobile ? 45 : undefined}
-              tickFormatter={(v) => formatValue(v, valueKeys[0])}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            {activeKeys.map((key) => {
-              const i = valueKeys.indexOf(key);
-              return (
-                <Line
-                  key={key}
-                  type="monotone"
-                  dataKey={key}
-                  stroke={COLORS[i % COLORS.length]}
-                  strokeWidth={2}
-                  dot={false}
-                  activeDot={{ r: 4 }}
-                />
-              );
-            })}
-          </LineChart>
-        )}
-      </ResponsiveContainer>
+      <div ref={chartRef}>
+        {/* Title + download button */}
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-sm font-semibold text-foreground truncate mr-2">
+            {chartTitle}
+          </h3>
+          <button
+            onClick={downloadChart}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs text-muted hover:text-foreground hover:bg-surface border border-transparent hover:border-rule transition-colors flex-shrink-0"
+            title="Download chart as PNG"
+          >
+            <Download size={13} />
+            <span className="hidden sm:inline">PNG</span>
+          </button>
+        </div>
+
+        <ResponsiveContainer width="100%" height={isMobile ? 280 : 400}>
+          {chartType === "pie" ? (
+            <PieChart>
+              <Pie
+                data={data.slice(0, 10)}
+                dataKey={activeKeys[0]}
+                nameKey={labelKey}
+                cx="50%"
+                cy="50%"
+                outerRadius={isMobile ? 90 : 150}
+                label={isMobile ? false : ({ name, percent }) =>
+                  `${shortenLabel(String(name), 15)} ${(percent * 100).toFixed(0)}%`
+                }
+                labelLine={false}
+              >
+                {data.slice(0, 10).map((_, i) => (
+                  <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
+            </PieChart>
+          ) : chartType === "bar" ? (
+            <BarChart data={data.slice(0, isMobile ? 10 : 20)}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#E7E5E4" />
+              <XAxis
+                dataKey={labelKey}
+                stroke="#78716C"
+                fontSize={isMobile ? 9 : 11}
+                tickLine={false}
+                angle={-45}
+                textAnchor="end"
+                height={isMobile ? 80 : 100}
+                interval={0}
+                tickFormatter={(v) => shortenLabel(String(v), isMobile ? 14 : 28)}
+              />
+              <YAxis
+                stroke="#78716C"
+                fontSize={isMobile ? 9 : 11}
+                tickLine={false}
+                axisLine={false}
+                width={isMobile ? 55 : 70}
+                tickFormatter={(v) => formatValue(v, activeKeys[0] || valueKeys[0])}
+                label={!isMobile && yAxisLabel ? {
+                  value: yAxisLabel,
+                  angle: -90,
+                  position: "insideLeft",
+                  offset: 4,
+                  style: { fontSize: 11, fill: "#78716C", textAnchor: "middle" },
+                } : undefined}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              {activeKeys.map((key) => {
+                const i = valueKeys.indexOf(key);
+                return <Bar key={key} dataKey={key} fill={COLORS[i % COLORS.length]} radius={[2, 2, 0, 0]} />;
+              })}
+            </BarChart>
+          ) : (
+            <LineChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#E7E5E4" />
+              <XAxis
+                dataKey={labelKey}
+                stroke="#78716C"
+                fontSize={isMobile ? 9 : 11}
+                tickLine={false}
+              />
+              <YAxis
+                stroke="#78716C"
+                fontSize={isMobile ? 9 : 11}
+                tickLine={false}
+                axisLine={false}
+                width={isMobile ? 55 : 70}
+                tickFormatter={(v) => formatValue(v, activeKeys[0] || valueKeys[0])}
+                label={!isMobile && yAxisLabel ? {
+                  value: yAxisLabel,
+                  angle: -90,
+                  position: "insideLeft",
+                  offset: 4,
+                  style: { fontSize: 11, fill: "#78716C", textAnchor: "middle" },
+                } : undefined}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              {activeKeys.map((key) => {
+                const i = valueKeys.indexOf(key);
+                return (
+                  <Line
+                    key={key}
+                    type="monotone"
+                    dataKey={key}
+                    stroke={COLORS[i % COLORS.length]}
+                    strokeWidth={2}
+                    dot={false}
+                    activeDot={{ r: 4 }}
+                  />
+                );
+              })}
+            </LineChart>
+          )}
+        </ResponsiveContainer>
+
+        {/* Watermark */}
+        <p className="text-right mt-1 pr-2 text-[10px] text-stone-400 tracking-wide select-none">
+          Open Health Data Hub &middot; openhealthdatahub.com
+        </p>
+      </div>
       )}
     </div>
   );
