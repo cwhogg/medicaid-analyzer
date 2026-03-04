@@ -152,10 +152,15 @@ interface CheckResult {
   deviation: number | null;
   tolerance: number;
   column: string;
+  foundInColumn?: string;
   error?: string;
 }
 
-function checkExpected(
+/**
+ * Layer 1 checker: strict column-name matching.
+ * Gold SQL controls the output schema, so we know the exact column name.
+ */
+function checkExpectedStrict(
   columns: string[],
   rows: unknown[][],
   expected: ExpectedResult
@@ -172,7 +177,7 @@ function checkExpected(
       deviation: null,
       tolerance: expected.tolerance,
       column: expected.column,
-      error: `Column "${expected.column}" not found in results. Available: ${columns.join(", ")}`,
+      error: `Column "${expected.column}" not found. Available: ${columns.join(", ")}`,
     };
   }
 
@@ -223,14 +228,9 @@ function checkExpected(
   }
 
   const rawValue = targetRow[colIdx];
-  const actual =
-    typeof rawValue === "number"
-      ? rawValue
-      : typeof rawValue === "string"
-        ? parseFloat(rawValue)
-        : null;
+  const actual = toNumber(rawValue);
 
-  if (actual === null || isNaN(actual as number)) {
+  if (actual === null) {
     return {
       pass: false,
       expected: expected.value,
@@ -251,6 +251,80 @@ function checkExpected(
     tolerance: expected.tolerance,
     column: expected.column,
   };
+}
+
+/**
+ * Layer 2 checker: flexible value scanning.
+ * Scans ALL numeric values across ALL columns and rows for a match.
+ * Claude may name columns anything — we only care if the right number appears.
+ */
+function checkExpectedFlexible(
+  columns: string[],
+  rows: unknown[][],
+  expected: ExpectedResult
+): CheckResult {
+  if (rows.length === 0) {
+    return {
+      pass: false,
+      expected: expected.value,
+      actual: null,
+      deviation: null,
+      tolerance: expected.tolerance,
+      column: expected.column,
+      error: "No rows returned",
+    };
+  }
+
+  // Scan every numeric cell for the closest match
+  let bestMatch: { value: number; deviation: number; col: string } | null = null;
+
+  for (const row of rows) {
+    for (let colIdx = 0; colIdx < row.length; colIdx++) {
+      const num = toNumber(row[colIdx]);
+      if (num === null) continue;
+
+      const deviation = Math.abs(num - expected.value);
+      if (!bestMatch || deviation < bestMatch.deviation) {
+        bestMatch = {
+          value: num,
+          deviation,
+          col: columns[colIdx] || `col${colIdx}`,
+        };
+      }
+    }
+  }
+
+  if (!bestMatch) {
+    return {
+      pass: false,
+      expected: expected.value,
+      actual: null,
+      deviation: null,
+      tolerance: expected.tolerance,
+      column: expected.column,
+      error: "No numeric values found in results",
+    };
+  }
+
+  const roundedDeviation = Math.round(bestMatch.deviation * 100) / 100;
+  return {
+    pass: bestMatch.deviation <= expected.tolerance,
+    expected: expected.value,
+    actual: bestMatch.value,
+    deviation: roundedDeviation,
+    tolerance: expected.tolerance,
+    column: expected.column,
+    foundInColumn: bestMatch.col,
+  };
+}
+
+function toNumber(raw: unknown): number | null {
+  if (typeof raw === "number" && !isNaN(raw)) return raw;
+  if (typeof raw === "string") {
+    const n = parseFloat(raw);
+    if (!isNaN(n)) return n;
+  }
+  return null;
 }
 
 // ─── Formatting ────────────────────────────────────────────────
@@ -296,7 +370,7 @@ async function runLayer1(
     }
 
     const checks = testCase.expected.map((exp) =>
-      checkExpected(result.columns, result.rows, exp)
+      checkExpectedStrict(result.columns, result.rows, exp)
     );
 
     return {
@@ -342,7 +416,7 @@ async function runLayer2(
     }
 
     const checks = testCase.expected.map((exp) =>
-      checkExpected(result.columns, result.rows, exp)
+      checkExpectedFlexible(result.columns, result.rows, exp)
     );
 
     return {
@@ -441,15 +515,16 @@ async function main() {
         console.log(`    ${RED}${result.error}${RESET}`);
       } else {
         for (const check of result.checks) {
+          const foundIn = check.foundInColumn ? ` in "${check.foundInColumn}"` : "";
           if (check.pass) {
             console.log(
-              `${passLabel(true)} ${DIM}expected ${check.expected}, got ${check.actual} (±${check.deviation}pp, tol ±${check.tolerance}pp) [${result.durationMs}ms]${RESET}`
+              `${passLabel(true)} ${DIM}expected ${check.expected}, got ${check.actual}${foundIn} (±${check.deviation}pp, tol ±${check.tolerance}pp) [${result.durationMs}ms]${RESET}`
             );
           } else if (check.error) {
             console.log(`${passLabel(false)} ${check.error} ${DIM}[${result.durationMs}ms]${RESET}`);
           } else {
             console.log(
-              `${passLabel(false)} expected ${check.expected}, got ${check.actual} ${RED}(±${check.deviation}pp, tol ±${check.tolerance}pp)${RESET} ${DIM}[${result.durationMs}ms]${RESET}`
+              `${passLabel(false)} expected ${check.expected}, got ${check.actual}${foundIn} ${RED}(±${check.deviation}pp, tol ±${check.tolerance}pp)${RESET} ${DIM}[${result.durationMs}ms]${RESET}`
             );
           }
         }
