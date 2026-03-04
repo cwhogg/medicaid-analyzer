@@ -25,11 +25,14 @@ const VIEW_MODES = [
   { key: "pie" as const, label: "Pie", icon: PieChart },
 ];
 
+// TODO: Set to true to re-enable the Feed tab
+const SHOW_FEED_TAB = false;
+
 const TABS = [
   { key: "query" as const, label: "Query", icon: Search },
-  { key: "feed" as const, label: "Feed", icon: History },
+  ...(SHOW_FEED_TAB ? [{ key: "feed" as const, label: "Feed", icon: History }] : []),
   { key: "data" as const, label: "Data", icon: BookOpen },
-];
+] as const;
 
 type Mode = "idle" | "query" | "analysis";
 
