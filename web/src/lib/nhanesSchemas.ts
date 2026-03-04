@@ -114,19 +114,26 @@ Three oscillometric readings taken in Mobile Examination Center:
 - \`BPXOSY2\`, \`BPXODI2\` — Systolic/Diastolic reading 2
 - \`BPXOSY3\`, \`BPXODI3\` — Systolic/Diastolic reading 3
 
-**To calculate average BP, use the mean of available readings:**
-\`\`\`sql
-ROUND((COALESCE(BPXOSY1, 0) + COALESCE(BPXOSY2, 0) + COALESCE(BPXOSY3, 0))
-  / NULLIF((CASE WHEN BPXOSY1 IS NOT NULL THEN 1 ELSE 0 END
-          + CASE WHEN BPXOSY2 IS NOT NULL THEN 1 ELSE 0 END
-          + CASE WHEN BPXOSY3 IS NOT NULL THEN 1 ELSE 0 END), 0), 0) AS avg_systolic
-\`\`\`
-
 **Hypertension thresholds (2017 ACC/AHA guidelines):**
 - Normal: SBP < 120 AND DBP < 80
 - Elevated: SBP 120-129 AND DBP < 80
 - Stage 1 Hypertension: SBP 130-139 OR DBP 80-89
 - Stage 2 Hypertension: SBP ≥ 140 OR DBP ≥ 90
+
+**Hypertension prevalence** uses average of available BP readings OR self-reported diagnosis. Use this pattern:
+\`\`\`sql
+SELECT ROUND(100.0 * SUM(CASE WHEN
+    (BPXOSY1 + COALESCE(BPXOSY2, BPXOSY1) + COALESCE(BPXOSY3, BPXOSY1))
+      / (1 + CASE WHEN BPXOSY2 IS NOT NULL THEN 1 ELSE 0 END + CASE WHEN BPXOSY3 IS NOT NULL THEN 1 ELSE 0 END) >= 130
+    OR (BPXODI1 + COALESCE(BPXODI2, BPXODI1) + COALESCE(BPXODI3, BPXODI1))
+      / (1 + CASE WHEN BPXODI2 IS NOT NULL THEN 1 ELSE 0 END + CASE WHEN BPXODI3 IS NOT NULL THEN 1 ELSE 0 END) >= 80
+    OR BPQ020 = 1
+  THEN WTMEC2YR ELSE 0 END)
+  / NULLIF(SUM(CASE WHEN BPXOSY1 IS NOT NULL THEN WTMEC2YR ELSE 0 END), 0), 1) AS hypertension_pct
+FROM nhanes
+WHERE RIDAGEYR >= 18 AND BPXOSY1 IS NOT NULL
+\`\`\`
+Note: Use COALESCE to average available readings (not all participants have 3 readings). Include \`BPQ020 = 1\` (self-reported high BP) to capture those on medication whose measured BP may be controlled.
 
 ---
 
@@ -140,6 +147,20 @@ ROUND((COALESCE(BPXOSY1, 0) + COALESCE(BPXOSY2, 0) + COALESCE(BPXOSY3, 0))
 - Prediabetes: 5.7% ≤ HbA1c < 6.5%
 - Diabetes: HbA1c ≥ 6.5%
 - Alternative: FPG < 100 normal, 100-125 prediabetes, ≥ 126 diabetes
+
+**IMPORTANT — Total diabetes prevalence** must combine diagnosed + undiagnosed:
+- Diagnosed: \`DIQ010 = 1\` (doctor told you have diabetes)
+- Undiagnosed: \`LBXGH >= 6.5 AND DIQ010 != 1\` (elevated HbA1c but not diagnosed)
+- Total: \`DIQ010 = 1 OR LBXGH >= 6.5\`
+
+Using HbA1c alone misses diagnosed diabetics whose HbA1c is controlled by medication. Always use the combined definition for "total diabetes" or "diabetes prevalence."
+\`\`\`sql
+-- Total diabetes prevalence (diagnosed + undiagnosed)
+SELECT ROUND(100.0 * SUM(CASE WHEN DIQ010 = 1 OR LBXGH >= 6.5 THEN WTMEC2YR ELSE 0 END)
+  / NULLIF(SUM(CASE WHEN DIQ010 IN (1, 2, 3) OR LBXGH IS NOT NULL THEN WTMEC2YR ELSE 0 END), 0), 1) AS diabetes_pct
+FROM nhanes
+WHERE RIDAGEYR >= 20 AND (DIQ010 IN (1, 2, 3) OR LBXGH IS NOT NULL)
+\`\`\`
 
 ---
 
