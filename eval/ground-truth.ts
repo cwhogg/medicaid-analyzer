@@ -276,10 +276,10 @@ export const TEST_CASES: TestCase[] = [
   },
 
   {
-    id: "nhanes-hypertension-measured",
+    id: "nhanes-hypertension",
     dataset: "nhanes",
     description:
-      "Hypertension prevalence based on measured BP (SBP >= 130 or DBP >= 80)",
+      "Hypertension prevalence (measured high BP or self-reported diagnosis)",
     source:
       "NCHS Data Brief No. 511 — https://www.cdc.gov/nchs/products/databriefs/db511.htm",
     sql: `
@@ -298,7 +298,7 @@ export const TEST_CASES: TestCase[] = [
         AND WTMEC2YR > 0
     `,
     question:
-      "What is the prevalence of hypertension among adults based on measured blood pressure?",
+      "What is the prevalence of hypertension among adults?",
     expected: [
       { column: "hypertension_pct", value: 47.7, tolerance: 5.0 },
     ],
