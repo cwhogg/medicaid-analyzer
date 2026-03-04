@@ -130,6 +130,16 @@ Days variables (PHYSHLTH, MENTHLTH): 1-30 = number of days, 88 = None, 77 = DK, 
 - \`CHCOCNC1\` (other cancer)
 - \`_MICHD\` (calculated: myocardial infarction or CHD: 1=Yes, 2=No — available 2017+ only)
 
+**IMPORTANT — Special coding for common conditions:**
+
+*Hypertension:* \`BPHIGH6\` uses non-standard codes. For hypertension prevalence, use \`BPHIGH6 = 1\` (yes). Exclude code 2 (pregnancy-only). Denominator: \`BPHIGH6 IN (1, 3, 4)\` or \`BPHIGH6 IN (1, 2, 3, 4)\` depending on context. Only available in 2015, 2017, 2019, 2023.
+
+*Diabetes:* \`DIABETE4 = 1\` for diagnosed diabetes. Exclude code 2 (pregnancy-only) and code 4 (pre-diabetes) from "has diabetes." Denominator: \`DIABETE4 IN (1, 2, 3, 4)\`.
+
+*Current asthma:* \`ASTHMA3 = 1 AND ASTHNOW = 1\` (ever told AND still have it). Lifetime asthma is just \`ASTHMA3 = 1\`.
+
+*Any heart disease/CVD:* \`CVDINFR4 = 1 OR CVDCRHD4 = 1\` for any coronary heart disease. Add \`OR CVDSTRK3 = 1\` to include stroke. Or use \`_MICHD = 1\` (CDC-calculated MI or CHD, available 2017+).
+
 **Health Care Access:**
 - \`PRIMINS1\` (primary insurance: 1-10 various types, 88=No coverage — 2023-2024)
 - \`PERSDOC3\` (personal doctor: 1=Yes one, 2=Yes more than one, 3=No, 7=DK, 9=Refused)
@@ -319,7 +329,15 @@ ORDER BY _INCOMG
 - ALWAYS add readable labels via CASE WHEN — never return raw numeric codes.
 - Prefer calculated variables (prefixed with _) when available — they are pre-cleaned by CDC.
 - For days variables (PHYSHLTH, MENTHLTH, POORHLTH), treat 88 as 0 days and exclude 77/99.
-- For ALCDAY4, decode: values 101-107 mean 1-7 days/week, 201-230 mean 1-30 days/month, 888=None.
+- For ALCDAY4, decode with:
+  \`\`\`sql
+  CASE
+    WHEN ALCDAY4 BETWEEN 101 AND 107 THEN (ALCDAY4 - 100) * 4.33  -- days/week → days/month
+    WHEN ALCDAY4 BETWEEN 201 AND 230 THEN ALCDAY4 - 200            -- days/month
+    WHEN ALCDAY4 = 888 THEN 0                                       -- none
+    ELSE NULL                                                        -- DK/Refused
+  END AS drinking_days_per_month
+  \`\`\`
 - When the user asks about trends over time, GROUP BY survey_year. Note the 2021-2022 gap.
 - When a column is only available in certain years (e.g., INCOME3 is 2023 only), filter to those years or return CANNOT_ANSWER if the user's question requires cross-year comparison with that variable.
 - For income analysis across all years, use INCOME2/\`_INCOMG\` for 2014-2020 and INCOME3/\`_INCOMG1\` for 2023-2024. Do NOT use both in the same query without careful binning.

@@ -177,6 +177,11 @@ WHERE RIDAGEYR >= 20 AND (DIQ010 IN (1, 2, 3) OR LBXGH IS NOT NULL)
 - LDL: <100 optimal, 100-129 near optimal, 130-159 borderline, 160-189 high, ≥190 very high
 - Triglycerides: <150 normal, 150-199 borderline, 200-499 high, ≥500 very high
 
+**IMPORTANT — High cholesterol prevalence** must combine measured + self-reported, because people on statins may have controlled levels:
+- Total: \`LBXTC >= 240 OR BPQ080 = 1\`
+- Denominator: adults with measured cholesterol (\`LBXTC IS NOT NULL\`)
+Using lab values alone misses people whose cholesterol is controlled by medication.
+
 ---
 
 ### Kidney & Liver (Standard Biochemistry)
@@ -251,6 +256,14 @@ All use coding: 1=Yes, 2=No, 7=Don't know, 9=Refused — exclude 7 and 9.
 - \`MCQ220\` — Ever told cancer/malignancy
 - \`MCQ160L\` — Ever told liver condition
 
+**Asthma definitions:**
+- Lifetime/ever asthma: \`MCQ010 = 1\`
+- Current asthma: \`MCQ010 = 1 AND MCQ035 = 1\` (ever told AND still have it)
+
+**Cardiovascular disease (CVD) composite:**
+- Any heart disease: \`MCQ160B = 1 OR MCQ160C = 1 OR MCQ160D = 1 OR MCQ160E = 1\` (CHF, CHD, angina, or MI)
+- Any CVD (including stroke): add \`OR MCQ160F = 1\`
+
 ---
 
 ### Depression Screener (PHQ-9)
@@ -288,10 +301,16 @@ Clinically significant depression: PHQ-9 ≥ 10.
 - \`SMQ020\` — Smoked at least 100 cigarettes in life (1=Yes, 2=No)
 - \`SMQ040\` — Do you now smoke (1=Every day, 2=Some days, 3=Not at all) — asked only if SMQ020=1
 
-Smoking status derivation:
-- Current smoker: SMQ020=1 AND SMQ040 IN (1, 2)
-- Former smoker: SMQ020=1 AND SMQ040=3
-- Never smoker: SMQ020=2
+Smoking status derivation (\`SMQ040\` is only asked when \`SMQ020=1\`, so always start from \`SMQ020\`):
+- Current smoker: \`SMQ020 = 1 AND SMQ040 IN (1, 2)\`
+- Former smoker: \`SMQ020 = 1 AND SMQ040 = 3\`
+- Never smoker: \`SMQ020 = 2\`
+\`\`\`sql
+-- Smoking prevalence
+SELECT ROUND(100.0 * SUM(CASE WHEN SMQ020 = 1 AND SMQ040 IN (1, 2) THEN WTMEC2YR ELSE 0 END)
+  / NULLIF(SUM(CASE WHEN SMQ020 IN (1, 2) THEN WTMEC2YR ELSE 0 END), 0), 1) AS current_smoking_pct
+FROM nhanes WHERE RIDAGEYR >= 18 AND SMQ020 IN (1, 2)
+\`\`\`
 
 **Alcohol:**
 - \`ALQ111\` — Ever had a drink of alcohol (1=Yes, 2=No)
@@ -330,7 +349,7 @@ For insurance type questions, these are CHECK-ALL-THAT-APPLY (value is 1 if chec
 
 ### SQL Examples
 
-**Weighted diabetes prevalence (HbA1c ≥ 6.5%) by age group, adults 20+:**
+**Total diabetes prevalence (diagnosed + undiagnosed) by age group, adults 20+:**
 \`\`\`sql
 SELECT
   CASE
@@ -338,11 +357,11 @@ SELECT
     WHEN RIDAGEYR BETWEEN 40 AND 59 THEN '40-59'
     WHEN RIDAGEYR >= 60 THEN '60+'
   END AS age_group,
-  ROUND(100.0 * SUM(CASE WHEN LBXGH >= 6.5 THEN WTMEC2YR ELSE 0 END)
-    / NULLIF(SUM(CASE WHEN LBXGH IS NOT NULL THEN WTMEC2YR ELSE 0 END), 0), 1) AS diabetes_pct,
-  COUNT(*) FILTER (WHERE LBXGH IS NOT NULL) AS sample_n
+  ROUND(100.0 * SUM(CASE WHEN DIQ010 = 1 OR LBXGH >= 6.5 THEN WTMEC2YR ELSE 0 END)
+    / NULLIF(SUM(CASE WHEN DIQ010 IN (1, 2, 3) OR LBXGH IS NOT NULL THEN WTMEC2YR ELSE 0 END), 0), 1) AS diabetes_pct,
+  COUNT(*) FILTER (WHERE DIQ010 IN (1, 2, 3) OR LBXGH IS NOT NULL) AS sample_n
 FROM nhanes
-WHERE RIDAGEYR >= 20 AND LBXGH IS NOT NULL
+WHERE RIDAGEYR >= 20 AND (DIQ010 IN (1, 2, 3) OR LBXGH IS NOT NULL)
 GROUP BY 1
 ORDER BY 1
 \`\`\`
@@ -390,14 +409,16 @@ GROUP BY 1
 ORDER BY 1
 \`\`\`
 
-**Hypertension prevalence (measured BP) by gender:**
+**Hypertension prevalence (measured BP + self-reported) by gender:**
 \`\`\`sql
 SELECT
   CASE RIAGENDR WHEN 1 THEN 'Male' WHEN 2 THEN 'Female' END AS gender,
-  ROUND(100.0 * SUM(CASE WHEN (BPXOSY1 + COALESCE(BPXOSY2, BPXOSY1) + COALESCE(BPXOSY3, BPXOSY1)) /
-    (1 + CASE WHEN BPXOSY2 IS NOT NULL THEN 1 ELSE 0 END + CASE WHEN BPXOSY3 IS NOT NULL THEN 1 ELSE 0 END) >= 130
-    OR (BPXODI1 + COALESCE(BPXODI2, BPXODI1) + COALESCE(BPXODI3, BPXODI1)) /
-    (1 + CASE WHEN BPXODI2 IS NOT NULL THEN 1 ELSE 0 END + CASE WHEN BPXODI3 IS NOT NULL THEN 1 ELSE 0 END) >= 80
+  ROUND(100.0 * SUM(CASE WHEN
+    (BPXOSY1 + COALESCE(BPXOSY2, BPXOSY1) + COALESCE(BPXOSY3, BPXOSY1))
+      / (1 + CASE WHEN BPXOSY2 IS NOT NULL THEN 1 ELSE 0 END + CASE WHEN BPXOSY3 IS NOT NULL THEN 1 ELSE 0 END) >= 130
+    OR (BPXODI1 + COALESCE(BPXODI2, BPXODI1) + COALESCE(BPXODI3, BPXODI1))
+      / (1 + CASE WHEN BPXODI2 IS NOT NULL THEN 1 ELSE 0 END + CASE WHEN BPXODI3 IS NOT NULL THEN 1 ELSE 0 END) >= 80
+    OR BPQ020 = 1
     THEN WTMEC2YR ELSE 0 END)
     / NULLIF(SUM(CASE WHEN BPXOSY1 IS NOT NULL THEN WTMEC2YR ELSE 0 END), 0), 1) AS hypertension_pct,
   COUNT(*) FILTER (WHERE BPXOSY1 IS NOT NULL) AS sample_n
