@@ -1,6 +1,7 @@
 import { getDataset } from "@/lib/datasets/index";
 
-const TIMEOUT_MS = 90_000;
+// Must finish before Vercel's maxDuration (60s) kills the function
+const TIMEOUT_MS = 55_000;
 
 export async function executeRemoteQuery(
   sql: string,
