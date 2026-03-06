@@ -112,6 +112,7 @@ export function Navbar() {
   ];
   const bottomLinks = [
     { href: "/blog", label: "Blog", active: pathname.startsWith("/blog") },
+    { href: "/validation", label: "Validation", active: pathname === "/validation" },
   ];
 
   const datasetLinks = DATASET_METAS.map((m) => ({
@@ -332,6 +333,17 @@ export function Navbar() {
                 )}
               >
                 Blog
+              </Link>
+
+              <Link
+                href="/validation"
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  "block px-3 py-2.5 rounded-sm text-sm font-semibold uppercase tracking-wider transition-colors",
+                  pathname === "/validation" ? "text-accent bg-red-50" : "text-foreground hover:text-accent hover:bg-background"
+                )}
+              >
+                Validation
               </Link>
 
               <button
