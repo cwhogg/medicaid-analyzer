@@ -27,14 +27,14 @@ interface ShareData {
 }
 
 async function fetchShareData(id: string): Promise<ShareData | null> {
-  const baseUrl = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const railwayUrl = process.env.RAILWAY_QUERY_URL;
+  if (!railwayUrl) return null;
 
   try {
-    const response = await fetch(`${baseUrl}/api/share/${encodeURIComponent(id)}`, {
-      cache: "no-store",
-    });
+    const response = await fetch(
+      `${railwayUrl}/share/${encodeURIComponent(id)}`,
+      { cache: "no-store", signal: AbortSignal.timeout(10000) }
+    );
 
     if (!response.ok) return null;
 
