@@ -1,15 +1,10 @@
 import { NextRequest } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
-import { getDataset } from "@/lib/datasets/index";
 import {
-  streamResponse,
-  runAnalyses,
-  writeArticle,
   publishToGitHub,
   type TopicPlan,
 } from "@/lib/blogGeneration";
 
-export const maxDuration = 300;
+export const maxDuration = 60;
 
 const ADMIN_SECRET = process.env.ADMIN_API_KEY;
 const RAILWAY_QUERY_URL = process.env.RAILWAY_QUERY_URL;
@@ -23,7 +18,7 @@ function railwayHeaders(): Record<string, string> {
   return headers;
 }
 
-// POST — Publish an idea (the expensive operation)
+// POST — Publish a generated idea (cheap — just commits stored content to GitHub)
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -35,10 +30,6 @@ export async function POST(
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return Response.json({ error: "ANTHROPIC_API_KEY not configured" }, { status: 500 });
-  }
   if (!process.env.GITHUB_TOKEN) {
     return Response.json({ error: "GITHUB_TOKEN not configured" }, { status: 500 });
   }
@@ -58,54 +49,27 @@ export async function POST(
   const { idea } = await getRes.json();
   const data = idea.data || {};
 
-  // Build topic from idea
-  const slugBase = data.title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
+  if (data.status !== "generated") {
+    return Response.json({ error: "Idea must be in generated status to publish" }, { status: 400 });
+  }
+  if (!data.generatedContent) {
+    return Response.json({ error: "No generated content found" }, { status: 400 });
+  }
+
+  // Build topic from stored fields
   const topic: TopicPlan = {
     title: data.title,
-    slug: slugBase,
+    slug: data.generatedSlug || data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
     description: data.description,
     targetKeywords: data.targetKeywords || [],
     contentGap: data.contentGap || "",
     analysisQuestions: data.analysisQuestions || [],
   };
 
-  const dataset = data.dataset || "medicaid";
-  const dsConfig = getDataset(dataset);
-  const client = new Anthropic({ apiKey });
-
-  return streamResponse(async (send) => {
-    const start = Date.now();
-
-    send({
-      phase: "topic",
-      message: `Publishing: ${topic.title}`,
-      title: topic.title,
-      slug: topic.slug,
-      questions: topic.analysisQuestions.length,
-    });
-
-    // Phase 2: Analysis
-    const analysisSteps = await runAnalyses(topic, dsConfig, client, send);
-
-    if (analysisSteps.length === 0) {
-      send({ phase: "error", message: "All analysis queries failed" });
-      return;
-    }
-
-    // Phase 3: Writing
-    const { bodyContent, wordCount } = await writeArticle(
-      topic,
-      analysisSteps,
-      dsConfig,
-      client,
-      send
-    );
-
-    // Phase 4: GitHub
-    await publishToGitHub(topic, bodyContent, wordCount, send);
+  try {
+    // Publish stored content to GitHub (no-op send since this isn't streaming)
+    const noop = () => {};
+    await publishToGitHub(topic, data.generatedContent, data.generatedWordCount || 0, noop);
 
     // Update idea status in Railway
     data.status = "published";
@@ -115,25 +79,16 @@ export async function POST(
     actions.push({ type: "published", timestamp: Date.now() });
     data.actions = actions;
 
-    try {
-      await fetch(`${RAILWAY_QUERY_URL}/blog-ideas/${id}`, {
-        method: "PATCH",
-        headers: railwayHeaders(),
-        body: JSON.stringify({ data, status: "published" }),
-      });
-    } catch {
-      // Non-critical — blog is already published
-    }
-
-    send({
-      phase: "done",
-      message: "Published!",
-      slug: topic.slug,
-      title: topic.title,
-      description: topic.description,
-      wordCount,
-      analysisSteps: analysisSteps.length,
-      generationMs: Date.now() - start,
+    await fetch(`${RAILWAY_QUERY_URL}/blog-ideas/${id}`, {
+      method: "PATCH",
+      headers: railwayHeaders(),
+      body: JSON.stringify({ data, status: "published" }),
     });
-  });
+
+    return Response.json({ ok: true, slug: topic.slug });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Publish failed";
+    console.error("Publish error:", message);
+    return Response.json({ error: message }, { status: 500 });
+  }
 }

@@ -16,7 +16,7 @@ function railwayHeaders(): Record<string, string> {
   return headers;
 }
 
-// POST — AI-assisted refinement of an idea
+// POST — AI-assisted refinement of an idea or generated article
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -57,11 +57,26 @@ export async function POST(
   }
   const { idea } = await getRes.json();
   const data = idea.data || {};
-  const dataset = data.dataset || "medicaid";
-  const dsConfig = getDataset(dataset);
-  const schemaPrompt = dsConfig.generateSchemaPrompt();
 
   const client = new Anthropic({ apiKey });
+
+  // Branch based on status
+  if (data.status === "generated") {
+    return improveArticle(id, data, feedback, client);
+  }
+  return improveIdea(id, data, feedback, client);
+}
+
+// Refine idea metadata (pending/improved status)
+async function improveIdea(
+  id: string,
+  data: Record<string, unknown>,
+  feedback: string | undefined,
+  client: Anthropic
+) {
+  const dataset = (data.dataset as string) || "medicaid";
+  const dsConfig = getDataset(dataset);
+  const schemaPrompt = dsConfig.generateSchemaPrompt();
 
   const systemPrompt = `You refine blog post ideas for a public health data analysis site. The idea is about the ${dsConfig.label} dataset.
 
@@ -81,10 +96,10 @@ Return ONLY valid JSON, no markdown fences or explanation.`;
   const userMessage = `Current idea:
 Title: ${data.title}
 Description: ${data.description}
-Keywords: ${(data.targetKeywords || []).join(", ")}
+Keywords: ${((data.targetKeywords as string[]) || []).join(", ")}
 Content gap: ${data.contentGap}
 Analysis questions:
-${(data.analysisQuestions || []).map((q: string, i: number) => `${i + 1}. ${q}`).join("\n")}
+${((data.analysisQuestions as string[]) || []).map((q: string, i: number) => `${i + 1}. ${q}`).join("\n")}
 
 ${feedback ? `User feedback for improvement:\n${feedback}` : "Please improve this idea — make the title more compelling, sharpen the analysis questions, and improve keyword targeting."}`;
 
@@ -155,6 +170,85 @@ ${feedback ? `User feedback for improvement:\n${feedback}` : "Please improve thi
   } catch (err) {
     const message = err instanceof Error ? err.message : "Improve failed";
     console.error("Idea improve error:", message);
+    return Response.json({ error: message }, { status: 500 });
+  }
+}
+
+// Refine generated article content
+async function improveArticle(
+  id: string,
+  data: Record<string, unknown>,
+  feedback: string | undefined,
+  client: Anthropic
+) {
+  if (!feedback) {
+    return Response.json({ error: "Feedback is required to improve a generated article" }, { status: 400 });
+  }
+  if (!data.generatedContent) {
+    return Response.json({ error: "No generated content to improve" }, { status: 400 });
+  }
+
+  const dataset = (data.dataset as string) || "medicaid";
+  const dsConfig = getDataset(dataset);
+
+  try {
+    const response = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 4096,
+      temperature: 0.3,
+      system: `You are a data journalist editing an article for Open Health Data Hub, a public health data analysis blog. This article is about ${dsConfig.label} data.
+
+Rules:
+- Apply the requested improvements while preserving the article's data accuracy
+- ONLY cite numbers that appear in the existing article — never fabricate statistics
+- Keep markdown formatting with ## and ### headings
+- Keep data as markdown tables (not code blocks)
+- Do NOT include the article title as an H1
+- Do NOT include frontmatter
+- Return ONLY the revised article content, no explanation or commentary`,
+      messages: [
+        {
+          role: "user",
+          content: `Here is the current article:\n\n${data.generatedContent}\n\nPlease revise the article with these instructions:\n${feedback}`,
+        },
+      ],
+    });
+
+    const textBlock = response.content.find((b) => b.type === "text");
+    if (!textBlock || textBlock.type !== "text") {
+      return Response.json({ error: "Claude returned no text" }, { status: 500 });
+    }
+
+    const revisedContent = textBlock.text.trim();
+    const wordCount = revisedContent.split(/\s+/).length;
+
+    data.generatedContent = revisedContent;
+    data.generatedWordCount = wordCount;
+    data.updatedAt = Date.now();
+
+    const actions = Array.isArray(data.actions) ? data.actions : [];
+    actions.push({
+      type: "article_improved",
+      timestamp: Date.now(),
+      details: feedback,
+    });
+    data.actions = actions;
+
+    const patchRes = await fetch(`${RAILWAY_QUERY_URL}/blog-ideas/${id}`, {
+      method: "PATCH",
+      headers: railwayHeaders(),
+      body: JSON.stringify({ data, status: "generated" }),
+    });
+
+    if (!patchRes.ok) {
+      const err = await patchRes.text();
+      return Response.json({ error: `Update failed: ${err}` }, { status: 500 });
+    }
+
+    return Response.json({ ok: true, idea: data });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Article improve failed";
+    console.error("Article improve error:", message);
     return Response.json({ error: message }, { status: 500 });
   }
 }

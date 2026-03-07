@@ -47,13 +47,13 @@ export async function PATCH(
   if (updates.contentGap) data.contentGap = updates.contentGap;
   if (updates.analysisQuestions) data.analysisQuestions = updates.analysisQuestions;
 
-  // Append action
+  // Append action with appropriate type
   const actions = Array.isArray(data.actions) ? data.actions : [];
-  actions.push({ type: "edited", timestamp: Date.now() });
+  const status = updates.status || idea.status;
+  const actionType = status !== idea.status ? status : "edited";
+  actions.push({ type: actionType, timestamp: Date.now() });
   data.actions = actions;
   data.updatedAt = Date.now();
-
-  const status = updates.status || idea.status;
 
   const patchRes = await fetch(`${RAILWAY_QUERY_URL}/blog-ideas/${id}`, {
     method: "PATCH",

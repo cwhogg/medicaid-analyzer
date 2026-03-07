@@ -108,16 +108,6 @@ interface GenerationEvent {
   question?: string;
 }
 
-const PHASE_LABELS: Record<string, string> = {
-  topic: "Topic Generation",
-  analysis: "Data Analysis",
-  writing: "Writing Article",
-  publishing: "Publishing",
-  done: "Complete",
-  error: "Error",
-};
-
-const PHASE_ORDER = ["topic", "analysis", "writing", "publishing", "done"];
 
 const DATASET_OPTIONS = [
   { key: "medicaid", label: "Medicaid", color: "#B91C1C" },
@@ -134,11 +124,15 @@ interface BlogIdea {
   targetKeywords: string[];
   contentGap: string;
   analysisQuestions: string[];
-  status: "pending" | "improved" | "published" | "deleted";
+  status: "pending" | "improved" | "queued" | "generated" | "published" | "deleted";
   createdAt: number;
   updatedAt: number;
   actions: { type: string; timestamp: number; details?: string }[];
   publishedSlug?: string;
+  generatedContent?: string;
+  generatedSlug?: string;
+  generatedWordCount?: number;
+  generatedAt?: number;
 }
 
 function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
@@ -149,13 +143,18 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
   const [showDeleted, setShowDeleted] = useState(false);
   const [improvingId, setImprovingId] = useState<string | null>(null);
   const [feedbackText, setFeedbackText] = useState("");
+  // Generate streaming state
+  const [generatingId, setGeneratingId] = useState<string | null>(null);
+  const [generateEvents, setGenerateEvents] = useState<GenerationEvent[]>([]);
+  const [generatePhase, setGeneratePhase] = useState<string | null>(null);
+  const [generateResult, setGenerateResult] = useState<GenerationEvent | null>(null);
+  // Publish state (now simple, no streaming)
   const [publishingId, setPublishingId] = useState<string | null>(null);
-  const [publishEvents, setPublishEvents] = useState<GenerationEvent[]>([]);
-  const [publishPhase, setPublishPhase] = useState<string | null>(null);
-  const [publishResult, setPublishResult] = useState<GenerationEvent | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const logRef = useRef<HTMLDivElement>(null);
+
+  const busy = generating || generatingId !== null || publishingId !== null || improvingId !== null;
 
   const fetchIdeas = useCallback(async () => {
     try {
@@ -184,7 +183,7 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
 
   useEffect(() => {
     if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
-  }, [publishEvents]);
+  }, [generateEvents]);
 
   const generateIdeas = async () => {
     setGenerating(true);
@@ -228,11 +227,24 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
     setFeedbackText("");
   };
 
-  const publishIdea = async (id: string) => {
-    setPublishingId(id);
-    setPublishEvents([]);
-    setPublishPhase(null);
-    setPublishResult(null);
+  const queueIdea = async (id: string) => {
+    try {
+      const res = await fetch(`/api/blog/ideas/${id}?key=${encodeURIComponent(adminKey)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "queued" }),
+      });
+      if (res.ok) {
+        setIdeas((prev) => prev.map((i) => (i.id === id ? { ...i, status: "queued" as const } : i)));
+      }
+    } catch { /* ignore */ }
+  };
+
+  const generateArticle = async (id: string) => {
+    setGeneratingId(id);
+    setGenerateEvents([]);
+    setGeneratePhase(null);
+    setGenerateResult(null);
     setElapsed(0);
 
     const startTime = Date.now();
@@ -241,21 +253,21 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
     }, 1000);
 
     try {
-      const res = await fetch(`/api/blog/ideas/${id}/publish?key=${encodeURIComponent(adminKey)}`, {
+      const res = await fetch(`/api/blog/ideas/${id}/generate?key=${encodeURIComponent(adminKey)}`, {
         method: "POST",
       });
 
       if (!res.ok) {
         const data = await res.json();
-        setPublishEvents([{ phase: "error", message: data.error || `HTTP ${res.status}` }]);
-        setPublishPhase("error");
+        setGenerateEvents([{ phase: "error", message: data.error || `HTTP ${res.status}` }]);
+        setGeneratePhase("error");
         return;
       }
 
       const reader = res.body?.getReader();
       if (!reader) {
-        setPublishEvents([{ phase: "error", message: "No response stream" }]);
-        setPublishPhase("error");
+        setGenerateEvents([{ phase: "error", message: "No response stream" }]);
+        setGeneratePhase("error");
         return;
       }
 
@@ -272,32 +284,45 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
           if (!line.trim()) continue;
           try {
             const event = JSON.parse(line) as GenerationEvent;
-            setPublishEvents((prev) => [...prev, event]);
-            setPublishPhase(event.phase);
-            if (event.phase === "done") setPublishResult(event);
+            setGenerateEvents((prev) => [...prev, event]);
+            setGeneratePhase(event.phase);
+            if (event.phase === "done") setGenerateResult(event);
           } catch { /* ignore */ }
         }
       }
       if (buffer.trim()) {
         try {
           const event = JSON.parse(buffer) as GenerationEvent;
-          setPublishEvents((prev) => [...prev, event]);
-          setPublishPhase(event.phase);
-          if (event.phase === "done") setPublishResult(event);
+          setGenerateEvents((prev) => [...prev, event]);
+          setGeneratePhase(event.phase);
+          if (event.phase === "done") setGenerateResult(event);
         } catch { /* ignore */ }
       }
     } catch (err) {
-      setPublishEvents((prev) => [...prev, {
+      setGenerateEvents((prev) => [...prev, {
         phase: "error",
         message: err instanceof Error ? err.message : "Network error",
       }]);
-      setPublishPhase("error");
+      setGeneratePhase("error");
     } finally {
       if (timerRef.current) clearInterval(timerRef.current);
-      setPublishingId(null);
+      setGeneratingId(null);
       fetchIdeas();
-      fetchBlogPosts();
     }
+  };
+
+  const publishIdea = async (id: string) => {
+    setPublishingId(id);
+    try {
+      const res = await fetch(`/api/blog/ideas/${id}/publish?key=${encodeURIComponent(adminKey)}`, {
+        method: "POST",
+      });
+      if (res.ok) {
+        setIdeas((prev) => prev.map((i) => (i.id === id ? { ...i, status: "published" as const } : i)));
+        fetchBlogPosts();
+      }
+    } catch { /* ignore */ }
+    setPublishingId(null);
   };
 
   const formatElapsed = (s: number) => {
@@ -309,7 +334,18 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
   const dsColor = (ds: string) => DATASET_OPTIONS.find((d) => d.key === ds)?.color || "#78716C";
   const dsLabel = (ds: string) => DATASET_OPTIONS.find((d) => d.key === ds)?.label || ds;
 
-  const pendingIdeas = ideas.filter((i) => i.status === "pending" || i.status === "improved");
+  const GENERATE_PHASE_ORDER = ["topic", "analysis", "writing", "done"];
+  const GENERATE_PHASE_LABELS: Record<string, string> = {
+    topic: "Topic",
+    analysis: "Data Analysis",
+    writing: "Writing Article",
+    done: "Complete",
+    error: "Error",
+  };
+
+  const ideaIdeas = ideas.filter((i) => i.status === "pending" || i.status === "improved");
+  const queuedIdeas = ideas.filter((i) => i.status === "queued");
+  const generatedIdeas = ideas.filter((i) => i.status === "generated");
   const publishedIdeas = ideas.filter((i) => i.status === "published");
   const deletedIdeas = ideas.filter((i) => i.status === "deleted");
 
@@ -323,11 +359,10 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
               Blog Pipeline
             </h2>
             <p className="text-xs text-muted mt-0.5">
-              Generate ideas, curate, then publish
+              Ideas &rarr; Queue &rarr; Generate &rarr; Publish
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {/* Dataset pills */}
             <div className="flex gap-1">
               {DATASET_OPTIONS.map((ds) => (
                 <button
@@ -346,7 +381,7 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
             </div>
             <button
               onClick={generateIdeas}
-              disabled={generating || publishingId !== null}
+              disabled={busy}
               className="btn-primary px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {generating ? (
@@ -361,182 +396,336 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
           </div>
         </div>
 
-        {/* Pending/Improved Ideas */}
-        {pendingIdeas.length > 0 && (
-          <div className="space-y-3 mb-4">
-            {pendingIdeas.map((idea) => (
-              <div
-                key={idea.id}
-                className="bg-[#F5F5F0] rounded-sm border border-rule-light p-4"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span
-                        className="px-1.5 py-0.5 text-xs font-medium rounded-sm"
-                        style={{ backgroundColor: dsColor(idea.dataset) + "15", color: dsColor(idea.dataset) }}
-                      >
-                        {dsLabel(idea.dataset)}
-                      </span>
-                      {idea.status === "improved" && (
-                        <span className="px-1.5 py-0.5 text-xs font-medium rounded-sm bg-teal-50 text-teal-700 border border-teal-200">
-                          Improved
+        {/* 1. Generated Articles */}
+        {(generatedIdeas.length > 0 || generateResult) && (
+          <div className="mb-4">
+            <h3 className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">
+              Generated ({generatedIdeas.length})
+            </h3>
+            <div className="space-y-3">
+              {generatedIdeas.map((idea) => (
+                <div
+                  key={idea.id}
+                  className="bg-[#F5F5F0] rounded-sm border border-green-200 p-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span
+                          className="px-1.5 py-0.5 text-xs font-medium rounded-sm"
+                          style={{ backgroundColor: dsColor(idea.dataset) + "15", color: dsColor(idea.dataset) }}
+                        >
+                          {dsLabel(idea.dataset)}
                         </span>
+                        <span className="px-1.5 py-0.5 text-xs font-medium rounded-sm bg-green-50 text-green-700 border border-green-200">
+                          Generated
+                        </span>
+                        {idea.generatedWordCount && (
+                          <span className="text-xs text-muted">
+                            {idea.generatedWordCount} words
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm font-semibold text-foreground">{idea.title}</p>
+                      {idea.generatedContent && (
+                        <p className="text-xs text-body mt-1 line-clamp-3">
+                          {idea.generatedContent.slice(0, 200)}...
+                        </p>
+                      )}
+                      {idea.generatedAt && (
+                        <p className="text-xs text-muted mt-2">
+                          Generated {new Date(idea.generatedAt).toLocaleDateString()}
+                        </p>
                       )}
                     </div>
-                    <p className="text-sm font-semibold text-foreground">{idea.title}</p>
-                    <p className="text-xs text-body mt-1">{idea.description}</p>
-                    {idea.targetKeywords?.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {idea.targetKeywords.map((kw, ki) => (
-                          <span key={ki} className="px-1.5 py-0.5 text-xs bg-white border border-rule-light rounded-sm text-muted">
-                            {kw}
-                          </span>
-                        ))}
+                    <div className="flex flex-col gap-1.5 shrink-0">
+                      <button
+                        onClick={() => {
+                          if (improvingId === idea.id) {
+                            setImprovingId(null);
+                            setFeedbackText("");
+                          } else {
+                            setImprovingId(idea.id);
+                            setFeedbackText("");
+                          }
+                        }}
+                        disabled={busy && improvingId !== idea.id}
+                        className="px-2.5 py-1.5 text-xs rounded-sm border border-teal-200 bg-teal-50 text-teal-700 hover:bg-teal-100 transition-colors disabled:opacity-50"
+                      >
+                        Improve
+                      </button>
+                      <button
+                        onClick={() => publishIdea(idea.id)}
+                        disabled={busy}
+                        className="px-2.5 py-1.5 text-xs rounded-sm border border-green-200 bg-green-50 text-green-700 hover:bg-green-100 transition-colors disabled:opacity-50"
+                      >
+                        {publishingId === idea.id ? "Publishing..." : "Publish"}
+                      </button>
+                    </div>
+                  </div>
+                  {/* Inline improve for generated article */}
+                  {improvingId === idea.id && (
+                    <div className="mt-3 pt-3 border-t border-rule-light">
+                      <textarea
+                        value={feedbackText}
+                        onChange={(e) => setFeedbackText(e.target.value)}
+                        placeholder="Instructions for article revision (e.g., 'add more context about regional differences', 'make the intro stronger')"
+                        className="w-full px-3 py-2 text-sm bg-white border border-rule rounded-sm text-foreground placeholder:text-muted focus:outline-none focus:border-teal-500 transition-colors resize-none"
+                        rows={2}
+                      />
+                      <div className="flex gap-2 mt-2">
+                        <button
+                          onClick={() => improveIdea(idea.id)}
+                          disabled={!feedbackText.trim()}
+                          className="px-3 py-1.5 text-xs rounded-sm bg-teal-600 text-white hover:bg-teal-700 transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                        >
+                          Revise Article
+                        </button>
+                        <button
+                          onClick={() => { setImprovingId(null); setFeedbackText(""); }}
+                          className="px-3 py-1.5 text-xs text-muted hover:text-foreground transition-colors"
+                        >
+                          Cancel
+                        </button>
                       </div>
-                    )}
-                    {idea.analysisQuestions?.length > 0 && (
-                      <ol className="mt-2 space-y-0.5">
-                        {idea.analysisQuestions.map((q, qi) => (
-                          <li key={qi} className="text-xs text-body pl-4 relative">
-                            <span className="absolute left-0 text-muted">{qi + 1}.</span>
-                            {q}
-                          </li>
-                        ))}
-                      </ol>
-                    )}
-                    <p className="text-xs text-muted mt-2">
-                      Created {new Date(idea.createdAt).toLocaleDateString()}
-                      {idea.actions?.length > 1 && ` \u00B7 ${idea.actions.length} actions`}
-                    </p>
-                  </div>
-                  {/* Action buttons */}
-                  <div className="flex flex-col gap-1.5 shrink-0">
-                    <button
-                      onClick={() => deleteIdea(idea.id)}
-                      disabled={publishingId !== null}
-                      className="px-2.5 py-1.5 text-xs rounded-sm border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 transition-colors disabled:opacity-50"
-                      title="Delete"
-                    >
-                      Delete
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (improvingId === idea.id) {
-                          setImprovingId(null);
-                          setFeedbackText("");
-                        } else {
-                          setImprovingId(idea.id);
-                          setFeedbackText("");
-                        }
-                      }}
-                      disabled={publishingId !== null || (improvingId !== null && improvingId !== idea.id)}
-                      className="px-2.5 py-1.5 text-xs rounded-sm border border-teal-200 bg-teal-50 text-teal-700 hover:bg-teal-100 transition-colors disabled:opacity-50"
-                      title="Improve"
-                    >
-                      Improve
-                    </button>
-                    <button
-                      onClick={() => publishIdea(idea.id)}
-                      disabled={publishingId !== null || generating}
-                      className="px-2.5 py-1.5 text-xs rounded-sm border border-green-200 bg-green-50 text-green-700 hover:bg-green-100 transition-colors disabled:opacity-50"
-                      title="Publish"
-                    >
-                      Publish
-                    </button>
-                  </div>
+                    </div>
+                  )}
                 </div>
-
-                {/* Inline improve feedback */}
-                {improvingId === idea.id && (
-                  <div className="mt-3 pt-3 border-t border-rule-light">
-                    <textarea
-                      value={feedbackText}
-                      onChange={(e) => setFeedbackText(e.target.value)}
-                      placeholder="Optional feedback for refinement (e.g., 'focus more on regional differences')"
-                      className="w-full px-3 py-2 text-sm bg-white border border-rule rounded-sm text-foreground placeholder:text-muted focus:outline-none focus:border-teal-500 transition-colors resize-none"
-                      rows={2}
-                    />
-                    <div className="flex gap-2 mt-2">
-                      <button
-                        onClick={() => improveIdea(idea.id)}
-                        className="px-3 py-1.5 text-xs rounded-sm bg-teal-600 text-white hover:bg-teal-700 transition-colors flex items-center gap-1.5"
-                      >
-                        Refine
-                      </button>
-                      <button
-                        onClick={() => { setImprovingId(null); setFeedbackText(""); }}
-                        className="px-3 py-1.5 text-xs text-muted hover:text-foreground transition-colors"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Publishing progress (shown below the card being published) */}
-                {publishingId === idea.id && publishEvents.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-rule-light">
-                    {/* Phase pipeline */}
-                    <div className="flex items-center gap-1 mb-2 overflow-x-auto">
-                      {PHASE_ORDER.slice(0, -1).map((phase, i) => {
-                        const phaseIdx = publishPhase ? PHASE_ORDER.indexOf(publishPhase) : -1;
-                        const thisIdx = PHASE_ORDER.indexOf(phase);
-                        const isActive = publishPhase === phase;
-                        const isDone = phaseIdx > thisIdx || publishPhase === "done" || (publishPhase === "error" && phaseIdx > thisIdx);
-                        const isError = publishPhase === "error" && isActive;
-
-                        return (
-                          <div key={phase} className="flex items-center gap-1">
-                            <div className={`px-2 py-0.5 rounded-sm text-xs font-medium whitespace-nowrap transition-colors ${
-                              isError ? "bg-red-50 text-red-700 border border-red-200"
-                              : isActive ? "bg-red-50 text-accent border border-red-200"
-                              : isDone ? "bg-green-50 text-green-700 border border-green-200"
-                              : "bg-white text-muted border border-rule-light"
-                            }`}>
-                              {isDone && !isActive ? "\u2713 " : ""}{PHASE_LABELS[phase]}
-                            </div>
-                            {i < PHASE_ORDER.length - 2 && <span className="text-rule text-xs">&rarr;</span>}
-                          </div>
-                        );
-                      })}
-                      <span className="text-xs text-muted ml-2 font-mono">{formatElapsed(elapsed)}</span>
-                    </div>
-                    <div
-                      ref={logRef}
-                      className="bg-white rounded-sm border border-rule-light p-2 max-h-32 overflow-y-auto font-mono text-xs space-y-0.5"
-                    >
-                      {publishEvents.map((ev, i) => (
-                        <div key={i} className={`flex gap-2 ${ev.phase === "error" ? "text-red-700" : ev.phase === "done" ? "text-green-700" : "text-body"}`}>
-                          <span className="text-muted shrink-0 w-12 text-right">{PHASE_LABELS[ev.phase]?.slice(0, 5) || ev.phase}</span>
-                          <span>{ev.message}</span>
-                        </div>
-                      ))}
-                    </div>
-                    {publishResult && (
-                      <div className="mt-2 p-2 rounded-sm bg-green-50 border border-green-200 flex items-center justify-between">
-                        <p className="text-xs text-green-700">
-                          Published! {publishResult.wordCount} words &middot; {Math.round((publishResult.generationMs || 0) / 1000)}s
-                        </p>
-                        <a href={`/blog/${publishResult.slug}`} target="_blank" rel="noopener noreferrer" className="text-xs text-teal hover:underline">
-                          View post &rarr;
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
 
-        {pendingIdeas.length === 0 && !generating && publishEvents.length === 0 && (
+        {/* 2. Queued Ideas */}
+        {(queuedIdeas.length > 0 || generatingId !== null) && (
+          <div className="mb-4">
+            <h3 className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">
+              Queued ({queuedIdeas.length})
+            </h3>
+            <div className="space-y-3">
+              {queuedIdeas.map((idea) => (
+                <div
+                  key={idea.id}
+                  className="bg-[#F5F5F0] rounded-sm border border-amber-200 p-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span
+                          className="px-1.5 py-0.5 text-xs font-medium rounded-sm"
+                          style={{ backgroundColor: dsColor(idea.dataset) + "15", color: dsColor(idea.dataset) }}
+                        >
+                          {dsLabel(idea.dataset)}
+                        </span>
+                        <span className="px-1.5 py-0.5 text-xs font-medium rounded-sm bg-amber-50 text-amber-700 border border-amber-200">
+                          Queued
+                        </span>
+                      </div>
+                      <p className="text-sm font-semibold text-foreground">{idea.title}</p>
+                      <p className="text-xs text-body mt-1">{idea.description}</p>
+                      {idea.analysisQuestions?.length > 0 && (
+                        <ol className="mt-2 space-y-0.5">
+                          {idea.analysisQuestions.map((q, qi) => (
+                            <li key={qi} className="text-xs text-body pl-4 relative">
+                              <span className="absolute left-0 text-muted">{qi + 1}.</span>
+                              {q}
+                            </li>
+                          ))}
+                        </ol>
+                      )}
+                    </div>
+                    <div className="flex flex-col gap-1.5 shrink-0">
+                      <button
+                        onClick={() => generateArticle(idea.id)}
+                        disabled={busy}
+                        className="px-2.5 py-1.5 text-xs rounded-sm border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors disabled:opacity-50"
+                      >
+                        Generate
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Generate streaming progress */}
+                  {generatingId === idea.id && generateEvents.length > 0 && (
+                    <div className="mt-3 pt-3 border-t border-rule-light">
+                      <div className="flex items-center gap-1 mb-2 overflow-x-auto">
+                        {GENERATE_PHASE_ORDER.slice(0, -1).map((phase, i) => {
+                          const phaseIdx = generatePhase ? GENERATE_PHASE_ORDER.indexOf(generatePhase) : -1;
+                          const thisIdx = GENERATE_PHASE_ORDER.indexOf(phase);
+                          const isActive = generatePhase === phase;
+                          const isDone = phaseIdx > thisIdx || generatePhase === "done" || (generatePhase === "error" && phaseIdx > thisIdx);
+                          const isError = generatePhase === "error" && isActive;
+
+                          return (
+                            <div key={phase} className="flex items-center gap-1">
+                              <div className={`px-2 py-0.5 rounded-sm text-xs font-medium whitespace-nowrap transition-colors ${
+                                isError ? "bg-red-50 text-red-700 border border-red-200"
+                                : isActive ? "bg-amber-50 text-amber-700 border border-amber-200"
+                                : isDone ? "bg-green-50 text-green-700 border border-green-200"
+                                : "bg-white text-muted border border-rule-light"
+                              }`}>
+                                {isDone && !isActive ? "\u2713 " : ""}{GENERATE_PHASE_LABELS[phase]}
+                              </div>
+                              {i < GENERATE_PHASE_ORDER.length - 2 && <span className="text-rule text-xs">&rarr;</span>}
+                            </div>
+                          );
+                        })}
+                        <span className="text-xs text-muted ml-2 font-mono">{formatElapsed(elapsed)}</span>
+                      </div>
+                      <div
+                        ref={logRef}
+                        className="bg-white rounded-sm border border-rule-light p-2 max-h-32 overflow-y-auto font-mono text-xs space-y-0.5"
+                      >
+                        {generateEvents.map((ev, i) => (
+                          <div key={i} className={`flex gap-2 ${ev.phase === "error" ? "text-red-700" : ev.phase === "done" ? "text-green-700" : "text-body"}`}>
+                            <span className="text-muted shrink-0 w-12 text-right">{GENERATE_PHASE_LABELS[ev.phase]?.slice(0, 5) || ev.phase}</span>
+                            <span>{ev.message}</span>
+                          </div>
+                        ))}
+                      </div>
+                      {generateResult && (
+                        <div className="mt-2 p-2 rounded-sm bg-green-50 border border-green-200">
+                          <p className="text-xs text-green-700">
+                            Generated! {generateResult.wordCount} words &middot; {Math.round((generateResult.generationMs || 0) / 1000)}s
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 3. Ideas (pending/improved) */}
+        {ideaIdeas.length > 0 && (
+          <div className="mb-4">
+            <h3 className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">
+              Ideas ({ideaIdeas.length})
+            </h3>
+            <div className="space-y-3">
+              {ideaIdeas.map((idea) => (
+                <div
+                  key={idea.id}
+                  className="bg-[#F5F5F0] rounded-sm border border-rule-light p-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span
+                          className="px-1.5 py-0.5 text-xs font-medium rounded-sm"
+                          style={{ backgroundColor: dsColor(idea.dataset) + "15", color: dsColor(idea.dataset) }}
+                        >
+                          {dsLabel(idea.dataset)}
+                        </span>
+                        {idea.status === "improved" && (
+                          <span className="px-1.5 py-0.5 text-xs font-medium rounded-sm bg-teal-50 text-teal-700 border border-teal-200">
+                            Improved
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm font-semibold text-foreground">{idea.title}</p>
+                      <p className="text-xs text-body mt-1">{idea.description}</p>
+                      {idea.targetKeywords?.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {idea.targetKeywords.map((kw, ki) => (
+                            <span key={ki} className="px-1.5 py-0.5 text-xs bg-white border border-rule-light rounded-sm text-muted">
+                              {kw}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {idea.analysisQuestions?.length > 0 && (
+                        <ol className="mt-2 space-y-0.5">
+                          {idea.analysisQuestions.map((q, qi) => (
+                            <li key={qi} className="text-xs text-body pl-4 relative">
+                              <span className="absolute left-0 text-muted">{qi + 1}.</span>
+                              {q}
+                            </li>
+                          ))}
+                        </ol>
+                      )}
+                      <p className="text-xs text-muted mt-2">
+                        Created {new Date(idea.createdAt).toLocaleDateString()}
+                        {idea.actions?.length > 1 && ` \u00B7 ${idea.actions.length} actions`}
+                      </p>
+                    </div>
+                    <div className="flex flex-col gap-1.5 shrink-0">
+                      <button
+                        onClick={() => deleteIdea(idea.id)}
+                        disabled={busy}
+                        className="px-2.5 py-1.5 text-xs rounded-sm border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 transition-colors disabled:opacity-50"
+                        title="Delete"
+                      >
+                        Delete
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (improvingId === idea.id) {
+                            setImprovingId(null);
+                            setFeedbackText("");
+                          } else {
+                            setImprovingId(idea.id);
+                            setFeedbackText("");
+                          }
+                        }}
+                        disabled={busy && improvingId !== idea.id}
+                        className="px-2.5 py-1.5 text-xs rounded-sm border border-teal-200 bg-teal-50 text-teal-700 hover:bg-teal-100 transition-colors disabled:opacity-50"
+                        title="Improve"
+                      >
+                        Improve
+                      </button>
+                      <button
+                        onClick={() => queueIdea(idea.id)}
+                        disabled={busy}
+                        className="px-2.5 py-1.5 text-xs rounded-sm border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors disabled:opacity-50"
+                        title="Queue for generation"
+                      >
+                        Queue
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Inline improve feedback */}
+                  {improvingId === idea.id && (
+                    <div className="mt-3 pt-3 border-t border-rule-light">
+                      <textarea
+                        value={feedbackText}
+                        onChange={(e) => setFeedbackText(e.target.value)}
+                        placeholder="Optional feedback for refinement (e.g., 'focus more on regional differences')"
+                        className="w-full px-3 py-2 text-sm bg-white border border-rule rounded-sm text-foreground placeholder:text-muted focus:outline-none focus:border-teal-500 transition-colors resize-none"
+                        rows={2}
+                      />
+                      <div className="flex gap-2 mt-2">
+                        <button
+                          onClick={() => improveIdea(idea.id)}
+                          className="px-3 py-1.5 text-xs rounded-sm bg-teal-600 text-white hover:bg-teal-700 transition-colors flex items-center gap-1.5"
+                        >
+                          Refine
+                        </button>
+                        <button
+                          onClick={() => { setImprovingId(null); setFeedbackText(""); }}
+                          className="px-3 py-1.5 text-xs text-muted hover:text-foreground transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {ideaIdeas.length === 0 && queuedIdeas.length === 0 && generatedIdeas.length === 0 && !generating && generateEvents.length === 0 && (
           <p className="text-xs text-muted mb-4">
             No pending ideas. Click &ldquo;Generate Ideas&rdquo; to create a batch.
           </p>
         )}
 
-        {/* Published ideas */}
+        {/* 4. Published */}
         {(publishedIdeas.length > 0 || blogPosts.length > 0) && (
           <div className="mb-4">
             <h3 className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">
@@ -562,7 +751,7 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
           </div>
         )}
 
-        {/* Deleted ideas (collapsed) */}
+        {/* 5. Deleted ideas (collapsed) */}
         {deletedIdeas.length > 0 && (
           <div>
             <button
