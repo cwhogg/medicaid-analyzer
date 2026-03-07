@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { useQuery } from "@/hooks/useQuery";
 import { useAnalysis, type PriorContext } from "@/hooks/useAnalysis";
 import { getDataset } from "@/lib/datasets/index";
@@ -13,6 +14,7 @@ import { ResultsTable } from "@/components/analyze/ResultsTable";
 import { ResultsChart } from "@/components/analyze/ResultsChart";
 import { QueryFeed } from "@/components/analyze/QueryFeed";
 import { AnalysisSteps } from "@/components/analyze/AnalysisSteps";
+import { ShareButton } from "@/components/analyze/ShareButton";
 import { Table, LineChart, BarChart3, PieChart, AlertCircle, Loader2, Search, History, BookOpen } from "lucide-react";
 import { DataDictionary } from "@/components/analyze/DataDictionary";
 import { cn } from "@/lib/utils";
@@ -41,6 +43,14 @@ interface DatasetAnalyzePageProps {
 }
 
 export default function DatasetAnalyzePage({ datasetKey }: DatasetAnalyzePageProps) {
+  return (
+    <Suspense>
+      <DatasetAnalyzePageInner datasetKey={datasetKey} />
+    </Suspense>
+  );
+}
+
+function DatasetAnalyzePageInner({ datasetKey }: DatasetAnalyzePageProps) {
   const {
     sql,
     columns,
@@ -64,6 +74,8 @@ export default function DatasetAnalyzePage({ datasetKey }: DatasetAnalyzePagePro
   const [lastQuestion, setLastQuestion] = useState<string | null>(null);
 
   const config: DatasetConfig = getDataset(datasetKey);
+  const searchParams = useSearchParams();
+  const queryInputRef = useRef<QueryInputHandle | null>(null);
 
   const analysisRef = useRef(analysis);
   analysisRef.current = analysis;
@@ -82,6 +94,17 @@ export default function DatasetAnalyzePage({ datasetKey }: DatasetAnalyzePagePro
       }));
     }
   }, [analysis.status, analysis.question, analysis.summary, analysis.steps]);
+
+  // Pre-fill query input from ?q= search param (e.g., from "Continue in dataset" link)
+  const prefillHandled = useRef(false);
+  useEffect(() => {
+    if (prefillHandled.current) return;
+    const q = searchParams.get("q");
+    if (q) {
+      prefillHandled.current = true;
+      queryInputRef.current?.setQuestion(q);
+    }
+  }, [searchParams]);
 
   const toggleYear = useCallback((year: number) => {
     setSelectedYears((prev) => {
@@ -123,8 +146,6 @@ export default function DatasetAnalyzePage({ datasetKey }: DatasetAnalyzePagePro
     },
     [submitQuestion, selectedYears, clearResults, priorContext, datasetKey, config.deepAnalysisSupported]
   );
-
-  const queryInputRef = useRef<QueryInputHandle | null>(null);
 
   const handleNewAnalysis = useCallback(() => {
     analysisRef.current.clearAnalysis();
@@ -341,25 +362,66 @@ export default function DatasetAnalyzePage({ datasetKey }: DatasetAnalyzePagePro
                       </p>
                     </div>
                   )}
+
+                  {/* Share button for simple queries */}
+                  {!loading && !error && sql && rows.length > 0 && lastQuestion && (
+                    <ShareButton
+                      payload={{
+                        question: lastQuestion,
+                        dataset: datasetKey,
+                        type: "query",
+                        sql,
+                        columns,
+                        rows,
+                        timestamp: Date.now(),
+                      }}
+                    />
+                  )}
                 </>
               )}
 
               {/* Deep analysis results */}
               {showAnalysisResults && (
-                <AnalysisSteps
-                  plan={analysis.plan}
-                  planReasoning={analysis.planReasoning}
-                  steps={analysis.steps}
-                  summary={analysis.summary}
-                  status={analysis.status}
-                  error={analysis.error}
-                  onRefine={(instruction) => {
-                    const years = selectedYears.size > 0 ? Array.from(selectedYears).sort() : null;
-                    setMode("analysis");
-                    clearResults();
-                    analysisRef.current.startAnalysis(instruction, years, priorContext, datasetKey);
-                  }}
-                />
+                <>
+                  <AnalysisSteps
+                    plan={analysis.plan}
+                    planReasoning={analysis.planReasoning}
+                    steps={analysis.steps}
+                    summary={analysis.summary}
+                    status={analysis.status}
+                    error={analysis.error}
+                    onRefine={(instruction) => {
+                      const years = selectedYears.size > 0 ? Array.from(selectedYears).sort() : null;
+                      setMode("analysis");
+                      clearResults();
+                      analysisRef.current.startAnalysis(instruction, years, priorContext, datasetKey);
+                    }}
+                  />
+
+                  {/* Share button for completed analyses */}
+                  {analysis.status === "complete" && analysis.question && (
+                    <ShareButton
+                      payload={{
+                        question: analysis.question,
+                        dataset: datasetKey,
+                        type: "analysis",
+                        plan: analysis.plan || undefined,
+                        steps: analysis.steps.map((s) => ({
+                          stepIndex: s.stepIndex,
+                          title: s.title,
+                          sql: s.sql,
+                          chartType: s.chartType,
+                          columns: s.columns,
+                          rows: s.rows,
+                          insight: s.insight,
+                          error: s.error,
+                        })),
+                        summary: analysis.summary,
+                        timestamp: Date.now(),
+                      }}
+                    />
+                  )}
+                </>
               )}
             </div>
           )}

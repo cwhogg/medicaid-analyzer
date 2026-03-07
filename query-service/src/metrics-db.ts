@@ -126,6 +126,14 @@ export async function initMetricsDB(): Promise<void> {
     // Column already exists — ignore
   }
 
+  await metricsDb.run(`
+    CREATE TABLE IF NOT EXISTS shares (
+      id VARCHAR PRIMARY KEY,
+      data VARCHAR NOT NULL,
+      timestamp BIGINT NOT NULL
+    )
+  `);
+
   // Backfill dataset='medicaid' on all NULL rows (pre-filtering era, before 2026-03-02)
   await metricsDb.run(`UPDATE feed_items SET dataset = 'medicaid' WHERE dataset IS NULL`);
   await metricsDb.run(`UPDATE query_log SET dataset = 'medicaid' WHERE dataset IS NULL`);
@@ -714,6 +722,52 @@ export async function getRetention(): Promise<Record<string, unknown>> {
   };
 
   return { cohort, engagement, recency };
+}
+
+// --- Shares ---
+
+const MAX_SHARES = 5_000;
+const SHARE_TTL_MS = 90 * 24 * 60 * 60 * 1000; // 90 days
+
+export async function saveShare(id: string, data: unknown): Promise<void> {
+  if (!metricsDb) throw new Error("Metrics DB not initialized");
+
+  await metricsDb.run(
+    `INSERT INTO shares (id, data, timestamp) VALUES (?, ?, ?)`,
+    id,
+    JSON.stringify(data),
+    Date.now()
+  );
+
+  // Prune if over limit
+  const count = await metricsDb.all(`SELECT COUNT(*) as cnt FROM shares`);
+  if (count[0] && (count[0] as Record<string, unknown>).cnt as number > MAX_SHARES) {
+    await metricsDb.run(`
+      DELETE FROM shares WHERE timestamp <= (
+        SELECT timestamp FROM shares ORDER BY timestamp DESC LIMIT 1 OFFSET ${MAX_SHARES}
+      )
+    `);
+  }
+}
+
+export async function getShare(id: string): Promise<unknown | null> {
+  if (!metricsDb) throw new Error("Metrics DB not initialized");
+
+  const rows = await metricsDb.all(
+    `SELECT data, timestamp FROM shares WHERE id = ?`, id
+  ) as Record<string, unknown>[];
+
+  if (rows.length === 0) return null;
+
+  const row = rows[0];
+  const ts = Number(row.timestamp);
+  if (Date.now() - ts > SHARE_TTL_MS) return null; // expired
+
+  try {
+    return JSON.parse(row.data as string);
+  } catch {
+    return null;
+  }
 }
 
 export async function getFeedback(limit = 50): Promise<Record<string, unknown>[]> {

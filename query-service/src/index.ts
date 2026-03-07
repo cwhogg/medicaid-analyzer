@@ -4,7 +4,7 @@ import { createWriteStream, createReadStream, existsSync, readdirSync, statSync,
 import { pipeline } from "stream/promises";
 import { Readable } from "stream";
 import { initDB, executeSQL, reloadViews, isReady } from "./db.js";
-import { initMetricsDB, recordMetrics, getMetrics, getDetailedUsers, getDailyQueries, getRetention, recordFeedItem, getFeedItems, recordFeedback, getFeedback } from "./metrics-db.js";
+import { initMetricsDB, recordMetrics, getMetrics, getDetailedUsers, getDailyQueries, getRetention, recordFeedItem, getFeedItems, recordFeedback, getFeedback, saveShare, getShare } from "./metrics-db.js";
 
 const DATA_DIR = process.env.DATA_DIR || "/data";
 
@@ -377,6 +377,53 @@ app.get("/metrics/retention", async (c) => {
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to fetch retention";
     console.error("Retention fetch error:", message);
+    return c.json({ error: message }, 500);
+  }
+});
+
+// --- Shares ---
+
+// Save share (auth required — from Vercel)
+app.use("/share", async (c, next) => {
+  if (c.req.method !== "POST") return next();
+  const auth = c.req.header("Authorization");
+  if (!API_KEY) return next();
+  if (auth !== `Bearer ${API_KEY}`) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  return next();
+});
+
+app.post("/share", async (c) => {
+  try {
+    const body = await c.req.json();
+    if (!body.id || !body.data) {
+      return c.json({ error: "id and data are required" }, 400);
+    }
+    if (typeof body.id !== "string" || body.id.length > 20) {
+      return c.json({ error: "Invalid id" }, 400);
+    }
+    await saveShare(body.id, body.data);
+    return c.json({ ok: true, id: body.id });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to save share";
+    console.error("Share save error:", message);
+    return c.json({ error: message }, 500);
+  }
+});
+
+// Get share (public — no auth)
+app.get("/share/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const data = await getShare(id);
+    if (!data) {
+      return c.json({ error: "Share not found or expired" }, 404);
+    }
+    return c.json({ data });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to fetch share";
+    console.error("Share fetch error:", message);
     return c.json({ error: message }, 500);
   }
 });
