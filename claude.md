@@ -1,25 +1,28 @@
-# Medicaid Data Analyzer — Claude Code Project
+# Open Health Data Hub — Claude Code Project
 
 ## Project Overview
 
-Build a product marketing site + natural language query interface for a 227M-row Medicaid provider spending dataset (2.9GB Parquet, Jan 2018–Dec 2024). Deploy on Vercel with a dark theme matching nofone.us.
+Multi-dataset public health data explorer at **openhealthdatahub.com**. Users ask natural language questions, Claude generates SQL, a Railway-hosted DuckDB instance executes it, and results display as tables/charts. Currently serves Medicaid (227M rows), Medicare (9.7M rows), and BRFSS (3.5M rows).
 
 ## Critical Architecture
 
-**DuckDB-WASM runs in the browser, NOT on the server.** The duckdb Node.js package (~284MB) exceeds Vercel's 250MB serverless function limit. The architecture is:
+**SQL execution is server-side via Railway, NOT in the browser.**
 
-- DuckDB-WASM executes SQL client-side in the browser
-- The only API route (`/api/query`) calls Claude to generate SQL — it is lightweight (~100KB)
-- Pre-aggregated Parquet files are served as static assets from `public/data/`
-- The server never touches DuckDB
+- Client (Next.js on Vercel) → `/api/query` (Claude NL→SQL) → Railway service (DuckDB-async) → results → display
+- Railway service (`query-service/`): Hono + duckdb-async, queries raw Parquet files from a mounted volume
+- Each dataset registers as a DuckDB view over its Parquet file(s)
+- The browser only displays results — no DuckDB-WASM, no client-side SQL execution
+- All dataset configs live in `web/src/lib/datasets/` — each file calls `registerDataset()`
 
-This is non-negotiable. Do not attempt to run DuckDB server-side.
+## Adding New Datasets
+
+**Read `ADDING-DATASETS.md` in the repo root** for the complete step-by-step guide. It covers finding data, parsing, normalizing, uploading to Railway (via DuckDB httpfs), and all frontend files to create/modify.
 
 ## Execution Mode
 
 Execute all steps sequentially without pausing for user confirmation. Work autonomously through the full plan. If you encounter an error, attempt to fix it yourself (up to 3 retries with different approaches) before stopping and explaining the blocker.
 
-Run `npm run build` after completing each major step to catch regressions early. Do not proceed to the next step if the build is broken — fix it first.
+Run `npm run build` after completing each major step to catch regressions early. Do not proceed to the next step if the build is broken — fix it first. If a build passes, always push to GitHub.
 
 ## Tech Stack (locked — do not change)
 
