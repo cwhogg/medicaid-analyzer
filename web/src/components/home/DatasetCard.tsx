@@ -43,15 +43,15 @@ export function DatasetCard({ meta }: { meta: DatasetMeta }) {
         {meta.stats.map((stat) => stat.value + " " + stat.label).join(" \u00B7 ")}
       </div>
 
-      {/* Limitations */}
-      {meta.limitations.length > 0 && (
+      {/* Sample analyses */}
+      {meta.sampleAnalyses.length > 0 && (
         <div className="mb-4">
-          <p className="text-xs font-medium text-muted mb-1.5">Limitations</p>
-          <ul className="space-y-1">
-            {meta.limitations.map((lim) => (
-              <li key={lim} className="text-xs text-muted flex items-start gap-1.5">
-                <span className="text-rule mt-0.5">-</span>
-                {lim}
+          <p className="text-xs font-medium text-body mb-1.5">Try asking</p>
+          <ul className="space-y-1.5">
+            {meta.sampleAnalyses.map((q) => (
+              <li key={q} className="text-xs text-muted italic flex items-start gap-1.5">
+                <span className="text-accent mt-0.5 shrink-0">&ldquo;</span>
+                <span>{q}&rdquo;</span>
               </li>
             ))}
           </ul>

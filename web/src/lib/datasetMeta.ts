@@ -8,7 +8,7 @@ export interface DatasetMeta {
   icon: LucideIcon;
   stats: { label: string; value: string }[];
   description: string;
-  limitations: string[];
+  sampleAnalyses: string[];
   href: string;
   accentColor: string;
   comingSoon?: boolean;
@@ -27,10 +27,10 @@ export const DATASET_METAS: DatasetMeta[] = [
     ],
     description:
       "Analyze provider spending patterns across Medicaid fee-for-service claims. Explore by procedure code, provider, state, and time period.",
-    limitations: [
-      "Fee-for-service only (no managed care)",
-      "No diagnosis or drug names",
-      "Oct–Dec 2024 data incomplete",
+    sampleAnalyses: [
+      "Which states spend the most on telehealth per capita?",
+      "Top 10 highest-paid Medicaid providers nationwide",
+      "How did COVID change procedure spending patterns?",
     ],
     href: "/medicaid",
     accentColor: "#B91C1C",
@@ -47,9 +47,10 @@ export const DATASET_METAS: DatasetMeta[] = [
     ],
     description:
       "Analyze Medicare Part B fee-for-service physician spending by provider, specialty, procedure, state, and place of service across 11 years.",
-    limitations: [
-      "Part B only (no hospital inpatient, Part C, or Part D)",
-      "Providers with <11 beneficiaries per code excluded",
+    sampleAnalyses: [
+      "Which specialties have the biggest gap between charges and payments?",
+      "How has opioid prescribing changed since 2015?",
+      "Compare average cost per beneficiary by state and specialty",
     ],
     href: "/medicare",
     accentColor: "#0F766E",
@@ -66,12 +67,10 @@ export const DATASET_METAS: DatasetMeta[] = [
     ],
     description:
       "Explore population health trends, risk factors, chronic conditions, SDOH, ACEs, and demographics across all 50 states and DC over 9 survey years.",
-    limitations: [
-      "Self-reported survey data",
-      "Phone-based sample",
-      "2021-2022 not included",
-      "Income categories changed in 2023",
-      "SDOH/ACE/marijuana modules are 2024 only",
+    sampleAnalyses: [
+      "Which states saw the biggest rise in obesity since 2014?",
+      "How does childhood adversity (ACEs) correlate with depression?",
+      "Diabetes rates by income level and race across all states",
     ],
     href: "/brfss",
     accentColor: "#1D4ED8",
@@ -88,11 +87,10 @@ export const DATASET_METAS: DatasetMeta[] = [
     ],
     description:
       "Explore clinical lab results, blood pressure, BMI, depression scores, and health questionnaires from a nationally representative in-person survey.",
-    limitations: [
-      "Single cycle (no time trends)",
-      "No geographic identifiers (state/ZIP)",
-      "Fasting labs available for subsample only",
-      "~12K participants (smaller than BRFSS)",
+    sampleAnalyses: [
+      "What % of undiagnosed diabetics have normal A1C but elevated glucose?",
+      "Average blood lead levels by age group and poverty status",
+      "How does sleep duration relate to BMI, blood pressure, and depression?",
     ],
     href: "/nhanes",
     accentColor: "#7C3AED",
