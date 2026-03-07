@@ -126,59 +126,113 @@ const DATASET_OPTIONS = [
   { key: "nhanes", label: "NHANES", color: "#7C3AED" },
 ];
 
-function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
-  const [generating, setGenerating] = useState(false);
-  const [showPrompt, setShowPrompt] = useState(false);
-  const [topicInput, setTopicInput] = useState("");
-  const [selectedDataset, setSelectedDataset] = useState("medicaid");
-  const [events, setEvents] = useState<GenerationEvent[]>([]);
-  const [currentPhase, setCurrentPhase] = useState<string | null>(null);
-  const [elapsed, setElapsed] = useState(0);
-  const [result, setResult] = useState<GenerationEvent | null>(null);
+interface BlogIdea {
+  id: string;
+  title: string;
+  description: string;
+  dataset: string;
+  targetKeywords: string[];
+  contentGap: string;
+  analysisQuestions: string[];
+  status: "pending" | "improved" | "published" | "deleted";
+  createdAt: number;
+  updatedAt: number;
+  actions: { type: string; timestamp: number; details?: string }[];
+  publishedSlug?: string;
+}
+
+function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
+  const [ideas, setIdeas] = useState<BlogIdea[]>([]);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [generating, setGenerating] = useState(false);
+  const [selectedDataset, setSelectedDataset] = useState("medicaid");
+  const [showDeleted, setShowDeleted] = useState(false);
+  const [improvingId, setImprovingId] = useState<string | null>(null);
+  const [feedbackText, setFeedbackText] = useState("");
+  const [publishingId, setPublishingId] = useState<string | null>(null);
+  const [publishEvents, setPublishEvents] = useState<GenerationEvent[]>([]);
+  const [publishPhase, setPublishPhase] = useState<string | null>(null);
+  const [publishResult, setPublishResult] = useState<GenerationEvent | null>(null);
+  const [elapsed, setElapsed] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const logRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+
+  const fetchIdeas = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/blog/ideas?key=${encodeURIComponent(adminKey)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setIdeas((data.ideas || []).map((i: { data: BlogIdea }) => i.data || i));
+      }
+    } catch { /* ignore */ }
+  }, [adminKey]);
 
   const fetchBlogPosts = useCallback(async () => {
     try {
-      const res = await fetch(
-        `/api/admin/blog?key=${encodeURIComponent(adminKey)}`
-      );
+      const res = await fetch(`/api/admin/blog?key=${encodeURIComponent(adminKey)}`);
       if (res.ok) {
         const data = await res.json();
         setBlogPosts(data.posts || []);
       }
-    } catch {
-      /* ignore */
-    }
+    } catch { /* ignore */ }
   }, [adminKey]);
 
   useEffect(() => {
+    fetchIdeas();
     fetchBlogPosts();
-  }, [fetchBlogPosts]);
+  }, [fetchIdeas, fetchBlogPosts]);
 
-  // Auto-scroll log
   useEffect(() => {
-    if (logRef.current) {
-      logRef.current.scrollTop = logRef.current.scrollHeight;
-    }
-  }, [events]);
+    if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
+  }, [publishEvents]);
 
-  // Focus input when prompt opens
-  useEffect(() => {
-    if (showPrompt && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [showPrompt]);
-
-  const generate = async (topic: string | null) => {
-    setShowPrompt(false);
-    setTopicInput("");
+  const generateIdeas = async () => {
     setGenerating(true);
-    setEvents([]);
-    setCurrentPhase(null);
-    setResult(null);
+    try {
+      const res = await fetch(`/api/blog/ideas?key=${encodeURIComponent(adminKey)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dataset: selectedDataset }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setIdeas((prev) => [...(data.ideas || []), ...prev]);
+      }
+    } catch { /* ignore */ }
+    setGenerating(false);
+  };
+
+  const deleteIdea = async (id: string) => {
+    try {
+      await fetch(`/api/blog/ideas/${id}?key=${encodeURIComponent(adminKey)}`, {
+        method: "DELETE",
+      });
+      setIdeas((prev) => prev.map((i) => (i.id === id ? { ...i, status: "deleted" as const } : i)));
+    } catch { /* ignore */ }
+  };
+
+  const improveIdea = async (id: string) => {
+    setImprovingId(id);
+    try {
+      const res = await fetch(`/api/blog/ideas/${id}/improve?key=${encodeURIComponent(adminKey)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ feedback: feedbackText || undefined }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setIdeas((prev) => prev.map((i) => (i.id === id ? data.idea : i)));
+      }
+    } catch { /* ignore */ }
+    setImprovingId(null);
+    setFeedbackText("");
+  };
+
+  const publishIdea = async (id: string) => {
+    setPublishingId(id);
+    setPublishEvents([]);
+    setPublishPhase(null);
+    setPublishResult(null);
     setElapsed(0);
 
     const startTime = Date.now();
@@ -187,28 +241,21 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
     }, 1000);
 
     try {
-      const fetchOptions: RequestInit = {
+      const res = await fetch(`/api/blog/ideas/${id}/publish?key=${encodeURIComponent(adminKey)}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...(topic ? { topic } : {}), dataset: selectedDataset }),
-      };
-
-      const res = await fetch(
-        `/api/blog/generate?key=${encodeURIComponent(adminKey)}`,
-        fetchOptions
-      );
+      });
 
       if (!res.ok) {
         const data = await res.json();
-        setEvents([{ phase: "error", message: data.error || `HTTP ${res.status}` }]);
-        setCurrentPhase("error");
+        setPublishEvents([{ phase: "error", message: data.error || `HTTP ${res.status}` }]);
+        setPublishPhase("error");
         return;
       }
 
       const reader = res.body?.getReader();
       if (!reader) {
-        setEvents([{ phase: "error", message: "No response stream" }]);
-        setCurrentPhase("error");
+        setPublishEvents([{ phase: "error", message: "No response stream" }]);
+        setPublishPhase("error");
         return;
       }
 
@@ -218,50 +265,37 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-
         buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split("\n");
         buffer = lines.pop() || "";
-
         for (const line of lines) {
           if (!line.trim()) continue;
           try {
             const event = JSON.parse(line) as GenerationEvent;
-            setEvents((prev) => [...prev, event]);
-            setCurrentPhase(event.phase);
-
-            if (event.phase === "done") {
-              setResult(event);
-            }
-          } catch {
-            // ignore parse errors
-          }
+            setPublishEvents((prev) => [...prev, event]);
+            setPublishPhase(event.phase);
+            if (event.phase === "done") setPublishResult(event);
+          } catch { /* ignore */ }
         }
       }
-
-      // Process any remaining buffer
       if (buffer.trim()) {
         try {
           const event = JSON.parse(buffer) as GenerationEvent;
-          setEvents((prev) => [...prev, event]);
-          setCurrentPhase(event.phase);
-          if (event.phase === "done") setResult(event);
-        } catch {
-          // ignore
-        }
+          setPublishEvents((prev) => [...prev, event]);
+          setPublishPhase(event.phase);
+          if (event.phase === "done") setPublishResult(event);
+        } catch { /* ignore */ }
       }
     } catch (err) {
-      setEvents((prev) => [
-        ...prev,
-        {
-          phase: "error",
-          message: err instanceof Error ? err.message : "Network error",
-        },
-      ]);
-      setCurrentPhase("error");
+      setPublishEvents((prev) => [...prev, {
+        phase: "error",
+        message: err instanceof Error ? err.message : "Network error",
+      }]);
+      setPublishPhase("error");
     } finally {
       if (timerRef.current) clearInterval(timerRef.current);
-      setGenerating(false);
+      setPublishingId(null);
+      fetchIdeas();
       fetchBlogPosts();
     }
   };
@@ -272,44 +306,34 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
     return m > 0 ? `${m}m ${sec}s` : `${sec}s`;
   };
 
+  const dsColor = (ds: string) => DATASET_OPTIONS.find((d) => d.key === ds)?.color || "#78716C";
+  const dsLabel = (ds: string) => DATASET_OPTIONS.find((d) => d.key === ds)?.label || ds;
+
+  const pendingIdeas = ideas.filter((i) => i.status === "pending" || i.status === "improved");
+  const publishedIdeas = ideas.filter((i) => i.status === "published");
+  const deletedIdeas = ideas.filter((i) => i.status === "deleted");
+
   return (
     <div className="card mb-6">
       <div className="p-4">
+        {/* Top bar */}
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-sm font-semibold text-muted uppercase tracking-wider">
-              Blog Posts ({blogPosts.length})
+              Blog Pipeline
             </h2>
             <p className="text-xs text-muted mt-0.5">
-              Generate data-driven posts from any dataset
+              Generate ideas, curate, then publish
             </p>
           </div>
-          <button
-            onClick={() => setShowPrompt(true)}
-            disabled={generating}
-            className="btn-primary px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            {generating ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Generating...
-              </>
-            ) : (
-              "Generate Post"
-            )}
-          </button>
-        </div>
-
-        {/* Topic prompt */}
-        {showPrompt && !generating && (
-          <div className="mb-4 p-4 rounded-sm bg-[#F5F5F0] border border-rule-light">
-            {/* Dataset selector pills */}
-            <div className="flex gap-2 mb-3">
+          <div className="flex items-center gap-2">
+            {/* Dataset pills */}
+            <div className="flex gap-1">
               {DATASET_OPTIONS.map((ds) => (
                 <button
                   key={ds.key}
                   onClick={() => setSelectedDataset(ds.key)}
-                  className="px-3 py-1.5 text-xs font-medium rounded-sm border transition-colors"
+                  className="px-2 py-1 text-xs font-medium rounded-sm border transition-colors"
                   style={
                     selectedDataset === ds.key
                       ? { backgroundColor: ds.color + "15", borderColor: ds.color, color: ds.color }
@@ -320,204 +344,252 @@ function BlogGenerationPanel({ adminKey }: { adminKey: string }) {
                 </button>
               ))}
             </div>
-            <p className="text-sm text-foreground mb-3">
-              Enter a topic or let Claude choose one automatically.
-            </p>
-            <div className="flex gap-2">
-              <input
-                ref={inputRef}
-                type="text"
-                value={topicInput}
-                onChange={(e) => setTopicInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && topicInput.trim()) {
-                    generate(topicInput.trim());
-                  } else if (e.key === "Escape") {
-                    setShowPrompt(false);
-                    setTopicInput("");
-                  }
-                }}
-                placeholder="e.g. Telehealth spending growth since 2020"
-                className="flex-1 px-3 py-2 text-sm bg-white border border-rule rounded-sm text-foreground placeholder:text-muted focus:outline-none focus:border-accent transition-colors"
-              />
-            </div>
-            <div className="flex items-center gap-2 mt-3">
-              {topicInput.trim() && (
-                <button
-                  onClick={() => generate(topicInput.trim())}
-                  className="btn-primary px-4 py-2 text-sm"
-                >
-                  Generate
-                </button>
+            <button
+              onClick={generateIdeas}
+              disabled={generating || publishingId !== null}
+              className="btn-primary px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              {generating ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                "Generate Ideas"
               )}
-              <button
-                onClick={() => generate(null)}
-                className="px-4 py-2 text-sm rounded-sm bg-surface border border-rule text-muted hover:text-foreground transition-colors"
-              >
-                Let Claude Choose
-              </button>
-              <button
-                onClick={() => {
-                  setShowPrompt(false);
-                  setTopicInput("");
-                }}
-                className="px-3 py-2 text-sm text-muted hover:text-foreground transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
+            </button>
           </div>
-        )}
+        </div>
 
-        {/* Generation progress */}
-        {(generating || events.length > 0) && (
-          <div className="mb-4">
-            {/* Phase pipeline */}
-            <div className="flex items-center gap-1 mb-3 overflow-x-auto">
-              {PHASE_ORDER.slice(0, -1).map((phase, i) => {
-                const phaseIdx = currentPhase
-                  ? PHASE_ORDER.indexOf(currentPhase)
-                  : -1;
-                const thisIdx = PHASE_ORDER.indexOf(phase);
-                const isActive = currentPhase === phase;
-                const isDone =
-                  phaseIdx > thisIdx ||
-                  currentPhase === "done" ||
-                  (currentPhase === "error" && phaseIdx > thisIdx);
-                const isError = currentPhase === "error" && isActive;
-
-                return (
-                  <div key={phase} className="flex items-center gap-1">
-                    <div
-                      className={`px-2.5 py-1 rounded-sm text-xs font-medium whitespace-nowrap transition-colors ${
-                        isError
-                          ? "bg-red-50 text-red-700 border border-red-200"
-                          : isActive
-                          ? "bg-red-50 text-accent border border-red-200"
-                          : isDone
-                          ? "bg-green-50 text-green-700 border border-green-200"
-                          : "bg-[#F5F5F0] text-muted border border-rule-light"
-                      }`}
-                    >
-                      {isDone && !isActive ? "\u2713 " : ""}
-                      {PHASE_LABELS[phase]}
+        {/* Pending/Improved Ideas */}
+        {pendingIdeas.length > 0 && (
+          <div className="space-y-3 mb-4">
+            {pendingIdeas.map((idea) => (
+              <div
+                key={idea.id}
+                className="bg-[#F5F5F0] rounded-sm border border-rule-light p-4"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span
+                        className="px-1.5 py-0.5 text-xs font-medium rounded-sm"
+                        style={{ backgroundColor: dsColor(idea.dataset) + "15", color: dsColor(idea.dataset) }}
+                      >
+                        {dsLabel(idea.dataset)}
+                      </span>
+                      {idea.status === "improved" && (
+                        <span className="px-1.5 py-0.5 text-xs font-medium rounded-sm bg-teal-50 text-teal-700 border border-teal-200">
+                          Improved
+                        </span>
+                      )}
                     </div>
-                    {i < PHASE_ORDER.length - 2 && (
-                      <span className="text-rule text-xs">&rarr;</span>
+                    <p className="text-sm font-semibold text-foreground">{idea.title}</p>
+                    <p className="text-xs text-body mt-1">{idea.description}</p>
+                    {idea.targetKeywords?.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {idea.targetKeywords.map((kw, ki) => (
+                          <span key={ki} className="px-1.5 py-0.5 text-xs bg-white border border-rule-light rounded-sm text-muted">
+                            {kw}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    {idea.analysisQuestions?.length > 0 && (
+                      <ol className="mt-2 space-y-0.5">
+                        {idea.analysisQuestions.map((q, qi) => (
+                          <li key={qi} className="text-xs text-body pl-4 relative">
+                            <span className="absolute left-0 text-muted">{qi + 1}.</span>
+                            {q}
+                          </li>
+                        ))}
+                      </ol>
+                    )}
+                    <p className="text-xs text-muted mt-2">
+                      Created {new Date(idea.createdAt).toLocaleDateString()}
+                      {idea.actions?.length > 1 && ` \u00B7 ${idea.actions.length} actions`}
+                    </p>
+                  </div>
+                  {/* Action buttons */}
+                  <div className="flex flex-col gap-1.5 shrink-0">
+                    <button
+                      onClick={() => deleteIdea(idea.id)}
+                      disabled={publishingId !== null}
+                      className="px-2.5 py-1.5 text-xs rounded-sm border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 transition-colors disabled:opacity-50"
+                      title="Delete"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (improvingId === idea.id) {
+                          setImprovingId(null);
+                          setFeedbackText("");
+                        } else {
+                          setImprovingId(idea.id);
+                          setFeedbackText("");
+                        }
+                      }}
+                      disabled={publishingId !== null || (improvingId !== null && improvingId !== idea.id)}
+                      className="px-2.5 py-1.5 text-xs rounded-sm border border-teal-200 bg-teal-50 text-teal-700 hover:bg-teal-100 transition-colors disabled:opacity-50"
+                      title="Improve"
+                    >
+                      Improve
+                    </button>
+                    <button
+                      onClick={() => publishIdea(idea.id)}
+                      disabled={publishingId !== null || generating}
+                      className="px-2.5 py-1.5 text-xs rounded-sm border border-green-200 bg-green-50 text-green-700 hover:bg-green-100 transition-colors disabled:opacity-50"
+                      title="Publish"
+                    >
+                      Publish
+                    </button>
+                  </div>
+                </div>
+
+                {/* Inline improve feedback */}
+                {improvingId === idea.id && (
+                  <div className="mt-3 pt-3 border-t border-rule-light">
+                    <textarea
+                      value={feedbackText}
+                      onChange={(e) => setFeedbackText(e.target.value)}
+                      placeholder="Optional feedback for refinement (e.g., 'focus more on regional differences')"
+                      className="w-full px-3 py-2 text-sm bg-white border border-rule rounded-sm text-foreground placeholder:text-muted focus:outline-none focus:border-teal-500 transition-colors resize-none"
+                      rows={2}
+                    />
+                    <div className="flex gap-2 mt-2">
+                      <button
+                        onClick={() => improveIdea(idea.id)}
+                        className="px-3 py-1.5 text-xs rounded-sm bg-teal-600 text-white hover:bg-teal-700 transition-colors flex items-center gap-1.5"
+                      >
+                        Refine
+                      </button>
+                      <button
+                        onClick={() => { setImprovingId(null); setFeedbackText(""); }}
+                        className="px-3 py-1.5 text-xs text-muted hover:text-foreground transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Publishing progress (shown below the card being published) */}
+                {publishingId === idea.id && publishEvents.length > 0 && (
+                  <div className="mt-3 pt-3 border-t border-rule-light">
+                    {/* Phase pipeline */}
+                    <div className="flex items-center gap-1 mb-2 overflow-x-auto">
+                      {PHASE_ORDER.slice(0, -1).map((phase, i) => {
+                        const phaseIdx = publishPhase ? PHASE_ORDER.indexOf(publishPhase) : -1;
+                        const thisIdx = PHASE_ORDER.indexOf(phase);
+                        const isActive = publishPhase === phase;
+                        const isDone = phaseIdx > thisIdx || publishPhase === "done" || (publishPhase === "error" && phaseIdx > thisIdx);
+                        const isError = publishPhase === "error" && isActive;
+
+                        return (
+                          <div key={phase} className="flex items-center gap-1">
+                            <div className={`px-2 py-0.5 rounded-sm text-xs font-medium whitespace-nowrap transition-colors ${
+                              isError ? "bg-red-50 text-red-700 border border-red-200"
+                              : isActive ? "bg-red-50 text-accent border border-red-200"
+                              : isDone ? "bg-green-50 text-green-700 border border-green-200"
+                              : "bg-white text-muted border border-rule-light"
+                            }`}>
+                              {isDone && !isActive ? "\u2713 " : ""}{PHASE_LABELS[phase]}
+                            </div>
+                            {i < PHASE_ORDER.length - 2 && <span className="text-rule text-xs">&rarr;</span>}
+                          </div>
+                        );
+                      })}
+                      <span className="text-xs text-muted ml-2 font-mono">{formatElapsed(elapsed)}</span>
+                    </div>
+                    <div
+                      ref={logRef}
+                      className="bg-white rounded-sm border border-rule-light p-2 max-h-32 overflow-y-auto font-mono text-xs space-y-0.5"
+                    >
+                      {publishEvents.map((ev, i) => (
+                        <div key={i} className={`flex gap-2 ${ev.phase === "error" ? "text-red-700" : ev.phase === "done" ? "text-green-700" : "text-body"}`}>
+                          <span className="text-muted shrink-0 w-12 text-right">{PHASE_LABELS[ev.phase]?.slice(0, 5) || ev.phase}</span>
+                          <span>{ev.message}</span>
+                        </div>
+                      ))}
+                    </div>
+                    {publishResult && (
+                      <div className="mt-2 p-2 rounded-sm bg-green-50 border border-green-200 flex items-center justify-between">
+                        <p className="text-xs text-green-700">
+                          Published! {publishResult.wordCount} words &middot; {Math.round((publishResult.generationMs || 0) / 1000)}s
+                        </p>
+                        <a href={`/blog/${publishResult.slug}`} target="_blank" rel="noopener noreferrer" className="text-xs text-teal hover:underline">
+                          View post &rarr;
+                        </a>
+                      </div>
                     )}
                   </div>
-                );
-              })}
-              {generating && (
-                <span className="text-xs text-muted ml-2 font-mono whitespace-nowrap">
-                  {formatElapsed(elapsed)}
-                </span>
-              )}
-            </div>
-
-            {/* Event log */}
-            <div
-              ref={logRef}
-              className="bg-[#F5F5F0] rounded-sm border border-rule-light p-3 max-h-48 overflow-y-auto font-mono text-xs space-y-1"
-            >
-              {events.map((ev, i) => (
-                <div
-                  key={i}
-                  className={`flex gap-2 ${
-                    ev.phase === "error"
-                      ? "text-red-700"
-                      : ev.phase === "done"
-                      ? "text-green-700"
-                      : "text-body"
-                  }`}
-                >
-                  <span className="text-muted shrink-0 w-[3.5rem] text-right">
-                    {PHASE_LABELS[ev.phase]?.slice(0, 5) || ev.phase}
-                  </span>
-                  <span>{ev.message}</span>
-                </div>
-              ))}
-              {generating && events.length === 0 && (
-                <div className="text-muted">Starting generation...</div>
-              )}
-            </div>
-
-            {/* Result card */}
-            {result && (
-              <div className="mt-3 p-3 rounded-sm bg-green-50 border border-green-200">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">
-                      {result.title}
-                    </p>
-                    <p className="text-xs text-muted mt-1">
-                      {result.wordCount} words &middot;{" "}
-                      {result.analysisSteps} analyses &middot;{" "}
-                      {Math.round((result.generationMs || 0) / 1000)}s
-                    </p>
-                    <p className="text-xs text-muted mt-1">
-                      Committed to GitHub. Vercel will auto-deploy in ~60s.
-                    </p>
-                  </div>
-                  <a
-                    href={`/blog/${result.slug}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-teal hover:underline shrink-0 mt-1"
-                  >
-                    View post &rarr;
-                  </a>
-                </div>
-              </div>
-            )}
-
-            {currentPhase === "error" && (
-              <div className="mt-3 p-3 rounded-sm bg-red-50 border border-red-200">
-                <p className="text-xs text-red-700">
-                  Generation failed. Check the log above for details.
-                </p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Existing posts */}
-        {blogPosts.length > 0 ? (
-          <div className="space-y-2">
-            {blogPosts.map((post) => (
-              <div
-                key={post.slug}
-                className="flex items-center justify-between bg-[#F5F5F0] rounded-sm p-3 border border-rule-light"
-              >
-                <div className="min-w-0">
-                  <a
-                    href={`/blog/${post.slug}`}
-                    className="text-sm text-foreground hover:text-teal transition-colors block truncate"
-                  >
-                    {post.title}
-                  </a>
-                  <p className="text-xs text-muted mt-0.5">
-                    {new Date(post.date).toLocaleDateString()} &middot;{" "}
-                    {post.wordCount} words
-                  </p>
-                </div>
-                <a
-                  href={`/blog/${post.slug}`}
-                  className="text-xs text-teal hover:underline shrink-0 ml-4"
-                >
-                  View &rarr;
-                </a>
+                )}
               </div>
             ))}
           </div>
-        ) : (
-          !generating &&
-          events.length === 0 && (
-            <p className="text-xs text-muted">
-              No blog posts yet. Click &ldquo;Generate Post&rdquo; to create
-              one.
-            </p>
-          )
+        )}
+
+        {pendingIdeas.length === 0 && !generating && publishEvents.length === 0 && (
+          <p className="text-xs text-muted mb-4">
+            No pending ideas. Click &ldquo;Generate Ideas&rdquo; to create a batch.
+          </p>
+        )}
+
+        {/* Published ideas */}
+        {(publishedIdeas.length > 0 || blogPosts.length > 0) && (
+          <div className="mb-4">
+            <h3 className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">
+              Published ({blogPosts.length})
+            </h3>
+            <div className="space-y-1.5">
+              {blogPosts.map((post) => (
+                <div key={post.slug} className="flex items-center justify-between bg-[#F5F5F0] rounded-sm p-2.5 border border-rule-light">
+                  <div className="min-w-0">
+                    <a href={`/blog/${post.slug}`} className="text-sm text-foreground hover:text-teal transition-colors block truncate">
+                      {post.title}
+                    </a>
+                    <p className="text-xs text-muted mt-0.5">
+                      {new Date(post.date).toLocaleDateString()} &middot; {post.wordCount} words
+                    </p>
+                  </div>
+                  <a href={`/blog/${post.slug}`} className="text-xs text-teal hover:underline shrink-0 ml-4">
+                    View &rarr;
+                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Deleted ideas (collapsed) */}
+        {deletedIdeas.length > 0 && (
+          <div>
+            <button
+              onClick={() => setShowDeleted(!showDeleted)}
+              className="text-xs text-muted hover:text-foreground transition-colors flex items-center gap-1"
+            >
+              <span className="font-mono">{showDeleted ? "\u25BC" : "\u25B6"}</span>
+              Deleted ({deletedIdeas.length})
+            </button>
+            {showDeleted && (
+              <div className="mt-2 space-y-1.5">
+                {deletedIdeas.map((idea) => (
+                  <div key={idea.id} className="bg-[#F5F5F0] rounded-sm p-2.5 border border-rule-light opacity-60">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="px-1.5 py-0.5 text-xs font-medium rounded-sm"
+                        style={{ backgroundColor: dsColor(idea.dataset) + "15", color: dsColor(idea.dataset) }}
+                      >
+                        {dsLabel(idea.dataset)}
+                      </span>
+                      <span className="text-sm text-muted line-through">{idea.title}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>
@@ -999,8 +1071,8 @@ function AdminDashboard() {
         </a>
       </div>
 
-      {/* Blog Management */}
-      {key && <BlogGenerationPanel adminKey={key} />}
+      {/* Blog Pipeline */}
+      {key && <BlogIdeaPipeline adminKey={key} />}
 
       {/* Sentry Link */}
       <div className="card mb-6 p-4 flex items-center justify-between">

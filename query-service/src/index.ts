@@ -4,7 +4,7 @@ import { createWriteStream, createReadStream, existsSync, readdirSync, statSync,
 import { pipeline } from "stream/promises";
 import { Readable } from "stream";
 import { initDB, executeSQL, reloadViews, isReady } from "./db.js";
-import { initMetricsDB, recordMetrics, getMetrics, getDetailedUsers, getDailyQueries, getRetention, recordFeedItem, getFeedItems, recordFeedback, getFeedback, saveShare, getShare } from "./metrics-db.js";
+import { initMetricsDB, recordMetrics, getMetrics, getDetailedUsers, getDailyQueries, getRetention, recordFeedItem, getFeedItems, recordFeedback, getFeedback, saveShare, getShare, saveBlogIdeas, getBlogIdeas, getBlogIdea, updateBlogIdea, deleteBlogIdea } from "./metrics-db.js";
 
 const DATA_DIR = process.env.DATA_DIR || "/data";
 
@@ -424,6 +424,102 @@ app.get("/share/:id", async (c) => {
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to fetch share";
     console.error("Share fetch error:", message);
+    return c.json({ error: message }, 500);
+  }
+});
+
+// --- Blog Ideas ---
+
+// Auth middleware for all blog-ideas routes
+app.use("/blog-ideas/*", async (c, next) => {
+  const auth = c.req.header("Authorization");
+  if (!API_KEY) return next();
+  if (auth !== `Bearer ${API_KEY}`) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  return next();
+});
+
+app.use("/blog-ideas", async (c, next) => {
+  const auth = c.req.header("Authorization");
+  if (!API_KEY) return next();
+  if (auth !== `Bearer ${API_KEY}`) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  return next();
+});
+
+// Save batch of ideas
+app.post("/blog-ideas", async (c) => {
+  try {
+    const body = await c.req.json();
+    if (!Array.isArray(body.ideas)) {
+      return c.json({ error: "ideas array is required" }, 400);
+    }
+    await saveBlogIdeas(body.ideas);
+    return c.json({ ok: true, count: body.ideas.length });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to save ideas";
+    console.error("Blog ideas save error:", message);
+    return c.json({ error: message }, 500);
+  }
+});
+
+// List ideas with optional status filter
+app.get("/blog-ideas", async (c) => {
+  try {
+    const status = c.req.query("status") || undefined;
+    const ideas = await getBlogIdeas(status);
+    return c.json({ ideas });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to fetch ideas";
+    console.error("Blog ideas fetch error:", message);
+    return c.json({ error: message }, 500);
+  }
+});
+
+// Get single idea
+app.get("/blog-ideas/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const idea = await getBlogIdea(id);
+    if (!idea) {
+      return c.json({ error: "Idea not found" }, 404);
+    }
+    return c.json({ idea });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to fetch idea";
+    console.error("Blog idea fetch error:", message);
+    return c.json({ error: message }, 500);
+  }
+});
+
+// Update idea
+app.patch("/blog-ideas/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const body = await c.req.json();
+    if (!body.data || !body.status) {
+      return c.json({ error: "data and status are required" }, 400);
+    }
+    await updateBlogIdea(id, typeof body.data === "string" ? body.data : JSON.stringify(body.data), body.status);
+    return c.json({ ok: true });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to update idea";
+    console.error("Blog idea update error:", message);
+    return c.json({ error: message }, 500);
+  }
+});
+
+// Soft-delete idea
+app.delete("/blog-ideas/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    await deleteBlogIdea(id);
+    return c.json({ ok: true });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to delete idea";
+    console.error("Blog idea delete error:", message);
     return c.json({ error: message }, 500);
   }
 });

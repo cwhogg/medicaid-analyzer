@@ -134,6 +134,16 @@ export async function initMetricsDB(): Promise<void> {
     )
   `);
 
+  await metricsDb.run(`
+    CREATE TABLE IF NOT EXISTS blog_ideas (
+      id VARCHAR PRIMARY KEY,
+      status VARCHAR NOT NULL DEFAULT 'pending',
+      data VARCHAR NOT NULL,
+      created_at BIGINT NOT NULL,
+      updated_at BIGINT NOT NULL
+    )
+  `);
+
   // Backfill dataset='medicaid' on all NULL rows (pre-filtering era, before 2026-03-02)
   await metricsDb.run(`UPDATE feed_items SET dataset = 'medicaid' WHERE dataset IS NULL`);
   await metricsDb.run(`UPDATE query_log SET dataset = 'medicaid' WHERE dataset IS NULL`);
@@ -784,4 +794,72 @@ export async function getFeedback(limit = 50): Promise<Record<string, unknown>[]
     ip: r.ip ? maskIP(String(r.ip)) : null,
     timestamp: r.timestamp,
   }));
+}
+
+// --- Blog Ideas ---
+
+export async function saveBlogIdeas(ideas: { id: string; status: string; data: string }[]): Promise<void> {
+  if (!metricsDb) throw new Error("Metrics DB not initialized");
+  const now = Date.now();
+  for (const idea of ideas) {
+    await metricsDb.run(
+      `INSERT INTO blog_ideas (id, status, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?)`,
+      idea.id, idea.status, idea.data, now, now
+    );
+  }
+}
+
+export async function getBlogIdeas(status?: string): Promise<Record<string, unknown>[]> {
+  if (!metricsDb) throw new Error("Metrics DB not initialized");
+  let rows: Record<string, unknown>[];
+  if (status) {
+    rows = allToNumbers(await metricsDb.all(
+      `SELECT * FROM blog_ideas WHERE status = ? ORDER BY created_at DESC`, status
+    ) as Record<string, unknown>[]);
+  } else {
+    rows = allToNumbers(await metricsDb.all(
+      `SELECT * FROM blog_ideas ORDER BY created_at DESC`
+    ) as Record<string, unknown>[]);
+  }
+  return rows.map((r) => {
+    let parsed = null;
+    try { parsed = JSON.parse(r.data as string); } catch { /* ignore */ }
+    return { id: r.id, status: r.status, data: parsed, created_at: r.created_at, updated_at: r.updated_at };
+  });
+}
+
+export async function getBlogIdea(id: string): Promise<Record<string, unknown> | null> {
+  if (!metricsDb) throw new Error("Metrics DB not initialized");
+  const rows = await metricsDb.all(
+    `SELECT * FROM blog_ideas WHERE id = ?`, id
+  ) as Record<string, unknown>[];
+  if (rows.length === 0) return null;
+  const r = rows[0];
+  let parsed = null;
+  try { parsed = JSON.parse(r.data as string); } catch { /* ignore */ }
+  return { id: r.id, status: r.status, data: parsed, created_at: Number(r.created_at), updated_at: Number(r.updated_at) };
+}
+
+export async function updateBlogIdea(id: string, data: string, status: string): Promise<void> {
+  if (!metricsDb) throw new Error("Metrics DB not initialized");
+  await metricsDb.run(
+    `UPDATE blog_ideas SET data = ?, status = ?, updated_at = ? WHERE id = ?`,
+    data, status, Date.now(), id
+  );
+}
+
+export async function deleteBlogIdea(id: string): Promise<void> {
+  if (!metricsDb) throw new Error("Metrics DB not initialized");
+  // Soft-delete: set status='deleted' and append action to data JSON
+  const rows = await metricsDb.all(`SELECT data FROM blog_ideas WHERE id = ?`, id) as Record<string, unknown>[];
+  if (rows.length === 0) return;
+  let parsed: Record<string, unknown> = {};
+  try { parsed = JSON.parse(rows[0].data as string); } catch { /* ignore */ }
+  const actions = Array.isArray(parsed.actions) ? parsed.actions : [];
+  actions.push({ type: "deleted", timestamp: Date.now() });
+  parsed.actions = actions;
+  await metricsDb.run(
+    `UPDATE blog_ideas SET status = 'deleted', data = ?, updated_at = ? WHERE id = ?`,
+    JSON.stringify(parsed), Date.now(), id
+  );
 }
