@@ -70,7 +70,7 @@ CRITICAL: Your analysisQuestions MUST be answerable using ONLY the columns liste
 ${schemaPrompt}
 
 Given the current idea and optional feedback, return an improved version as a JSON object with these fields:
-- title: SEO-optimized article title (50-70 chars)
+- title: An engaging QUESTION that a curious person would search for (50-70 chars). Must end with a question mark. Examples: "How Many Americans Have Diabetes and Don't Know It?", "Does Where You Live Predict Your Health?". Never use colon-separated labels like "Topic: Subtitle" — always a natural question.
 - description: Brief summary (1-2 sentences)
 - targetKeywords: array of 3-5 SEO keywords
 - contentGap: what gap this content fills (1 sentence)

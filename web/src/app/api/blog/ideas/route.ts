@@ -104,7 +104,7 @@ CRITICAL: Your analysisQuestions MUST be answerable using ONLY the columns liste
 ${schemaPrompt}
 
 Generate 5-8 distinct blog post ideas. Each idea should have:
-- title: SEO-optimized article title (50-70 chars)
+- title: An engaging QUESTION that a curious person would search for (50-70 chars). Must end with a question mark. Examples: "How Many Americans Have Diabetes and Don't Know It?", "Does Where You Live Predict Your Health?". Never use colon-separated labels like "Topic: Subtitle" — always a natural question.
 - description: Brief summary of what the article will cover (1-2 sentences)
 - targetKeywords: array of 3-5 SEO keywords
 - contentGap: what gap this content fills (1 sentence)
