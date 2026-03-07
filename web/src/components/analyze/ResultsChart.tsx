@@ -160,10 +160,10 @@ export function ResultsChart({ columns, rows, chartType }: ResultsChartProps) {
     return { data, labelKey, valueKeys };
   }, [columns, rows]);
 
-  // Reset visible keys when valueKeys change
+  // Reset visible keys when valueKeys change (sample_n hidden by default)
   useEffect(() => {
-    setVisibleKeys(new Set(valueKeys));
-  }, [valueKeys.join(",")]);
+    setVisibleKeys(new Set(valueKeys.filter((k) => !/^sample_n$/i.test(k))));
+  }, [valueKeys.join(",")]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const activeKeys = useMemo(() => {
     const filtered = valueKeys.filter((k) => visibleKeys.has(k));
