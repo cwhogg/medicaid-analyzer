@@ -11,6 +11,14 @@ const LiveDemo = dynamic(
   { ssr: false }
 );
 
+const SampleAnalyses = dynamic(
+  () =>
+    import("@/components/landing/SampleAnalyses").then(
+      (m) => m.SampleAnalyses
+    ),
+  { ssr: false }
+);
+
 export default function Home() {
   return (
     <>
@@ -28,6 +36,7 @@ export default function Home() {
           </div>
         </section>
 
+        <SampleAnalyses />
         <LiveDemo />
         <Features />
       </main>
