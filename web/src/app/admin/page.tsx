@@ -181,6 +181,10 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
   const [savingEdit, setSavingEdit] = useState(false);
+  const [editingIdeaId, setEditingIdeaId] = useState<string | null>(null);
+  const [editIdeaTitle, setEditIdeaTitle] = useState("");
+  const [editIdeaDesc, setEditIdeaDesc] = useState("");
+  const [editIdeaQuestions, setEditIdeaQuestions] = useState<string[]>([]);
   // Generate streaming state
   const [generatingId, setGeneratingId] = useState<string | null>(null);
   const [generateEvents, setGenerateEvents] = useState<GenerationEvent[]>([]);
@@ -283,6 +287,27 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
     setSavingEdit(false);
     setEditingId(null);
     setEditContent("");
+  };
+
+  const saveIdeaEdit = async (id: string) => {
+    setSavingEdit(true);
+    try {
+      const res = await fetch(`/api/blog/ideas/${id}?key=${encodeURIComponent(adminKey)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: editIdeaTitle,
+          description: editIdeaDesc,
+          analysisQuestions: editIdeaQuestions.filter((q) => q.trim()),
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setIdeas((prev) => prev.map((i) => (i.id === id ? { ...i, ...data.idea } : i)));
+      }
+    } catch { /* ignore */ }
+    setSavingEdit(false);
+    setEditingIdeaId(null);
   };
 
   const queueIdea = async (id: string) => {
@@ -714,6 +739,40 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                     </div>
                     <div className="flex flex-col gap-1.5 shrink-0">
                       <button
+                        onClick={() => {
+                          if (editingIdeaId === idea.id) {
+                            setEditingIdeaId(null);
+                          } else {
+                            setImprovingId(null);
+                            setFeedbackText("");
+                            setEditingIdeaId(idea.id);
+                            setEditIdeaTitle(idea.title);
+                            setEditIdeaDesc(idea.description);
+                            setEditIdeaQuestions([...(idea.analysisQuestions || [])]);
+                          }
+                        }}
+                        disabled={busy && editingIdeaId !== idea.id}
+                        className="px-2.5 py-1.5 text-xs rounded-sm border border-stone-300 bg-white text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (improvingId === idea.id) {
+                            setImprovingId(null);
+                            setFeedbackText("");
+                          } else {
+                            setEditingIdeaId(null);
+                            setImprovingId(idea.id);
+                            setFeedbackText("");
+                          }
+                        }}
+                        disabled={busy && improvingId !== idea.id}
+                        className="px-2.5 py-1.5 text-xs rounded-sm border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors disabled:opacity-50"
+                      >
+                        Improve
+                      </button>
+                      <button
                         onClick={() => generateArticle(idea.id)}
                         disabled={busy}
                         className="px-2.5 py-1.5 text-xs rounded-sm border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors disabled:opacity-50"
@@ -722,6 +781,90 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                       </button>
                     </div>
                   </div>
+
+                  {/* Inline edit for queued idea */}
+                  {editingIdeaId === idea.id && (
+                    <div className="mt-3 pt-3 border-t border-rule-light space-y-2">
+                      <div>
+                        <label className="text-xs font-medium text-muted block mb-0.5">Title</label>
+                        <input
+                          type="text"
+                          value={editIdeaTitle}
+                          onChange={(e) => setEditIdeaTitle(e.target.value)}
+                          className="w-full px-3 py-1.5 text-sm bg-white border border-rule rounded-sm text-foreground focus:outline-none focus:border-stone-500 transition-colors"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-muted block mb-0.5">Description</label>
+                        <textarea
+                          value={editIdeaDesc}
+                          onChange={(e) => setEditIdeaDesc(e.target.value)}
+                          className="w-full px-3 py-1.5 text-sm bg-white border border-rule rounded-sm text-foreground focus:outline-none focus:border-stone-500 transition-colors resize-none"
+                          rows={2}
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-muted block mb-0.5">Analysis Questions</label>
+                        {editIdeaQuestions.map((q, qi) => (
+                          <div key={qi} className="flex gap-1.5 mb-1">
+                            <span className="text-xs text-muted pt-2 shrink-0">{qi + 1}.</span>
+                            <textarea
+                              value={q}
+                              onChange={(e) => {
+                                const updated = [...editIdeaQuestions];
+                                updated[qi] = e.target.value;
+                                setEditIdeaQuestions(updated);
+                              }}
+                              className="flex-1 px-2 py-1 text-xs bg-white border border-rule rounded-sm text-foreground focus:outline-none focus:border-stone-500 transition-colors resize-none"
+                              rows={2}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => saveIdeaEdit(idea.id)}
+                          disabled={savingEdit}
+                          className="px-3 py-1.5 text-xs rounded-sm border border-stone-300 bg-stone-800 text-white hover:bg-stone-900 transition-colors disabled:opacity-50"
+                        >
+                          {savingEdit ? "Saving..." : "Save Changes"}
+                        </button>
+                        <button
+                          onClick={() => setEditingIdeaId(null)}
+                          className="px-3 py-1.5 text-xs text-muted hover:text-foreground transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Inline improve for queued idea */}
+                  {improvingId === idea.id && (
+                    <div className="mt-3 pt-3 border-t border-rule-light">
+                      <textarea
+                        value={feedbackText}
+                        onChange={(e) => setFeedbackText(e.target.value)}
+                        placeholder="Optional feedback for refinement (e.g., 'focus more on regional differences', 'sharpen the analysis questions')"
+                        className="w-full px-3 py-2 text-sm bg-white border border-rule rounded-sm text-foreground placeholder:text-muted focus:outline-none focus:border-emerald-500 transition-colors resize-none"
+                        rows={2}
+                      />
+                      <div className="flex gap-2 mt-2">
+                        <button
+                          onClick={() => improveIdea(idea.id)}
+                          className="px-3 py-1.5 text-xs rounded-sm bg-emerald-600 text-white hover:bg-emerald-700 transition-colors flex items-center gap-1.5"
+                        >
+                          Refine
+                        </button>
+                        <button
+                          onClick={() => { setImprovingId(null); setFeedbackText(""); }}
+                          className="px-3 py-1.5 text-xs text-muted hover:text-foreground transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Generate streaming progress */}
                   {generatingId === idea.id && generateEvents.length > 0 && (
