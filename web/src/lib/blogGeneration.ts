@@ -233,13 +233,13 @@ Turn the provided query results into an 800–1200 word article that makes one c
 
 ## Twitter thread (REQUIRED — include at the very end)
 After the article, output a separator line "---TWEETS---" followed by exactly two lines:
-- TWEET1: A punchy "Did you know?" hook featuring the single most surprising or counter-intuitive stat from the article. Must cite a real number from the data. Under 250 characters. No hashtags, no links, no vague language like "the data tells a striking story." Be specific and provocative.
-- TWEET2: The article title as a question, followed by a bare URL on its own line. The URL must be the LAST thing in the tweet so Twitter expands the link card. Format: "{title}\n\nhttps://www.openhealthdatahub.com/blog/{slug}"
+- TWEET1: A punchy hook featuring the single most surprising, counter-intuitive, or compelling percentage, dollar amount, or trend from the article. Use percentages, dollar figures, or rate changes — NOT raw sample sizes or "N out of M" counts. Under 250 characters. No hashtags, no links, no vague language like "the data tells a striking story." Be specific and provocative.
+- TWEET2: "Read more in this blog post:" followed by the article title, then a bare URL on its own line. The URL must be the LAST thing in the tweet so Twitter expands the link card. Format: "Read more in this blog post: {title}\n\nhttps://www.openhealthdatahub.com/blog/{slug}"
 
 Example output format:
 ---TWEETS---
-TWEET1: Did you know? Medicare spending on nurse practitioners jumped 47% in just two years — faster than any other provider type.
-TWEET2: Are Non-Physician Providers Taking Over Medicare Billing?\n\nhttps://www.openhealthdatahub.com/blog/are-non-physician-providers-taking-over-medicare-billing`,
+TWEET1: Medicare spending on nurse practitioners jumped 47% in just two years — faster than any other provider type.
+TWEET2: Read more in this blog post: Are Non-Physician Providers Taking Over Medicare Billing?\n\nhttps://www.openhealthdatahub.com/blog/are-non-physician-providers-taking-over-medicare-billing`,
     messages: [
       {
         role: "user",
