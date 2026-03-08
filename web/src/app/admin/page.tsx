@@ -185,6 +185,11 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
   const [editIdeaTitle, setEditIdeaTitle] = useState("");
   const [editIdeaDesc, setEditIdeaDesc] = useState("");
   const [editIdeaQuestions, setEditIdeaQuestions] = useState<string[]>([]);
+  // Published post editing state
+  const [editingPostSlug, setEditingPostSlug] = useState<string | null>(null);
+  const [editPostContent, setEditPostContent] = useState("");
+  const [editPostLoading, setEditPostLoading] = useState(false);
+  const [editPostSaving, setEditPostSaving] = useState(false);
   // Generate streaming state
   const [generatingId, setGeneratingId] = useState<string | null>(null);
   const [generateEvents, setGenerateEvents] = useState<GenerationEvent[]>([]);
@@ -308,6 +313,41 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
     } catch { /* ignore */ }
     setSavingEdit(false);
     setEditingIdeaId(null);
+  };
+
+  const loadPublishedPost = async (slug: string) => {
+    setEditPostLoading(true);
+    setEditingPostSlug(slug);
+    try {
+      const res = await fetch(`/api/admin/blog?key=${encodeURIComponent(adminKey)}&slug=${encodeURIComponent(slug)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setEditPostContent(data.content || "");
+      }
+    } catch { /* ignore */ }
+    setEditPostLoading(false);
+  };
+
+  const savePublishedPost = async () => {
+    if (!editingPostSlug) return;
+    setEditPostSaving(true);
+    try {
+      const res = await fetch(`/api/admin/blog?key=${encodeURIComponent(adminKey)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: editingPostSlug, content: editPostContent }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        // Update word count in local state
+        setBlogPosts((prev) => prev.map((p) =>
+          p.slug === editingPostSlug ? { ...p, wordCount: data.wordCount } : p
+        ));
+        setEditingPostSlug(null);
+        setEditPostContent("");
+      }
+    } catch { /* ignore */ }
+    setEditPostSaving(false);
   };
 
   const queueIdea = async (id: string) => {
@@ -1054,18 +1094,73 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
             </h3>
             <div className="space-y-1.5">
               {blogPosts.map((post) => (
-                <div key={post.slug} className="flex items-center justify-between bg-[#F5F5F0] rounded-sm p-2.5 border border-rule-light">
-                  <div className="min-w-0">
-                    <a href={`/blog/${post.slug}`} className="text-sm text-foreground hover:text-teal transition-colors block truncate">
-                      {post.title}
-                    </a>
-                    <p className="text-xs text-muted mt-0.5">
-                      {new Date(post.date).toLocaleDateString()} &middot; {post.wordCount} words
-                    </p>
+                <div key={post.slug} className="bg-[#F5F5F0] rounded-sm border border-rule-light">
+                  <div className="flex items-center justify-between p-2.5">
+                    <div className="min-w-0">
+                      <a href={`/blog/${post.slug}`} className="text-sm text-foreground hover:text-teal transition-colors block truncate">
+                        {post.title}
+                      </a>
+                      <p className="text-xs text-muted mt-0.5">
+                        {new Date(post.date).toLocaleDateString()} &middot; {post.wordCount} words
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0 ml-4">
+                      <button
+                        onClick={() => {
+                          if (editingPostSlug === post.slug) {
+                            setEditingPostSlug(null);
+                            setEditPostContent("");
+                          } else {
+                            loadPublishedPost(post.slug);
+                          }
+                        }}
+                        disabled={editPostSaving}
+                        className="px-2.5 py-1.5 text-xs rounded-sm border border-stone-300 bg-white text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
+                      >
+                        {editingPostSlug === post.slug ? "Close" : "Edit"}
+                      </button>
+                      <a href={`/blog/${post.slug}`} className="text-xs text-teal hover:underline">
+                        View &rarr;
+                      </a>
+                    </div>
                   </div>
-                  <a href={`/blog/${post.slug}`} className="text-xs text-teal hover:underline shrink-0 ml-4">
-                    View &rarr;
-                  </a>
+
+                  {/* Inline editor for published post */}
+                  {editingPostSlug === post.slug && (
+                    <div className="px-2.5 pb-2.5">
+                      {editPostLoading ? (
+                        <div className="text-xs text-muted py-4 text-center">Loading...</div>
+                      ) : (
+                        <>
+                          <textarea
+                            value={editPostContent}
+                            onChange={(e) => setEditPostContent(e.target.value)}
+                            className="w-full px-3 py-2 text-sm bg-white border border-rule rounded-sm text-foreground font-mono focus:outline-none focus:border-stone-500 transition-colors resize-y"
+                            rows={20}
+                            style={{ minHeight: "300px" }}
+                          />
+                          <div className="flex items-center gap-2 mt-2">
+                            <button
+                              onClick={savePublishedPost}
+                              disabled={editPostSaving}
+                              className="px-3 py-1.5 text-xs rounded-sm border border-stone-300 bg-stone-800 text-white hover:bg-stone-900 transition-colors disabled:opacity-50"
+                            >
+                              {editPostSaving ? "Saving & Publishing..." : "Save & Republish"}
+                            </button>
+                            <button
+                              onClick={() => { setEditingPostSlug(null); setEditPostContent(""); }}
+                              className="px-3 py-1.5 text-xs text-muted hover:text-foreground transition-colors"
+                            >
+                              Cancel
+                            </button>
+                            <span className="text-xs text-muted ml-auto">
+                              {editPostContent.split(/\s+/).filter(Boolean).length} words
+                            </span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
