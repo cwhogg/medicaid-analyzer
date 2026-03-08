@@ -518,43 +518,20 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                     </div>
                     <div className="flex flex-col gap-1.5 shrink-0">
                       <button
-                        onClick={() => setPreviewId(previewId === idea.id ? null : idea.id)}
-                        className="px-2.5 py-1.5 text-xs rounded-sm border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
-                      >
-                        {previewId === idea.id ? "Collapse" : "Preview"}
-                      </button>
-                      <button
                         onClick={() => {
-                          if (improvingId === idea.id) {
+                          if (previewId === idea.id) {
+                            setPreviewId(null);
+                            setEditingId(null);
+                            setEditContent("");
                             setImprovingId(null);
                             setFeedbackText("");
                           } else {
                             setPreviewId(idea.id);
-                            setImprovingId(idea.id);
-                            setFeedbackText("");
                           }
                         }}
-                        disabled={busy && improvingId !== idea.id}
-                        className="px-2.5 py-1.5 text-xs rounded-sm border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors disabled:opacity-50"
+                        className="px-2.5 py-1.5 text-xs rounded-sm border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
                       >
-                        Improve
-                      </button>
-                      <button
-                        onClick={() => {
-                          if (editingId === idea.id) {
-                            setEditingId(null);
-                            setEditContent("");
-                          } else {
-                            setPreviewId(null);
-                            setImprovingId(null);
-                            setEditingId(idea.id);
-                            setEditContent(idea.generatedContent || "");
-                          }
-                        }}
-                        disabled={busy && editingId !== idea.id}
-                        className="px-2.5 py-1.5 text-xs rounded-sm border border-stone-300 bg-white text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
-                      >
-                        Edit
+                        {previewId === idea.id ? "Collapse" : "Preview"}
                       </button>
                       <button
                         onClick={() => publishIdea(idea.id)}
@@ -566,82 +543,129 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                     </div>
                   </div>
 
-                  {/* Full article preview */}
-                  {previewId === idea.id && idea.generatedContent && editingId !== idea.id && (
+                  {/* Expanded preview with edit/improve tools */}
+                  {previewId === idea.id && idea.generatedContent && (
                     <div className="mt-3 pt-3 border-t border-rule-light">
-                      <div className="bg-white rounded-sm border border-rule-light p-4 max-h-[600px] overflow-y-auto prose prose-sm prose-stone max-w-none
-                        [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-foreground [&_h2]:mt-5 [&_h2]:mb-2
-                        [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-foreground [&_h3]:mt-4 [&_h3]:mb-1.5
-                        [&_p]:text-sm [&_p]:text-body [&_p]:leading-relaxed [&_p]:mb-3
-                        [&_table]:text-xs [&_table]:w-full [&_table]:border-collapse [&_table]:my-3
-                        [&_th]:text-left [&_th]:p-1.5 [&_th]:border [&_th]:border-rule-light [&_th]:bg-[#F5F5F0] [&_th]:font-semibold [&_th]:text-foreground
-                        [&_td]:p-1.5 [&_td]:border [&_td]:border-rule-light [&_td]:text-body
-                        [&_ul]:text-sm [&_ul]:text-body [&_ul]:pl-5 [&_ul]:mb-3 [&_ul]:list-disc
-                        [&_ol]:text-sm [&_ol]:text-body [&_ol]:pl-5 [&_ol]:mb-3 [&_ol]:list-decimal
-                        [&_li]:mb-1 [&_li]:leading-relaxed
-                        [&_strong]:text-foreground [&_strong]:font-semibold
-                        [&_blockquote]:border-l-2 [&_blockquote]:border-rule [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-muted"
-                        dangerouslySetInnerHTML={{ __html: simpleMarkdownToHtml(idea.generatedContent) }}
-                      />
-                    </div>
-                  )}
-
-                  {/* Direct markdown editor */}
-                  {editingId === idea.id && (
-                    <div className="mt-3 pt-3 border-t border-rule-light">
-                      <textarea
-                        value={editContent}
-                        onChange={(e) => setEditContent(e.target.value)}
-                        className="w-full px-3 py-2 text-sm bg-white border border-rule rounded-sm text-foreground font-mono focus:outline-none focus:border-stone-500 transition-colors resize-y"
-                        rows={20}
-                        style={{ minHeight: "300px" }}
-                      />
-                      <div className="flex items-center gap-2 mt-2">
+                      {/* Toolbar inside preview */}
+                      <div className="flex items-center gap-2 mb-3">
                         <button
-                          onClick={() => saveDirectEdit(idea.id)}
-                          disabled={savingEdit || editContent === idea.generatedContent}
-                          className="px-3 py-1.5 text-xs rounded-sm border border-stone-300 bg-stone-800 text-white hover:bg-stone-900 transition-colors disabled:opacity-50"
+                          onClick={() => {
+                            if (editingId === idea.id) {
+                              setEditingId(null);
+                              setEditContent("");
+                            } else {
+                              setImprovingId(null);
+                              setFeedbackText("");
+                              setEditingId(idea.id);
+                              setEditContent(idea.generatedContent || "");
+                            }
+                          }}
+                          disabled={busy && editingId !== idea.id}
+                          className={`px-2.5 py-1.5 text-xs rounded-sm border transition-colors disabled:opacity-50 ${
+                            editingId === idea.id
+                              ? "border-stone-400 bg-stone-800 text-white"
+                              : "border-stone-300 bg-white text-stone-700 hover:bg-stone-50"
+                          }`}
                         >
-                          {savingEdit ? "Saving..." : "Save Changes"}
+                          {editingId === idea.id ? "Editing..." : "Edit Markdown"}
                         </button>
                         <button
-                          onClick={() => { setEditingId(null); setEditContent(""); }}
-                          className="px-3 py-1.5 text-xs text-muted hover:text-foreground transition-colors"
+                          onClick={() => {
+                            if (improvingId === idea.id) {
+                              setImprovingId(null);
+                              setFeedbackText("");
+                            } else {
+                              setEditingId(null);
+                              setEditContent("");
+                              setImprovingId(idea.id);
+                              setFeedbackText("");
+                            }
+                          }}
+                          disabled={busy && improvingId !== idea.id}
+                          className={`px-2.5 py-1.5 text-xs rounded-sm border transition-colors disabled:opacity-50 ${
+                            improvingId === idea.id
+                              ? "border-emerald-600 bg-emerald-600 text-white"
+                              : "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                          }`}
                         >
-                          Cancel
-                        </button>
-                        <span className="text-xs text-muted ml-auto">
-                          {editContent.split(/\s+/).filter(Boolean).length} words
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Inline improve for generated article */}
-                  {improvingId === idea.id && (
-                    <div className={`mt-3 pt-3 ${previewId !== idea.id ? "border-t border-rule-light" : ""}`}>
-                      <textarea
-                        value={feedbackText}
-                        onChange={(e) => setFeedbackText(e.target.value)}
-                        placeholder="Instructions for article revision (e.g., 'add more context about regional differences', 'make the intro stronger')"
-                        className="w-full px-3 py-2 text-sm bg-white border border-rule rounded-sm text-foreground placeholder:text-muted focus:outline-none focus:border-emerald-500 transition-colors resize-none"
-                        rows={2}
-                      />
-                      <div className="flex gap-2 mt-2">
-                        <button
-                          onClick={() => improveIdea(idea.id)}
-                          disabled={!feedbackText.trim()}
-                          className="px-3 py-1.5 text-xs rounded-sm border border-emerald-700 bg-emerald-600 text-white hover:bg-emerald-700 transition-colors flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed"
-                        >
-                          Revise Article
-                        </button>
-                        <button
-                          onClick={() => { setImprovingId(null); setFeedbackText(""); }}
-                          className="px-3 py-1.5 text-xs text-muted hover:text-foreground transition-colors"
-                        >
-                          Cancel
+                          {improvingId === idea.id ? "Improving..." : "Improve with AI"}
                         </button>
                       </div>
+
+                      {/* AI improve input */}
+                      {improvingId === idea.id && (
+                        <div className="mb-3">
+                          <textarea
+                            value={feedbackText}
+                            onChange={(e) => setFeedbackText(e.target.value)}
+                            placeholder="Instructions for article revision (e.g., 'add more context about regional differences', 'make the intro stronger')"
+                            className="w-full px-3 py-2 text-sm bg-white border border-rule rounded-sm text-foreground placeholder:text-muted focus:outline-none focus:border-emerald-500 transition-colors resize-none"
+                            rows={2}
+                          />
+                          <div className="flex gap-2 mt-2">
+                            <button
+                              onClick={() => improveIdea(idea.id)}
+                              disabled={!feedbackText.trim()}
+                              className="px-3 py-1.5 text-xs rounded-sm border border-emerald-700 bg-emerald-600 text-white hover:bg-emerald-700 transition-colors flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed"
+                            >
+                              Revise Article
+                            </button>
+                            <button
+                              onClick={() => { setImprovingId(null); setFeedbackText(""); }}
+                              className="px-3 py-1.5 text-xs text-muted hover:text-foreground transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Direct markdown editor */}
+                      {editingId === idea.id ? (
+                        <div>
+                          <textarea
+                            value={editContent}
+                            onChange={(e) => setEditContent(e.target.value)}
+                            className="w-full px-3 py-2 text-sm bg-white border border-rule rounded-sm text-foreground font-mono focus:outline-none focus:border-stone-500 transition-colors resize-y"
+                            rows={20}
+                            style={{ minHeight: "300px" }}
+                          />
+                          <div className="flex items-center gap-2 mt-2">
+                            <button
+                              onClick={() => saveDirectEdit(idea.id)}
+                              disabled={savingEdit || editContent === idea.generatedContent}
+                              className="px-3 py-1.5 text-xs rounded-sm border border-stone-300 bg-stone-800 text-white hover:bg-stone-900 transition-colors disabled:opacity-50"
+                            >
+                              {savingEdit ? "Saving..." : "Save Changes"}
+                            </button>
+                            <button
+                              onClick={() => { setEditingId(null); setEditContent(""); }}
+                              className="px-3 py-1.5 text-xs text-muted hover:text-foreground transition-colors"
+                            >
+                              Cancel
+                            </button>
+                            <span className="text-xs text-muted ml-auto">
+                              {editContent.split(/\s+/).filter(Boolean).length} words
+                            </span>
+                          </div>
+                        </div>
+                      ) : (
+                        /* Rendered preview */
+                        <div className="bg-white rounded-sm border border-rule-light p-4 max-h-[600px] overflow-y-auto prose prose-sm prose-stone max-w-none
+                          [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-foreground [&_h2]:mt-5 [&_h2]:mb-2
+                          [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-foreground [&_h3]:mt-4 [&_h3]:mb-1.5
+                          [&_p]:text-sm [&_p]:text-body [&_p]:leading-relaxed [&_p]:mb-3
+                          [&_table]:text-xs [&_table]:w-full [&_table]:border-collapse [&_table]:my-3
+                          [&_th]:text-left [&_th]:p-1.5 [&_th]:border [&_th]:border-rule-light [&_th]:bg-[#F5F5F0] [&_th]:font-semibold [&_th]:text-foreground
+                          [&_td]:p-1.5 [&_td]:border [&_td]:border-rule-light [&_td]:text-body
+                          [&_ul]:text-sm [&_ul]:text-body [&_ul]:pl-5 [&_ul]:mb-3 [&_ul]:list-disc
+                          [&_ol]:text-sm [&_ol]:text-body [&_ol]:pl-5 [&_ol]:mb-3 [&_ol]:list-decimal
+                          [&_li]:mb-1 [&_li]:leading-relaxed
+                          [&_strong]:text-foreground [&_strong]:font-semibold
+                          [&_blockquote]:border-l-2 [&_blockquote]:border-rule [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-muted"
+                          dangerouslySetInnerHTML={{ __html: simpleMarkdownToHtml(idea.generatedContent) }}
+                        />
+                      )}
                     </div>
                   )}
                 </div>
