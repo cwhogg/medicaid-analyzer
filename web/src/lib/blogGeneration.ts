@@ -268,12 +268,42 @@ export async function publishToGitHub(
 
   send({ phase: "publishing", message: "Committing to GitHub..." });
 
+  const filePath = `content/blog/${topic.slug}.md`;
+  const ghHeaders = {
+    Authorization: `Bearer ${GITHUB_TOKEN}`,
+    "Content-Type": "application/json",
+    Accept: "application/vnd.github.v3+json",
+  };
+
+  // Check if file already exists (for re-publish: preserve original date, provide sha)
+  let existingSha: string | undefined;
+  let publishDate = new Date().toISOString();
+
+  try {
+    const existingRes = await fetch(
+      `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`,
+      { headers: ghHeaders }
+    );
+    if (existingRes.ok) {
+      const existing = await existingRes.json();
+      existingSha = existing.sha;
+      // Extract original date from existing frontmatter
+      const decoded = Buffer.from(existing.content, "base64").toString("utf-8");
+      const dateMatch = decoded.match(/^date:\s*"(.+?)"/m);
+      if (dateMatch) {
+        publishDate = dateMatch[1];
+      }
+    }
+  } catch {
+    // File doesn't exist yet — use current date
+  }
+
   const frontmatter = `---
 title: "${topic.title.replace(/"/g, '\\"')}"
 type: blog-post
 targetKeywords: ${JSON.stringify(topic.targetKeywords)}
 contentGap: "${topic.contentGap.replace(/"/g, '\\"')}"
-date: "${new Date().toISOString()}"
+date: "${publishDate}"
 description: "${topic.description.replace(/"/g, '\\"')}"
 ideaName: "Open Health Data Hub"
 status: published
@@ -284,23 +314,23 @@ canonicalUrl: "https://www.openhealthdatahub.com/blog/${topic.slug}"
 ${content}
 `;
 
-  const filePath = `content/blog/${topic.slug}.md`;
   const contentBase64 = Buffer.from(frontmatter).toString("base64");
+
+  const putBody: Record<string, unknown> = {
+    message: existingSha ? `Update blog post: ${topic.title}` : `Add blog post: ${topic.title}`,
+    content: contentBase64,
+    branch: "main",
+  };
+  if (existingSha) {
+    putBody.sha = existingSha;
+  }
 
   const ghResponse = await fetch(
     `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`,
     {
       method: "PUT",
-      headers: {
-        Authorization: `Bearer ${GITHUB_TOKEN}`,
-        "Content-Type": "application/json",
-        Accept: "application/vnd.github.v3+json",
-      },
-      body: JSON.stringify({
-        message: `Add blog post: ${topic.title}`,
-        content: contentBase64,
-        branch: "main",
-      }),
+      headers: ghHeaders,
+      body: JSON.stringify(putBody),
     }
   );
 
