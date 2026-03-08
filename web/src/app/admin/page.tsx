@@ -135,6 +135,39 @@ interface BlogIdea {
   generatedAt?: number;
 }
 
+function simpleMarkdownToHtml(md: string): string {
+  return md
+    // Tables: detect header row + separator + data rows
+    .replace(/^(\|.+\|)\n(\|[\s:|-]+\|)\n((?:\|.+\|\n?)+)/gm, (_match, header: string, _sep: string, body: string) => {
+      const thCells = header.split("|").filter((c: string) => c.trim()).map((c: string) => `<th>${c.trim()}</th>`).join("");
+      const rows = body.trim().split("\n").map((row: string) => {
+        const cells = row.split("|").filter((c: string) => c.trim()).map((c: string) => `<td>${c.trim()}</td>`).join("");
+        return `<tr>${cells}</tr>`;
+      }).join("");
+      return `<table><thead><tr>${thCells}</tr></thead><tbody>${rows}</tbody></table>`;
+    })
+    // Headings
+    .replace(/^### (.+)$/gm, "<h3>$1</h3>")
+    .replace(/^## (.+)$/gm, "<h2>$1</h2>")
+    // Bold and italic
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    // Unordered lists
+    .replace(/^- (.+)$/gm, "<li>$1</li>")
+    .replace(/((?:<li>.*<\/li>\n?)+)/g, "<ul>$1</ul>")
+    // Ordered lists
+    .replace(/^\d+\. (.+)$/gm, "<li>$1</li>")
+    // Paragraphs: wrap remaining non-tag lines
+    .split("\n\n")
+    .map((block) => {
+      const trimmed = block.trim();
+      if (!trimmed) return "";
+      if (trimmed.startsWith("<")) return trimmed;
+      return `<p>${trimmed.replace(/\n/g, " ")}</p>`;
+    })
+    .join("\n");
+}
+
 function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
   const [ideas, setIdeas] = useState<BlogIdea[]>([]);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
@@ -148,6 +181,8 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
   const [generateEvents, setGenerateEvents] = useState<GenerationEvent[]>([]);
   const [generatePhase, setGeneratePhase] = useState<string | null>(null);
   const [generateResult, setGenerateResult] = useState<GenerationEvent | null>(null);
+  // Preview state for reading generated articles
+  const [previewId, setPreviewId] = useState<string | null>(null);
   // Publish state (now simple, no streaming)
   const [publishingId, setPublishingId] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
@@ -427,7 +462,7 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                         )}
                       </div>
                       <p className="text-sm font-semibold text-foreground">{idea.title}</p>
-                      {idea.generatedContent && (
+                      {idea.generatedContent && previewId !== idea.id && (
                         <p className="text-xs text-body mt-1 line-clamp-3">
                           {idea.generatedContent.slice(0, 200)}...
                         </p>
@@ -440,11 +475,18 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                     </div>
                     <div className="flex flex-col gap-1.5 shrink-0">
                       <button
+                        onClick={() => setPreviewId(previewId === idea.id ? null : idea.id)}
+                        className="px-2.5 py-1.5 text-xs rounded-sm border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
+                      >
+                        {previewId === idea.id ? "Collapse" : "Preview"}
+                      </button>
+                      <button
                         onClick={() => {
                           if (improvingId === idea.id) {
                             setImprovingId(null);
                             setFeedbackText("");
                           } else {
+                            setPreviewId(idea.id);
                             setImprovingId(idea.id);
                             setFeedbackText("");
                           }
@@ -463,9 +505,30 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                       </button>
                     </div>
                   </div>
+
+                  {/* Full article preview */}
+                  {previewId === idea.id && idea.generatedContent && (
+                    <div className="mt-3 pt-3 border-t border-rule-light">
+                      <div className="bg-white rounded-sm border border-rule-light p-4 max-h-[600px] overflow-y-auto prose prose-sm prose-stone max-w-none
+                        [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-foreground [&_h2]:mt-5 [&_h2]:mb-2
+                        [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-foreground [&_h3]:mt-4 [&_h3]:mb-1.5
+                        [&_p]:text-sm [&_p]:text-body [&_p]:leading-relaxed [&_p]:mb-3
+                        [&_table]:text-xs [&_table]:w-full [&_table]:border-collapse [&_table]:my-3
+                        [&_th]:text-left [&_th]:p-1.5 [&_th]:border [&_th]:border-rule-light [&_th]:bg-[#F5F5F0] [&_th]:font-semibold [&_th]:text-foreground
+                        [&_td]:p-1.5 [&_td]:border [&_td]:border-rule-light [&_td]:text-body
+                        [&_ul]:text-sm [&_ul]:text-body [&_ul]:pl-5 [&_ul]:mb-3 [&_ul]:list-disc
+                        [&_ol]:text-sm [&_ol]:text-body [&_ol]:pl-5 [&_ol]:mb-3 [&_ol]:list-decimal
+                        [&_li]:mb-1 [&_li]:leading-relaxed
+                        [&_strong]:text-foreground [&_strong]:font-semibold
+                        [&_blockquote]:border-l-2 [&_blockquote]:border-rule [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-muted"
+                        dangerouslySetInnerHTML={{ __html: simpleMarkdownToHtml(idea.generatedContent) }}
+                      />
+                    </div>
+                  )}
+
                   {/* Inline improve for generated article */}
                   {improvingId === idea.id && (
-                    <div className="mt-3 pt-3 border-t border-rule-light">
+                    <div className={`mt-3 pt-3 ${previewId !== idea.id ? "border-t border-rule-light" : ""}`}>
                       <textarea
                         value={feedbackText}
                         onChange={(e) => setFeedbackText(e.target.value)}
