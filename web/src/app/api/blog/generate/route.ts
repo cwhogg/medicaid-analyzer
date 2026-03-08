@@ -7,6 +7,7 @@ import {
   runAnalyses,
   writeArticle,
   publishToGitHub,
+  waitForLivePage,
   type TopicPlan,
 } from "@/lib/blogGeneration";
 import { postTweetThread, isTwitterConfigured } from "@/lib/twitter";
@@ -157,9 +158,14 @@ Return ONLY valid JSON, no markdown fences or explanation.`;
     // --- Phase 4: Publish via GitHub ---
     const { isFirstPublish } = await publishToGitHub(topic, bodyContent, wordCount, send);
 
-    // --- Phase 5: Tweet (first publish only) ---
+    // --- Phase 5: Tweet (first publish only, after deployment is live) ---
     if (isFirstPublish && tweet1 && tweet2 && isTwitterConfigured()) {
       try {
+        send({ phase: "tweeting", message: "Waiting for deployment..." });
+        const isLive = await waitForLivePage(topic.slug);
+        if (!isLive) {
+          send({ phase: "tweeting", message: "Page not live yet, tweeting anyway..." });
+        }
         send({ phase: "tweeting", message: "Posting to Twitter..." });
         const { tweetId } = await postTweetThread(tweet1, tweet2);
         send({ phase: "tweeting", message: `Tweeted! (${tweetId})` });

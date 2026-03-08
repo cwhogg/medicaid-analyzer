@@ -386,3 +386,21 @@ ${content}
 
   return { isFirstPublish: !existingSha };
 }
+
+// Wait for Vercel deployment to make the blog page live before tweeting
+export async function waitForLivePage(slug: string, timeoutMs = 120000): Promise<boolean> {
+  const url = `https://www.openhealthdatahub.com/blog/${slug}`;
+  const start = Date.now();
+
+  while (Date.now() - start < timeoutMs) {
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+    try {
+      const res = await fetch(url, { method: "HEAD", redirect: "follow" });
+      if (res.ok) return true;
+    } catch {
+      // Network error, keep trying
+    }
+  }
+
+  return false;
+}

@@ -1,11 +1,12 @@
 import { NextRequest } from "next/server";
 import {
   publishToGitHub,
+  waitForLivePage,
   type TopicPlan,
 } from "@/lib/blogGeneration";
 import { postTweetThread, isTwitterConfigured } from "@/lib/twitter";
 
-export const maxDuration = 60;
+export const maxDuration = 180;
 
 const ADMIN_SECRET = process.env.ADMIN_API_KEY;
 const RAILWAY_QUERY_URL = process.env.RAILWAY_QUERY_URL;
@@ -72,8 +73,12 @@ export async function POST(
     const noop = () => {};
     const { isFirstPublish } = await publishToGitHub(topic, data.generatedContent, data.generatedWordCount || 0, noop);
 
-    // Tweet on first publish only (using pre-generated tweets from the writing phase)
+    // Tweet on first publish only — wait for Vercel deployment so the URL is live
     if (isFirstPublish && data.generatedTweet1 && data.generatedTweet2 && isTwitterConfigured()) {
+      const isLive = await waitForLivePage(topic.slug);
+      if (!isLive) {
+        console.warn("Blog page not live after 2min, tweeting anyway:", topic.slug);
+      }
       try {
         await postTweetThread(data.generatedTweet1, data.generatedTweet2);
       } catch (tweetErr) {
