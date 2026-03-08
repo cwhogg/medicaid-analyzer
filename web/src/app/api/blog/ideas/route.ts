@@ -55,6 +55,8 @@ export async function POST(request: NextRequest) {
   }
 
   let datasetKey = "medicaid";
+  let count = 5;
+  let guidance = "";
   try {
     const body = await request.json();
     if (body.dataset && typeof body.dataset === "string") {
@@ -62,6 +64,12 @@ export async function POST(request: NextRequest) {
       if (validKeys.includes(body.dataset)) {
         datasetKey = body.dataset;
       }
+    }
+    if (body.count && typeof body.count === "number" && body.count >= 1 && body.count <= 20) {
+      count = Math.round(body.count);
+    }
+    if (body.guidance && typeof body.guidance === "string" && body.guidance.trim()) {
+      guidance = body.guidance.trim();
     }
   } catch {
     // No body — use default dataset
@@ -103,7 +111,7 @@ CRITICAL: Your analysisQuestions MUST be answerable using ONLY the columns liste
 
 ${schemaPrompt}
 
-Generate 5-8 distinct blog post ideas. Each idea should have:
+Generate exactly ${count} distinct blog post ideas. Each idea should have:
 - title: An engaging QUESTION that a curious person would search for (50-70 chars). Must end with a question mark. Examples: "How Many Americans Have Diabetes and Don't Know It?", "Does Where You Live Predict Your Health?". Never use colon-separated labels like "Topic: Subtitle" — always a natural question.
 - description: Brief summary of what the article will cover (1-2 sentences)
 - targetKeywords: array of 3-5 SEO keywords
@@ -112,7 +120,11 @@ Generate 5-8 distinct blog post ideas. Each idea should have:
 
 Return a JSON array of idea objects. Return ONLY valid JSON, no markdown fences or explanation.`;
 
-  const userMessage = `Generate 5-8 novel ${dsConfig.label} data analysis blog post ideas. Each idea should explore a different angle or topic.
+  const guidanceSection = guidance
+    ? `\n\nFOCUS AREA: The user wants ideas specifically about: "${guidance}". All ${count} ideas should relate to this topic or area, exploring different angles within it.`
+    : "";
+
+  const userMessage = `Generate exactly ${count} novel ${dsConfig.label} data analysis blog post ideas. Each idea should explore a different angle or topic.${guidanceSection}
 
 Existing titles to avoid overlap with:
 ${existingTitles.map((t) => `- ${t}`).join("\n") || "(none yet)"}`;

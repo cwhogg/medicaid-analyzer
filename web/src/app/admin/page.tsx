@@ -176,6 +176,8 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
   const [showDeleted, setShowDeleted] = useState(false);
   const [improvingId, setImprovingId] = useState<string | null>(null);
   const [feedbackText, setFeedbackText] = useState("");
+  const [ideaCount, setIdeaCount] = useState(5);
+  const [ideaGuidance, setIdeaGuidance] = useState("");
   // Generate streaming state
   const [generatingId, setGeneratingId] = useState<string | null>(null);
   const [generateEvents, setGenerateEvents] = useState<GenerationEvent[]>([]);
@@ -226,7 +228,7 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
       const res = await fetch(`/api/blog/ideas?key=${encodeURIComponent(adminKey)}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ dataset: selectedDataset }),
+        body: JSON.stringify({ dataset: selectedDataset, count: ideaCount, guidance: ideaGuidance || undefined }),
       });
       if (res.ok) {
         const data = await res.json();
@@ -414,6 +416,17 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                 </button>
               ))}
             </div>
+            <select
+              value={ideaCount}
+              onChange={(e) => setIdeaCount(Number(e.target.value))}
+              className="px-2 py-1.5 text-xs border border-stone-300 rounded-sm bg-white text-stone-700"
+            >
+              {[1, 2, 3, 5, 8, 10].map((n) => (
+                <option key={n} value={n}>
+                  {n} {n === 1 ? "idea" : "ideas"}
+                </option>
+              ))}
+            </select>
             <button
               onClick={generateIdeas}
               disabled={busy}
@@ -428,6 +441,15 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                 "Generate Ideas"
               )}
             </button>
+          </div>
+          <div className="mt-2">
+            <input
+              type="text"
+              value={ideaGuidance}
+              onChange={(e) => setIdeaGuidance(e.target.value)}
+              placeholder="Focus area (optional) — e.g. &quot;state-level spending trends&quot; or &quot;rural vs urban health&quot;"
+              className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-sm bg-white text-stone-700 placeholder:text-stone-400"
+            />
           </div>
         </div>
 
