@@ -96,7 +96,7 @@ export async function POST(
     }
 
     // Phase 3: Writing
-    const { bodyContent, wordCount } = await writeArticle(
+    const { bodyContent, wordCount, tweet1, tweet2 } = await writeArticle(
       topic,
       analysisSteps,
       dsConfig,
@@ -109,6 +109,8 @@ export async function POST(
     data.generatedContent = bodyContent;
     data.generatedSlug = topic.slug;
     data.generatedWordCount = wordCount;
+    data.generatedTweet1 = tweet1;
+    data.generatedTweet2 = tweet2;
     data.generatedAt = Date.now();
     data.updatedAt = Date.now();
     const actions = Array.isArray(data.actions) ? data.actions : [];

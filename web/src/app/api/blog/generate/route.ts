@@ -9,7 +9,7 @@ import {
   publishToGitHub,
   type TopicPlan,
 } from "@/lib/blogGeneration";
-import { generateTweet, postTweetThread, isTwitterConfigured } from "@/lib/twitter";
+import { postTweetThread, isTwitterConfigured } from "@/lib/twitter";
 
 export const maxDuration = 300;
 
@@ -146,7 +146,7 @@ Return ONLY valid JSON, no markdown fences or explanation.`;
     }
 
     // --- Phase 3: Blog Writing ---
-    const { bodyContent, wordCount } = await writeArticle(
+    const { bodyContent, wordCount, tweet1, tweet2 } = await writeArticle(
       topic,
       analysisSteps,
       dsConfig,
@@ -158,17 +158,16 @@ Return ONLY valid JSON, no markdown fences or explanation.`;
     const { isFirstPublish } = await publishToGitHub(topic, bodyContent, wordCount, send);
 
     // --- Phase 5: Tweet (first publish only) ---
-    if (isFirstPublish && isTwitterConfigured()) {
+    if (isFirstPublish && tweet1 && tweet2 && isTwitterConfigured()) {
       try {
         send({ phase: "tweeting", message: "Posting to Twitter..." });
-        const tweets = await generateTweet(topic.title, topic.description, bodyContent, topic.slug, client);
-        const { tweetId } = await postTweetThread(tweets.tweet1, tweets.tweet2);
+        const { tweetId } = await postTweetThread(tweet1, tweet2);
         send({ phase: "tweeting", message: `Tweeted! (${tweetId})` });
       } catch (err) {
         console.error("Tweet failed:", err);
         send({ phase: "tweeting", message: `Tweet failed: ${err instanceof Error ? err.message : "unknown error"}` });
       }
-    } else if (isFirstPublish) {
+    } else if (isFirstPublish && !isTwitterConfigured()) {
       console.warn("Twitter not configured — skipping tweet for new post:", topic.slug);
     }
 

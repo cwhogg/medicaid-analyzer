@@ -1,4 +1,3 @@
-import Anthropic from "@anthropic-ai/sdk";
 import { TwitterApi } from "twitter-api-v2";
 
 const TWITTER_API_KEY = process.env.TWITTER_API_KEY;
@@ -13,48 +12,6 @@ function isConfigured(): boolean {
     TWITTER_ACCESS_TOKEN &&
     TWITTER_ACCESS_TOKEN_SECRET
   );
-}
-
-export async function generateTweet(
-  title: string,
-  description: string,
-  content: string,
-  slug: string,
-  client: Anthropic
-): Promise<{ tweet1: string; tweet2: string }> {
-  const response = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 512,
-    temperature: 0.5,
-    system: `You write punchy tweets for Open Health Data Hub, a public health data analysis site. Return ONLY valid JSON with two fields: tweet1 and tweet2. No markdown fences.`,
-    messages: [
-      {
-        role: "user",
-        content: `Write a 2-tweet thread for this blog post.
-
-Title: ${title}
-Description: ${description}
-Article content (first 1500 chars): ${content.slice(0, 1500)}
-
-Rules:
-- tweet1: "Did you know?" hook with the most surprising stat from the article. ~200 chars max. No hashtags, no links.
-- tweet2: One-sentence teaser + link to https://www.openhealthdatahub.com/blog/${slug}. Include 2-3 relevant hashtags.
-
-Return ONLY JSON: {"tweet1": "...", "tweet2": "..."}`,
-      },
-    ],
-  });
-
-  const text = response.content.find((b) => b.type === "text");
-  if (!text || text.type !== "text") {
-    throw new Error("Tweet generation returned no text");
-  }
-
-  const cleaned = text.text
-    .replace(/^```(?:json)?\n?/, "")
-    .replace(/\n?```$/, "")
-    .trim();
-  return JSON.parse(cleaned);
 }
 
 export async function postTweetThread(

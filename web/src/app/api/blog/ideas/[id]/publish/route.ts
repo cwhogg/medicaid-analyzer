@@ -1,10 +1,9 @@
 import { NextRequest } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
 import {
   publishToGitHub,
   type TopicPlan,
 } from "@/lib/blogGeneration";
-import { generateTweet, postTweetThread, isTwitterConfigured } from "@/lib/twitter";
+import { postTweetThread, isTwitterConfigured } from "@/lib/twitter";
 
 export const maxDuration = 60;
 
@@ -73,19 +72,14 @@ export async function POST(
     const noop = () => {};
     const { isFirstPublish } = await publishToGitHub(topic, data.generatedContent, data.generatedWordCount || 0, noop);
 
-    // Tweet on first publish only
-    if (isFirstPublish && isTwitterConfigured()) {
+    // Tweet on first publish only (using pre-generated tweets from the writing phase)
+    if (isFirstPublish && data.generatedTweet1 && data.generatedTweet2 && isTwitterConfigured()) {
       try {
-        const apiKey = process.env.ANTHROPIC_API_KEY;
-        if (apiKey) {
-          const client = new Anthropic({ apiKey });
-          const tweets = await generateTweet(topic.title, topic.description, data.generatedContent, topic.slug, client);
-          await postTweetThread(tweets.tweet1, tweets.tweet2);
-        }
+        await postTweetThread(data.generatedTweet1, data.generatedTweet2);
       } catch (tweetErr) {
         console.error("Tweet failed (non-blocking):", tweetErr);
       }
-    } else if (isFirstPublish) {
+    } else if (isFirstPublish && !isTwitterConfigured()) {
       console.warn("Twitter not configured — skipping tweet for new post:", topic.slug);
     }
 

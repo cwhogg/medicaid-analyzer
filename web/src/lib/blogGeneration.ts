@@ -170,7 +170,7 @@ export async function writeArticle(
   dsConfig: DatasetConfig,
   client: Anthropic,
   send: (event: Record<string, unknown>) => void
-): Promise<{ bodyContent: string; wordCount: number }> {
+): Promise<{ bodyContent: string; wordCount: number; tweet1: string; tweet2: string }> {
   send({
     phase: "writing",
     message: `Writing article from ${analysisSteps.length} analyses...`,
@@ -229,11 +229,21 @@ Turn the provided query results into an 800–1200 word article that makes one c
 - Do NOT include the article title as an H1
 - Do NOT include frontmatter
 - Keep paragraphs to 3-4 sentences max
-- Prefer specific numbers over vague qualifiers ("rose 34%" not "rose significantly")`,
+- Prefer specific numbers over vague qualifiers ("rose 34%" not "rose significantly")
+
+## Twitter thread (REQUIRED — include at the very end)
+After the article, output a separator line "---TWEETS---" followed by exactly two lines:
+- TWEET1: A punchy "Did you know?" hook featuring the single most surprising or counter-intuitive stat from the article. Must cite a real number from the data. Under 250 characters. No hashtags, no links, no vague language like "the data tells a striking story." Be specific and provocative.
+- TWEET2: The article title as a question, followed by a bare URL on its own line. The URL must be the LAST thing in the tweet so Twitter expands the link card. Format: "{title}\n\nhttps://www.openhealthdatahub.com/blog/{slug}"
+
+Example output format:
+---TWEETS---
+TWEET1: Did you know? Medicare spending on nurse practitioners jumped 47% in just two years — faster than any other provider type.
+TWEET2: Are Non-Physician Providers Taking Over Medicare Billing?\n\nhttps://www.openhealthdatahub.com/blog/are-non-physician-providers-taking-over-medicare-billing`,
     messages: [
       {
         role: "user",
-        content: `Write a blog post titled "${topic.title}" using these real analysis results:\n\n${dataSummary}\n\nToday's date: ${today}`,
+        content: `Write a blog post titled "${topic.title}" (slug: "${topic.slug}") using these real analysis results:\n\n${dataSummary}\n\nToday's date: ${today}`,
       },
     ],
   });
@@ -243,7 +253,26 @@ Turn the provided query results into an 800–1200 word article that makes one c
     throw new Error("Blog writing returned no text");
   }
 
-  const bodyContent = writeBlock.text.trim();
+  const fullOutput = writeBlock.text.trim();
+
+  // Split article from tweets
+  let tweet1 = "";
+  let tweet2 = "";
+
+  const tweetSplit = fullOutput.split("---TWEETS---");
+  const bodyContent = tweetSplit[0].trim();
+
+  if (tweetSplit[1]) {
+    const tweetLines = tweetSplit[1].trim().split("\n").filter(Boolean);
+    for (const line of tweetLines) {
+      if (line.startsWith("TWEET1:")) {
+        tweet1 = line.replace("TWEET1:", "").trim();
+      } else if (line.startsWith("TWEET2:")) {
+        tweet2 = line.replace("TWEET2:", "").trim().replace(/\\n/g, "\n");
+      }
+    }
+  }
+
   const wordCount = bodyContent.split(/\s+/).length;
 
   send({
@@ -252,7 +281,7 @@ Turn the provided query results into an 800–1200 word article that makes one c
     wordCount,
   });
 
-  return { bodyContent, wordCount };
+  return { bodyContent, wordCount, tweet1, tweet2 };
 }
 
 // Phase 4: Publish to GitHub
