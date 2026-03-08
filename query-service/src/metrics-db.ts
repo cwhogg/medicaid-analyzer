@@ -11,6 +11,19 @@ const MAX_QUERIES = 1_000;
 const PRUNE_INTERVAL = 100;
 let insertCount = 0;
 
+function formatAgo(seconds: number): string {
+  if (seconds < 60) return `${seconds}s`;
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
+  if (seconds < 86400) {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    return m > 0 ? `${h}h ${m}m` : `${h}h`;
+  }
+  const d = Math.floor(seconds / 86400);
+  const h = Math.floor((seconds % 86400) / 3600);
+  return h > 0 ? `${d}d ${h}h` : `${d}d`;
+}
+
 export async function initMetricsDB(): Promise<void> {
   if (metricsDb) return;
 
@@ -412,7 +425,7 @@ export async function getMetrics() {
     totalMs: q.total_ms,
     cached: q.cached,
     error: q.error || undefined,
-    ago: `${Math.floor((now - Number(q.timestamp)) / 1000)}s ago`,
+    ago: `${formatAgo(Math.floor((now - Number(q.timestamp)) / 1000))} ago`,
   }));
 
   return {
@@ -625,7 +638,7 @@ export async function getDailyQueries(day?: string): Promise<Record<string, unkn
       totalMs: q.total_ms,
       cached: q.cached,
       error: q.error || undefined,
-      ago: `${Math.floor((now - Number(q.timestamp)) / 1000)}s ago`,
+      ago: `${formatAgo(Math.floor((now - Number(q.timestamp)) / 1000))} ago`,
     }));
   }
 
