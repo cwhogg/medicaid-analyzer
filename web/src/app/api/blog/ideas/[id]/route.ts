@@ -47,9 +47,12 @@ export async function PATCH(
   if (updates.contentGap) data.contentGap = updates.contentGap;
   if (updates.analysisQuestions) data.analysisQuestions = updates.analysisQuestions;
 
+  // Determine status and sync it into data
+  const status = updates.status || idea.status;
+  if (updates.status) data.status = updates.status;
+
   // Append action with appropriate type
   const actions = Array.isArray(data.actions) ? data.actions : [];
-  const status = updates.status || idea.status;
   const actionType = status !== idea.status ? status : "edited";
   actions.push({ type: actionType, timestamp: Date.now() });
   data.actions = actions;
