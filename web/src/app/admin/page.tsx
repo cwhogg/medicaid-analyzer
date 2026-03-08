@@ -202,6 +202,11 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
   const [elapsed, setElapsed] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const logRef = useRef<HTMLDivElement>(null);
+  // Collapsible log in generation progress
+  const [showLog, setShowLog] = useState(false);
+  // Editable title on generated posts
+  const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
+  const [editTitleValue, setEditTitleValue] = useState("");
 
   const busy = generating || generatingId !== null || publishingId !== null || improvingId !== null || savingEdit;
 
@@ -294,6 +299,27 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
     setEditContent("");
   };
 
+  const saveTitleEdit = async (id: string) => {
+    const trimmed = editTitleValue.trim();
+    if (!trimmed) { setEditingTitleId(null); return; }
+    setSavingEdit(true);
+    try {
+      const newSlug = trimmed.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const res = await fetch(`/api/blog/ideas/${id}?key=${encodeURIComponent(adminKey)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: trimmed, generatedSlug: newSlug }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setIdeas((prev) => prev.map((i) => (i.id === id ? { ...i, ...data.idea } : i)));
+      }
+    } catch { /* ignore */ }
+    setSavingEdit(false);
+    setEditingTitleId(null);
+    setEditTitleValue("");
+  };
+
   const saveIdeaEdit = async (id: string) => {
     setSavingEdit(true);
     try {
@@ -369,7 +395,9 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
     setGeneratePhase(null);
     setGenerateResult(null);
     setElapsed(0);
+    setShowLog(false);
 
+    let lastPhase: string | null = null;
     const startTime = Date.now();
     timerRef.current = setInterval(() => {
       setElapsed(Math.floor((Date.now() - startTime) / 1000));
@@ -409,6 +437,7 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
             const event = JSON.parse(line) as GenerationEvent;
             setGenerateEvents((prev) => [...prev, event]);
             setGeneratePhase(event.phase);
+            lastPhase = event.phase;
             if (event.phase === "done") setGenerateResult(event);
           } catch { /* ignore */ }
         }
@@ -418,10 +447,12 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
           const event = JSON.parse(buffer) as GenerationEvent;
           setGenerateEvents((prev) => [...prev, event]);
           setGeneratePhase(event.phase);
+          lastPhase = event.phase;
           if (event.phase === "done") setGenerateResult(event);
         } catch { /* ignore */ }
       }
     } catch (err) {
+      lastPhase = "error";
       setGenerateEvents((prev) => [...prev, {
         phase: "error",
         message: err instanceof Error ? err.message : "Network error",
@@ -429,8 +460,16 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
       setGeneratePhase("error");
     } finally {
       if (timerRef.current) clearInterval(timerRef.current);
-      setGeneratingId(null);
-      fetchIdeas();
+      if (lastPhase === "done") {
+        // Brief delay so user can see completion state
+        setTimeout(() => {
+          setGeneratingId(null);
+          fetchIdeas();
+        }, 2500);
+      } else {
+        setGeneratingId(null);
+        fetchIdeas();
+      }
     }
   };
 
@@ -465,6 +504,28 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
     tweeting: "Tweeting",
     done: "Complete",
     error: "Error",
+  };
+
+  const getProgressPercent = (phase: string | null, events: GenerationEvent[]) => {
+    let effective = phase;
+    if (phase === "error") {
+      const nonError = events.filter((e) => e.phase !== "error");
+      effective = nonError.length > 0 ? nonError[nonError.length - 1].phase : null;
+    }
+    if (!effective) return 0;
+    if (effective === "done") return 100;
+    if (effective === "topic") return 15;
+    if (effective === "analysis") {
+      const steps = events.filter((e) => e.phase === "analysis" && e.step != null && e.total != null);
+      if (steps.length > 0) {
+        const last = steps[steps.length - 1];
+        return Math.min(25 + ((last.step! / last.total!) * 35), 60);
+      }
+      return 25;
+    }
+    if (effective === "writing") return 75;
+    if (effective === "tweeting") return 90;
+    return 0;
   };
 
   const ideaIdeas = ideas.filter((i) => i.status === "pending" || i.status === "improved");
@@ -570,7 +631,28 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                           </span>
                         )}
                       </div>
-                      <p className="text-sm font-semibold text-foreground">{idea.title}</p>
+                      {editingTitleId === idea.id ? (
+                        <input
+                          type="text"
+                          value={editTitleValue}
+                          onChange={(e) => setEditTitleValue(e.target.value)}
+                          onBlur={() => saveTitleEdit(idea.id)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") saveTitleEdit(idea.id);
+                            if (e.key === "Escape") { setEditingTitleId(null); setEditTitleValue(""); }
+                          }}
+                          autoFocus
+                          className="w-full text-sm font-semibold text-foreground bg-white border border-stone-300 rounded-sm px-1.5 py-0.5 focus:outline-none focus:border-stone-500"
+                        />
+                      ) : (
+                        <p
+                          className="text-sm font-semibold text-foreground cursor-pointer hover:bg-white/60 px-1 -mx-1 rounded-sm transition-colors group"
+                          onClick={() => { setEditingTitleId(idea.id); setEditTitleValue(idea.title); }}
+                        >
+                          {idea.title}
+                          <span className="invisible group-hover:visible text-muted ml-1 text-xs font-normal">✎</span>
+                        </p>
+                      )}
                       {idea.generatedContent && previewId !== idea.id && (
                         <p className="text-xs text-body mt-1 line-clamp-3">
                           {idea.generatedContent.slice(0, 200)}...
@@ -750,8 +832,144 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
               {queuedIdeas.map((idea) => (
                 <div
                   key={idea.id}
-                  className="bg-[#F5F5F0] rounded-sm border border-amber-200 p-4"
+                  className={`bg-[#F5F5F0] rounded-sm border p-4 ${generatingId === idea.id ? "border-amber-300" : "border-amber-200"}`}
                 >
+                  {generatingId === idea.id ? (
+                    <div className="space-y-4">
+                      {/* Header: badge + status + timer */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="px-1.5 py-0.5 text-xs font-medium rounded-sm"
+                            style={{ backgroundColor: dsColor(idea.dataset) + "15", color: dsColor(idea.dataset) }}
+                          >
+                            {dsLabel(idea.dataset)}
+                          </span>
+                          {generatePhase === "done" ? (
+                            <span className="text-sm font-medium text-green-700">Complete!</span>
+                          ) : generatePhase === "error" ? (
+                            <span className="text-sm font-medium text-red-700">Error</span>
+                          ) : (
+                            <span className="text-sm font-medium text-amber-700 animate-pulse">Generating...</span>
+                          )}
+                        </div>
+                        <span className="text-xs text-muted font-mono">{formatElapsed(elapsed)}</span>
+                      </div>
+
+                      {/* Title */}
+                      <p className="text-base font-semibold text-foreground">{idea.title}</p>
+
+                      {/* Phase stepper */}
+                      <div className="flex items-center">
+                        {(() => {
+                          const errorAt = generatePhase === "error"
+                            ? generateEvents.filter((e) => e.phase !== "error").pop()?.phase
+                            : null;
+                          return GENERATE_PHASE_ORDER.slice(0, -1).map((phase, i) => {
+                            const effectivePhase = errorAt || generatePhase;
+                            const phaseIdx = effectivePhase ? GENERATE_PHASE_ORDER.indexOf(effectivePhase) : -1;
+                            const thisIdx = GENERATE_PHASE_ORDER.indexOf(phase);
+                            const isDone = phaseIdx > thisIdx || generatePhase === "done";
+                            const isActive = effectivePhase === phase && generatePhase !== "done";
+                            const isError = errorAt === phase;
+                            return (
+                              <div key={phase} className="flex items-center">
+                                <div className="flex items-center gap-1.5">
+                                  <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${
+                                    isError ? "bg-red-100 text-red-600 ring-1 ring-red-300"
+                                    : isDone ? "bg-green-100 text-green-600 ring-1 ring-green-300"
+                                    : isActive ? "bg-amber-100 text-amber-600 ring-1 ring-amber-300 animate-pulse"
+                                    : "bg-stone-100 text-stone-400 ring-1 ring-stone-200"
+                                  }`}>
+                                    {isError ? "✕" : isDone ? "✓" : isActive ? "●" : "○"}
+                                  </div>
+                                  <span className={`text-xs font-medium whitespace-nowrap ${
+                                    isError ? "text-red-600"
+                                    : isDone ? "text-green-600"
+                                    : isActive ? "text-amber-600"
+                                    : "text-stone-400"
+                                  }`}>
+                                    {GENERATE_PHASE_LABELS[phase]}
+                                  </span>
+                                </div>
+                                {i < GENERATE_PHASE_ORDER.length - 2 && (
+                                  <div className={`w-8 h-px mx-2 ${isDone ? "bg-green-300" : "bg-stone-200"}`} />
+                                )}
+                              </div>
+                            );
+                          });
+                        })()}
+                      </div>
+
+                      {/* Progress bar */}
+                      <div className="w-full bg-stone-200 rounded-full h-1.5">
+                        <div
+                          className={`h-1.5 rounded-full transition-all duration-500 ${
+                            generatePhase === "done" ? "bg-green-500"
+                            : generatePhase === "error" ? "bg-red-500"
+                            : "bg-amber-500"
+                          }`}
+                          style={{ width: `${getProgressPercent(generatePhase, generateEvents)}%` }}
+                        />
+                      </div>
+
+                      {/* Status text */}
+                      {generateEvents.length > 0 && generatePhase !== "done" && generatePhase !== "error" && (
+                        <div>
+                          <p className="text-sm font-medium text-foreground">
+                            {generateEvents[generateEvents.length - 1].message}
+                          </p>
+                          {generateEvents[generateEvents.length - 1].question && (
+                            <p className="text-xs text-muted mt-0.5">
+                              {generateEvents[generateEvents.length - 1].question}
+                            </p>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Done banner */}
+                      {generatePhase === "done" && generateResult && (
+                        <div className="p-3 rounded-sm bg-green-50 border border-green-200">
+                          <p className="text-sm font-medium text-green-700">
+                            ✓ Article generated — {generateResult.wordCount} words in {formatElapsed(Math.round((generateResult.generationMs || 0) / 1000))}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Error banner */}
+                      {generatePhase === "error" && (
+                        <div className="p-3 rounded-sm bg-red-50 border border-red-200">
+                          <p className="text-sm font-medium text-red-700">
+                            {generateEvents.filter((e) => e.phase === "error").map((e) => e.message).join(". ")}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Collapsible log */}
+                      <div>
+                        <button
+                          onClick={() => setShowLog(!showLog)}
+                          className="text-xs text-muted hover:text-foreground transition-colors flex items-center gap-1"
+                        >
+                          <span>{showLog ? "▾" : "▸"}</span>
+                          {showLog ? "Hide log" : "Show log"}
+                        </button>
+                        {showLog && (
+                          <div
+                            ref={logRef}
+                            className="mt-2 bg-white rounded-sm border border-rule-light p-2 max-h-40 overflow-y-auto font-mono text-xs space-y-0.5"
+                          >
+                            {generateEvents.map((ev, i) => (
+                              <div key={i} className={`flex gap-2 ${ev.phase === "error" ? "text-red-700" : ev.phase === "done" ? "text-green-700" : "text-body"}`}>
+                                <span className="text-muted shrink-0 w-12 text-right">{GENERATE_PHASE_LABELS[ev.phase]?.slice(0, 5) || ev.phase}</span>
+                                <span>{ev.message}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ) : (<>
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 mb-1">
@@ -907,53 +1125,7 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                     </div>
                   )}
 
-                  {/* Generate streaming progress */}
-                  {generatingId === idea.id && generateEvents.length > 0 && (
-                    <div className="mt-3 pt-3 border-t border-rule-light">
-                      <div className="flex items-center gap-1 mb-2 overflow-x-auto">
-                        {GENERATE_PHASE_ORDER.slice(0, -1).map((phase, i) => {
-                          const phaseIdx = generatePhase ? GENERATE_PHASE_ORDER.indexOf(generatePhase) : -1;
-                          const thisIdx = GENERATE_PHASE_ORDER.indexOf(phase);
-                          const isActive = generatePhase === phase;
-                          const isDone = phaseIdx > thisIdx || generatePhase === "done" || (generatePhase === "error" && phaseIdx > thisIdx);
-                          const isError = generatePhase === "error" && isActive;
-
-                          return (
-                            <div key={phase} className="flex items-center gap-1">
-                              <div className={`px-2 py-0.5 rounded-sm text-xs font-medium whitespace-nowrap transition-colors ${
-                                isError ? "bg-red-50 text-red-700 border border-red-200"
-                                : isActive ? "bg-amber-50 text-amber-700 border border-amber-200"
-                                : isDone ? "bg-green-50 text-green-700 border border-green-200"
-                                : "bg-white text-muted border border-rule-light"
-                              }`}>
-                                {isDone && !isActive ? "\u2713 " : ""}{GENERATE_PHASE_LABELS[phase]}
-                              </div>
-                              {i < GENERATE_PHASE_ORDER.length - 2 && <span className="text-rule text-xs">&rarr;</span>}
-                            </div>
-                          );
-                        })}
-                        <span className="text-xs text-muted ml-2 font-mono">{formatElapsed(elapsed)}</span>
-                      </div>
-                      <div
-                        ref={logRef}
-                        className="bg-white rounded-sm border border-rule-light p-2 max-h-32 overflow-y-auto font-mono text-xs space-y-0.5"
-                      >
-                        {generateEvents.map((ev, i) => (
-                          <div key={i} className={`flex gap-2 ${ev.phase === "error" ? "text-red-700" : ev.phase === "done" ? "text-green-700" : "text-body"}`}>
-                            <span className="text-muted shrink-0 w-12 text-right">{GENERATE_PHASE_LABELS[ev.phase]?.slice(0, 5) || ev.phase}</span>
-                            <span>{ev.message}</span>
-                          </div>
-                        ))}
-                      </div>
-                      {generateResult && (
-                        <div className="mt-2 p-2 rounded-sm bg-green-50 border border-green-200">
-                          <p className="text-xs text-green-700">
-                            Generated! {generateResult.wordCount} words &middot; {Math.round((generateResult.generationMs || 0) / 1000)}s
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                  </>)}
                 </div>
               ))}
             </div>

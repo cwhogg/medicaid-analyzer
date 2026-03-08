@@ -263,13 +263,28 @@ TWEET2: Are Non-Physician Providers Taking Over Medicare Billing?\n\nhttps://www
   const bodyContent = tweetSplit[0].trim();
 
   if (tweetSplit[1]) {
-    const tweetLines = tweetSplit[1].trim().split("\n").filter(Boolean);
+    const tweetLines = tweetSplit[1].trim().split("\n");
+    let collectingTweet2 = false;
+    const tweet2Lines: string[] = [];
+
     for (const line of tweetLines) {
       if (line.startsWith("TWEET1:")) {
+        collectingTweet2 = false;
         tweet1 = line.replace("TWEET1:", "").trim();
       } else if (line.startsWith("TWEET2:")) {
-        tweet2 = line.replace("TWEET2:", "").trim().replace(/\\n/g, "\n");
+        collectingTweet2 = true;
+        tweet2Lines.push(line.replace("TWEET2:", "").trim());
+      } else if (collectingTweet2) {
+        // Capture URL that ends up on its own line
+        tweet2Lines.push(line);
       }
+    }
+
+    // Handle both literal \n from Claude and actual newlines
+    tweet2 = tweet2Lines.join("\n").replace(/\\n/g, "\n").trim();
+    // Ensure blank line before URL so Twitter expands the link card
+    if (tweet2 && tweet2.includes("https://") && !tweet2.includes("\n\nhttps://")) {
+      tweet2 = tweet2.replace(/\n?(https:\/\/)/, "\n\n$1");
     }
   }
 
