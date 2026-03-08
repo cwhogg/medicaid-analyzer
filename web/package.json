@@ -21,7 +21,8 @@
     "react-markdown": "^10.1.0",
     "recharts": "^2.15.0",
     "remark-gfm": "^4.0.1",
-    "tailwind-merge": "^2.6.0"
+    "tailwind-merge": "^2.6.0",
+    "twitter-api-v2": "^1.29.0"
   },
   "devDependencies": {
     "@types/node": "^20",

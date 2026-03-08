@@ -9,6 +9,7 @@ import {
   publishToGitHub,
   type TopicPlan,
 } from "@/lib/blogGeneration";
+import { generateTweet, postTweetThread, isTwitterConfigured } from "@/lib/twitter";
 
 export const maxDuration = 300;
 
@@ -154,7 +155,22 @@ Return ONLY valid JSON, no markdown fences or explanation.`;
     );
 
     // --- Phase 4: Publish via GitHub ---
-    await publishToGitHub(topic, bodyContent, wordCount, send);
+    const { isFirstPublish } = await publishToGitHub(topic, bodyContent, wordCount, send);
+
+    // --- Phase 5: Tweet (first publish only) ---
+    if (isFirstPublish && isTwitterConfigured()) {
+      try {
+        send({ phase: "tweeting", message: "Posting to Twitter..." });
+        const tweets = await generateTweet(topic.title, topic.description, bodyContent, topic.slug, client);
+        const { tweetId } = await postTweetThread(tweets.tweet1, tweets.tweet2);
+        send({ phase: "tweeting", message: `Tweeted! (${tweetId})` });
+      } catch (err) {
+        console.error("Tweet failed:", err);
+        send({ phase: "tweeting", message: `Tweet failed: ${err instanceof Error ? err.message : "unknown error"}` });
+      }
+    } else if (isFirstPublish) {
+      console.warn("Twitter not configured — skipping tweet for new post:", topic.slug);
+    }
 
     send({
       phase: "done",

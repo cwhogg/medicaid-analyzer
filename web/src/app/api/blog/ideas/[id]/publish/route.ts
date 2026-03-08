@@ -1,8 +1,10 @@
 import { NextRequest } from "next/server";
+import Anthropic from "@anthropic-ai/sdk";
 import {
   publishToGitHub,
   type TopicPlan,
 } from "@/lib/blogGeneration";
+import { generateTweet, postTweetThread, isTwitterConfigured } from "@/lib/twitter";
 
 export const maxDuration = 60;
 
@@ -69,7 +71,23 @@ export async function POST(
   try {
     // Publish stored content to GitHub (no-op send since this isn't streaming)
     const noop = () => {};
-    await publishToGitHub(topic, data.generatedContent, data.generatedWordCount || 0, noop);
+    const { isFirstPublish } = await publishToGitHub(topic, data.generatedContent, data.generatedWordCount || 0, noop);
+
+    // Tweet on first publish only
+    if (isFirstPublish && isTwitterConfigured()) {
+      try {
+        const apiKey = process.env.ANTHROPIC_API_KEY;
+        if (apiKey) {
+          const client = new Anthropic({ apiKey });
+          const tweets = await generateTweet(topic.title, topic.description, data.generatedContent, topic.slug, client);
+          await postTweetThread(tweets.tweet1, tweets.tweet2);
+        }
+      } catch (tweetErr) {
+        console.error("Tweet failed (non-blocking):", tweetErr);
+      }
+    } else if (isFirstPublish) {
+      console.warn("Twitter not configured — skipping tweet for new post:", topic.slug);
+    }
 
     // Update idea status in Railway
     data.status = "published";

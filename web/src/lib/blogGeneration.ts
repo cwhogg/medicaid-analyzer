@@ -261,7 +261,7 @@ export async function publishToGitHub(
   content: string,
   wordCount: number,
   send: (event: Record<string, unknown>) => void
-): Promise<void> {
+): Promise<{ isFirstPublish: boolean }> {
   if (!GITHUB_TOKEN) {
     throw new Error("GITHUB_TOKEN not configured");
   }
@@ -339,4 +339,6 @@ ${content}
     console.error("GitHub API error:", ghError);
     throw new Error(`GitHub commit failed (${ghResponse.status}): ${ghError.slice(0, 200)}`);
   }
+
+  return { isFirstPublish: !existingSha };
 }

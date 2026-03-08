@@ -457,11 +457,12 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
   const dsColor = (ds: string) => DATASET_OPTIONS.find((d) => d.key === ds)?.color || "#78716C";
   const dsLabel = (ds: string) => DATASET_OPTIONS.find((d) => d.key === ds)?.label || ds;
 
-  const GENERATE_PHASE_ORDER = ["topic", "analysis", "writing", "done"];
+  const GENERATE_PHASE_ORDER = ["topic", "analysis", "writing", "tweeting", "done"];
   const GENERATE_PHASE_LABELS: Record<string, string> = {
     topic: "Topic",
     analysis: "Data Analysis",
     writing: "Writing Article",
+    tweeting: "Tweeting",
     done: "Complete",
     error: "Error",
   };
