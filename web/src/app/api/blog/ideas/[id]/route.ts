@@ -46,6 +46,10 @@ export async function PATCH(
   if (updates.targetKeywords) data.targetKeywords = updates.targetKeywords;
   if (updates.contentGap) data.contentGap = updates.contentGap;
   if (updates.analysisQuestions) data.analysisQuestions = updates.analysisQuestions;
+  if (typeof updates.generatedContent === "string") {
+    data.generatedContent = updates.generatedContent;
+    data.generatedWordCount = updates.generatedContent.split(/\s+/).filter(Boolean).length;
+  }
 
   // Determine status and sync it into data
   const status = updates.status || idea.status;

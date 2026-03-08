@@ -178,6 +178,9 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
   const [feedbackText, setFeedbackText] = useState("");
   const [ideaCount, setIdeaCount] = useState(5);
   const [ideaGuidance, setIdeaGuidance] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editContent, setEditContent] = useState("");
+  const [savingEdit, setSavingEdit] = useState(false);
   // Generate streaming state
   const [generatingId, setGeneratingId] = useState<string | null>(null);
   const [generateEvents, setGenerateEvents] = useState<GenerationEvent[]>([]);
@@ -191,7 +194,7 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const logRef = useRef<HTMLDivElement>(null);
 
-  const busy = generating || generatingId !== null || publishingId !== null || improvingId !== null;
+  const busy = generating || generatingId !== null || publishingId !== null || improvingId !== null || savingEdit;
 
   const fetchIdeas = useCallback(async () => {
     try {
@@ -262,6 +265,24 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
     } catch { /* ignore */ }
     setImprovingId(null);
     setFeedbackText("");
+  };
+
+  const saveDirectEdit = async (id: string) => {
+    setSavingEdit(true);
+    try {
+      const res = await fetch(`/api/blog/ideas/${id}?key=${encodeURIComponent(adminKey)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ generatedContent: editContent }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setIdeas((prev) => prev.map((i) => (i.id === id ? { ...i, ...data.idea } : i)));
+      }
+    } catch { /* ignore */ }
+    setSavingEdit(false);
+    setEditingId(null);
+    setEditContent("");
   };
 
   const queueIdea = async (id: string) => {
@@ -514,9 +535,26 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                           }
                         }}
                         disabled={busy && improvingId !== idea.id}
-                        className="px-2.5 py-1.5 text-xs rounded-sm border border-teal-200 bg-teal-50 text-teal-700 hover:bg-teal-100 transition-colors disabled:opacity-50"
+                        className="px-2.5 py-1.5 text-xs rounded-sm border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors disabled:opacity-50"
                       >
                         Improve
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (editingId === idea.id) {
+                            setEditingId(null);
+                            setEditContent("");
+                          } else {
+                            setPreviewId(null);
+                            setImprovingId(null);
+                            setEditingId(idea.id);
+                            setEditContent(idea.generatedContent || "");
+                          }
+                        }}
+                        disabled={busy && editingId !== idea.id}
+                        className="px-2.5 py-1.5 text-xs rounded-sm border border-stone-300 bg-white text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
+                      >
+                        Edit
                       </button>
                       <button
                         onClick={() => publishIdea(idea.id)}
@@ -529,7 +567,7 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                   </div>
 
                   {/* Full article preview */}
-                  {previewId === idea.id && idea.generatedContent && (
+                  {previewId === idea.id && idea.generatedContent && editingId !== idea.id && (
                     <div className="mt-3 pt-3 border-t border-rule-light">
                       <div className="bg-white rounded-sm border border-rule-light p-4 max-h-[600px] overflow-y-auto prose prose-sm prose-stone max-w-none
                         [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-foreground [&_h2]:mt-5 [&_h2]:mb-2
@@ -548,6 +586,37 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                     </div>
                   )}
 
+                  {/* Direct markdown editor */}
+                  {editingId === idea.id && (
+                    <div className="mt-3 pt-3 border-t border-rule-light">
+                      <textarea
+                        value={editContent}
+                        onChange={(e) => setEditContent(e.target.value)}
+                        className="w-full px-3 py-2 text-sm bg-white border border-rule rounded-sm text-foreground font-mono focus:outline-none focus:border-stone-500 transition-colors resize-y"
+                        rows={20}
+                        style={{ minHeight: "300px" }}
+                      />
+                      <div className="flex items-center gap-2 mt-2">
+                        <button
+                          onClick={() => saveDirectEdit(idea.id)}
+                          disabled={savingEdit || editContent === idea.generatedContent}
+                          className="px-3 py-1.5 text-xs rounded-sm border border-stone-300 bg-stone-800 text-white hover:bg-stone-900 transition-colors disabled:opacity-50"
+                        >
+                          {savingEdit ? "Saving..." : "Save Changes"}
+                        </button>
+                        <button
+                          onClick={() => { setEditingId(null); setEditContent(""); }}
+                          className="px-3 py-1.5 text-xs text-muted hover:text-foreground transition-colors"
+                        >
+                          Cancel
+                        </button>
+                        <span className="text-xs text-muted ml-auto">
+                          {editContent.split(/\s+/).filter(Boolean).length} words
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Inline improve for generated article */}
                   {improvingId === idea.id && (
                     <div className={`mt-3 pt-3 ${previewId !== idea.id ? "border-t border-rule-light" : ""}`}>
@@ -555,14 +624,14 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                         value={feedbackText}
                         onChange={(e) => setFeedbackText(e.target.value)}
                         placeholder="Instructions for article revision (e.g., 'add more context about regional differences', 'make the intro stronger')"
-                        className="w-full px-3 py-2 text-sm bg-white border border-rule rounded-sm text-foreground placeholder:text-muted focus:outline-none focus:border-teal-500 transition-colors resize-none"
+                        className="w-full px-3 py-2 text-sm bg-white border border-rule rounded-sm text-foreground placeholder:text-muted focus:outline-none focus:border-emerald-500 transition-colors resize-none"
                         rows={2}
                       />
                       <div className="flex gap-2 mt-2">
                         <button
                           onClick={() => improveIdea(idea.id)}
                           disabled={!feedbackText.trim()}
-                          className="px-3 py-1.5 text-xs rounded-sm bg-teal-600 text-white hover:bg-teal-700 transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                          className="px-3 py-1.5 text-xs rounded-sm border border-emerald-700 bg-emerald-600 text-white hover:bg-emerald-700 transition-colors flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed"
                         >
                           Revise Article
                         </button>
@@ -705,7 +774,7 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                           {dsLabel(idea.dataset)}
                         </span>
                         {idea.status === "improved" && (
-                          <span className="px-1.5 py-0.5 text-xs font-medium rounded-sm bg-teal-50 text-teal-700 border border-teal-200">
+                          <span className="px-1.5 py-0.5 text-xs font-medium rounded-sm bg-emerald-50 text-emerald-700 border border-emerald-200">
                             Improved
                           </span>
                         )}
@@ -756,7 +825,7 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                           }
                         }}
                         disabled={busy && improvingId !== idea.id}
-                        className="px-2.5 py-1.5 text-xs rounded-sm border border-teal-200 bg-teal-50 text-teal-700 hover:bg-teal-100 transition-colors disabled:opacity-50"
+                        className="px-2.5 py-1.5 text-xs rounded-sm border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors disabled:opacity-50"
                         title="Improve"
                       >
                         Improve
@@ -779,13 +848,13 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                         value={feedbackText}
                         onChange={(e) => setFeedbackText(e.target.value)}
                         placeholder="Optional feedback for refinement (e.g., 'focus more on regional differences')"
-                        className="w-full px-3 py-2 text-sm bg-white border border-rule rounded-sm text-foreground placeholder:text-muted focus:outline-none focus:border-teal-500 transition-colors resize-none"
+                        className="w-full px-3 py-2 text-sm bg-white border border-rule rounded-sm text-foreground placeholder:text-muted focus:outline-none focus:border-emerald-500 transition-colors resize-none"
                         rows={2}
                       />
                       <div className="flex gap-2 mt-2">
                         <button
                           onClick={() => improveIdea(idea.id)}
-                          className="px-3 py-1.5 text-xs rounded-sm bg-teal-600 text-white hover:bg-teal-700 transition-colors flex items-center gap-1.5"
+                          className="px-3 py-1.5 text-xs rounded-sm bg-emerald-600 text-white hover:bg-emerald-700 transition-colors flex items-center gap-1.5"
                         >
                           Refine
                         </button>
