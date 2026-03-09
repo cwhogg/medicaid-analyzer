@@ -88,7 +88,7 @@ export default function BlogPostPage({ params }: Props) {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-background pt-20 sm:pt-24 pb-12 sm:pb-16">
+      <main className="min-h-screen bg-background pt-6 sm:pt-16 pb-12 sm:pb-16">
         <article className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <script
             type="application/ld+json"

@@ -114,28 +114,34 @@ export function DataDictionary({ groups }: DataDictionaryProps) {
                     {group.variables.map((v) => (
                       <div
                         key={v.name}
-                        className="px-4 py-2.5 border-b border-rule-light last:border-b-0 hover:bg-[#F5F5F0] transition-colors"
+                        className="px-3 sm:px-4 py-2.5 border-b border-rule-light last:border-b-0 hover:bg-[#F5F5F0] transition-colors"
                       >
-                        <div className="flex items-start gap-3">
+                        <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3">
                           {/* Name + type */}
-                          <div className="shrink-0 min-w-[140px]">
+                          <div className="shrink-0 sm:min-w-[140px] flex items-center gap-1.5 flex-wrap">
                             <code className="text-xs font-mono text-accent">{v.name}</code>
                             {v.type && (
-                              <span className="text-[10px] text-teal ml-1.5 uppercase bg-emerald-50 px-1 py-0.5 rounded-sm">{v.type}</span>
+                              <span className="text-[10px] text-teal uppercase bg-emerald-50 px-1 py-0.5 rounded-sm">{v.type}</span>
+                            )}
+                            {v.note && (
+                              <span className="sm:hidden inline-flex items-center gap-1 px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                                <Info className="w-2.5 h-2.5" />
+                                {v.note}
+                              </span>
                             )}
                           </div>
 
-                          {/* Description + codes + note */}
+                          {/* Description + codes */}
                           <div className="flex-1 min-w-0">
                             <p className="text-sm text-body">{v.description}</p>
                             {v.codes && (
-                              <p className="text-xs text-muted mt-0.5 font-mono">{v.codes}</p>
+                              <p className="text-xs text-muted mt-0.5 font-mono break-all">{v.codes}</p>
                             )}
                           </div>
 
-                          {/* Note badge */}
+                          {/* Note badge — desktop only (shown inline on mobile) */}
                           {v.note && (
-                            <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                            <span className="hidden sm:inline-flex shrink-0 items-center gap-1 px-2 py-0.5 rounded-sm text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
                               <Info className="w-3 h-3" />
                               {v.note}
                             </span>

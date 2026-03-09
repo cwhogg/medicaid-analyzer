@@ -59,6 +59,9 @@ function DevBadge({ dev }: { dev: number }) {
 
 function ResultsTable({ rows, dataset }: { rows: ValidationRow[]; dataset: string }) {
   return (
+    <div className="relative">
+      {/* Scroll hint — fades on right edge on mobile */}
+      <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-surface to-transparent pointer-events-none z-10" />
     <div className="overflow-x-auto -mx-4 sm:mx-0">
       <table className="w-full text-sm border-collapse min-w-[700px]">
         <thead>
@@ -93,6 +96,7 @@ function ResultsTable({ rows, dataset }: { rows: ValidationRow[]; dataset: strin
         </tbody>
       </table>
     </div>
+    </div>
   );
 }
 
@@ -100,7 +104,7 @@ export default function ValidationPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen pt-24 pb-16">
+      <main className="min-h-screen pt-6 sm:pt-16 pb-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Hero */}

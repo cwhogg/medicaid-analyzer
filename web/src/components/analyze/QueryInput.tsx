@@ -43,15 +43,15 @@ export const QueryInput = forwardRef<QueryInputHandle, QueryInputProps>(function
   return (
     <div>
       {followUpQuestion ? (
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2 text-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+          <div className="flex items-center gap-2 text-sm min-w-0">
             <CornerDownRight className="w-4 h-4 text-accent shrink-0" />
-            <span className="text-muted">Refined from:</span>
-            <span className="text-foreground font-medium truncate max-w-[300px] sm:max-w-[400px]">{followUpQuestion}</span>
+            <span className="text-muted shrink-0">Refined from:</span>
+            <span className="text-foreground font-medium truncate">{followUpQuestion}</span>
           </div>
           <button
             onClick={onNewAnalysis}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-sm text-muted hover:text-foreground bg-surface border border-rule hover:border-muted transition-colors shrink-0"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-sm text-muted hover:text-foreground bg-surface border border-rule hover:border-muted transition-colors shrink-0 self-end sm:self-auto"
           >
             <RotateCcw className="w-3 h-3" />
             Start Fresh

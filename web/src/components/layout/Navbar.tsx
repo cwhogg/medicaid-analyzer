@@ -150,7 +150,7 @@ export function Navbar() {
           <hr className="rule-thick" />
           <Link href="/" className="block">
             <h1
-              className="font-headline text-[1.875rem] font-bold tracking-[0.08em] text-foreground py-4 leading-tight"
+              className="font-headline text-[1.375rem] sm:text-[1.875rem] font-bold tracking-[0.04em] sm:tracking-[0.08em] text-foreground py-3 sm:py-4 leading-tight"
               style={{ fontVariant: "small-caps" }}
             >
               Open Health Data Hub

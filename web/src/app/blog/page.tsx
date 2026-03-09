@@ -41,7 +41,7 @@ export default function BlogListPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-background pt-20 sm:pt-24 pb-12 sm:pb-16">
+      <main className="min-h-screen bg-background pt-6 sm:pt-16 pb-12 sm:pb-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8 sm:mb-12">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-headline font-bold text-foreground mb-3 sm:mb-4">

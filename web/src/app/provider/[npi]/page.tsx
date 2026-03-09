@@ -113,7 +113,7 @@ export default function ProviderPage({ params }: { params: { npi: string } }) {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen pt-24 pb-12">
+      <main className="min-h-screen pt-6 sm:pt-16 pb-12">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back button */}
           <button
