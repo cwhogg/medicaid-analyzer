@@ -222,7 +222,7 @@ Requirements:
 - Vary sentence openings — not every paragraph should start with "The [noun]...". Start with verbs, numbers, names, questions.
 - Vary paragraph length. Some sections should be 1-2 sentences. Not everything needs 3 paragraphs of development.
 - Use bold sparingly — only for the 1-2 most important numbers per section, not every number.
-- Limit em dashes to 2 per article. Use commas or parentheses instead.
+- NEVER use em dashes (—). Use commas, parentheses, periods, or colons instead.
 - Contractions are fine. Jargon is fine if your audience knows it.
 - H2 headings should read like newspaper headlines — specific and descriptive.
 

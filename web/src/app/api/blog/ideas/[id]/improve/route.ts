@@ -205,7 +205,7 @@ Rules:
 - Maximum ONE table, ≤ 8 rows
 - Target 650-850 words. Cut filler to stay in range.
 - Bold sparingly — only the 1-2 most important numbers per section, not every number
-- Limit em dashes to 2 per article
+- NEVER use em dashes (—). Use commas, parentheses, periods, or colons instead
 - Do NOT explain what the dataset is to the reader
 - Vary paragraph and section length — not every finding needs 3 paragraphs
 - NEVER use: "it's worth noting", "taken together", "the broader takeaway", "several patterns jump out", "several factors could explain", "warrants further investigation", "what makes this finding particularly significant", "one hypothesis:", "at least in this dataset", "paints a [adjective] picture", "hard numbers"
