@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { QueryCounter } from "./QueryCounter";
 
 export function Hero() {
 
@@ -15,11 +16,12 @@ export function Hero() {
           answers from federal datasets.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10 animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
+        <div className="flex flex-col items-center gap-3 mb-10 animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
           <Link href="/datasets" className="btn-primary inline-flex items-center justify-center gap-2 w-full sm:w-auto">
-            Explore Datasets
+            Ask Your First Question
             <ArrowRight className="w-4 h-4" />
           </Link>
+          <QueryCounter />
         </div>
       </div>
 
@@ -34,7 +36,7 @@ export function Hero() {
           <div className="stat-cell">
             <div className="font-headline text-[1.75rem] sm:text-[2.375rem] font-bold text-foreground leading-[1.1] tracking-tight">9.7M</div>
             <div className="text-[0.8125rem] font-semibold tracking-[0.04em] uppercase text-body mt-1">Physician Records</div>
-            <div className="text-[0.6875rem] text-muted mt-0.5 tracking-wide">Medicare 2023</div>
+            <div className="text-[0.6875rem] text-muted mt-0.5 tracking-wide">Medicare 2013&ndash;2023</div>
           </div>
           <div className="stat-cell border-b-0 sm:border-b-0">
             <div className="font-headline text-[1.75rem] sm:text-[2.375rem] font-bold text-foreground leading-[1.1] tracking-tight">4.0M</div>
