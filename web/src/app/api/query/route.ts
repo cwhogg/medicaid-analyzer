@@ -49,6 +49,32 @@ function setCache(question: string, entry: Omit<CacheEntry, "timestamp">) {
   cache.set(key, { ...entry, timestamp: Date.now() });
 }
 
+// Fix LIMIT clauses that Claude places inside CASE/ORDER BY expressions
+function fixMisplacedLimit(sql: string): string {
+  const trimmed = sql.trim().replace(/;+$/, "").trim();
+  const limitPattern = /\bLIMIT\s+(\d+)\b/gi;
+  let match: RegExpExecArray | null;
+  const matches: { index: number; full: string; value: string }[] = [];
+  while ((match = limitPattern.exec(trimmed)) !== null) {
+    matches.push({ index: match.index, full: match[0], value: match[1] });
+  }
+  if (matches.length === 0) return sql;
+
+  // Check if the last LIMIT is at the very end
+  const lastMatch = matches[matches.length - 1];
+  const endPos = lastMatch.index + lastMatch.full.length;
+  const afterLast = trimmed.slice(endPos).trim();
+  if (afterLast === "") return sql; // Already at end
+
+  // Only fix single-LIMIT queries (avoid breaking subquery LIMITs)
+  if (matches.length === 1) {
+    const cleaned = trimmed.replace(/\bLIMIT\s+\d+\b/gi, "").replace(/\s{2,}/g, " ").trim();
+    return `${cleaned}\nLIMIT ${lastMatch.value}`;
+  }
+
+  return sql;
+}
+
 // --- Route Handler ---
 export async function POST(request: NextRequest) {
   const requestStart = Date.now();
@@ -201,6 +227,9 @@ ${config.systemPromptRules}`;
       sql = sql.replace(/^```(?:sql)?\n?/, "").replace(/\n?```$/, "").trim();
     }
 
+    // Fix misplaced LIMIT clauses (e.g., LIMIT inside CASE/ORDER BY)
+    sql = fixMisplacedLimit(sql);
+
     const validation = validateSQL(sql);
     if (!validation.valid) {
       return NextResponse.json({ error: validation.error }, { status: 400 });
@@ -266,6 +295,7 @@ ${config.retrySystemPromptRules}`;
       if (fixedSql.startsWith("```")) {
         fixedSql = fixedSql.replace(/^```(?:sql)?\n?/, "").replace(/\n?```$/, "").trim();
       }
+      fixedSql = fixMisplacedLimit(fixedSql);
 
       const retryValidation = validateSQL(fixedSql);
       if (!retryValidation.valid) {

@@ -427,6 +427,26 @@ WHERE RIDAGEYR >= 18 AND BPXOSY1 IS NOT NULL
 GROUP BY RIAGENDR
 \`\`\`
 
+**Average blood pressure by age group (weighted):**
+\`\`\`sql
+SELECT
+  CASE
+    WHEN RIDAGEYR BETWEEN 18 AND 29 THEN '18-29'
+    WHEN RIDAGEYR BETWEEN 30 AND 39 THEN '30-39'
+    WHEN RIDAGEYR BETWEEN 40 AND 49 THEN '40-49'
+    WHEN RIDAGEYR BETWEEN 50 AND 59 THEN '50-59'
+    WHEN RIDAGEYR BETWEEN 60 AND 69 THEN '60-69'
+    WHEN RIDAGEYR >= 70 THEN '70+'
+  END AS age_group,
+  ROUND(SUM(BPXOSY1 * WTMEC2YR) / NULLIF(SUM(CASE WHEN BPXOSY1 IS NOT NULL THEN WTMEC2YR ELSE 0 END), 0), 1) AS avg_systolic,
+  ROUND(SUM(BPXODI1 * WTMEC2YR) / NULLIF(SUM(CASE WHEN BPXODI1 IS NOT NULL THEN WTMEC2YR ELSE 0 END), 0), 1) AS avg_diastolic,
+  COUNT(*) FILTER (WHERE BPXOSY1 IS NOT NULL) AS sample_n
+FROM nhanes
+WHERE RIDAGEYR >= 18 AND BPXOSY1 IS NOT NULL
+GROUP BY 1
+ORDER BY 1
+\`\`\`
+
 ---
 
 ### Rules
@@ -434,6 +454,7 @@ GROUP BY RIAGENDR
 - If the question cannot be answered from available columns, return exactly: CANNOT_ANSWER: <short reason>.
 - SELECT queries only. Use DuckDB SQL syntax.
 - Always include LIMIT (max 10000), unless the query is a single aggregated row.
+- LIMIT must ALWAYS be the very last clause in any query. Never place LIMIT inside CASE, ORDER BY, or any other expression. For age-group sorting, use ORDER BY 1 (not ORDER BY CASE).
 - ALWAYS use WTMEC2YR for weighted estimates when any exam or lab data is involved. Use WTINT2YR only for pure interview/demographic queries.
 - ALWAYS filter out NULLs and refusal codes (7, 9, 77, 99) before calculations.
 - ALWAYS add readable labels via CASE WHEN — never return raw numeric codes.
