@@ -125,7 +125,7 @@ function QueriesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-6 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-background text-foreground px-4 py-4 sm:p-6 max-w-7xl mx-auto">
       <div className="flex items-center gap-4 mb-8">
         <a
           href={`/admin?key=${encodeURIComponent(key || "")}`}
@@ -137,11 +137,14 @@ function QueriesPage() {
       </div>
 
       {/* Day summary table */}
-      <div className="card mb-6 p-4 overflow-x-auto">
+      <div className="card mb-6 p-4">
         <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-3">
           Last {days.length} Days
         </h2>
-        <table className="w-full text-sm">
+        <div className="relative">
+          <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-surface to-transparent pointer-events-none z-10" />
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm min-w-[600px]">
           <thead>
             <tr className="text-left text-muted">
               <th className="pb-2 pr-4">Date</th>
@@ -198,6 +201,8 @@ function QueriesPage() {
             )}
           </tbody>
         </table>
+        </div>
+        </div>
       </div>
 
       {/* Drill-down: individual queries for selected day */}
@@ -221,8 +226,10 @@ function QueriesPage() {
           {drillLoading ? (
             <div className="py-8 text-center animate-pulse text-muted">Loading...</div>
           ) : (
+            <div className="relative">
+              <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-surface to-transparent pointer-events-none z-10" />
             <div className="overflow-x-auto">
-              <table className="w-full text-xs">
+              <table className="w-full text-xs min-w-[700px]">
                 <thead>
                   <tr className="text-left text-muted">
                     <th className="pb-2 pr-3">Time</th>
@@ -305,6 +312,7 @@ function QueriesPage() {
                   )}
                 </tbody>
               </table>
+            </div>
             </div>
           )}
         </div>

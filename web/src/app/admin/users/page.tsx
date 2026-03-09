@@ -106,7 +106,7 @@ function UsersPage() {
     sortKey === k ? (sortAsc ? " \u25B2" : " \u25BC") : "";
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-6 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-background text-foreground px-4 py-4 sm:p-6 max-w-7xl mx-auto">
       <div className="flex items-center gap-4 mb-8">
         <a
           href={`/admin?key=${encodeURIComponent(key || "")}`}
@@ -118,8 +118,11 @@ function UsersPage() {
         <span className="text-sm text-muted">({users.length} users)</span>
       </div>
 
-      <div className="card p-4 overflow-x-auto">
-        <table className="w-full text-sm">
+      <div className="card p-4">
+        <div className="relative">
+          <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-surface to-transparent pointer-events-none z-10" />
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm min-w-[600px]">
           <thead>
             <tr className="text-left text-muted">
               <th className="pb-2 pr-4">#</th>
@@ -176,6 +179,8 @@ function UsersPage() {
             )}
           </tbody>
         </table>
+        </div>
+        </div>
       </div>
     </div>
   );

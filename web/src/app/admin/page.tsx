@@ -538,67 +538,67 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
     <div className="card mb-6">
       <div className="p-4">
         {/* Top bar */}
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-sm font-semibold text-muted uppercase tracking-wider">
-              Blog Pipeline
-            </h2>
-            <p className="text-xs text-muted mt-0.5">
-              Ideas &rarr; Queue &rarr; Generate &rarr; Publish
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="flex gap-1">
-              {DATASET_OPTIONS.map((ds) => (
-                <button
-                  key={ds.key}
-                  onClick={() => setSelectedDataset(ds.key)}
-                  className="px-2 py-1 text-xs font-medium rounded-sm border transition-colors"
-                  style={
-                    selectedDataset === ds.key
-                      ? { backgroundColor: ds.color + "15", borderColor: ds.color, color: ds.color }
-                      : { backgroundColor: "white", borderColor: "#D6D3D1", color: "#78716C" }
-                  }
-                >
-                  {ds.label}
-                </button>
-              ))}
+        <div className="mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+            <div>
+              <h2 className="text-sm font-semibold text-muted uppercase tracking-wider">
+                Blog Pipeline
+              </h2>
+              <p className="text-xs text-muted mt-0.5">
+                Ideas &rarr; Queue &rarr; Generate &rarr; Publish
+              </p>
             </div>
-            <select
-              value={ideaCount}
-              onChange={(e) => setIdeaCount(Number(e.target.value))}
-              className="px-2 py-1.5 text-xs border border-stone-300 rounded-sm bg-white text-stone-700"
-            >
-              {[1, 2, 3, 5, 8, 10].map((n) => (
-                <option key={n} value={n}>
-                  {n} {n === 1 ? "idea" : "ideas"}
-                </option>
-              ))}
-            </select>
-            <button
-              onClick={generateIdeas}
-              disabled={busy}
-              className="btn-primary px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              {generating ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                "Generate Ideas"
-              )}
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex gap-1">
+                {DATASET_OPTIONS.map((ds) => (
+                  <button
+                    key={ds.key}
+                    onClick={() => setSelectedDataset(ds.key)}
+                    className="px-2 py-1 text-xs font-medium rounded-sm border transition-colors"
+                    style={
+                      selectedDataset === ds.key
+                        ? { backgroundColor: ds.color + "15", borderColor: ds.color, color: ds.color }
+                        : { backgroundColor: "white", borderColor: "#D6D3D1", color: "#78716C" }
+                    }
+                  >
+                    {ds.label}
+                  </button>
+                ))}
+              </div>
+              <select
+                value={ideaCount}
+                onChange={(e) => setIdeaCount(Number(e.target.value))}
+                className="px-2 py-1.5 text-xs border border-stone-300 rounded-sm bg-white text-stone-700"
+              >
+                {[1, 2, 3, 5, 8, 10].map((n) => (
+                  <option key={n} value={n}>
+                    {n} {n === 1 ? "idea" : "ideas"}
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={generateIdeas}
+                disabled={busy}
+                className="btn-primary px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {generating ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  "Generate Ideas"
+                )}
+              </button>
+            </div>
           </div>
-          <div className="mt-2">
-            <input
-              type="text"
-              value={ideaGuidance}
-              onChange={(e) => setIdeaGuidance(e.target.value)}
-              placeholder="Focus area (optional) — e.g. &quot;state-level spending trends&quot; or &quot;rural vs urban health&quot;"
-              className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-sm bg-white text-stone-700 placeholder:text-stone-400"
-            />
-          </div>
+          <input
+            type="text"
+            value={ideaGuidance}
+            onChange={(e) => setIdeaGuidance(e.target.value)}
+            placeholder="Focus area (optional) — e.g. &quot;state-level spending trends&quot; or &quot;rural vs urban health&quot;"
+            className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-sm bg-white text-stone-700 placeholder:text-stone-400"
+          />
         </div>
 
         {/* 1. Generated Articles */}
@@ -799,7 +799,7 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                         </div>
                       ) : (
                         /* Rendered preview */
-                        <div className="bg-white rounded-sm border border-rule-light p-4 max-h-[600px] overflow-y-auto prose prose-sm prose-stone max-w-none
+                        <div className="bg-white rounded-sm border border-rule-light p-4 max-h-[400px] sm:max-h-[600px] overflow-y-auto prose prose-sm prose-stone max-w-none
                           [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-foreground [&_h2]:mt-5 [&_h2]:mb-2
                           [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-foreground [&_h3]:mt-4 [&_h3]:mb-1.5
                           [&_p]:text-sm [&_p]:text-body [&_p]:leading-relaxed [&_p]:mb-3
@@ -860,11 +860,17 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                       <p className="text-base font-semibold text-foreground">{idea.title}</p>
 
                       {/* Phase stepper */}
-                      <div className="flex items-center">
+                      <div className="flex items-center flex-wrap gap-y-1">
                         {(() => {
                           const errorAt = generatePhase === "error"
                             ? generateEvents.filter((e) => e.phase !== "error").pop()?.phase
                             : null;
+                          const PHASE_SHORT_LABELS: Record<string, string> = {
+                            topic: "Topic",
+                            analysis: "Analysis",
+                            writing: "Writing",
+                            tweeting: "Tweet",
+                          };
                           return GENERATE_PHASE_ORDER.slice(0, -1).map((phase, i) => {
                             const effectivePhase = errorAt || generatePhase;
                             const phaseIdx = effectivePhase ? GENERATE_PHASE_ORDER.indexOf(effectivePhase) : -1;
@@ -874,7 +880,7 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                             const isError = errorAt === phase;
                             return (
                               <div key={phase} className="flex items-center">
-                                <div className="flex items-center gap-1.5">
+                                <div className="flex items-center gap-1">
                                   <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${
                                     isError ? "bg-red-100 text-red-600 ring-1 ring-red-300"
                                     : isDone ? "bg-green-100 text-green-600 ring-1 ring-green-300"
@@ -889,11 +895,11 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                                     : isActive ? "text-amber-600"
                                     : "text-stone-400"
                                   }`}>
-                                    {GENERATE_PHASE_LABELS[phase]}
+                                    {PHASE_SHORT_LABELS[phase] || phase}
                                   </span>
                                 </div>
                                 {i < GENERATE_PHASE_ORDER.length - 2 && (
-                                  <div className={`w-8 h-px mx-2 ${isDone ? "bg-green-300" : "bg-stone-200"}`} />
+                                  <div className={`w-4 sm:w-8 h-px mx-1 sm:mx-2 ${isDone ? "bg-green-300" : "bg-stone-200"}`} />
                                 )}
                               </div>
                             );
@@ -1458,9 +1464,9 @@ function AdminDashboard() {
     metrics.costs.budgetPercent >= 80 ? "bg-red-600" : "bg-accent";
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-6 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-background text-foreground px-4 py-4 sm:p-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-8">
         <div>
           <h1 className="text-2xl font-headline font-bold">Admin Dashboard</h1>
           <p className="text-sm text-muted mt-1">
@@ -1909,8 +1915,10 @@ function AdminDashboard() {
         <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-3">
           Recent Queries ({metrics.recentQueries.length})
         </h2>
+        <div className="relative">
+          <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-surface to-transparent pointer-events-none z-10" />
         <div className="overflow-x-auto">
-          <table className="w-full text-xs">
+          <table className="w-full text-xs min-w-[700px]">
             <thead>
               <tr className="text-left text-muted">
                 <th className="pb-2 pr-3">Time</th>
@@ -1999,6 +2007,7 @@ function AdminDashboard() {
               )}
             </tbody>
           </table>
+        </div>
         </div>
       </div>
     </div>

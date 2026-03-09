@@ -116,7 +116,7 @@ function RetentionPage() {
   const totalUsers = d0?.total || engagement.total || 1;
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-6 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-background text-foreground px-4 py-4 sm:p-6 max-w-7xl mx-auto">
       <div className="flex items-center gap-4 mb-8">
         <a
           href={`/admin?key=${encodeURIComponent(key || "")}`}
