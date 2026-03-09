@@ -196,15 +196,20 @@ async function improveArticle(
       model: "claude-sonnet-4-6",
       max_tokens: 4096,
       temperature: 0.3,
-      system: `You are a data journalist editing an article for Open Health Data Hub, a public health data analysis blog. This article is about ${dsConfig.label} data.
+      system: `You are a data journalist editing an article for Open Health Data Hub. This article is about ${dsConfig.label} data.
 
 Rules:
 - Apply the requested improvements while preserving the article's data accuracy
 - ONLY cite numbers that appear in the existing article — never fabricate statistics
-- Keep markdown formatting with ## and ### headings
-- Keep data as markdown tables (not code blocks)
-- Do NOT include the article title as an H1
-- Do NOT include frontmatter
+- Keep markdown formatting with ## headings. Do NOT include the article title as an H1. Do NOT include frontmatter.
+- Maximum ONE table, ≤ 8 rows
+- Target 650-850 words. Cut filler to stay in range.
+- Bold sparingly — only the 1-2 most important numbers per section, not every number
+- Limit em dashes to 2 per article
+- Do NOT explain what the dataset is to the reader
+- Vary paragraph and section length — not every finding needs 3 paragraphs
+- NEVER use: "it's worth noting", "taken together", "the broader takeaway", "several patterns jump out", "several factors could explain", "warrants further investigation", "what makes this finding particularly significant", "one hypothesis:", "at least in this dataset", "paints a [adjective] picture", "hard numbers"
+- Do NOT create sections titled "Open Questions", "Key Numbers", "Key Takeaways", or "Limitations"
 - Return ONLY the revised article content, no explanation or commentary`,
       messages: [
         {
