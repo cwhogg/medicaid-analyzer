@@ -454,7 +454,6 @@ ORDER BY 1
 - If the question cannot be answered from available columns, return exactly: CANNOT_ANSWER: <short reason>.
 - SELECT queries only. Use DuckDB SQL syntax.
 - Always include LIMIT (max 10000), unless the query is a single aggregated row.
-- LIMIT must ALWAYS be the very last clause in any query. Never place LIMIT inside CASE, ORDER BY, or any other expression. For age-group sorting, use ORDER BY 1 (not ORDER BY CASE).
 - ALWAYS use WTMEC2YR for weighted estimates when any exam or lab data is involved. Use WTINT2YR only for pure interview/demographic queries.
 - ALWAYS filter out NULLs and refusal codes (7, 9, 77, 99) before calculations.
 - ALWAYS add readable labels via CASE WHEN — never return raw numeric codes.

@@ -8,6 +8,13 @@ import { recordRequest, recordQuery, recordFeedItem } from "@/lib/metrics";
 
 export const maxDuration = 60; // Allow up to 60s for Claude + Railway query
 
+// Appended to every dataset's system prompt to prevent common SQL generation mistakes
+const UNIVERSAL_SQL_RULES = `CRITICAL SQL SYNTAX RULES (apply to ALL queries):
+- LIMIT must ALWAYS be the very last clause in any query. Never place LIMIT inside CASE, ORDER BY, WHERE, GROUP BY, or any other expression.
+- For sorting by computed columns (age groups, categories), use ORDER BY 1 or ORDER BY column_alias. Do NOT use ORDER BY CASE...END.
+- Every CASE expression must have a matching END before any subsequent clause.
+- Always close all parentheses. Verify balanced parens before returning.`;
+
 // --- Response Cache (LRU, keyed by normalized question) ---
 const CACHE_MAX_SIZE = 500;
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
@@ -183,7 +190,9 @@ export async function POST(request: NextRequest) {
 
 ${schemaPrompt}
 
-${config.systemPromptRules}`;
+${config.systemPromptRules}
+
+${UNIVERSAL_SQL_RULES}`;
 
     const systemBlocks: Anthropic.TextBlockParam[] = [
       { type: "text", text: staticSystemPrompt, cache_control: { type: "ephemeral" } },
@@ -260,7 +269,9 @@ ${config.systemPromptRules}`;
 
 ${schemaPrompt}
 
-${config.retrySystemPromptRules}`;
+${config.retrySystemPromptRules}
+
+${UNIVERSAL_SQL_RULES}`;
 
       const retrySystemBlocks: Anthropic.TextBlockParam[] = [
         { type: "text", text: retryStaticPrompt, cache_control: { type: "ephemeral" } },
