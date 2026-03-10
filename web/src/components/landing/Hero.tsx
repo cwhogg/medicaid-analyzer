@@ -39,7 +39,7 @@ export function Hero() {
             <div className="text-[0.6875rem] text-muted mt-0.5 tracking-wide">Medicare 2013&ndash;2023</div>
           </div>
           <div className="stat-cell">
-            <div className="font-headline text-[1.75rem] sm:text-[2.375rem] font-bold text-foreground leading-[1.1] tracking-tight">2.0M</div>
+            <div className="font-headline text-[1.75rem] sm:text-[2.375rem] font-bold text-foreground leading-[1.1] tracking-tight">72M</div>
             <div className="text-[0.8125rem] font-semibold tracking-[0.04em] uppercase text-body mt-1">Hospital Discharges</div>
             <div className="text-[0.6875rem] text-muted mt-0.5 tracking-wide">Medicare Inpatient 2013&ndash;2023</div>
           </div>
