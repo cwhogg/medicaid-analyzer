@@ -175,6 +175,7 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
   const [selectedDataset, setSelectedDataset] = useState("medicaid");
   const [showDeleted, setShowDeleted] = useState(false);
   const [improvingId, setImprovingId] = useState<string | null>(null);
+  const [refining, setRefining] = useState(false);
   const [feedbackText, setFeedbackText] = useState("");
   const [ideaCount, setIdeaCount] = useState(5);
   const [ideaGuidance, setIdeaGuidance] = useState("");
@@ -265,7 +266,7 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
   };
 
   const improveIdea = async (id: string) => {
-    setImprovingId(id);
+    setRefining(true);
     try {
       const res = await fetch(`/api/blog/ideas/${id}/improve?key=${encodeURIComponent(adminKey)}`, {
         method: "POST",
@@ -277,6 +278,7 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
         setIdeas((prev) => prev.map((i) => (i.id === id ? data.idea : i)));
       }
     } catch { /* ignore */ }
+    setRefining(false);
     setImprovingId(null);
     setFeedbackText("");
   };
@@ -1111,22 +1113,29 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                         value={feedbackText}
                         onChange={(e) => setFeedbackText(e.target.value)}
                         placeholder="Optional feedback for refinement (e.g., 'focus more on regional differences', 'sharpen the analysis questions')"
-                        className="w-full px-3 py-2 text-sm bg-white border border-rule rounded-sm text-foreground placeholder:text-muted focus:outline-none focus:border-emerald-500 transition-colors resize-none"
+                        disabled={refining}
+                        className="w-full px-3 py-2 text-sm bg-white border border-rule rounded-sm text-foreground placeholder:text-muted focus:outline-none focus:border-emerald-500 transition-colors resize-none disabled:opacity-50"
                         rows={2}
                       />
-                      <div className="flex gap-2 mt-2">
+                      <div className="flex items-center gap-2 mt-2">
                         <button
                           onClick={() => improveIdea(idea.id)}
-                          className="px-3 py-1.5 text-xs rounded-sm bg-emerald-600 text-white hover:bg-emerald-700 transition-colors flex items-center gap-1.5"
+                          disabled={refining}
+                          className="px-3 py-1.5 text-xs rounded-sm bg-emerald-600 text-white hover:bg-emerald-700 transition-colors flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
                         >
-                          Refine
+                          {refining ? "Refining..." : "Refine"}
                         </button>
-                        <button
-                          onClick={() => { setImprovingId(null); setFeedbackText(""); }}
-                          className="px-3 py-1.5 text-xs text-muted hover:text-foreground transition-colors"
-                        >
-                          Cancel
-                        </button>
+                        {!refining && (
+                          <button
+                            onClick={() => { setImprovingId(null); setFeedbackText(""); }}
+                            className="px-3 py-1.5 text-xs text-muted hover:text-foreground transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                        {refining && (
+                          <span className="text-xs text-emerald-600 animate-pulse">AI is refining this idea...</span>
+                        )}
                       </div>
                     </div>
                   )}
@@ -1234,22 +1243,29 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                         value={feedbackText}
                         onChange={(e) => setFeedbackText(e.target.value)}
                         placeholder="Optional feedback for refinement (e.g., 'focus more on regional differences')"
-                        className="w-full px-3 py-2 text-sm bg-white border border-rule rounded-sm text-foreground placeholder:text-muted focus:outline-none focus:border-emerald-500 transition-colors resize-none"
+                        disabled={refining}
+                        className="w-full px-3 py-2 text-sm bg-white border border-rule rounded-sm text-foreground placeholder:text-muted focus:outline-none focus:border-emerald-500 transition-colors resize-none disabled:opacity-50"
                         rows={2}
                       />
-                      <div className="flex gap-2 mt-2">
+                      <div className="flex items-center gap-2 mt-2">
                         <button
                           onClick={() => improveIdea(idea.id)}
-                          className="px-3 py-1.5 text-xs rounded-sm bg-emerald-600 text-white hover:bg-emerald-700 transition-colors flex items-center gap-1.5"
+                          disabled={refining}
+                          className="px-3 py-1.5 text-xs rounded-sm bg-emerald-600 text-white hover:bg-emerald-700 transition-colors flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
                         >
-                          Refine
+                          {refining ? "Refining..." : "Refine"}
                         </button>
-                        <button
-                          onClick={() => { setImprovingId(null); setFeedbackText(""); }}
-                          className="px-3 py-1.5 text-xs text-muted hover:text-foreground transition-colors"
-                        >
-                          Cancel
-                        </button>
+                        {!refining && (
+                          <button
+                            onClick={() => { setImprovingId(null); setFeedbackText(""); }}
+                            className="px-3 py-1.5 text-xs text-muted hover:text-foreground transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                        {refining && (
+                          <span className="text-xs text-emerald-600 animate-pulse">AI is refining this idea...</span>
+                        )}
                       </div>
                     </div>
                   )}
