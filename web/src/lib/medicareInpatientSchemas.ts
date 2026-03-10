@@ -1,7 +1,7 @@
 export function generateMedicareInpatientSchemaPrompt(): string {
   return `## Medicare Inpatient Hospitals — by Provider and Service (2013-2023)
 
-You have ONE table: **medicare_inpatient** (~750K rows, 16 columns)
+You have ONE table: **medicare_inpatient** (~2M rows, 16 columns)
 
 This is the CMS Medicare Inpatient Hospitals dataset. Each row represents one hospital (identified by CCN) + one DRG (Diagnosis Related Group) code for a single calendar year. Data spans 11 years (2013-2023). It covers Original Medicare Part A fee-for-service inpatient hospital discharges from IPPS (Inpatient Prospective Payment System) hospitals only.
 
@@ -179,7 +179,7 @@ ORDER BY data_year
 
 ---
 
-### Performance Rules (CRITICAL — ~750K rows)
+### Performance Rules (CRITICAL — ~2M rows)
 - ALWAYS use GROUP BY to aggregate. Never SELECT * FROM medicare_inpatient without aggregation.
 - ALWAYS include a LIMIT clause (max 10000 rows).
 - For "top N" queries, use ORDER BY ... DESC LIMIT N.

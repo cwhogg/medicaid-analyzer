@@ -126,7 +126,7 @@ registerDataset({
 
   domainKnowledge: `## Medicare Inpatient Hospital Domain Knowledge
 - This dataset covers Medicare Part A inpatient hospital discharges from IPPS (Inpatient Prospective Payment System) hospitals
-- Covers 2013-2023 (11 years), ~3,000+ hospitals per year, ~750K total rows
+- Covers 2013-2023 (11 years), ~3,000+ hospitals per year, ~2M total rows
 - Uses DRG (Diagnosis Related Group) codes instead of HCPCS/CPT codes
 - MS-DRG = Medicare Severity DRG. Many DRGs have 3 tiers: "w MCC" (major complications), "w CC" (complications), "w/o CC/MCC"
 - Does NOT include: Part B physician services, Part C (Medicare Advantage), Part D (prescription drugs), outpatient hospital, Critical Access Hospitals

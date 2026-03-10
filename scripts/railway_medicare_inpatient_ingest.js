@@ -28,7 +28,7 @@ const { Database } = require("duckdb-async");
   const cols = "Rndrng_Prvdr_CCN, Rndrng_Prvdr_Org_Name, Rndrng_Prvdr_City, Rndrng_Prvdr_St, Rndrng_Prvdr_State_FIPS, Rndrng_Prvdr_Zip5, Rndrng_Prvdr_State_Abrvtn, Rndrng_Prvdr_RUCA, Rndrng_Prvdr_RUCA_Desc, DRG_Cd, DRG_Desc, Tot_Dschrgs, Avg_Submtd_Cvrd_Chrg, Avg_Tot_Pymt_Amt, Avg_Mdcr_Pymt_Amt";
 
   for (const [year, url] of years) {
-    const outFile = "/data/medicare_inpatient_" + year + ".parquet";
+    const outFile = "/data/inpatient_" + year + ".parquet";
     // Check if already downloaded
     try {
       const check = await db.all("SELECT COUNT(*) as cnt FROM read_parquet('" + outFile + "')");
@@ -40,7 +40,8 @@ const { Database } = require("duckdb-async");
 
     console.log("Downloading " + year + "...");
     const start = Date.now();
-    const sql = "COPY (SELECT " + cols + ", " + year + " AS data_year FROM read_csv_auto('" + url + "', types={'Rndrng_Prvdr_CCN': 'VARCHAR', 'DRG_Cd': 'VARCHAR', 'Rndrng_Prvdr_State_FIPS': 'VARCHAR', 'Rndrng_Prvdr_Zip5': 'VARCHAR', 'Rndrng_Prvdr_RUCA': 'VARCHAR'})) TO '" + outFile + "' (FORMAT PARQUET, COMPRESSION SNAPPY)";
+    // ignore_errors=true handles non-UTF-8 characters in some hospital names (e.g. special dashes)
+    const sql = "COPY (SELECT " + cols + ", " + year + " AS data_year FROM read_csv_auto('" + url + "', types={'Rndrng_Prvdr_CCN': 'VARCHAR', 'DRG_Cd': 'VARCHAR', 'Rndrng_Prvdr_State_FIPS': 'VARCHAR', 'Rndrng_Prvdr_Zip5': 'VARCHAR', 'Rndrng_Prvdr_RUCA': 'VARCHAR'}, ignore_errors=true)) TO '" + outFile + "' (FORMAT PARQUET, COMPRESSION SNAPPY)";
     await db.run(sql);
     const r = await db.all("SELECT COUNT(*) as cnt FROM read_parquet('" + outFile + "')");
     console.log(year + " done: " + r[0].cnt + " rows (" + Math.round((Date.now()-start)/1000) + "s)");
@@ -50,7 +51,7 @@ const { Database } = require("duckdb-async");
   console.log("\nVerifying all files...");
   let grandTotal = 0;
   for (const [year] of years) {
-    const f = "/data/medicare_inpatient_" + year + ".parquet";
+    const f = "/data/inpatient_" + year + ".parquet";
     try {
       const r = await db.all("SELECT COUNT(*) as cnt FROM read_parquet('" + f + "')");
       console.log("  " + year + ": " + r[0].cnt + " rows");
@@ -62,5 +63,5 @@ const { Database } = require("duckdb-async");
   console.log("Total rows across all years: " + grandTotal);
 
   await db.close();
-  console.log("\nDone! Files: /data/medicare_inpatient_*.parquet");
+  console.log("\nDone! Files: /data/inpatient_*.parquet");
 })().catch(e => { console.error(e); process.exit(1); });

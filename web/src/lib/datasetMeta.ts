@@ -61,7 +61,7 @@ export const DATASET_METAS: DatasetMeta[] = [
     subtitle: "Part A Hospital Discharges by DRG",
     icon: Building2,
     stats: [
-      { label: "Rows", value: "~750K" },
+      { label: "Rows", value: "~2M" },
       { label: "Period", value: "2013-2023" },
       { label: "Hospitals", value: "3,000+" },
     ],
