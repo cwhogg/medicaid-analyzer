@@ -1,5 +1,5 @@
 ---
-title: "Are Younger Adults Now Drinking More Than Older Adults?"
+title: "Who Binge Drinks the Most? Are Young People Binge Drinking More or Less Over Time?"
 type: blog-post
 targetKeywords: ["binge drinking by age","young adult alcohol use","heavy drinking trends","alcohol consumption America","BRFSS alcohol data"]
 contentGap: "Media coverage of alcohol trends often focuses on Gen Z sobriety culture without examining whether population-level survey data actually shows declining rates among younger adults relative to older cohorts."
