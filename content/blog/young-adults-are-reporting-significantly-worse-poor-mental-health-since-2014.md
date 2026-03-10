@@ -1,5 +1,5 @@
 ---
-title: "Young Adults Are Reporting Significantly Worse Poor Mental Health Since 2014"
+title: "Young Adults Are Reporting Significantly Worse Mental Health Since 2014"
 type: blog-post
 targetKeywords: ["youth mental health trends","young adult mental health BRFSS","poor mental health days by age","mental health crisis millennials","behavioral risk factor mental health"]
 contentGap: "While much is written about a youth mental health crisis, few analyses use population-weighted survey data to quantify exactly how many more poor mental health days young adults report today versus a decade ago, and how that compares to every other age group."
