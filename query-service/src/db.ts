@@ -17,6 +17,7 @@ const VIEWS: [string, string][] = [
   ["provider_monthly", "provider_monthly.parquet"],
   ["brfss", "brfss_harmonized.parquet"],
   ["medicare", "medicare_*.parquet"],
+  ["medicare_inpatient", "medicare_inpatient_*.parquet"],
   ["nhanes", "nhanes_2021_2023.parquet"],
 ];
 
@@ -27,6 +28,22 @@ export async function initDB(): Promise<void> {
 
   // Try to register views — skip missing files gracefully
   await tryCreateViews();
+}
+
+// Medicare Part B physician view needs explicit column list with CAST for NPI
+const MEDICARE_PHYSICIAN_COLS = `CAST(Rndrng_NPI AS VARCHAR) AS Rndrng_NPI, Rndrng_Prvdr_Last_Org_Name, Rndrng_Prvdr_First_Name, Rndrng_Prvdr_MI, Rndrng_Prvdr_Crdntls, Rndrng_Prvdr_Ent_Cd, Rndrng_Prvdr_St1, Rndrng_Prvdr_St2, Rndrng_Prvdr_City, Rndrng_Prvdr_State_Abrvtn, Rndrng_Prvdr_State_FIPS, Rndrng_Prvdr_Zip5, Rndrng_Prvdr_RUCA, Rndrng_Prvdr_RUCA_Desc, Rndrng_Prvdr_Cntry, Rndrng_Prvdr_Type, Rndrng_Prvdr_Mdcr_Prtcptg_Ind, HCPCS_Cd, HCPCS_Desc, HCPCS_Drug_Ind, Place_Of_Srvc, Tot_Benes, Tot_Srvcs, Tot_Bene_Day_Srvcs, Avg_Sbmtd_Chrg, Avg_Mdcr_Alowd_Amt, Avg_Mdcr_Pymt_Amt, Avg_Mdcr_Stdzd_Amt, data_year`;
+
+// Map view names to explicit column lists (for views that need special handling)
+const GLOB_VIEW_COLUMNS: Record<string, string> = {
+  medicare: MEDICARE_PHYSICIAN_COLS,
+};
+
+function buildGlobViewSQL(viewName: string, filePath: string): string {
+  const cols = GLOB_VIEW_COLUMNS[viewName];
+  if (cols) {
+    return `CREATE OR REPLACE VIEW ${viewName} AS SELECT ${cols} FROM read_parquet('${filePath}', union_by_name=true)`;
+  }
+  return `CREATE OR REPLACE VIEW ${viewName} AS SELECT * FROM read_parquet('${filePath}', union_by_name=true)`;
 }
 
 async function tryCreateViews(): Promise<void> {
@@ -48,7 +65,7 @@ async function tryCreateViews(): Promise<void> {
         continue;
       }
       try {
-        await db.run(`CREATE OR REPLACE VIEW ${viewName} AS SELECT CAST(Rndrng_NPI AS VARCHAR) AS Rndrng_NPI, Rndrng_Prvdr_Last_Org_Name, Rndrng_Prvdr_First_Name, Rndrng_Prvdr_MI, Rndrng_Prvdr_Crdntls, Rndrng_Prvdr_Ent_Cd, Rndrng_Prvdr_St1, Rndrng_Prvdr_St2, Rndrng_Prvdr_City, Rndrng_Prvdr_State_Abrvtn, Rndrng_Prvdr_State_FIPS, Rndrng_Prvdr_Zip5, Rndrng_Prvdr_RUCA, Rndrng_Prvdr_RUCA_Desc, Rndrng_Prvdr_Cntry, Rndrng_Prvdr_Type, Rndrng_Prvdr_Mdcr_Prtcptg_Ind, HCPCS_Cd, HCPCS_Desc, HCPCS_Drug_Ind, Place_Of_Srvc, Tot_Benes, Tot_Srvcs, Tot_Bene_Day_Srvcs, Avg_Sbmtd_Chrg, Avg_Mdcr_Alowd_Amt, Avg_Mdcr_Pymt_Amt, Avg_Mdcr_Stdzd_Amt, data_year FROM read_parquet('${filePath}', union_by_name=true)`);
+        await db.run(buildGlobViewSQL(viewName, filePath));
         created.push(viewName);
         console.log(`  ${viewName}: ${matches.length} files matched glob`);
       } catch (err) {
@@ -101,7 +118,7 @@ export async function reloadViews(): Promise<{ created: string[]; missing: strin
         continue;
       }
       try {
-        await db.run(`CREATE OR REPLACE VIEW ${viewName} AS SELECT CAST(Rndrng_NPI AS VARCHAR) AS Rndrng_NPI, Rndrng_Prvdr_Last_Org_Name, Rndrng_Prvdr_First_Name, Rndrng_Prvdr_MI, Rndrng_Prvdr_Crdntls, Rndrng_Prvdr_Ent_Cd, Rndrng_Prvdr_St1, Rndrng_Prvdr_St2, Rndrng_Prvdr_City, Rndrng_Prvdr_State_Abrvtn, Rndrng_Prvdr_State_FIPS, Rndrng_Prvdr_Zip5, Rndrng_Prvdr_RUCA, Rndrng_Prvdr_RUCA_Desc, Rndrng_Prvdr_Cntry, Rndrng_Prvdr_Type, Rndrng_Prvdr_Mdcr_Prtcptg_Ind, HCPCS_Cd, HCPCS_Desc, HCPCS_Drug_Ind, Place_Of_Srvc, Tot_Benes, Tot_Srvcs, Tot_Bene_Day_Srvcs, Avg_Sbmtd_Chrg, Avg_Mdcr_Alowd_Amt, Avg_Mdcr_Pymt_Amt, Avg_Mdcr_Stdzd_Amt, data_year FROM read_parquet('${filePath}', union_by_name=true)`);
+        await db.run(buildGlobViewSQL(viewName, filePath));
         created.push(viewName);
         console.log(`  ${viewName}: ${matches.length} files matched glob`);
       } catch (err) {

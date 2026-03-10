@@ -34,7 +34,7 @@ export function generateMetadata(): Metadata {
     metadataBase: new URL("https://www.openhealthdatahub.com"),
     title: "Open Health Data Hub",
     description:
-      "Explore Medicaid, Medicare, BRFSS, and NHANES datasets with natural language queries powered by AI. 240M+ rows of public health data.",
+      "Explore Medicaid, Medicare, Medicare Inpatient, BRFSS, and NHANES datasets with natural language queries powered by AI. 240M+ rows of public health data.",
     openGraph: {
       title: "Open Health Data Hub",
       description:

@@ -2,6 +2,7 @@
 import "./medicaid";
 import "./brfss";
 import "./medicare";
+import "./medicare-inpatient";
 import "./nhanes";
 
 // Re-export registry API

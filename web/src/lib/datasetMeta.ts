@@ -1,4 +1,4 @@
-import { Pill, BarChart3, FlaskConical, Stethoscope } from "lucide-react";
+import { Pill, BarChart3, FlaskConical, Stethoscope, Building2 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export interface DatasetMeta {
@@ -54,6 +54,26 @@ export const DATASET_METAS: DatasetMeta[] = [
     ],
     href: "/medicare",
     accentColor: "#0F766E",
+  },
+  {
+    key: "medicare-inpatient",
+    title: "Medicare Inpatient Hospitals",
+    subtitle: "Part A Hospital Discharges by DRG",
+    icon: Building2,
+    stats: [
+      { label: "Rows", value: "~750K" },
+      { label: "Period", value: "2013-2023" },
+      { label: "Hospitals", value: "3,000+" },
+    ],
+    description:
+      "Analyze Medicare Part A inpatient hospital spending by hospital, DRG, state, and year. Compare hospital charges, Medicare payments, and beneficiary costs across 3,000+ IPPS hospitals.",
+    sampleAnalyses: [
+      "Which hospitals charge the most for hip replacement (DRG 470)?",
+      "Top 10 most expensive DRGs by total Medicare spending",
+      "How did COVID-19 change inpatient hospital spending in 2020?",
+    ],
+    href: "/medicare-inpatient",
+    accentColor: "#0D9488",
   },
   {
     key: "brfss",

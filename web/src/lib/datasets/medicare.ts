@@ -64,9 +64,9 @@ registerDataset({
           "This is the Medicare dataset, not Medicaid. Try the Medicaid dataset for Medicaid spending questions.",
       },
       {
-        patterns: ["inpatient drg", "hospital drg", "drg payment"],
+        patterns: ["inpatient drg", "hospital drg", "drg payment", "inpatient hospital", "hospital discharge", "drg code"],
         reason:
-          "This dataset covers Medicare Part B physician/professional services only, not inpatient DRG hospital payments.",
+          "This dataset covers Medicare Part B physician/professional services only, not inpatient DRG hospital payments. Try the Medicare Inpatient dataset for hospital discharge and DRG data.",
       },
       {
         patterns: ["part d", "drug plan", "prescription drug plan"],

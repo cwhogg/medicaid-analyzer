@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Datasets — Open Health Data Hub",
   description:
-    "Browse all available public health datasets. Medicaid claims, Medicare physician spending, BRFSS surveys, and NHANES clinical data.",
+    "Browse all available public health datasets. Medicaid claims, Medicare physician spending, Medicare inpatient hospitals, BRFSS surveys, and NHANES clinical data.",
 };
 
 export default function DatasetsPage() {

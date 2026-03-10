@@ -494,3 +494,51 @@ export const medicareVariableGroups: VariableGroup[] = [
     ],
   },
 ];
+
+export const medicareInpatientVariableGroups: VariableGroup[] = [
+  {
+    name: "Hospital Identity",
+    description: "CCN and hospital name",
+    variables: [
+      { name: "Rndrng_Prvdr_CCN", type: "VARCHAR", description: "CMS Certification Number (6-digit hospital identifier)" },
+      { name: "Rndrng_Prvdr_Org_Name", type: "VARCHAR", description: "Hospital name" },
+    ],
+  },
+  {
+    name: "Hospital Location",
+    description: "Address, state, ZIP, and rural/urban classification",
+    variables: [
+      { name: "Rndrng_Prvdr_St", type: "VARCHAR", description: "Street address" },
+      { name: "Rndrng_Prvdr_City", type: "VARCHAR", description: "City" },
+      { name: "Rndrng_Prvdr_State_Abrvtn", type: "VARCHAR", description: "State abbreviation (e.g. CA, NY)" },
+      { name: "Rndrng_Prvdr_State_FIPS", type: "VARCHAR", description: "State FIPS code" },
+      { name: "Rndrng_Prvdr_Zip5", type: "VARCHAR", description: "5-digit ZIP code" },
+      { name: "Rndrng_Prvdr_RUCA", type: "VARCHAR", description: "Rural-Urban Commuting Area code" },
+      { name: "Rndrng_Prvdr_RUCA_Desc", type: "VARCHAR", description: "RUCA description (Metropolitan, Micropolitan, Small town, Rural)" },
+    ],
+  },
+  {
+    name: "Diagnosis Related Group",
+    description: "MS-DRG code and description for inpatient hospital stays",
+    variables: [
+      { name: "DRG_Cd", type: "VARCHAR", description: "MS-DRG code (3-digit, e.g. '003', '470', '871')" },
+      { name: "DRG_Desc", type: "VARCHAR", description: "DRG description (e.g. 'MAJOR JOINT REPLACEMENT OR REATTACHMENT OF LOWER EXTREMITY W/O MCC')" },
+    ],
+  },
+  {
+    name: "Volume & Payment",
+    description: "Discharge counts and per-discharge payment averages (multiply by Tot_Dschrgs for totals)",
+    variables: [
+      { name: "Tot_Dschrgs", type: "INTEGER", description: "Total number of discharges (minimum 11 per row for privacy)" },
+      { name: "Avg_Submtd_Cvrd_Chrg", type: "DOUBLE", description: "Average submitted covered charge per discharge (hospital billed amount)" },
+      { name: "Avg_Tot_Pymt_Amt", type: "DOUBLE", description: "Average total payment per discharge (Medicare + beneficiary coinsurance + deductible + outlier)" },
+      { name: "Avg_Mdcr_Pymt_Amt", type: "DOUBLE", description: "Average Medicare payment per discharge (what Medicare actually paid)" },
+    ],
+  },
+  {
+    name: "Data Year",
+    variables: [
+      { name: "data_year", type: "INTEGER", description: "Year of data (2013-2023)" },
+    ],
+  },
+];
