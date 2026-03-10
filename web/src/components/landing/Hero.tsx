@@ -16,7 +16,7 @@ export function Hero() {
           answers from federal datasets.
         </p>
 
-        <div className="flex flex-col items-center gap-3 mb-10 animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
+        <div className="flex flex-col items-center gap-6 mb-10 animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
           <Link href="/datasets" className="btn-primary inline-flex items-center justify-center gap-2 w-full sm:w-auto">
             Ask Your First Question
             <ArrowRight className="w-4 h-4" />
