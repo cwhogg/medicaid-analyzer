@@ -36,6 +36,7 @@ For every new dataset, you will create or modify these files:
 | `query-service/src/metrics-db.ts` | **Modify** | Add dataset FILTER to getDailyQueries() |
 | `web/src/app/admin/page.tsx` | **Modify** | Add dataset to DaySummary + chart bars |
 | `web/src/app/admin/queries/page.tsx` | **Modify** | Add dataset column to daily queries table |
+| `web/src/components/landing/Hero.tsx` | **Modify** | Add stat cell to homepage stats row |
 
 **Note:** Navbar does NOT need manual editing — it dynamically renders from DATASET_METAS.
 
@@ -52,10 +53,11 @@ For every new dataset, you will create or modify these files:
 |---------|-----|------|-------------|------|--------|
 | Medicaid | `medicaid` | `claims` + lookups | `medicaid-provider-spending.parquet` | 227M | `#EA580C` (orange) |
 | BRFSS | `brfss` | `brfss` | `brfss_harmonized.parquet` | 4M | `#0EA5E9` (sky blue) |
-| Medicare | `medicare` | `medicare` | `medicare_physician_2023.parquet` | 9.7M | `#10B981` (emerald) |
+| Medicare Physician | `medicare` | `medicare` | `medicare_*.parquet` (11 files) | 107M | `#10B981` (emerald) |
 | NHANES | `nhanes` | `nhanes` | `nhanes_2021_2023.parquet` | 12K | `#8B5CF6` (purple) |
+| Medicare Inpatient | `medicare-inpatient` | `medicare_inpatient` | `inpatient_*.parquet` (11 files) | 2M | `#F59E0B` (amber) |
 
-**Available accent colors** (not yet used): `#F59E0B` (amber), `#EC4899` (pink), `#14B8A6` (teal).
+**Available accent colors** (not yet used): `#EC4899` (pink), `#14B8A6` (teal).
 
 ---
 
@@ -637,7 +639,27 @@ Edit `web/src/app/sitemap.ts` — add to `staticRoutes` array:
 
 ---
 
-## Step 14: Admin Analytics
+## Step 14: Homepage Stats Row
+
+Edit `web/src/components/landing/Hero.tsx` — add a new stat cell to the stats grid.
+
+The grid uses `grid-cols-2 sm:grid-cols-N` where N is the number of datasets. Add a new `<div className="stat-cell">` with the dataset's headline stat (row count), label, and date range. Follow the existing pattern:
+
+```tsx
+<div className="stat-cell">
+  <div className="font-headline text-[1.75rem] sm:text-[2.375rem] font-bold text-foreground leading-[1.1] tracking-tight"><N></div>
+  <div className="text-[0.8125rem] font-semibold tracking-[0.04em] uppercase text-body mt-1"><Label></div>
+  <div className="text-[0.6875rem] text-muted mt-0.5 tracking-wide"><Source> <Years></div>
+</div>
+```
+
+Update the grid column count: `sm:grid-cols-N` where N = total number of stat cells. If adding a cell pushes beyond the current max-width, increase `max-w-[...]` proportionally (~190px per column).
+
+The last stat cell should have `border-r-0` to remove the right border.
+
+---
+
+## Step 15: Admin Analytics
 
 Update the admin dashboard to track queries for the new dataset.
 
@@ -681,7 +703,7 @@ And in the return `rows.map(...)`:
 
 ---
 
-## Step 15: Build
+## Step 16: Build
 
 ```bash
 cd /Users/cwhogg/medicaid-analysis/web && npm run build
@@ -695,13 +717,13 @@ If build fails, fix the error and retry (up to 3 times with different approaches
 
 ---
 
-## Step 16: Deploy
+## Step 17: Deploy
 
 Commit all changes, push, and deploy:
 
 ```bash
 cd /Users/cwhogg/medicaid-analysis
-git add scripts/ingest_<dataset>.py web/src/lib/<dataset>Schemas.ts web/src/lib/variableMeta.ts web/src/lib/datasets/<dataset>.ts web/src/lib/datasets/index.ts web/src/lib/datasetMeta.ts web/src/app/<slug>/page.tsx web/src/components/layout/Footer.tsx web/src/app/sitemap.ts query-service/src/db.ts query-service/src/metrics-db.ts web/src/app/admin/page.tsx web/src/app/admin/queries/page.tsx
+git add scripts/ingest_<dataset>.py web/src/lib/<dataset>Schemas.ts web/src/lib/variableMeta.ts web/src/lib/datasets/<dataset>.ts web/src/lib/datasets/index.ts web/src/lib/datasetMeta.ts web/src/app/<slug>/page.tsx web/src/components/layout/Footer.tsx web/src/app/sitemap.ts query-service/src/db.ts query-service/src/metrics-db.ts web/src/app/admin/page.tsx web/src/app/admin/queries/page.tsx web/src/components/landing/Hero.tsx
 git commit -m "Add <Dataset Name> dataset (<year>, ~<N> rows)"
 git push origin main
 vercel --prod --yes
