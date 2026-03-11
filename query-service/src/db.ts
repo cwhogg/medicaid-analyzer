@@ -19,6 +19,7 @@ const VIEWS: [string, string][] = [
   ["medicare", "medicare_*.parquet"],
   ["medicare_inpatient", "inpatient_*.parquet"],
   ["nhanes", "nhanes_2021_2023.parquet"],
+  ["dac", "dac_clinicians.parquet"],
 ];
 
 export async function initDB(): Promise<void> {

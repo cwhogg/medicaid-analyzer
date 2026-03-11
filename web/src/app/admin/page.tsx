@@ -22,6 +22,7 @@ interface DaySummary {
   medicare: number;
   nhanes: number;
   "medicare-inpatient": number;
+  dac: number;
 }
 
 interface FeedbackItem {
@@ -116,6 +117,7 @@ const DATASET_OPTIONS = [
   { key: "brfss", label: "BRFSS", color: "#1D4ED8" },
   { key: "nhanes", label: "NHANES", color: "#7C3AED" },
   { key: "medicare-inpatient", label: "Medicare Inpatient", color: "#F59E0B" },
+  { key: "dac", label: "Clinician Dir.", color: "#EC4899" },
 ];
 
 interface BlogIdea {
@@ -1670,6 +1672,14 @@ function AdminDashboard() {
                   name="Medicare Inpatient"
                   stackId="queries"
                   fill="#F59E0B"
+                  radius={[0, 0, 0, 0]}
+                  maxBarSize={40}
+                />
+                <Bar
+                  dataKey="dac"
+                  name="Clinician Dir."
+                  stackId="queries"
+                  fill="#EC4899"
                   radius={[2, 2, 0, 0]}
                   maxBarSize={40}
                 />

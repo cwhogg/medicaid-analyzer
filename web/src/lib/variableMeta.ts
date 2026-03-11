@@ -542,3 +542,67 @@ export const medicareInpatientVariableGroups: VariableGroup[] = [
     ],
   },
 ];
+
+export const dacVariableGroups: VariableGroup[] = [
+  {
+    name: "Provider Identity",
+    description: "Clinician identification and demographics (~2.8M rows, one per clinician/enrollment/group/address)",
+    variables: [
+      { name: "npi", type: "VARCHAR", description: "National Provider Identifier (10-digit)" },
+      { name: "ind_pac_id", type: "VARCHAR", description: "Individual PECOS Associate Control ID" },
+      { name: "ind_enrl_id", type: "VARCHAR", description: "Individual enrollment ID" },
+      { name: "provider_last_name", type: "VARCHAR", description: "Clinician last name" },
+      { name: "provider_first_name", type: "VARCHAR", description: "Clinician first name" },
+      { name: "provider_middle_name", type: "VARCHAR", description: "Clinician middle name" },
+      { name: "suff", type: "VARCHAR", description: "Name suffix (Jr, Sr, III, etc.)" },
+      { name: "gndr", type: "VARCHAR", description: "Gender", codes: "M=Male, F=Female" },
+      { name: "cred", type: "VARCHAR", description: "Credentials (MD, DO, NP, PA, etc.)" },
+    ],
+  },
+  {
+    name: "Education",
+    description: "Medical school and graduation information",
+    variables: [
+      { name: "med_sch", type: "VARCHAR", description: "Medical school name" },
+      { name: "grd_yr", type: "VARCHAR", description: "Graduation year (4-digit)" },
+    ],
+  },
+  {
+    name: "Specialty",
+    description: "Primary and secondary specialty designations",
+    variables: [
+      { name: "pri_spec", type: "VARCHAR", description: "Primary specialty (e.g., INTERNAL MEDICINE)" },
+      { name: "sec_spec_1", type: "VARCHAR", description: "Secondary specialty 1" },
+      { name: "sec_spec_2", type: "VARCHAR", description: "Secondary specialty 2" },
+      { name: "sec_spec_3", type: "VARCHAR", description: "Secondary specialty 3" },
+      { name: "sec_spec_4", type: "VARCHAR", description: "Secondary specialty 4" },
+      { name: "sec_spec_all", type: "VARCHAR", description: "All secondary specialties concatenated" },
+    ],
+  },
+  {
+    name: "Organization & Location",
+    description: "Group practice and address information",
+    variables: [
+      { name: "telehlth", type: "VARCHAR", description: "Telehealth indicator", codes: "Y=Yes, blank=No" },
+      { name: "facility_name", type: "VARCHAR", description: "Group practice or facility name" },
+      { name: "org_pac_id", type: "VARCHAR", description: "Organization PECOS Associate Control ID" },
+      { name: "num_org_mem", type: "INTEGER", description: "Number of organization members" },
+      { name: "adr_ln_1", type: "VARCHAR", description: "Street address line 1" },
+      { name: "adr_ln_2", type: "VARCHAR", description: "Street address line 2" },
+      { name: "city", type: "VARCHAR", description: "City name" },
+      { name: "state", type: "VARCHAR", description: "State abbreviation (2-letter)" },
+      { name: "zip_code", type: "VARCHAR", description: "ZIP code (5 or 9 digit)" },
+      { name: "telephone", type: "VARCHAR", description: "Phone number" },
+    ],
+  },
+  {
+    name: "Medicare Assignment",
+    description: "Medicare participation status",
+    variables: [
+      { name: "ind_assgn", type: "VARCHAR", description: "Individual Medicare assignment", codes: "Y=Yes, M=May accept" },
+      { name: "grp_assgn", type: "VARCHAR", description: "Group Medicare assignment", codes: "Y=Yes, M=May accept" },
+      { name: "adrs_id", type: "VARCHAR", description: "Address identifier (internal CMS ID)" },
+      { name: "ln_2_sprs", type: "VARCHAR", description: "Address line 2 suppression flag" },
+    ],
+  },
+];

@@ -12,6 +12,7 @@ interface DaySummary {
   medicare: number;
   nhanes: number;
   "medicare-inpatient": number;
+  dac: number;
 }
 
 interface Query {
@@ -156,6 +157,7 @@ function QueriesPage() {
               <th className="pb-2 pr-3 text-right" style={{ color: "#1D4ED8" }}>BRFSS</th>
               <th className="pb-2 pr-3 text-right" style={{ color: "#7C3AED" }}>NHANES</th>
               <th className="pb-2 pr-3 text-right" style={{ color: "#F59E0B" }}>Inpatient</th>
+              <th className="pb-2 pr-3 text-right" style={{ color: "#EC4899" }}>DAC</th>
               <th className="pb-2"></th>
             </tr>
           </thead>
@@ -190,6 +192,9 @@ function QueriesPage() {
                 <td className="py-2 pr-3 text-right font-mono text-muted">
                   {d["medicare-inpatient"] || 0}
                 </td>
+                <td className="py-2 pr-3 text-right font-mono text-muted">
+                  {d.dac || 0}
+                </td>
                 <td className="py-2 text-right">
                   <span className="text-teal text-xs">
                     {selectedDay === d.day ? "selected" : "view"}
@@ -199,7 +204,7 @@ function QueriesPage() {
             ))}
             {days.length === 0 && (
               <tr>
-                <td colSpan={10} className="py-8 text-center text-muted">
+                <td colSpan={11} className="py-8 text-center text-muted">
                   No query data available
                 </td>
               </tr>
