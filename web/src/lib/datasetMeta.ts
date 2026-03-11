@@ -96,6 +96,26 @@ export const DATASET_METAS: DatasetMeta[] = [
     accentColor: "#14B8A6",
   },
   {
+    key: "dac",
+    title: "Medicare Clinician Directory",
+    subtitle: "CMS Doctors and Clinicians",
+    icon: Users,
+    stats: [
+      { label: "Records", value: "~2.8M" },
+      { label: "Updated", value: "Feb 2026" },
+      { label: "Unique NPIs", value: "1.5M" },
+    ],
+    description:
+      "Look up any Medicare-enrolled clinician by NPI, specialty, location, or group practice. Analyze workforce distribution, telehealth adoption, and specialty demographics.",
+    sampleAnalyses: [
+      "How many cardiologists are in each state?",
+      "What is the gender breakdown across surgical specialties?",
+      "Which medical schools produce the most active clinicians?",
+    ],
+    href: "/dac",
+    accentColor: "#0F766E",
+  },
+  {
     key: "brfss",
     title: "BRFSS Health Survey",
     subtitle: "CDC Behavioral Risk Factor Survey",
@@ -134,25 +154,5 @@ export const DATASET_METAS: DatasetMeta[] = [
     ],
     href: "/nhanes",
     accentColor: "#7C3AED",
-  },
-  {
-    key: "dac",
-    title: "Clinician Directory",
-    subtitle: "CMS Doctors and Clinicians",
-    icon: Users,
-    stats: [
-      { label: "Records", value: "~2.8M" },
-      { label: "Updated", value: "Feb 2026" },
-      { label: "Unique NPIs", value: "1.5M" },
-    ],
-    description:
-      "Look up any Medicare-enrolled clinician by NPI, specialty, location, or group practice. Analyze workforce distribution, telehealth adoption, and specialty demographics.",
-    sampleAnalyses: [
-      "How many cardiologists are in each state?",
-      "What is the gender breakdown across surgical specialties?",
-      "Which medical schools produce the most active clinicians?",
-    ],
-    href: "/dac",
-    accentColor: "#EC4899",
   },
 ];
