@@ -4,7 +4,9 @@ import { getDataset } from "@/lib/datasets/index";
 import {
   streamResponse,
   runAnalyses,
+  extractFacts,
   writeArticle,
+  auditArticleNumbers,
   type TopicPlan,
 } from "@/lib/blogGeneration";
 
@@ -70,6 +72,7 @@ export async function POST(
     targetKeywords: data.targetKeywords || [],
     contentGap: data.contentGap || "",
     analysisQuestions: data.analysisQuestions || [],
+    provocativeAngle: data.provocativeAngle || undefined,
   };
 
   const dataset = data.dataset || "medicaid";
@@ -95,14 +98,29 @@ export async function POST(
       return;
     }
 
+    // Phase 2.5: Facts extraction
+    const facts = await extractFacts(topic, analysisSteps, client, send);
+
     // Phase 3: Writing
     const { bodyContent, wordCount, tweet1, tweet2 } = await writeArticle(
       topic,
       analysisSteps,
       dsConfig,
       client,
-      send
+      send,
+      facts
     );
+
+    // Phase 3.5: Audit numbers
+    const unmatchedNumbers = auditArticleNumbers(bodyContent, facts);
+    send({
+      phase: "audit",
+      message: unmatchedNumbers.length === 0
+        ? "All article numbers verified against facts"
+        : `${unmatchedNumbers.length} number(s) not found in facts object`,
+      unmatchedNumbers,
+      passed: unmatchedNumbers.length === 0,
+    });
 
     // Store generated content in Railway
     data.status = "generated";
@@ -111,6 +129,7 @@ export async function POST(
     data.generatedWordCount = wordCount;
     data.generatedTweet1 = tweet1;
     data.generatedTweet2 = tweet2;
+    data.generatedFacts = facts;
     data.generatedAt = Date.now();
     data.updatedAt = Date.now();
     const actions = Array.isArray(data.actions) ? data.actions : [];

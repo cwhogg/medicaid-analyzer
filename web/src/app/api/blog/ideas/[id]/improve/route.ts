@@ -85,8 +85,9 @@ CRITICAL: Your analysisQuestions MUST be answerable using ONLY the columns liste
 ${schemaPrompt}
 
 Given the current idea and optional feedback, return an improved version as a JSON object with these fields:
-- title: An engaging QUESTION that a curious person would search for (50-70 chars). Must end with a question mark. Examples: "How Many Americans Have Diabetes and Don't Know It?", "Does Where You Live Predict Your Health?". Never use colon-separated labels like "Topic: Subtitle" — always a natural question.
-- description: Brief summary (1-2 sentences)
+- title: Evaluate the current title. Pick the best approach: (1) A surprising question that challenges assumptions ("Are Rural Hospitals Actually More Expensive?"), (2) A declarative finding that stops scrolling ("The $4 Billion Procedure Nobody Talks About"), (3) A contradiction that demands explanation ("Medicare Spending Dropped, But Patients Got Sicker"). 50-70 chars. Never use colon-separated labels.
+- description: 2-3 sentences structured as: (1) The surprising finding the data will reveal, (2) Why a healthcare analyst or journalist should care, (3) The tension or unanswered question that makes this worth reading.
+- provocativeAngle: One sentence describing the "so what" — the implication that makes a reader stop scrolling.
 - targetKeywords: array of 3-5 SEO keywords
 - contentGap: what gap this content fills (1 sentence)
 - analysisQuestions: array of 2-3 specific analytical questions (MUST use only columns from the schema)
@@ -120,6 +121,7 @@ ${feedback ? `User feedback for improvement:\n${feedback}` : "Please improve thi
     let improved: {
       title: string;
       description: string;
+      provocativeAngle?: string;
       targetKeywords: string[];
       contentGap: string;
       analysisQuestions: string[];
@@ -140,6 +142,7 @@ ${feedback ? `User feedback for improvement:\n${feedback}` : "Please improve thi
     // Merge improved fields into data
     data.title = improved.title;
     data.description = improved.description;
+    data.provocativeAngle = improved.provocativeAngle || undefined;
     data.targetKeywords = improved.targetKeywords;
     data.contentGap = improved.contentGap;
     data.analysisQuestions = improved.analysisQuestions;
@@ -198,9 +201,18 @@ async function improveArticle(
       temperature: 0.3,
       system: `You are a data journalist editing an article for Open Health Data Hub. This article is about ${dsConfig.label} data.
 
-Rules:
+## Number integrity rules
+- ONLY cite numbers that already appear in the existing article. Do NOT introduce new statistics, percentages, or dollar amounts.
+- Do NOT rephrase existing numbers (e.g., don't change "$4.2 billion" to "$4.2B" or "4,200 million").
+- If moving a number to a different section, keep the exact same formatting.
+
+## Interpretation rules
+- You MAY add "why this matters" sentences that explain the human significance of existing findings.
+- You MAY NOT speculate about causes (no "this likely reflects...").
+- You MAY add context like "that's enough to..." or "for comparison..." as long as no new numbers are introduced.
+
+## General rules
 - Apply the requested improvements while preserving the article's data accuracy
-- ONLY cite numbers that appear in the existing article — never fabricate statistics
 - Keep markdown formatting with ## headings. Do NOT include the article title as an H1. Do NOT include frontmatter.
 - Maximum ONE table, ≤ 8 rows
 - Target 650-850 words. Cut filler to stay in range.

@@ -21,6 +21,17 @@ export interface TopicPlan {
   targetKeywords: string[];
   contentGap: string;
   analysisQuestions: string[];
+  provocativeAngle?: string;
+}
+
+export interface FactsObject {
+  headline_finding: string;
+  key_facts: string[];
+  comparisons: string[];
+  trend_direction: string;
+  trend_magnitude: string | null;
+  audience_hook: string;
+  open_question: string;
 }
 
 // Stream newline-delimited JSON events back to the client
@@ -163,13 +174,95 @@ export async function runAnalyses(
   return analysisSteps;
 }
 
+// Phase 2.5: Extract verified facts from analysis results
+export async function extractFacts(
+  topic: TopicPlan,
+  analysisSteps: AnalysisStep[],
+  client: Anthropic,
+  send: (event: Record<string, unknown>) => void
+): Promise<FactsObject | null> {
+  send({ phase: "facts", message: "Extracting verified facts..." });
+
+  const dataSummary = analysisSteps
+    .map((step, i) => {
+      const header = step.columns.join(" | ");
+      const rows = step.rows
+        .slice(0, 20)
+        .map((r) => r.map((v) => String(v ?? "")).join(" | "))
+        .join("\n");
+      return `### Analysis ${i + 1}: ${step.question}\nColumns: ${header}\n${rows}`;
+    })
+    .join("\n\n");
+
+  try {
+    const response = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1024,
+      temperature: 0,
+      system: `You are a facts extraction engine. Your ONLY job is to pull explicit numbers and findings from query results into a structured JSON object.
+
+STRICT RULES:
+- ONLY include numbers, percentages, and values that appear VERBATIM in the data tables provided
+- Do NOT calculate, infer, interpolate, or estimate any values
+- Do NOT round numbers differently than they appear in the data
+- If a comparison is not explicitly in the data (e.g. year-over-year change), do NOT compute it
+- If you cannot fill a field from the data, use null for nullable fields or "Unknown" for string fields
+- Every number in key_facts and comparisons must be directly traceable to a cell in the provided data
+
+Return a JSON object with these fields:
+- headline_finding: The single most newsworthy finding (1 sentence, must contain a number from the data)
+- key_facts: Array of 4-8 factual statements, each containing at least one number from the data
+- comparisons: Array of 2-4 comparisons that are explicit in the data (e.g. "State A: X% vs State B: Y%")
+- trend_direction: "increasing", "decreasing", "mixed", or "stable" (based on data, not inference)
+- trend_magnitude: A specific number from the data showing the scale of change, or null if not available
+- audience_hook: Why a healthcare analyst would care (1 sentence, referencing a specific number)
+- open_question: One question the data raises but cannot answer (must reference a specific finding)
+
+Return ONLY valid JSON, no markdown fences or explanation.`,
+      messages: [
+        {
+          role: "user",
+          content: `Extract verified facts for an article titled "${topic.title}" from these query results:\n\n${dataSummary}`,
+        },
+      ],
+    });
+
+    const textBlock = response.content.find((b) => b.type === "text");
+    if (!textBlock || textBlock.type !== "text") {
+      console.warn("Facts extraction returned no text");
+      send({ phase: "facts", message: "Facts extraction returned no text, continuing without facts" });
+      return null;
+    }
+
+    const cleaned = textBlock.text
+      .replace(/^```(?:json)?\n?/, "")
+      .replace(/\n?```$/, "")
+      .trim();
+    const facts: FactsObject = JSON.parse(cleaned);
+
+    send({
+      phase: "facts",
+      message: "Facts extracted",
+      headlineFinding: facts.headline_finding,
+      factCount: facts.key_facts.length,
+    });
+
+    return facts;
+  } catch (err) {
+    console.warn("Facts extraction failed:", err instanceof Error ? err.message : err);
+    send({ phase: "facts", message: "Facts extraction failed, continuing without facts" });
+    return null;
+  }
+}
+
 // Phase 3: Write the article
 export async function writeArticle(
   topic: TopicPlan,
   analysisSteps: AnalysisStep[],
   dsConfig: DatasetConfig,
   client: Anthropic,
-  send: (event: Record<string, unknown>) => void
+  send: (event: Record<string, unknown>) => void,
+  facts: FactsObject | null = null
 ): Promise<{ bodyContent: string; wordCount: number; tweet1: string; tweet2: string }> {
   send({
     phase: "writing",
@@ -210,11 +303,18 @@ Requirements:
 - End the article differently each time: a single unanswered question woven into prose, a callback to the opening, a surprising implication stated flatly, or just stop after the last finding. Do NOT always end with a numbered list of questions under "## Open Questions".
 
 ## Data rules
-- ONLY cite numbers that appear in the provided data — never fabricate statistics.
+- ONLY cite numbers from the VERIFIED FACTS OBJECT (if provided). Every number, percentage, and dollar amount in your article must appear in the facts object. If no facts object is provided, only cite numbers from the raw query results.
 - When you reference a number, give context (percentage change, rank, comparison).
 - Maximum ONE table per article, ≤ 8 rows. If a sentence can say what the table says, cut the table.
 - Do NOT explain what the dataset is. Never write "The BRFSS is a survey administered by..." — the audience knows.
 - Mention sample size only for genuinely small samples (under 200). Otherwise trust the data.
+
+## Interpretation framework — your most important job
+The data tells us WHAT happened. Your job is to tell us WHY IT MATTERS. After every key finding, add 1-2 sentences explaining the human significance:
+- What does this mean for real patients, providers, or taxpayers?
+- How does this compare to what people assume?
+- What would change if this trend continues?
+Do NOT speculate about causes (no "this likely reflects..."). DO explain consequences and significance.
 
 ## Tone & style
 - Confident and direct. Short sentences mixed with longer ones. Active voice.
@@ -245,7 +345,7 @@ Passive padding: "it can be seen that...", "there has been an increase in..."
 
 ## Twitter thread (REQUIRED — include at the very end)
 After the article, output a separator line "---TWEETS---" followed by exactly two lines:
-- TWEET1: Under 250 chars. No hashtags, no links. Feature a specific surprising number. Vary the format — sometimes lead with the number, sometimes lead with the implication, sometimes ask a question. Do NOT always use the "[stat] — [context]" format.
+- TWEET1: Under 250 chars. No hashtags, no links. Feature a specific surprising number from the VERIFIED FACTS OBJECT (if provided). Vary the format — sometimes lead with the number, sometimes lead with the implication, sometimes ask a question. Do NOT always use the "[stat] — [context]" format.
 - TWEET2: The article title on its own line, then a blank line, then the bare URL. Do NOT prefix with "Read more in this blog post:" — just the title and URL. Format: "{title}\n\nhttps://www.openhealthdatahub.com/blog/{slug}"
 
 Example output format:
@@ -255,7 +355,24 @@ TWEET2: Has Obesity Gotten Worse in Every State Since 2014?\n\nhttps://www.openh
     messages: [
       {
         role: "user",
-        content: `Write a blog post titled "${topic.title}" (slug: "${topic.slug}") using these real analysis results:\n\n${dataSummary}\n\nToday's date: ${today}`,
+        content: facts
+          ? `Write a blog post titled "${topic.title}" (slug: "${topic.slug}").
+
+## VERIFIED FACTS OBJECT
+Use ONLY these pre-verified numbers in your article:
+${JSON.stringify(facts, null, 2)}
+
+## RAW QUERY RESULTS (for context only — do not cite numbers not in the facts object above)
+${dataSummary}${topic.provocativeAngle ? `\n\n## Framing guidance\n${topic.provocativeAngle}` : ""}
+
+Today's date: ${today}`
+          : `NOTE: Facts extraction was unavailable. Be extra careful to only cite numbers that appear verbatim in the data below.
+
+Write a blog post titled "${topic.title}" (slug: "${topic.slug}") using these real analysis results:
+
+${dataSummary}${topic.provocativeAngle ? `\n\n## Framing guidance\n${topic.provocativeAngle}` : ""}
+
+Today's date: ${today}`,
       },
     ],
   });
@@ -397,6 +514,44 @@ ${content}
   }
 
   return { isFirstPublish: !existingSha };
+}
+
+// Audit: check that all numbers in the article appear in the facts object
+export function auditArticleNumbers(
+  article: string,
+  facts: FactsObject | null
+): string[] {
+  if (!facts) return [];
+
+  // Extract all numbers from the facts JSON
+  const factsText = JSON.stringify(facts);
+  const factsNumbers = new Set<string>();
+  const numberPattern = /\d[\d,]*\.?\d*/g;
+  let match;
+  while ((match = numberPattern.exec(factsText)) !== null) {
+    factsNumbers.add(match[0].replace(/,/g, ""));
+  }
+
+  // Extract all numbers from the article
+  const articleNumbers: string[] = [];
+  const articlePattern = /\d[\d,]*\.?\d*%?/g;
+  while ((match = articlePattern.exec(article)) !== null) {
+    const raw = match[0].replace(/%$/, "").replace(/,/g, "");
+    // Filter out common false positives
+    const num = parseFloat(raw);
+    if (isNaN(num)) continue;
+    // Skip years 2013-2030
+    if (num >= 2013 && num <= 2030 && Number.isInteger(num)) continue;
+    // Skip single digits 0-9
+    if (num >= 0 && num <= 9 && Number.isInteger(num)) continue;
+    articleNumbers.push(raw);
+  }
+
+  // Find numbers in the article that aren't in the facts
+  const unmatched = articleNumbers.filter((n) => !factsNumbers.has(n));
+
+  // Deduplicate
+  return Array.from(new Set(unmatched));
 }
 
 // Wait for Vercel deployment to make the blog page live before tweeting

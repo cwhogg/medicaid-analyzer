@@ -112,8 +112,9 @@ CRITICAL: Your analysisQuestions MUST be answerable using ONLY the columns liste
 ${schemaPrompt}
 
 Generate exactly ${count} distinct blog post ideas. Each idea should have:
-- title: An engaging QUESTION that a curious person would search for (50-70 chars). Must end with a question mark. Examples: "How Many Americans Have Diabetes and Don't Know It?", "Does Where You Live Predict Your Health?". Never use colon-separated labels like "Topic: Subtitle" — always a natural question.
-- description: Brief summary of what the article will cover (1-2 sentences)
+- title: Pick ONE of these approaches: (1) A surprising question that challenges assumptions ("Are Rural Hospitals Actually More Expensive?"), (2) A declarative finding that stops scrolling ("The $4 Billion Procedure Nobody Talks About"), (3) A contradiction that demands explanation ("Medicare Spending Dropped, But Patients Got Sicker"). 50-70 chars. Never use colon-separated labels like "Topic: Subtitle".
+- description: 2-3 sentences structured as: (1) The surprising finding the data will reveal, (2) Why a healthcare analyst or journalist should care, (3) The tension or unanswered question that makes this worth reading.
+- provocativeAngle: One sentence describing the "so what" — the implication that makes a reader stop scrolling. This should be the interpretive lens for the article, not just a restatement of the data.
 - targetKeywords: array of 3-5 SEO keywords
 - contentGap: what gap this content fills (1 sentence)
 - analysisQuestions: array of 2-3 specific analytical questions to investigate using SQL queries against the dataset (MUST use only columns from the schema above)
@@ -146,6 +147,7 @@ ${existingTitles.map((t) => `- ${t}`).join("\n") || "(none yet)"}`;
     let ideas: Array<{
       title: string;
       description: string;
+      provocativeAngle?: string;
       targetKeywords: string[];
       contentGap: string;
       analysisQuestions: string[];
@@ -174,6 +176,7 @@ ${existingTitles.map((t) => `- ${t}`).join("\n") || "(none yet)"}`;
         id,
         title: idea.title,
         description: idea.description,
+        provocativeAngle: idea.provocativeAngle || undefined,
         dataset: datasetKey,
         targetKeywords: idea.targetKeywords,
         contentGap: idea.contentGap,
