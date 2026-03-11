@@ -1,4 +1,4 @@
-import { Pill, BarChart3, FlaskConical, Stethoscope, Building2, Users } from "lucide-react";
+import { Pill, BarChart3, FlaskConical, Stethoscope, Building2, Users, Tablets } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export interface DatasetMeta {
@@ -74,6 +74,26 @@ export const DATASET_METAS: DatasetMeta[] = [
     ],
     href: "/medicare-inpatient",
     accentColor: "#0D9488",
+  },
+  {
+    key: "medicare-partd",
+    title: "Medicare Part D Prescriptions",
+    subtitle: "Part D Prescribers by Provider & Drug",
+    icon: Tablets,
+    stats: [
+      { label: "Rows", value: "~276M" },
+      { label: "Period", value: "2013-2023" },
+      { label: "Prescribers", value: "1.2M+" },
+    ],
+    description:
+      "Analyze Medicare Part D prescription drug spending by prescriber, drug, specialty, state, and year. Compare brand vs generic costs, track opioid trends, and identify top-prescribed medications.",
+    sampleAnalyses: [
+      "What are the top 10 most prescribed drugs in Medicare?",
+      "How has opioid prescribing changed since 2013?",
+      "Which specialties prescribe the most expensive drugs?",
+    ],
+    href: "/medicare-partd",
+    accentColor: "#14B8A6",
   },
   {
     key: "brfss",

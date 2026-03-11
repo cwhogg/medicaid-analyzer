@@ -13,7 +13,8 @@ export function Footer() {
               <a href="https://data.cms.gov/" target="_blank" rel="noopener noreferrer" className="text-teal hover:text-teal-hover transition-colors">CMS</a>,{" "}
               <a href="https://www.cdc.gov/brfss/" target="_blank" rel="noopener noreferrer" className="text-teal hover:text-teal-hover transition-colors">CDC BRFSS</a>,{" "}
               <a href="https://wwwn.cdc.gov/nchs/nhanes/" target="_blank" rel="noopener noreferrer" className="text-teal hover:text-teal-hover transition-colors">CDC NHANES</a>,{" "}
-              <a href="https://data.cms.gov/provider-data/dataset/mj5m-pzi6" target="_blank" rel="noopener noreferrer" className="text-teal hover:text-teal-hover transition-colors">CMS DAC</a>
+              <a href="https://data.cms.gov/provider-data/dataset/mj5m-pzi6" target="_blank" rel="noopener noreferrer" className="text-teal hover:text-teal-hover transition-colors">CMS DAC</a>,{" "}
+              <a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-part-d-prescribers/medicare-part-d-prescribers-by-provider-and-drug" target="_blank" rel="noopener noreferrer" className="text-teal hover:text-teal-hover transition-colors">CMS Part D</a>
             </p>
           </div>
         </div>

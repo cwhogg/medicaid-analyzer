@@ -23,6 +23,7 @@ interface DaySummary {
   nhanes: number;
   "medicare-inpatient": number;
   dac: number;
+  "medicare-partd": number;
 }
 
 interface FeedbackItem {
@@ -118,6 +119,7 @@ const DATASET_OPTIONS = [
   { key: "nhanes", label: "NHANES", color: "#7C3AED" },
   { key: "medicare-inpatient", label: "Medicare Inpatient", color: "#F59E0B" },
   { key: "dac", label: "Clinician Dir.", color: "#EC4899" },
+  { key: "medicare-partd", label: "Part D", color: "#14B8A6" },
 ];
 
 interface BlogIdea {
@@ -1680,6 +1682,14 @@ function AdminDashboard() {
                   name="Clinician Dir."
                   stackId="queries"
                   fill="#EC4899"
+                  radius={[0, 0, 0, 0]}
+                  maxBarSize={40}
+                />
+                <Bar
+                  dataKey="medicare-partd"
+                  name="Part D"
+                  stackId="queries"
+                  fill="#14B8A6"
                   radius={[2, 2, 0, 0]}
                   maxBarSize={40}
                 />

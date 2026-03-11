@@ -20,6 +20,7 @@ const VIEWS: [string, string][] = [
   ["medicare_inpatient", "inpatient_*.parquet"],
   ["nhanes", "nhanes_2021_2023.parquet"],
   ["dac", "dac_clinicians.parquet"],
+  ["medicare_partd", "partd_*.parquet"],
 ];
 
 export async function initDB(): Promise<void> {
@@ -34,9 +35,13 @@ export async function initDB(): Promise<void> {
 // Medicare Part B physician view needs explicit column list with CAST for NPI
 const MEDICARE_PHYSICIAN_COLS = `CAST(Rndrng_NPI AS VARCHAR) AS Rndrng_NPI, Rndrng_Prvdr_Last_Org_Name, Rndrng_Prvdr_First_Name, Rndrng_Prvdr_MI, Rndrng_Prvdr_Crdntls, Rndrng_Prvdr_Ent_Cd, Rndrng_Prvdr_St1, Rndrng_Prvdr_St2, Rndrng_Prvdr_City, Rndrng_Prvdr_State_Abrvtn, Rndrng_Prvdr_State_FIPS, Rndrng_Prvdr_Zip5, Rndrng_Prvdr_RUCA, Rndrng_Prvdr_RUCA_Desc, Rndrng_Prvdr_Cntry, Rndrng_Prvdr_Type, Rndrng_Prvdr_Mdcr_Prtcptg_Ind, HCPCS_Cd, HCPCS_Desc, HCPCS_Drug_Ind, Place_Of_Srvc, Tot_Benes, Tot_Srvcs, Tot_Bene_Day_Srvcs, Avg_Sbmtd_Chrg, Avg_Mdcr_Alowd_Amt, Avg_Mdcr_Pymt_Amt, Avg_Mdcr_Stdzd_Amt, data_year`;
 
+// Medicare Part D prescriber view needs explicit column list with CAST for NPI and FIPS
+const MEDICARE_PARTD_COLS = `CAST(Prscrbr_NPI AS VARCHAR) AS Prscrbr_NPI, Prscrbr_Last_Org_Name, Prscrbr_First_Name, Prscrbr_City, Prscrbr_State_Abrvtn, CAST(Prscrbr_State_FIPS AS VARCHAR) AS Prscrbr_State_FIPS, Prscrbr_Type, Prscrbr_Type_Src, Brnd_Name, Gnrc_Name, Tot_Clms, Tot_30day_Fills, Tot_Day_Suply, Tot_Drug_Cst, Tot_Benes, GE65_Sprsn_Flag, GE65_Tot_Clms, GE65_Tot_30day_Fills, GE65_Tot_Day_Suply, GE65_Tot_Drug_Cst, GE65_Bene_Sprsn_Flag, GE65_Tot_Benes, data_year`;
+
 // Map view names to explicit column lists (for views that need special handling)
 const GLOB_VIEW_COLUMNS: Record<string, string> = {
   medicare: MEDICARE_PHYSICIAN_COLS,
+  medicare_partd: MEDICARE_PARTD_COLS,
 };
 
 function buildGlobViewSQL(viewName: string, filePath: string): string {

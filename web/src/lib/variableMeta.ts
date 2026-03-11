@@ -543,6 +543,61 @@ export const medicareInpatientVariableGroups: VariableGroup[] = [
   },
 ];
 
+export const partdVariableGroups: VariableGroup[] = [
+  {
+    name: "Prescriber Identity",
+    description: "NPI, name, location, and specialty (~276M rows, one per prescriber + drug per year)",
+    variables: [
+      { name: "Prscrbr_NPI", type: "VARCHAR", description: "National Provider Identifier (10-digit)" },
+      { name: "Prscrbr_Last_Org_Name", type: "VARCHAR", description: "Last name or organization name" },
+      { name: "Prscrbr_First_Name", type: "VARCHAR", description: "First name (NULL for organizations)" },
+      { name: "Prscrbr_City", type: "VARCHAR", description: "City" },
+      { name: "Prscrbr_State_Abrvtn", type: "VARCHAR", description: "State abbreviation (e.g. CA, NY)" },
+      { name: "Prscrbr_State_FIPS", type: "VARCHAR", description: "State FIPS code" },
+      { name: "Prscrbr_Type", type: "VARCHAR", description: "Provider specialty (e.g. Internal Medicine, Family Practice)" },
+      { name: "Prscrbr_Type_Src", type: "VARCHAR", description: "Source of specialty", codes: "S=Medicare enrollment, blank=NPPES" },
+    ],
+  },
+  {
+    name: "Drug Identity",
+    description: "Brand and generic drug names",
+    variables: [
+      { name: "Brnd_Name", type: "VARCHAR", description: "Brand name (NULL if generic-only drug)" },
+      { name: "Gnrc_Name", type: "VARCHAR", description: "Generic/chemical name (always populated)" },
+    ],
+  },
+  {
+    name: "All-Age Metrics",
+    description: "Total values per prescriber + drug + year (not averages)",
+    variables: [
+      { name: "Tot_Clms", type: "BIGINT", description: "Total Medicare Part D claims" },
+      { name: "Tot_30day_Fills", type: "DOUBLE", description: "Total 30-day standardized fills" },
+      { name: "Tot_Day_Suply", type: "BIGINT", description: "Total day supply" },
+      { name: "Tot_Drug_Cst", type: "DOUBLE", description: "Total drug cost in dollars" },
+      { name: "Tot_Benes", type: "BIGINT", description: "Total unique beneficiaries" },
+    ],
+  },
+  {
+    name: "Age 65+ Metrics",
+    description: "Same metrics restricted to beneficiaries aged 65+. Suppressed (NULL) when claims < 11.",
+    variables: [
+      { name: "GE65_Sprsn_Flag", type: "VARCHAR", description: "Suppression flag", codes: "'*' if claims < 11" },
+      { name: "GE65_Tot_Clms", type: "BIGINT", description: "Age 65+ total claims" },
+      { name: "GE65_Tot_30day_Fills", type: "DOUBLE", description: "Age 65+ total 30-day fills" },
+      { name: "GE65_Tot_Day_Suply", type: "BIGINT", description: "Age 65+ total day supply" },
+      { name: "GE65_Tot_Drug_Cst", type: "DOUBLE", description: "Age 65+ total drug cost" },
+      { name: "GE65_Bene_Sprsn_Flag", type: "VARCHAR", description: "Beneficiary suppression flag", codes: "'*' if beneficiaries < 11" },
+      { name: "GE65_Tot_Benes", type: "BIGINT", description: "Age 65+ total beneficiaries" },
+    ],
+  },
+  {
+    name: "Data Year",
+    variables: [
+      { name: "data_year", type: "INTEGER", description: "Year of data (2013-2023)" },
+    ],
+  },
+];
+
 export const dacVariableGroups: VariableGroup[] = [
   {
     name: "Provider Identity",

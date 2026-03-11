@@ -5,6 +5,7 @@ import "./medicare";
 import "./medicare-inpatient";
 import "./nhanes";
 import "./dac";
+import "./medicare-partd";
 
 // Re-export registry API
 export { getDataset, getAllDatasets, getDefaultDatasetKey } from "@/lib/datasets";

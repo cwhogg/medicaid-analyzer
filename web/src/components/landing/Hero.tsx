@@ -27,7 +27,7 @@ export function Hero() {
 
       {/* Stats row */}
       <div className="max-w-[1140px] mx-auto px-4 sm:px-8 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
-        <div className="grid grid-cols-2 sm:grid-cols-6 border-t-2 border-foreground border-b border-rule">
+        <div className="grid grid-cols-2 sm:grid-cols-7 border-t-2 border-foreground border-b border-rule">
           <div className="stat-cell">
             <div className="font-headline text-[1.75rem] sm:text-[2.375rem] font-bold text-foreground leading-[1.1] tracking-tight">227M</div>
             <div className="text-[0.8125rem] font-semibold tracking-[0.04em] uppercase text-body mt-1">Spending Records</div>
@@ -52,6 +52,11 @@ export function Hero() {
             <div className="font-headline text-[1.75rem] sm:text-[2.375rem] font-bold text-foreground leading-[1.1] tracking-tight">12K</div>
             <div className="text-[0.8125rem] font-semibold tracking-[0.04em] uppercase text-body mt-1">Clinical Exams</div>
             <div className="text-[0.6875rem] text-muted mt-0.5 tracking-wide">NHANES 2021&ndash;2023</div>
+          </div>
+          <div className="stat-cell">
+            <div className="font-headline text-[1.75rem] sm:text-[2.375rem] font-bold text-foreground leading-[1.1] tracking-tight">276M</div>
+            <div className="text-[0.8125rem] font-semibold tracking-[0.04em] uppercase text-body mt-1">Prescriptions</div>
+            <div className="text-[0.6875rem] text-muted mt-0.5 tracking-wide">Part D 2013&ndash;2023</div>
           </div>
           <div className="stat-cell border-r-0">
             <div className="font-headline text-[1.75rem] sm:text-[2.375rem] font-bold text-foreground leading-[1.1] tracking-tight">1.5M</div>
