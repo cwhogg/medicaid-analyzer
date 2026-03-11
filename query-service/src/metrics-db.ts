@@ -649,7 +649,8 @@ export async function getDailyQueries(day?: string): Promise<Record<string, unkn
       COUNT(*) FILTER (WHERE dataset = 'medicaid' OR dataset IS NULL) as medicaid,
       COUNT(*) FILTER (WHERE dataset = 'brfss') as brfss,
       COUNT(*) FILTER (WHERE dataset = 'medicare') as medicare,
-      COUNT(*) FILTER (WHERE dataset = 'nhanes') as nhanes
+      COUNT(*) FILTER (WHERE dataset = 'nhanes') as nhanes,
+      COUNT(*) FILTER (WHERE dataset = 'medicare-inpatient') as medicare_inpatient
     FROM query_log WHERE ${f}
     GROUP BY day ORDER BY day DESC LIMIT 90
   `) as Record<string, unknown>[]);
@@ -662,6 +663,7 @@ export async function getDailyQueries(day?: string): Promise<Record<string, unkn
     brfss: Number(r.brfss),
     medicare: Number(r.medicare),
     nhanes: Number(r.nhanes),
+    "medicare-inpatient": Number(r.medicare_inpatient),
   }));
 }
 

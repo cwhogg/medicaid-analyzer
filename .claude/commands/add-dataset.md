@@ -668,33 +668,38 @@ Update the admin dashboard to track queries for the new dataset.
 In the `getDailyQueries()` function, find the SQL query that aggregates per-dataset counts. Add a new FILTER line and a new field in the return mapping:
 
 ```sql
-COUNT(*) FILTER (WHERE dataset = '<dataset-key>') as <dataset_key>
+COUNT(*) FILTER (WHERE dataset = '<dataset-key>') as <dataset_key_underscored>
 ```
 
-And in the return `rows.map(...)`:
+And in the return `rows.map(...)` (use the dataset key as the JSON property name, quoted if it contains hyphens):
 ```typescript
-<dataset_key>: Number(r.<dataset_key>),
+"<dataset-key>": Number(r.<dataset_key_underscored>),
 ```
 
 ### 14b. Frontend — `web/src/app/admin/page.tsx`
 
 1. Add the new field to the `DaySummary` interface:
    ```typescript
-   <dataset_key>: number;
+   "<dataset-key>": number;
    ```
 
-2. Add a new `<Bar>` in the "Queries by Day" stacked chart (use the dataset's accent color):
+2. Add the dataset to the `DATASET_OPTIONS` array (used for blog pipeline dataset filtering, color coding, and labels):
+   ```typescript
+   { key: "<dataset-key>", label: "<Dataset Label>", color: "<accentColor>" },
+   ```
+
+3. Add a new `<Bar>` in the "Queries by Day" stacked chart (use the dataset's accent color). Change the previous last Bar's radius to `[0, 0, 0, 0]`, then add yours as the new last:
    ```tsx
    <Bar
-     dataKey="<dataset_key>"
+     dataKey="<dataset-key>"
      name="<Dataset Label>"
      stackId="queries"
      fill="<accentColor>"
-     radius={[0, 0, 0, 0]}
+     radius={[2, 2, 0, 0]}
      maxBarSize={40}
    />
    ```
-   The **last** Bar in the stack should have `radius={[3, 3, 0, 0]}` for rounded top corners.
+   The **last** Bar in the stack should have `radius={[2, 2, 0, 0]}` for rounded top corners.
 
 ### 14c. Frontend — `web/src/app/admin/queries/page.tsx`
 
