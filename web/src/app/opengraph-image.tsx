@@ -6,10 +6,13 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 const datasets = [
-  { name: "Medicaid", color: "#B91C1C" },
-  { name: "Medicare", color: "#0F766E" },
-  { name: "BRFSS", color: "#1D4ED8" },
-  { name: "NHANES", color: "#7C3AED" },
+  { name: "Medicaid", color: "#EA580C" },
+  { name: "Medicare", color: "#10B981" },
+  { name: "Inpatient", color: "#F59E0B" },
+  { name: "Part D", color: "#14B8A6" },
+  { name: "BRFSS", color: "#0EA5E9" },
+  { name: "NHANES", color: "#8B5CF6" },
+  { name: "DAC", color: "#EC4899" },
 ];
 
 export default async function Image() {
@@ -92,14 +95,16 @@ export default async function Image() {
             maxWidth: 700,
           }}
         >
-          Explore 240M+ rows of public health data with AI
+          Explore 600M+ rows of public health data with AI
         </div>
 
         {/* Dataset pills */}
         <div
           style={{
             display: "flex",
-            gap: 16,
+            gap: 12,
+            flexWrap: "wrap" as const,
+            justifyContent: "center",
           }}
         >
           {datasets.map((ds) => (
@@ -109,7 +114,7 @@ export default async function Image() {
                 display: "flex",
                 alignItems: "center",
                 gap: 8,
-                padding: "10px 20px",
+                padding: "8px 16px",
                 borderRadius: 4,
                 border: `1px solid ${ds.color}40`,
                 backgroundColor: `${ds.color}10`,
@@ -123,7 +128,7 @@ export default async function Image() {
                   backgroundColor: ds.color,
                 }}
               />
-              <span style={{ fontSize: 18, color: ds.color, fontWeight: 600 }}>
+              <span style={{ fontSize: 16, color: ds.color, fontWeight: 600 }}>
                 {ds.name}
               </span>
             </div>
@@ -138,7 +143,7 @@ export default async function Image() {
             left: 0,
             right: 0,
             height: 4,
-            background: "linear-gradient(to right, #B91C1C, #0F766E, #1D4ED8, #7C3AED)",
+            background: "linear-gradient(to right, #EA580C, #10B981, #F59E0B, #14B8A6, #0EA5E9, #8B5CF6, #EC4899)",
           }}
         />
       </div>

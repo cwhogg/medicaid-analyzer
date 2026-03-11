@@ -37,6 +37,7 @@ For every new dataset, you will create or modify these files:
 | `web/src/app/admin/page.tsx` | **Modify** | Add dataset to DaySummary + chart bars |
 | `web/src/app/admin/queries/page.tsx` | **Modify** | Add dataset column to daily queries table |
 | `web/src/components/landing/Hero.tsx` | **Modify** | Add stat cell to homepage stats row |
+| `web/src/app/opengraph-image.tsx` | **Modify** | Add dataset pill + update row count |
 
 **Note:** Navbar does NOT need manual editing — it dynamically renders from DATASET_METAS.
 
@@ -56,8 +57,8 @@ For every new dataset, you will create or modify these files:
 | Medicare Physician | `medicare` | `medicare` | `medicare_*.parquet` (11 files) | 107M | `#10B981` (emerald) |
 | NHANES | `nhanes` | `nhanes` | `nhanes_2021_2023.parquet` | 12K | `#8B5CF6` (purple) |
 | Medicare Inpatient | `medicare-inpatient` | `medicare_inpatient` | `inpatient_*.parquet` (11 files) | 2M | `#F59E0B` (amber) |
-
-**Available accent colors** (not yet used): `#EC4899` (pink), `#14B8A6` (teal).
+| DAC (Clinician Directory) | `dac` | `dac` | `dac_clinicians.parquet` | 2.8M | `#EC4899` (pink) |
+| Medicare Part D | `medicare-partd` | `medicare_partd` | `partd_*.parquet` (11 files) | 276M | `#14B8A6` (teal) |
 
 ---
 
@@ -659,11 +660,24 @@ The last stat cell should have `border-r-0` to remove the right border.
 
 ---
 
-## Step 15: Admin Analytics
+## Step 15: Update OpenGraph Image
+
+Edit `web/src/app/opengraph-image.tsx`:
+
+1. Add the new dataset to the `datasets` array with a short label and the dataset's accent color:
+   ```typescript
+   { name: "<Short Label>", color: "<accentColor>" },
+   ```
+2. Update the subtitle row count (`"Explore <N>M+ rows..."`) to include the new dataset's rows.
+3. Add the new accent color to the bottom gradient `background` string.
+
+---
+
+## Step 16: Admin Analytics
 
 Update the admin dashboard to track queries for the new dataset.
 
-### 14a. Backend — `query-service/src/metrics-db.ts`
+### 16a. Backend — `query-service/src/metrics-db.ts`
 
 In the `getDailyQueries()` function, find the SQL query that aggregates per-dataset counts. Add a new FILTER line and a new field in the return mapping:
 
@@ -676,7 +690,7 @@ And in the return `rows.map(...)` (use the dataset key as the JSON property name
 "<dataset-key>": Number(r.<dataset_key_underscored>),
 ```
 
-### 14b. Frontend — `web/src/app/admin/page.tsx`
+### 16b. Frontend — `web/src/app/admin/page.tsx`
 
 1. Add the new field to the `DaySummary` interface:
    ```typescript
@@ -701,14 +715,14 @@ And in the return `rows.map(...)` (use the dataset key as the JSON property name
    ```
    The **last** Bar in the stack should have `radius={[2, 2, 0, 0]}` for rounded top corners.
 
-### 14c. Frontend — `web/src/app/admin/queries/page.tsx`
+### 16c. Frontend — `web/src/app/admin/queries/page.tsx`
 
 1. Add the new field to the `DaySummary` interface.
 2. Add a color-coded `<th>` header and a `<td>` cell showing `{d.<dataset_key> || 0}` in the daily summary table.
 
 ---
 
-## Step 16: Build
+## Step 17: Build
 
 ```bash
 cd /Users/cwhogg/medicaid-analysis/web && npm run build
@@ -722,13 +736,13 @@ If build fails, fix the error and retry (up to 3 times with different approaches
 
 ---
 
-## Step 17: Deploy
+## Step 18: Deploy
 
 Commit all changes, push, and deploy:
 
 ```bash
 cd /Users/cwhogg/medicaid-analysis
-git add scripts/ingest_<dataset>.py web/src/lib/<dataset>Schemas.ts web/src/lib/variableMeta.ts web/src/lib/datasets/<dataset>.ts web/src/lib/datasets/index.ts web/src/lib/datasetMeta.ts web/src/app/<slug>/page.tsx web/src/components/layout/Footer.tsx web/src/app/sitemap.ts query-service/src/db.ts query-service/src/metrics-db.ts web/src/app/admin/page.tsx web/src/app/admin/queries/page.tsx web/src/components/landing/Hero.tsx
+git add scripts/ingest_<dataset>.py web/src/lib/<dataset>Schemas.ts web/src/lib/variableMeta.ts web/src/lib/datasets/<dataset>.ts web/src/lib/datasets/index.ts web/src/lib/datasetMeta.ts web/src/app/<slug>/page.tsx web/src/components/layout/Footer.tsx web/src/app/sitemap.ts query-service/src/db.ts query-service/src/metrics-db.ts web/src/app/admin/page.tsx web/src/app/admin/queries/page.tsx web/src/components/landing/Hero.tsx web/src/app/opengraph-image.tsx
 git commit -m "Add <Dataset Name> dataset (<year>, ~<N> rows)"
 git push origin main
 vercel --prod --yes
