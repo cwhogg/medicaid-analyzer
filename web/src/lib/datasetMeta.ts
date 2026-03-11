@@ -37,7 +37,7 @@ export const DATASET_METAS: DatasetMeta[] = [
   },
   {
     key: "medicare",
-    title: "Medicare Physician Spending",
+    title: "Medicare Outpatient Spend",
     subtitle: "Part B Physician & Other Practitioner Payments",
     icon: Stethoscope,
     stats: [
@@ -57,7 +57,7 @@ export const DATASET_METAS: DatasetMeta[] = [
   },
   {
     key: "medicare-inpatient",
-    title: "Medicare Inpatient Hospitals",
+    title: "Medicare Inpatient Spend",
     subtitle: "Part A Hospital Discharges by DRG",
     icon: Building2,
     stats: [

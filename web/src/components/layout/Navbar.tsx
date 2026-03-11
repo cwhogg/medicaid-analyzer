@@ -117,7 +117,7 @@ export function Navbar() {
 
   const datasetLinks = DATASET_METAS.map((m) => ({
     href: m.href,
-    label: m.key === "brfss" || m.key === "nhanes" ? m.key.toUpperCase() : m.key === "medicare-inpatient" ? "Medicare Inpatient" : m.title.split(" ")[0],
+    label: m.key === "brfss" || m.key === "nhanes" ? m.key.toUpperCase() : m.title,
     active: pathname === m.href,
     subtitle: m.subtitle,
   }));
