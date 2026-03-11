@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Data Validation Report — Open Health Data Hub",
   description:
-    "Reproducible validation of BRFSS and NHANES query results against published CDC and NCHS statistics. 38 checks, all passing.",
+    "Reproducible validation of BRFSS, NHANES, Medicare Inpatient, and Part D query results against published statistics from CDC, NCHS, and CMS. 56 checks, all passing.",
 };
 
 interface ValidationRow {
@@ -20,6 +20,7 @@ interface ValidationRow {
   source: string;
   sourceUrl: string;
   tolerance: number;
+  format?: "pct" | "count" | "currency";
 }
 
 const brfssResults: ValidationRow[] = [
@@ -46,6 +47,35 @@ const nhanesResults: ValidationRow[] = [
   { statistic: "Severe obesity (BMI\u226540)", year: "2021\u201323", published: 9.4, l1Result: 9.4, l1Dev: 0, l2Result: 9.3, l2Dev: -0.1, source: "NCHS Brief #508", sourceUrl: "https://www.cdc.gov/nchs/products/databriefs/db508.htm", tolerance: 1.5 },
   { statistic: "Depression (PHQ-9\u226510)", year: "2021\u201323", published: 13.1, l1Result: 12.6, l1Dev: -0.5, l2Result: 12.6, l2Dev: -0.5, source: "NCHS Brief #527", sourceUrl: "https://www.cdc.gov/nchs/products/databriefs/db527.htm", tolerance: 2.0 },
 ];
+
+const inpatientResults: ValidationRow[] = [
+  { statistic: "IPPS hospitals", year: "2023", published: 3100, l1Result: 2941, l1Dev: -5.1, l2Result: 2941, l2Dev: -5.1, source: "CMS IPPS PUF", sourceUrl: "https://data.cms.gov/provider-summary-by-type-of-service/medicare-inpatient-hospitals/medicare-inpatient-hospitals-by-provider-and-service", tolerance: 10, format: "count" },
+  { statistic: "Distinct DRG codes", year: "2023", published: 600, l1Result: 534, l1Dev: -11.0, l2Result: 534, l2Dev: -11.0, source: "CMS FY 2023 IPPS Rule", sourceUrl: "https://www.cms.gov/newsroom/fact-sheets/fy-2023-hospital-inpatient-prospective-payment-system-ipps-and-long-term-care-hospital-prospective", tolerance: 15, format: "count" },
+  { statistic: "Top DRG: Septicemia (871)", year: "2023", published: 561177, l1Result: 561177, l1Dev: 0, l2Result: 561177, l2Dev: 0, source: "CMS IPPS PUF", sourceUrl: "https://data.cms.gov/provider-summary-by-type-of-service/medicare-inpatient-hospitals/medicare-inpatient-hospitals-by-provider-and-service", tolerance: 2, format: "count" },
+  { statistic: "#2 DRG: Heart Failure (291)", year: "2023", published: 319367, l1Result: 319367, l1Dev: 0, l2Result: 319367, l2Dev: 0, source: "CMS IPPS PUF", sourceUrl: "https://data.cms.gov/provider-summary-by-type-of-service/medicare-inpatient-hospitals/medicare-inpatient-hospitals-by-provider-and-service", tolerance: 2, format: "count" },
+];
+
+const partdResults: ValidationRow[] = [
+  { statistic: "Unique prescribers", year: "2023", published: 1104162, l1Result: 1104162, l1Dev: 0, l2Result: 1104162, l2Dev: 0, source: "CMS Part D PUF", sourceUrl: "https://data.cms.gov/provider-summary-by-type-of-service/medicare-part-d-prescribers/medicare-part-d-prescribers-by-provider-and-drug", tolerance: 1, format: "count" },
+  { statistic: "Total claims", year: "2023", published: 1393568104, l1Result: 1393568104, l1Dev: 0, l2Result: 1393568104, l2Dev: 0, source: "CMS Part D PUF", sourceUrl: "https://data.cms.gov/provider-summary-by-type-of-service/medicare-part-d-prescribers/medicare-part-d-prescribers-by-provider-and-drug", tolerance: 1, format: "count" },
+  { statistic: "Total drug cost", year: "2023", published: 212689454816, l1Result: 212689454816, l1Dev: 0, l2Result: 212689454816, l2Dev: 0, source: "CMS Part D PUF", sourceUrl: "https://data.cms.gov/provider-summary-by-type-of-service/medicare-part-d-prescribers/medicare-part-d-prescribers-by-provider-and-drug", tolerance: 1, format: "currency" },
+  { statistic: "Unique prescribers", year: "2019", published: 985533, l1Result: 985533, l1Dev: 0, l2Result: 985533, l2Dev: 0, source: "CMS Part D PUF", sourceUrl: "https://data.cms.gov/provider-summary-by-type-of-service/medicare-part-d-prescribers/medicare-part-d-prescribers-by-provider-and-drug", tolerance: 1, format: "count" },
+  { statistic: "Total drug cost", year: "2019", published: 137025088397, l1Result: 137025088397, l1Dev: 0, l2Result: 137025088397, l2Dev: 0, source: "CMS Part D PUF", sourceUrl: "https://data.cms.gov/provider-summary-by-type-of-service/medicare-part-d-prescribers/medicare-part-d-prescribers-by-provider-and-drug", tolerance: 1, format: "currency" },
+];
+
+function formatValue(value: number, format?: "pct" | "count" | "currency"): string {
+  switch (format) {
+    case "count":
+      return value.toLocaleString("en-US");
+    case "currency":
+      if (value >= 1e12) return `$${(value / 1e12).toFixed(1)}T`;
+      if (value >= 1e9) return `$${(value / 1e9).toFixed(1)}B`;
+      if (value >= 1e6) return `$${(value / 1e6).toFixed(1)}M`;
+      return `$${value.toLocaleString("en-US")}`;
+    default:
+      return `${value.toFixed(1)}%`;
+  }
+}
 
 function DevBadge({ dev }: { dev: number }) {
   const display = dev === 0 ? "0.0" : (dev > 0 ? "+" : "") + dev.toFixed(1);
@@ -81,10 +111,10 @@ function ResultsTable({ rows, dataset }: { rows: ValidationRow[]; dataset: strin
             <tr key={`${dataset}-${i}`} className="border-b border-rule/50 hover:bg-background/50 transition-colors">
               <td className="py-2.5 pr-3 text-foreground">{row.statistic}</td>
               <td className="py-2.5 px-2 text-center font-mono text-muted">{row.year}</td>
-              <td className="py-2.5 px-2 text-right font-mono font-semibold text-foreground">{row.published.toFixed(1)}%</td>
-              <td className="py-2.5 px-2 text-right font-mono text-foreground">{row.l1Result.toFixed(1)}%</td>
+              <td className="py-2.5 px-2 text-right font-mono font-semibold text-foreground">{formatValue(row.published, row.format)}</td>
+              <td className="py-2.5 px-2 text-right font-mono text-foreground">{formatValue(row.l1Result, row.format)}</td>
               <td className="py-2.5 px-2 text-center"><DevBadge dev={row.l1Dev} /></td>
-              <td className="py-2.5 px-2 text-right font-mono text-foreground">{row.l2Result.toFixed(1)}%</td>
+              <td className="py-2.5 px-2 text-right font-mono text-foreground">{formatValue(row.l2Result, row.format)}</td>
               <td className="py-2.5 px-2 text-center"><DevBadge dev={row.l2Dev} /></td>
               <td className="py-2.5 pl-3">
                 <a href={row.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover transition-colors text-xs">
@@ -114,26 +144,26 @@ export default function ValidationPage() {
             </h1>
             <p className="text-base sm:text-lg text-muted max-w-2xl mx-auto leading-relaxed font-serif">
               Every query result on this site is validated against published statistics
-              from the CDC and NCHS. This report shows our automated test suite results.
+              from the CDC, NCHS, and CMS. This report shows our automated test suite results.
             </p>
           </div>
 
           {/* Summary Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12">
             <div className="card p-4 text-center">
-              <div className="text-2xl sm:text-3xl font-mono font-bold text-green-600">38/38</div>
+              <div className="text-2xl sm:text-3xl font-mono font-bold text-green-600">56/56</div>
               <div className="text-xs text-muted mt-1">Checks Passed</div>
             </div>
             <div className="card p-4 text-center">
-              <div className="text-2xl sm:text-3xl font-mono font-bold text-foreground">19</div>
+              <div className="text-2xl sm:text-3xl font-mono font-bold text-foreground">28</div>
               <div className="text-xs text-muted mt-1">Test Cases</div>
             </div>
             <div className="card p-4 text-center">
-              <div className="text-2xl sm:text-3xl font-mono font-bold text-foreground">2</div>
+              <div className="text-2xl sm:text-3xl font-mono font-bold text-foreground">4</div>
               <div className="text-xs text-muted mt-1">Datasets</div>
             </div>
             <div className="card p-4 text-center">
-              <div className="text-xs sm:text-sm font-mono font-bold text-foreground">Mar 6, 2026</div>
+              <div className="text-xs sm:text-sm font-mono font-bold text-foreground">Mar 11, 2026</div>
               <div className="text-xs text-muted mt-1">Last Run</div>
             </div>
           </div>
@@ -202,6 +232,37 @@ export default function ValidationPage() {
             </div>
           </div>
 
+          {/* Medicare Inpatient Results */}
+          <div className="mb-12">
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-lg font-headline font-bold text-foreground">Medicare Inpatient (Part A) Results</h2>
+              <span className="text-xs font-mono text-muted bg-background px-2 py-0.5 rounded-sm border border-rule">4 tests</span>
+            </div>
+            <p className="text-sm text-muted font-serif mb-4">
+              Medicare Inpatient Prospective Payment System (IPPS) &mdash; hospital discharges by DRG, ~2M rows across 11 years (2013&ndash;2023).
+              Values are counts from the CMS Provider Summary PUF, which only includes hospitals with &ge;11 discharges per DRG.
+            </p>
+            <div className="card p-4 sm:p-6">
+              <ResultsTable rows={inpatientResults} dataset="inpatient" />
+            </div>
+          </div>
+
+          {/* Medicare Part D Results */}
+          <div className="mb-12">
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-lg font-headline font-bold text-foreground">Medicare Part D Results</h2>
+              <span className="text-xs font-mono text-muted bg-background px-2 py-0.5 rounded-sm border border-rule">5 tests</span>
+            </div>
+            <p className="text-sm text-muted font-serif mb-4">
+              Medicare Part D Prescribers by Provider and Drug &mdash; 276M rows across 11 years (2013&ndash;2023).
+              Published values are aggregate totals from the CMS Public Use File. Prescriber-drug combinations with
+              fewer than 11 claims are suppressed by CMS before release.
+            </p>
+            <div className="card p-4 sm:p-6">
+              <ResultsTable rows={partdResults} dataset="partd" />
+            </div>
+          </div>
+
           {/* Notes */}
           <div className="card p-6 sm:p-8 mb-12">
             <h2 className="text-lg font-headline font-bold text-foreground mb-4">Notes</h2>
@@ -223,6 +284,16 @@ export default function ValidationPage() {
                 </p>
               </div>
               <div>
+                <h3 className="text-foreground font-semibold text-sm mb-1">CMS Public Use File suppression</h3>
+                <p>
+                  Medicare PUF data suppresses all provider-level rows with fewer than 11 claims,
+                  beneficiaries, or discharges. This means aggregate totals from the PUF are systematically
+                  lower than universe totals. For Medicare Inpatient, hospital and DRG counts are ~5&ndash;15%
+                  below CMS-reported totals. For Part D, published values are computed directly from the PUF,
+                  so Gold SQL matches exactly.
+                </p>
+              </div>
+              <div>
                 <h3 className="text-foreground font-semibold text-sm mb-1">What each layer catches</h3>
                 <p>
                   Layer 1 failures indicate data issues: wrong codebook interpretation, missing survey weights,
@@ -237,7 +308,7 @@ export default function ValidationPage() {
           {/* Sources */}
           <div className="card p-6 sm:p-8">
             <h2 className="text-lg font-headline font-bold text-foreground mb-4">Source Citations</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm">
               <div>
                 <h3 className="text-foreground font-semibold text-xs uppercase tracking-wider mb-2">BRFSS Sources</h3>
                 <ul className="space-y-1.5 text-muted font-serif">
@@ -258,6 +329,19 @@ export default function ValidationPage() {
                   <li><a href="https://www.cdc.gov/nchs/products/databriefs/db515.htm" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover transition-colors">NCHS Data Brief No. 515 — Cholesterol</a></li>
                   <li><a href="https://www.cdc.gov/nchs/products/databriefs/db511.htm" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover transition-colors">NCHS Data Brief No. 511 — Hypertension</a></li>
                   <li><a href="https://www.cdc.gov/nchs/products/databriefs/db527.htm" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover transition-colors">NCHS Data Brief No. 527 — Depression</a></li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-foreground font-semibold text-xs uppercase tracking-wider mb-2">Medicare Inpatient Sources</h3>
+                <ul className="space-y-1.5 text-muted font-serif">
+                  <li><a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-inpatient-hospitals/medicare-inpatient-hospitals-by-provider-and-service" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover transition-colors">CMS Medicare Inpatient Hospitals PUF</a></li>
+                  <li><a href="https://www.cms.gov/newsroom/fact-sheets/fy-2023-hospital-inpatient-prospective-payment-system-ipps-and-long-term-care-hospital-prospective" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover transition-colors">CMS FY 2023 IPPS Final Rule</a></li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-foreground font-semibold text-xs uppercase tracking-wider mb-2">Medicare Part D Sources</h3>
+                <ul className="space-y-1.5 text-muted font-serif">
+                  <li><a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-part-d-prescribers/medicare-part-d-prescribers-by-provider-and-drug" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover transition-colors">CMS Part D Prescribers PUF</a></li>
                 </ul>
               </div>
             </div>
