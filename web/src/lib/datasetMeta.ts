@@ -77,7 +77,7 @@ export const DATASET_METAS: DatasetMeta[] = [
   },
   {
     key: "medicare-partd",
-    title: "Medicare Part D Prescriptions",
+    title: "Medicare Prescription Rx Spend",
     subtitle: "Part D Prescribers by Provider & Drug",
     icon: Tablets,
     stats: [
