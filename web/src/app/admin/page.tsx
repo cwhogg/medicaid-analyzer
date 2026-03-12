@@ -504,12 +504,13 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
   const dsColor = (ds: string) => DATASET_OPTIONS.find((d) => d.key === ds)?.color || "#78716C";
   const dsLabel = (ds: string) => DATASET_OPTIONS.find((d) => d.key === ds)?.label || ds;
 
-  const GENERATE_PHASE_ORDER = ["topic", "analysis", "writing", "tweeting", "done"];
+  const GENERATE_PHASE_ORDER = ["topic", "analysis", "facts", "writing", "audit", "done"];
   const GENERATE_PHASE_LABELS: Record<string, string> = {
     topic: "Topic",
     analysis: "Data Analysis",
+    facts: "Extracting Facts",
     writing: "Writing Article",
-    tweeting: "Tweeting",
+    audit: "Fact Audit",
     done: "Complete",
     error: "Error",
   };
@@ -531,8 +532,9 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
       }
       return 25;
     }
-    if (effective === "writing") return 75;
-    if (effective === "tweeting") return 90;
+    if (effective === "facts") return 65;
+    if (effective === "writing") return 80;
+    if (effective === "audit") return 95;
     return 0;
   };
 
@@ -876,8 +878,9 @@ function BlogIdeaPipeline({ adminKey }: { adminKey: string }) {
                           const PHASE_SHORT_LABELS: Record<string, string> = {
                             topic: "Topic",
                             analysis: "Analysis",
+                            facts: "Facts",
                             writing: "Writing",
-                            tweeting: "Tweet",
+                            audit: "Audit",
                           };
                           return GENERATE_PHASE_ORDER.slice(0, -1).map((phase, i) => {
                             const effectivePhase = errorAt || generatePhase;
