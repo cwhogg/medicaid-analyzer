@@ -11,7 +11,20 @@ This is the CDC Behavioral Risk Factor Surveillance System — the largest conti
 
 ALWAYS use \`_LLCPWT\` (landline/cell combined weight) for population estimates. Raw counts are NOT representative.
 
-Weighted prevalence pattern:
+**Pattern 1 — Population-level prevalence (DEFAULT):**
+Use this for "what % of adults have X" questions. Denominator = ALL weighted respondents. NULLs in the condition column naturally count as "no" (don't match the CASE). This is correct for any variable, including those with sparse coverage (e.g., e-cigarette module).
+\`\`\`sql
+SELECT
+  <group_column>,
+  ROUND(100.0 * SUM(CASE WHEN <condition> THEN _LLCPWT ELSE 0 END)
+    / NULLIF(SUM(_LLCPWT), 0), 1) AS prevalence_pct,
+  COUNT(*) AS total_n
+FROM brfss
+GROUP BY <group_column>
+\`\`\`
+
+**Pattern 2 — Condition-specific prevalence:**
+Use ONLY when the user explicitly asks "among people asked about X, what % said yes" (e.g., "among people screened for diabetes, what % tested positive").
 \`\`\`sql
 SELECT
   <group_column>,
@@ -23,6 +36,8 @@ WHERE <valid_response>
 GROUP BY <group_column>
 ORDER BY prevalence_pct DESC
 \`\`\`
+
+**IMPORTANT: Use Pattern 1 (population-level) by default. Use Pattern 2 only when the user explicitly asks about prevalence among a specific subpopulation. When comparing two or more conditions side-by-side (e.g., smoking vs vaping), ALWAYS use Pattern 1 so all metrics share the same denominator.**
 
 Weighted mean pattern (e.g. average days of poor health):
 \`\`\`sql
@@ -40,15 +55,14 @@ GROUP BY <group_column>
 
 Use the \`survey_year\` column to analyze trends over time. Always GROUP BY survey_year for trend analysis.
 
-**Trend query pattern:**
+**Trend query pattern (uses population-level denominator by default):**
 \`\`\`sql
 SELECT
   survey_year,
-  ROUND(100.0 * SUM(CASE WHEN <condition_yes> THEN _LLCPWT ELSE 0 END)
-    / NULLIF(SUM(CASE WHEN <valid_response> THEN _LLCPWT ELSE 0 END), 0), 1) AS prevalence_pct,
-  COUNT(*) FILTER (WHERE <valid_response>) AS sample_n
+  ROUND(100.0 * SUM(CASE WHEN <condition> THEN _LLCPWT ELSE 0 END)
+    / NULLIF(SUM(_LLCPWT), 0), 1) AS prevalence_pct,
+  COUNT(*) AS total_n
 FROM brfss
-WHERE <valid_response>
 GROUP BY survey_year
 ORDER BY survey_year
 \`\`\`
@@ -136,7 +150,12 @@ Days variables (PHYSHLTH, MENTHLTH): 1-30 = number of days, 88 = None, 77 = DK, 
 
 *Diabetes:* \`DIABETE4 = 1\` for diagnosed diabetes. Exclude code 2 (pregnancy-only) and code 4 (pre-diabetes) from "has diabetes." Denominator: \`DIABETE4 IN (1, 2, 3, 4)\`.
 
-*Current asthma:* \`ASTHMA3 = 1 AND ASTHNOW = 1\` (ever told AND still have it). Lifetime asthma is just \`ASTHMA3 = 1\`.
+*Current asthma:* \`ASTHMA3 = 1 AND ASTHNOW = 1\` (ever told AND still have it). Lifetime asthma is just \`ASTHMA3 = 1\`. IMPORTANT: For population-level current asthma prevalence, the denominator must be ALL adults with valid \`ASTHMA3\` responses (\`ASTHMA3 IN (1, 2)\`), NOT just those asked ASTHNOW. ASTHNOW is only asked when ASTHMA3 = 1. Example:
+\`\`\`sql
+SELECT ROUND(100.0 * SUM(CASE WHEN ASTHMA3 = 1 AND ASTHNOW = 1 THEN _LLCPWT ELSE 0 END)
+  / NULLIF(SUM(CASE WHEN ASTHMA3 IN (1, 2) THEN _LLCPWT ELSE 0 END), 0), 1) AS current_asthma_pct
+FROM brfss WHERE ASTHMA3 IN (1, 2)
+\`\`\`
 
 *Any heart disease/CVD:* \`CVDINFR4 = 1 OR CVDCRHD4 = 1\` for any coronary heart disease. Add \`OR CVDSTRK3 = 1\` to include stroke. Or use \`_MICHD = 1\` (CDC-calculated MI or CHD, available 2017+).
 
@@ -153,7 +172,7 @@ Days variables (PHYSHLTH, MENTHLTH): 1-30 = number of days, 88 = None, 77 = DK, 
 - \`_TOTINDA\` (calculated: leisure time physical activity: 1=Had activity, 2=No activity, 9=DK)
 - \`SMOKE100\` (smoked 100+ cigarettes ever: 1=Yes, 2=No, 7=DK, 9=Refused)
 - \`_SMOKER3\` (calculated: 1=Current daily, 2=Current some days, 3=Former, 4=Never, 9=DK)
-- \`_CURECI2\` (calculated current e-cigarette user: 1=Current daily, 2=Current some days, 3=Former, 4=Never, 9=DK — 2023-2024)
+- \`_CURECI2\` (calculated current e-cigarette user: 1=Current daily, 2=Current some days, 3=Former, 4=Never, 9=DK — 2023-2024). NOTE: This variable may contain NULLs for respondents not asked the e-cigarette module. When calculating population-level vaping prevalence, use total respondents (SUM(_LLCPWT)) as the denominator, NOT just valid _CURECI2 responses.
 - \`ALCDAY4\` (days per week/month: 101-199=days/week, 201-299=days/month, 888=None past 30, 777=DK, 999=Refused)
 - \`_RFBING6\` (calculated binge drinker: 1=No, 2=Yes, 9=DK)
 - \`_RFDRHV8\` (calculated heavy drinker: 1=No, 2=Yes, 9=DK — available 2015+ only)
@@ -264,43 +283,57 @@ END AS state_name
 
 ### SQL Examples
 
-**Weighted diabetes prevalence by age group:**
+**Weighted diabetes prevalence by age group (population-level denominator):**
 \`\`\`sql
 SELECT
   CASE _AGE_G WHEN 1 THEN '18-24' WHEN 2 THEN '25-34' WHEN 3 THEN '35-44'
     WHEN 4 THEN '45-54' WHEN 5 THEN '55-64' WHEN 6 THEN '65+' END AS age_group,
   ROUND(100.0 * SUM(CASE WHEN DIABETE4 = 1 THEN _LLCPWT ELSE 0 END)
-    / NULLIF(SUM(CASE WHEN DIABETE4 IN (1, 3) THEN _LLCPWT ELSE 0 END), 0), 1) AS diabetes_pct,
-  COUNT(*) FILTER (WHERE DIABETE4 IN (1, 3)) AS sample_n
+    / NULLIF(SUM(_LLCPWT), 0), 1) AS diabetes_pct,
+  COUNT(*) AS total_n
 FROM brfss
 WHERE _AGE_G BETWEEN 1 AND 6
 GROUP BY _AGE_G
 ORDER BY _AGE_G
 \`\`\`
 
-**Obesity rate trend by year:**
+**Obesity rate trend by year (population-level denominator):**
 \`\`\`sql
 SELECT
   survey_year,
   ROUND(100.0 * SUM(CASE WHEN _BMI5CAT = 4 THEN _LLCPWT ELSE 0 END)
-    / NULLIF(SUM(CASE WHEN _BMI5CAT BETWEEN 1 AND 4 THEN _LLCPWT ELSE 0 END), 0), 1) AS obesity_pct,
-  COUNT(*) FILTER (WHERE _BMI5CAT BETWEEN 1 AND 4) AS sample_n
+    / NULLIF(SUM(_LLCPWT), 0), 1) AS obesity_pct,
+  COUNT(*) AS total_n
 FROM brfss
 GROUP BY survey_year
 ORDER BY survey_year
 \`\`\`
 
-**States with highest obesity rates:**
+**States with highest obesity rates (population-level denominator):**
 \`\`\`sql
 SELECT
   CASE _STATE WHEN 1 THEN 'Alabama' ... END AS state_name,
   ROUND(100.0 * SUM(CASE WHEN _BMI5CAT = 4 THEN _LLCPWT ELSE 0 END)
-    / NULLIF(SUM(CASE WHEN _BMI5CAT BETWEEN 1 AND 4 THEN _LLCPWT ELSE 0 END), 0), 1) AS obesity_pct
+    / NULLIF(SUM(_LLCPWT), 0), 1) AS obesity_pct
 FROM brfss
-WHERE _BMI5CAT BETWEEN 1 AND 4
 GROUP BY _STATE
 ORDER BY obesity_pct DESC
 LIMIT 10
+\`\`\`
+
+**Comparing smoking vs vaping prevalence (shared denominator — CRITICAL PATTERN):**
+\`\`\`sql
+SELECT
+  survey_year,
+  ROUND(100.0 * SUM(CASE WHEN _SMOKER3 IN (1, 2) THEN _LLCPWT ELSE 0 END)
+    / NULLIF(SUM(_LLCPWT), 0), 1) AS smoking_pct,
+  ROUND(100.0 * SUM(CASE WHEN _CURECI2 IN (1, 2) THEN _LLCPWT ELSE 0 END)
+    / NULLIF(SUM(_LLCPWT), 0), 1) AS vaping_pct,
+  COUNT(*) AS total_n
+FROM brfss
+WHERE survey_year IN (2023, 2024)
+GROUP BY survey_year
+ORDER BY survey_year
 \`\`\`
 
 **Poor mental health days by income:**
