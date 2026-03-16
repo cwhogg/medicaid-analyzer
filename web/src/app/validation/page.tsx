@@ -29,12 +29,12 @@ const brfssResults: ValidationRow[] = [
   { statistic: "Adult obesity (West Virginia)", year: "2018", published: 39.5, l1Result: 39.5, l1Dev: 0, l2Result: 39.5, l2Dev: 0, source: "CDC State Data", sourceUrl: "https://www.cdc.gov/obesity/data-and-statistics/adult-obesity-prevalence-maps.html", tolerance: 2.0 },
   { statistic: "Adult obesity (Colorado)", year: "2018", published: 22.9, l1Result: 22.9, l1Dev: 0, l2Result: 22.9, l2Dev: 0, source: "CDC State Data", sourceUrl: "https://www.cdc.gov/obesity/data-and-statistics/adult-obesity-prevalence-maps.html", tolerance: 2.0 },
   { statistic: "Current smoking", year: "2018", published: 15.5, l1Result: 15.5, l1Dev: 0, l2Result: 15.5, l2Dev: 0, source: "CDC Tobacco Data", sourceUrl: "https://www.cdc.gov/tobacco/about-data-statistics/index.html", tolerance: 1.5 },
-  { statistic: "Adult obesity (national)", year: "2020", published: 31.9, l1Result: 31.9, l1Dev: 0, l2Result: 31.9, l2Dev: 0, source: "CDC Obesity Maps", sourceUrl: "https://www.cdc.gov/obesity/data-and-statistics/adult-obesity-prevalence-maps.html", tolerance: 1.0 },
-  { statistic: "Diagnosed diabetes", year: "2018", published: 10.9, l1Result: 11.4, l1Dev: 0.5, l2Result: 11.8, l2Dev: 0.9, source: "CDC Diabetes", sourceUrl: "https://www.cdc.gov/diabetes/php/data-research/index.html", tolerance: 1.5 },
+  { statistic: "Adult obesity (national)", year: "2020", published: 31.9, l1Result: 31.9, l1Dev: 0, l2Result: 31.9, l2Dev: 0, source: "CDC BRFSS Overweight and Obesity Dataset", sourceUrl: "https://chronicdata.cdc.gov/Behavioral-Risk-Factors/BRFSS-Table-of-Overweight-and-Obesity-BMI-/fqb7-mgjf", tolerance: 1.0 },
+  { statistic: "Diagnosed diabetes", year: "2018", published: 10.9, l1Result: 11.4, l1Dev: 0.5, l2Result: 11.8, l2Dev: 0.9, source: "CDC Chronic Disease Indicators \u2014 Diabetes", sourceUrl: "https://chronicdata.cdc.gov/Chronic-Disease-Indicators/U-S-Chronic-Disease-Indicators-Diabetes/f8ti-h92k", tolerance: 1.5 },
   { statistic: "Current asthma", year: "2018", published: 9.2, l1Result: 9.2, l1Dev: 0, l2Result: 9.2, l2Dev: 0, source: "CDC Asthma", sourceUrl: "https://www.cdc.gov/asthma/brfss/default.htm", tolerance: 1.0 },
   { statistic: "Physical inactivity", year: "2018", published: 24.5, l1Result: 24.5, l1Dev: 0, l2Result: 24.5, l2Dev: 0, source: "CDC PCD", sourceUrl: "https://www.cdc.gov/pcd/issues/2020/20_0106.htm", tolerance: 1.5 },
   { statistic: "Adult obesity (national)", year: "2023", published: 34.3, l1Result: 32.8, l1Dev: -1.5, l2Result: 32.8, l2Dev: -1.5, source: "CDC Newsroom", sourceUrl: "https://www.cdc.gov/media/releases/2024/p0912-adult-obesity.html", tolerance: 2.0 },
-  { statistic: "Depressive disorder", year: "2019", published: 19.9, l1Result: 18.8, l1Dev: -1.1, l2Result: 18.8, l2Dev: -1.1, source: "PLOS ONE", sourceUrl: "https://doi.org/10.1371/journal.pone.0277966", tolerance: 2.0 },
+  { statistic: "Lifetime depression diagnosis (national)", year: "2020", published: 18.5, l1Result: 18.8, l1Dev: 0.3, l2Result: 18.8, l2Dev: 0.3, source: "CDC MMWR 72(24), June 2023", sourceUrl: "https://www.cdc.gov/mmwr/volumes/72/wr/mm7224a1.htm", tolerance: 2.0 },
 ];
 
 const nhanesResults: ValidationRow[] = [
@@ -313,12 +313,13 @@ export default function ValidationPage() {
                 <h3 className="text-foreground font-semibold text-xs uppercase tracking-wider mb-2">BRFSS Sources</h3>
                 <ul className="space-y-1.5 text-muted font-serif">
                   <li><a href="https://www.cdc.gov/obesity/data-and-statistics/adult-obesity-prevalence-maps.html" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover transition-colors">CDC Adult Obesity Prevalence Maps</a></li>
+                  <li><a href="https://chronicdata.cdc.gov/Behavioral-Risk-Factors/BRFSS-Table-of-Overweight-and-Obesity-BMI-/fqb7-mgjf" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover transition-colors">CDC BRFSS Overweight and Obesity Dataset</a></li>
                   <li><a href="https://www.cdc.gov/tobacco/about-data-statistics/index.html" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover transition-colors">CDC Tobacco Data &amp; Statistics</a></li>
-                  <li><a href="https://www.cdc.gov/diabetes/php/data-research/index.html" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover transition-colors">CDC Diabetes Surveillance</a></li>
+                  <li><a href="https://chronicdata.cdc.gov/Chronic-Disease-Indicators/U-S-Chronic-Disease-Indicators-Diabetes/f8ti-h92k" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover transition-colors">CDC Chronic Disease Indicators &mdash; Diabetes</a></li>
                   <li><a href="https://www.cdc.gov/asthma/brfss/default.htm" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover transition-colors">CDC BRFSS Asthma Data</a></li>
                   <li><a href="https://www.cdc.gov/pcd/issues/2020/20_0106.htm" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover transition-colors">CDC Preventing Chronic Disease</a></li>
                   <li><a href="https://www.cdc.gov/media/releases/2024/p0912-adult-obesity.html" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover transition-colors">CDC Newsroom (2023 Obesity)</a></li>
-                  <li><a href="https://doi.org/10.1371/journal.pone.0277966" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover transition-colors">Ettman et al. (PLOS ONE)</a></li>
+                  <li><a href="https://www.cdc.gov/mmwr/volumes/72/wr/mm7224a1.htm" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-hover transition-colors">CDC MMWR 72(24) &mdash; Depression Prevalence</a></li>
                 </ul>
               </div>
               <div>
