@@ -105,5 +105,5 @@ registerDataset({
 - 2024 new modules: Social Determinants of Health (SDOH), Adverse Childhood Experiences (ACEs), Marijuana Use methods, Emotional Support — these are 2024-only
 - Optional modules (ACEs, marijuana, firearms, sexual orientation) have limited state coverage — note this in results
 - Some columns are only available in certain years (e.g., CHCCOPD3 from 2019+, PRIMINS1 in 2023-2024, SDOH/ACEs in 2024 only) — see schema for availability notes
-- E-cigarette data (_CURECI2) is only available 2023-2024 and may have NULL values for respondents not asked. When comparing vaping to smoking prevalence, both must use total adult population as the denominator.`,
+- Variables from optional or year-limited modules (e.g., _CURECI2, SDOH, ACEs) may have NULLs for respondents not asked. When comparing any two conditions, always use total adult population as the shared denominator — do not restrict to valid responses for any single variable.`,
 });

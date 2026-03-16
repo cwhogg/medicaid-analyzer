@@ -172,7 +172,7 @@ FROM brfss WHERE ASTHMA3 IN (1, 2)
 - \`_TOTINDA\` (calculated: leisure time physical activity: 1=Had activity, 2=No activity, 9=DK)
 - \`SMOKE100\` (smoked 100+ cigarettes ever: 1=Yes, 2=No, 7=DK, 9=Refused)
 - \`_SMOKER3\` (calculated: 1=Current daily, 2=Current some days, 3=Former, 4=Never, 9=DK)
-- \`_CURECI2\` (calculated current e-cigarette user: 1=Current daily, 2=Current some days, 3=Former, 4=Never, 9=DK — 2023-2024). NOTE: This variable may contain NULLs for respondents not asked the e-cigarette module. When calculating population-level vaping prevalence, use total respondents (SUM(_LLCPWT)) as the denominator, NOT just valid _CURECI2 responses.
+- \`_CURECI2\` (calculated current e-cigarette user: 1=Current daily, 2=Current some days, 3=Former, 4=Never, 9=DK — 2023-2024)
 - \`ALCDAY4\` (days per week/month: 101-199=days/week, 201-299=days/month, 888=None past 30, 777=DK, 999=Refused)
 - \`_RFBING6\` (calculated binge drinker: 1=No, 2=Yes, 9=DK)
 - \`_RFDRHV8\` (calculated heavy drinker: 1=No, 2=Yes, 9=DK — available 2015+ only)
@@ -321,17 +321,16 @@ ORDER BY obesity_pct DESC
 LIMIT 10
 \`\`\`
 
-**Comparing smoking vs vaping prevalence (shared denominator — CRITICAL PATTERN):**
+**Comparing multiple conditions side-by-side (shared denominator — CRITICAL PATTERN):**
 \`\`\`sql
 SELECT
   survey_year,
-  ROUND(100.0 * SUM(CASE WHEN _SMOKER3 IN (1, 2) THEN _LLCPWT ELSE 0 END)
-    / NULLIF(SUM(_LLCPWT), 0), 1) AS smoking_pct,
-  ROUND(100.0 * SUM(CASE WHEN _CURECI2 IN (1, 2) THEN _LLCPWT ELSE 0 END)
-    / NULLIF(SUM(_LLCPWT), 0), 1) AS vaping_pct,
+  ROUND(100.0 * SUM(CASE WHEN <condition_A> THEN _LLCPWT ELSE 0 END)
+    / NULLIF(SUM(_LLCPWT), 0), 1) AS condition_a_pct,
+  ROUND(100.0 * SUM(CASE WHEN <condition_B> THEN _LLCPWT ELSE 0 END)
+    / NULLIF(SUM(_LLCPWT), 0), 1) AS condition_b_pct,
   COUNT(*) AS total_n
 FROM brfss
-WHERE survey_year IN (2023, 2024)
 GROUP BY survey_year
 ORDER BY survey_year
 \`\`\`
