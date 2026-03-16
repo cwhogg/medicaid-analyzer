@@ -147,7 +147,7 @@ export const brfssVariableGroups: VariableGroup[] = [
       { name: "_TOTINDA", type: "INTEGER", description: "Leisure time physical activity (calculated)", codes: "1=Had activity, 2=No activity" },
       { name: "SMOKE100", type: "INTEGER", description: "Smoked 100+ cigarettes ever", codes: "1=Yes, 2=No" },
       { name: "_SMOKER3", type: "INTEGER", description: "Smoking status (calculated)", codes: "1=Current daily, 2=Current some days, 3=Former, 4=Never" },
-      { name: "_CURECI2", type: "INTEGER", description: "E-cigarette use (calculated)", codes: "1=Current daily, 2=Current some days, 3=Former, 4=Never", note: "2023-2024" },
+      { name: "_CURECI2", type: "INTEGER", description: "Current e-cigarette user (calculated, binary)", codes: "1=Not a current user, 2=Current user", note: "2023-2024" },
       { name: "ALCDAY4", type: "INTEGER", description: "Alcohol drinking days per week/month", codes: "101-107=days/week, 201-230=days/month, 888=None" },
       { name: "_RFBING6", type: "INTEGER", description: "Binge drinker (calculated)", codes: "1=No, 2=Yes" },
       { name: "_RFDRHV8", type: "INTEGER", description: "Heavy drinker (calculated)", codes: "1=No, 2=Yes", note: "2015+ only" },

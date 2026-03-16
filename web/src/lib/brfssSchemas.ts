@@ -11,20 +11,7 @@ This is the CDC Behavioral Risk Factor Surveillance System — the largest conti
 
 ALWAYS use \`_LLCPWT\` (landline/cell combined weight) for population estimates. Raw counts are NOT representative.
 
-**Pattern 1 — Population-level prevalence (DEFAULT):**
-Use this for "what % of adults have X" questions. Denominator = ALL weighted respondents. NULLs in the condition column naturally count as "no" (don't match the CASE). This is correct for any variable, including those with sparse coverage (e.g., e-cigarette module).
-\`\`\`sql
-SELECT
-  <group_column>,
-  ROUND(100.0 * SUM(CASE WHEN <condition> THEN _LLCPWT ELSE 0 END)
-    / NULLIF(SUM(_LLCPWT), 0), 1) AS prevalence_pct,
-  COUNT(*) AS total_n
-FROM brfss
-GROUP BY <group_column>
-\`\`\`
-
-**Pattern 2 — Condition-specific prevalence:**
-Use ONLY when the user explicitly asks "among people asked about X, what % said yes" (e.g., "among people screened for diabetes, what % tested positive").
+Weighted prevalence pattern:
 \`\`\`sql
 SELECT
   <group_column>,
@@ -36,8 +23,6 @@ WHERE <valid_response>
 GROUP BY <group_column>
 ORDER BY prevalence_pct DESC
 \`\`\`
-
-**IMPORTANT: Use Pattern 1 (population-level) by default. Use Pattern 2 only when the user explicitly asks about prevalence among a specific subpopulation. When comparing two or more conditions side-by-side (e.g., smoking vs vaping), ALWAYS use Pattern 1 so all metrics share the same denominator.**
 
 Weighted mean pattern (e.g. average days of poor health):
 \`\`\`sql
@@ -55,14 +40,15 @@ GROUP BY <group_column>
 
 Use the \`survey_year\` column to analyze trends over time. Always GROUP BY survey_year for trend analysis.
 
-**Trend query pattern (uses population-level denominator by default):**
+**Trend query pattern:**
 \`\`\`sql
 SELECT
   survey_year,
-  ROUND(100.0 * SUM(CASE WHEN <condition> THEN _LLCPWT ELSE 0 END)
-    / NULLIF(SUM(_LLCPWT), 0), 1) AS prevalence_pct,
-  COUNT(*) AS total_n
+  ROUND(100.0 * SUM(CASE WHEN <condition_yes> THEN _LLCPWT ELSE 0 END)
+    / NULLIF(SUM(CASE WHEN <valid_response> THEN _LLCPWT ELSE 0 END), 0), 1) AS prevalence_pct,
+  COUNT(*) FILTER (WHERE <valid_response>) AS sample_n
 FROM brfss
+WHERE <valid_response>
 GROUP BY survey_year
 ORDER BY survey_year
 \`\`\`
@@ -86,6 +72,9 @@ ALL values are numeric codes. NEVER assume text values exist in the data.
 For yes/no variables: 1 = Yes, 2 = No
 For scales (e.g. GENHLTH): lower numbers = better (1=Excellent, 5=Poor)
 Days variables (PHYSHLTH, MENTHLTH): 1-30 = number of days, 88 = None, 77 = DK, 99 = Refused
+
+**IMPORTANT — CDC binary vs multi-level calculated variables:**
+Not all calculated variables (prefixed with _) use the same coding scheme. Some are binary (e.g., _RFHLTH: 1=Good+, 2=Fair/Poor; _CURECI2: 1=Not current user, 2=Current user) while others are multi-level (e.g., _SMOKER3: 1-4 scale; _BMI5CAT: 1-4 scale). ALWAYS check each variable's specific codes listed in this schema before writing queries. Do NOT assume one calculated variable's codes match another's.
 
 **ALWAYS add readable labels in output using CASE WHEN.** Never return raw codes without labels.
 
@@ -172,7 +161,7 @@ FROM brfss WHERE ASTHMA3 IN (1, 2)
 - \`_TOTINDA\` (calculated: leisure time physical activity: 1=Had activity, 2=No activity, 9=DK)
 - \`SMOKE100\` (smoked 100+ cigarettes ever: 1=Yes, 2=No, 7=DK, 9=Refused)
 - \`_SMOKER3\` (calculated: 1=Current daily, 2=Current some days, 3=Former, 4=Never, 9=DK)
-- \`_CURECI2\` (calculated current e-cigarette user: 1=Current daily, 2=Current some days, 3=Former, 4=Never, 9=DK — 2023-2024)
+- \`_CURECI2\` (calculated current e-cigarette user — BINARY: 1=Not a current user, 2=Current user, 9=DK/Refused/Missing — 2023-2024)
 - \`ALCDAY4\` (days per week/month: 101-199=days/week, 201-299=days/month, 888=None past 30, 777=DK, 999=Refused)
 - \`_RFBING6\` (calculated binge drinker: 1=No, 2=Yes, 9=DK)
 - \`_RFDRHV8\` (calculated heavy drinker: 1=No, 2=Yes, 9=DK — available 2015+ only)
@@ -283,56 +272,43 @@ END AS state_name
 
 ### SQL Examples
 
-**Weighted diabetes prevalence by age group (population-level denominator):**
+**Weighted diabetes prevalence by age group:**
 \`\`\`sql
 SELECT
   CASE _AGE_G WHEN 1 THEN '18-24' WHEN 2 THEN '25-34' WHEN 3 THEN '35-44'
     WHEN 4 THEN '45-54' WHEN 5 THEN '55-64' WHEN 6 THEN '65+' END AS age_group,
   ROUND(100.0 * SUM(CASE WHEN DIABETE4 = 1 THEN _LLCPWT ELSE 0 END)
-    / NULLIF(SUM(_LLCPWT), 0), 1) AS diabetes_pct,
-  COUNT(*) AS total_n
+    / NULLIF(SUM(CASE WHEN DIABETE4 IN (1, 3) THEN _LLCPWT ELSE 0 END), 0), 1) AS diabetes_pct,
+  COUNT(*) FILTER (WHERE DIABETE4 IN (1, 3)) AS sample_n
 FROM brfss
 WHERE _AGE_G BETWEEN 1 AND 6
 GROUP BY _AGE_G
 ORDER BY _AGE_G
 \`\`\`
 
-**Obesity rate trend by year (population-level denominator):**
+**Obesity rate trend by year:**
 \`\`\`sql
 SELECT
   survey_year,
   ROUND(100.0 * SUM(CASE WHEN _BMI5CAT = 4 THEN _LLCPWT ELSE 0 END)
-    / NULLIF(SUM(_LLCPWT), 0), 1) AS obesity_pct,
-  COUNT(*) AS total_n
+    / NULLIF(SUM(CASE WHEN _BMI5CAT BETWEEN 1 AND 4 THEN _LLCPWT ELSE 0 END), 0), 1) AS obesity_pct,
+  COUNT(*) FILTER (WHERE _BMI5CAT BETWEEN 1 AND 4) AS sample_n
 FROM brfss
 GROUP BY survey_year
 ORDER BY survey_year
 \`\`\`
 
-**States with highest obesity rates (population-level denominator):**
+**States with highest obesity rates:**
 \`\`\`sql
 SELECT
   CASE _STATE WHEN 1 THEN 'Alabama' ... END AS state_name,
   ROUND(100.0 * SUM(CASE WHEN _BMI5CAT = 4 THEN _LLCPWT ELSE 0 END)
-    / NULLIF(SUM(_LLCPWT), 0), 1) AS obesity_pct
+    / NULLIF(SUM(CASE WHEN _BMI5CAT BETWEEN 1 AND 4 THEN _LLCPWT ELSE 0 END), 0), 1) AS obesity_pct
 FROM brfss
+WHERE _BMI5CAT BETWEEN 1 AND 4
 GROUP BY _STATE
 ORDER BY obesity_pct DESC
 LIMIT 10
-\`\`\`
-
-**Comparing multiple conditions side-by-side (shared denominator — CRITICAL PATTERN):**
-\`\`\`sql
-SELECT
-  survey_year,
-  ROUND(100.0 * SUM(CASE WHEN <condition_A> THEN _LLCPWT ELSE 0 END)
-    / NULLIF(SUM(_LLCPWT), 0), 1) AS condition_a_pct,
-  ROUND(100.0 * SUM(CASE WHEN <condition_B> THEN _LLCPWT ELSE 0 END)
-    / NULLIF(SUM(_LLCPWT), 0), 1) AS condition_b_pct,
-  COUNT(*) AS total_n
-FROM brfss
-GROUP BY survey_year
-ORDER BY survey_year
 \`\`\`
 
 **Poor mental health days by income:**

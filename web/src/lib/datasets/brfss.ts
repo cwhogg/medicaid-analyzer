@@ -36,9 +36,7 @@ registerDataset({
 - Include sample_n (unweighted count of valid respondents) alongside weighted estimates for context.
 - For trend queries, GROUP BY survey_year and ORDER BY survey_year. Note: 2021-2022 are not in the data.
 - For income analysis: use INCOME2/_INCOMG for 2014-2020, INCOME3/_INCOMG1 for 2023-2024. Do NOT mix across eras.
-- SDOH, ACE, marijuana method-of-use, and emotional support variables are 2024 only. Filter to survey_year = 2024 when querying these.
-- DENOMINATOR CONSISTENCY: When comparing prevalence of two or more conditions (e.g. smoking vs vaping), use the SAME denominator for all: SUM(_LLCPWT) over all respondents. Do NOT use condition-specific denominators that vary between metrics.
-- For population-level prevalence, denominator = SUM(_LLCPWT) with no condition filter. Do NOT filter the WHERE clause to only valid responses for the condition — NULLs should remain in the denominator as non-cases.`,
+- SDOH, ACE, marijuana method-of-use, and emotional support variables are 2024 only. Filter to survey_year = 2024 when querying these.`,
   retrySystemPromptRules: `Rules:
 - Return ONLY the SQL query, nothing else. No markdown, no explanation, no code fences.
 - Always include a LIMIT clause (max 10000).
@@ -46,8 +44,7 @@ registerDataset({
 - Use DuckDB SQL syntax.
 - Use _LLCPWT for weighted estimates.
 - Add readable labels via CASE WHEN for coded values.
-- For trends, GROUP BY survey_year. Note 2021-2022 gap.
-- DENOMINATOR CONSISTENCY: For population-level prevalence, denominator = SUM(_LLCPWT) over all respondents (no condition filter). When comparing multiple conditions, use the same denominator for all.`,
+- For trends, GROUP BY survey_year. Note 2021-2022 gap.`,
 
   pageTitle: "Analyze Population Health",
   pageSubtitle: "Ask questions about BRFSS population health survey data (2014-2024) in natural language",
@@ -104,6 +101,5 @@ registerDataset({
 - BRFSS underestimates some conditions compared to clinical data (e.g., diabetes prevalence is ~12% in BRFSS vs ~14% clinically)
 - 2024 new modules: Social Determinants of Health (SDOH), Adverse Childhood Experiences (ACEs), Marijuana Use methods, Emotional Support — these are 2024-only
 - Optional modules (ACEs, marijuana, firearms, sexual orientation) have limited state coverage — note this in results
-- Some columns are only available in certain years (e.g., CHCCOPD3 from 2019+, PRIMINS1 in 2023-2024, SDOH/ACEs in 2024 only) — see schema for availability notes
-- Variables from optional or year-limited modules (e.g., _CURECI2, SDOH, ACEs) may have NULLs for respondents not asked. When comparing any two conditions, always use total adult population as the shared denominator — do not restrict to valid responses for any single variable.`,
+- Some columns are only available in certain years (e.g., CHCCOPD3 from 2019+, PRIMINS1 in 2023-2024, SDOH/ACEs in 2024 only) — see schema for availability notes`,
 });
