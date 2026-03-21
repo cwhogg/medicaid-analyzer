@@ -157,6 +157,25 @@ export async function initMetricsDB(): Promise<void> {
     )
   `);
 
+  await metricsDb.run(`
+    CREATE TABLE IF NOT EXISTS tweet_metrics (
+      id VARCHAR PRIMARY KEY,
+      blog_idea_id VARCHAR,
+      tweet_id VARCHAR,
+      slug VARCHAR,
+      tweet_text VARCHAR,
+      recorded_at BIGINT NOT NULL,
+      impressions INTEGER DEFAULT 0,
+      likes INTEGER DEFAULT 0,
+      retweets INTEGER DEFAULT 0,
+      replies INTEGER DEFAULT 0,
+      quotes INTEGER DEFAULT 0,
+      bookmarks INTEGER DEFAULT 0,
+      link_clicks INTEGER DEFAULT 0,
+      profile_clicks INTEGER DEFAULT 0
+    )
+  `);
+
   // Backfill dataset='medicaid' on all NULL rows (pre-filtering era, before 2026-03-02)
   await metricsDb.run(`UPDATE feed_items SET dataset = 'medicaid' WHERE dataset IS NULL`);
   await metricsDb.run(`UPDATE query_log SET dataset = 'medicaid' WHERE dataset IS NULL`);
@@ -881,4 +900,116 @@ export async function deleteBlogIdea(id: string): Promise<void> {
     `UPDATE blog_ideas SET status = 'deleted', data = ?, updated_at = ? WHERE id = ?`,
     JSON.stringify(parsed), Date.now(), id
   );
+}
+
+// --- Tweet Metrics ---
+
+export interface TweetMetricsInput {
+  id: string;
+  blog_idea_id?: string;
+  tweet_id?: string;
+  slug?: string;
+  tweet_text?: string;
+  impressions?: number;
+  likes?: number;
+  retweets?: number;
+  replies?: number;
+  quotes?: number;
+  bookmarks?: number;
+  link_clicks?: number;
+  profile_clicks?: number;
+}
+
+export async function saveTweetMetrics(input: TweetMetricsInput): Promise<void> {
+  if (!metricsDb) throw new Error("Metrics DB not initialized");
+
+  const existing = await metricsDb.all(`SELECT 1 FROM tweet_metrics WHERE id = ?`, input.id);
+  if (existing.length > 0) {
+    // Update existing
+    await metricsDb.run(
+      `UPDATE tweet_metrics SET
+        blog_idea_id = COALESCE(?, blog_idea_id),
+        tweet_id = COALESCE(?, tweet_id),
+        slug = COALESCE(?, slug),
+        tweet_text = COALESCE(?, tweet_text),
+        recorded_at = ?,
+        impressions = COALESCE(?, impressions),
+        likes = COALESCE(?, likes),
+        retweets = COALESCE(?, retweets),
+        replies = COALESCE(?, replies),
+        quotes = COALESCE(?, quotes),
+        bookmarks = COALESCE(?, bookmarks),
+        link_clicks = COALESCE(?, link_clicks),
+        profile_clicks = COALESCE(?, profile_clicks)
+      WHERE id = ?`,
+      input.blog_idea_id ?? null,
+      input.tweet_id ?? null,
+      input.slug ?? null,
+      input.tweet_text ?? null,
+      Date.now(),
+      input.impressions ?? null,
+      input.likes ?? null,
+      input.retweets ?? null,
+      input.replies ?? null,
+      input.quotes ?? null,
+      input.bookmarks ?? null,
+      input.link_clicks ?? null,
+      input.profile_clicks ?? null,
+      input.id
+    );
+  } else {
+    await metricsDb.run(
+      `INSERT INTO tweet_metrics (id, blog_idea_id, tweet_id, slug, tweet_text, recorded_at, impressions, likes, retweets, replies, quotes, bookmarks, link_clicks, profile_clicks)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      input.id,
+      input.blog_idea_id ?? null,
+      input.tweet_id ?? null,
+      input.slug ?? null,
+      input.tweet_text ?? null,
+      Date.now(),
+      input.impressions ?? 0,
+      input.likes ?? 0,
+      input.retweets ?? 0,
+      input.replies ?? 0,
+      input.quotes ?? 0,
+      input.bookmarks ?? 0,
+      input.link_clicks ?? 0,
+      input.profile_clicks ?? 0
+    );
+  }
+}
+
+export async function getTweetMetrics(id?: string): Promise<Record<string, unknown> | Record<string, unknown>[]> {
+  if (!metricsDb) throw new Error("Metrics DB not initialized");
+
+  if (id) {
+    const rows = allToNumbers(await metricsDb.all(
+      `SELECT * FROM tweet_metrics WHERE id = ?`, id
+    ) as Record<string, unknown>[]);
+    return rows[0] || null;
+  }
+
+  const rows = allToNumbers(await metricsDb.all(
+    `SELECT * FROM tweet_metrics ORDER BY recorded_at DESC`
+  ) as Record<string, unknown>[]);
+  return rows;
+}
+
+export async function getTopPerformingTweets(limit = 20): Promise<Record<string, unknown>[]> {
+  if (!metricsDb) throw new Error("Metrics DB not initialized");
+
+  // Weighted engagement score: impressions base + weighted interactions
+  const rows = allToNumbers(await metricsDb.all(`
+    SELECT *,
+      (impressions * 0.1 + likes * 1.0 + retweets * 2.0 + replies * 1.5 + quotes * 2.0 + bookmarks * 1.5 + link_clicks * 3.0 + profile_clicks * 0.5) as engagement_score,
+      CASE WHEN impressions > 0
+        THEN ROUND((likes + retweets + replies + quotes + bookmarks) * 100.0 / impressions, 2)
+        ELSE 0 END as engagement_rate
+    FROM tweet_metrics
+    WHERE impressions > 0
+    ORDER BY engagement_score DESC
+    LIMIT ?
+  `, limit) as Record<string, unknown>[]);
+
+  return rows;
 }

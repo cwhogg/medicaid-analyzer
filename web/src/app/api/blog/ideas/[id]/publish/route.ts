@@ -80,7 +80,9 @@ export async function POST(
         console.warn("Blog page not live after 2min, tweeting anyway:", topic.slug);
       }
       try {
-        await postTweetThread(data.generatedTweet1, data.generatedTweet2);
+        const { tweetId, replyId } = await postTweetThread(data.generatedTweet1, data.generatedTweet2);
+        data.tweetId = tweetId;
+        data.tweetReplyId = replyId;
       } catch (tweetErr) {
         console.error("Tweet failed (non-blocking):", tweetErr);
       }

@@ -4,7 +4,7 @@ import { createWriteStream, createReadStream, existsSync, readdirSync, statSync,
 import { pipeline } from "stream/promises";
 import { Readable } from "stream";
 import { initDB, executeSQL, reloadViews, isReady } from "./db.js";
-import { initMetricsDB, recordMetrics, getMetrics, getDetailedUsers, getDailyQueries, getRetention, recordFeedItem, getFeedItems, recordFeedback, getFeedback, saveShare, getShare, saveBlogIdeas, getBlogIdeas, getBlogIdea, updateBlogIdea, deleteBlogIdea } from "./metrics-db.js";
+import { initMetricsDB, recordMetrics, getMetrics, getDetailedUsers, getDailyQueries, getRetention, recordFeedItem, getFeedItems, recordFeedback, getFeedback, saveShare, getShare, saveBlogIdeas, getBlogIdeas, getBlogIdea, updateBlogIdea, deleteBlogIdea, saveTweetMetrics, getTweetMetrics, getTopPerformingTweets } from "./metrics-db.js";
 
 const DATA_DIR = process.env.DATA_DIR || "/data";
 
@@ -520,6 +520,84 @@ app.delete("/blog-ideas/:id", async (c) => {
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to delete idea";
     console.error("Blog idea delete error:", message);
+    return c.json({ error: message }, 500);
+  }
+});
+
+// --- Tweet Metrics ---
+
+// Auth middleware for tweet-metrics routes
+app.use("/tweet-metrics/*", async (c, next) => {
+  const auth = c.req.header("Authorization");
+  if (!API_KEY) return next();
+  if (auth !== `Bearer ${API_KEY}`) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  return next();
+});
+
+app.use("/tweet-metrics", async (c, next) => {
+  const auth = c.req.header("Authorization");
+  if (!API_KEY) return next();
+  if (auth !== `Bearer ${API_KEY}`) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+  return next();
+});
+
+// Save/update tweet metrics
+app.post("/tweet-metrics", async (c) => {
+  try {
+    const body = await c.req.json();
+    if (!body.id) {
+      return c.json({ error: "id is required" }, 400);
+    }
+    await saveTweetMetrics(body);
+    return c.json({ ok: true });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to save tweet metrics";
+    console.error("Tweet metrics save error:", message);
+    return c.json({ error: message }, 500);
+  }
+});
+
+// List all tweet metrics
+app.get("/tweet-metrics", async (c) => {
+  try {
+    const metrics = await getTweetMetrics();
+    return c.json({ metrics });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to fetch tweet metrics";
+    console.error("Tweet metrics fetch error:", message);
+    return c.json({ error: message }, 500);
+  }
+});
+
+// Top performing tweets (must be registered BEFORE :id route)
+app.get("/tweet-metrics/top", async (c) => {
+  try {
+    const limit = parseInt(c.req.query("limit") || "20", 10);
+    const tweets = await getTopPerformingTweets(Math.min(limit, 100));
+    return c.json({ tweets });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to fetch top tweets";
+    console.error("Top tweets fetch error:", message);
+    return c.json({ error: message }, 500);
+  }
+});
+
+// Get single tweet metrics
+app.get("/tweet-metrics/:id", async (c) => {
+  try {
+    const id = c.req.param("id");
+    const metrics = await getTweetMetrics(id);
+    if (!metrics) {
+      return c.json({ error: "Tweet metrics not found" }, 404);
+    }
+    return c.json({ metrics });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to fetch tweet metrics";
+    console.error("Tweet metrics fetch error:", message);
     return c.json({ error: message }, 500);
   }
 });

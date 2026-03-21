@@ -255,6 +255,15 @@ Return ONLY valid JSON, no markdown fences or explanation.`,
   }
 }
 
+export interface TopTweetExample {
+  tweet_text: string;
+  impressions: number;
+  likes: number;
+  retweets: number;
+  link_clicks: number;
+  engagement_rate: number;
+}
+
 // Phase 3: Write the article
 export async function writeArticle(
   topic: TopicPlan,
@@ -262,7 +271,8 @@ export async function writeArticle(
   dsConfig: DatasetConfig,
   client: Anthropic,
   send: (event: Record<string, unknown>) => void,
-  facts: FactsObject | null = null
+  facts: FactsObject | null = null,
+  topTweets: TopTweetExample[] = []
 ): Promise<{ bodyContent: string; wordCount: number; tweet1: string; tweet2: string }> {
   send({
     phase: "writing",
@@ -353,7 +363,16 @@ After the article, output a separator line "---TWEETS---" followed by exactly tw
 Example output format:
 ---TWEETS---
 TWEET1: Every state that had an obesity rate below 25% in 2014 has now crossed that line. Colorado, the leanest, went from 21.3% to 25.0%.
-TWEET2: Has Obesity Gotten Worse in Every State Since 2014?\n\nhttps://www.openhealthdatahub.com/blog/has-obesity-gotten-worse-in-every-state-since-2014`,
+TWEET2: Has Obesity Gotten Worse in Every State Since 2014?\n\nhttps://www.openhealthdatahub.com/blog/has-obesity-gotten-worse-in-every-state-since-2014${
+      topTweets.length > 0
+        ? `\n\n## TOP-PERFORMING TWEET EXAMPLES (learn from what worked)\nThese tweets got the highest engagement. Study their patterns:\n${topTweets
+            .map(
+              (t, i) =>
+                `${i + 1}. "${t.tweet_text}" (${t.impressions.toLocaleString()} impressions, ${t.likes} likes, ${t.retweets} RTs, ${t.engagement_rate}% engagement)`
+            )
+            .join("\n")}`
+        : ""
+    }`,
     messages: [
       {
         role: "user",

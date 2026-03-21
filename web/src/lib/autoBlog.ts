@@ -9,6 +9,7 @@ import {
   publishToGitHub,
   waitForLivePage,
   type TopicPlan,
+  type TopTweetExample,
 } from "@/lib/blogGeneration";
 import { postTweetThread, isTwitterConfigured } from "@/lib/twitter";
 
@@ -316,13 +317,37 @@ export async function runDailyBlogPipeline(): Promise<{
     }
 
     const facts = await extractFacts(topic, analysisSteps, client, noop);
+
+    // Fetch top-performing tweets for prompt context
+    let topTweets: TopTweetExample[] = [];
+    try {
+      const topRes = await fetch(`${RAILWAY_QUERY_URL}/tweet-metrics/top?limit=5`, {
+        headers: railwayHeaders(),
+        signal: AbortSignal.timeout(5000),
+      });
+      if (topRes.ok) {
+        const topData = await topRes.json();
+        topTweets = (topData.tweets || []).map((t: Record<string, unknown>) => ({
+          tweet_text: t.tweet_text || "",
+          impressions: Number(t.impressions) || 0,
+          likes: Number(t.likes) || 0,
+          retweets: Number(t.retweets) || 0,
+          link_clicks: Number(t.link_clicks) || 0,
+          engagement_rate: Number(t.engagement_rate) || 0,
+        }));
+      }
+    } catch {
+      // Non-critical — continue without top tweets
+    }
+
     const { bodyContent, wordCount, tweet1, tweet2 } = await writeArticle(
       topic,
       analysisSteps,
       dsConfig,
       client,
       noop,
-      facts
+      facts,
+      topTweets
     );
 
     // Audit numbers (log only, don't block)
@@ -343,7 +368,9 @@ export async function runDailyBlogPipeline(): Promise<{
     // 9. Tweet thread
     if (tweet1 && tweet2 && isTwitterConfigured()) {
       try {
-        await postTweetThread(tweet1, tweet2);
+        const { tweetId, replyId } = await postTweetThread(tweet1, tweet2);
+        (ideaData as Record<string, unknown>).tweetId = tweetId;
+        (ideaData as Record<string, unknown>).tweetReplyId = replyId;
       } catch (tweetErr) {
         console.error("Auto blog tweet failed (non-blocking):", tweetErr);
       }

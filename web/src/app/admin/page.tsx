@@ -1860,7 +1860,7 @@ function AdminDashboard() {
       </div>
 
       {/* Navigation Links */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
         <a
           href={`/admin/users?key=${encodeURIComponent(key || "")}`}
         >
@@ -1897,6 +1897,19 @@ function AdminDashboard() {
               <h2 className="text-sm font-semibold text-foreground">Retention</h2>
               <p className="text-xs text-muted mt-1">
                 Cohorts, engagement, return rates
+              </p>
+            </div>
+            <span className="text-accent text-lg">&rarr;</span>
+          </div>
+        </a>
+        <a
+          href={`/admin/tweets?key=${encodeURIComponent(key || "")}`}
+        >
+          <div className="card-hover p-4 flex items-center justify-between cursor-pointer">
+            <div>
+              <h2 className="text-sm font-semibold text-foreground">Tweet Performance</h2>
+              <p className="text-xs text-muted mt-1">
+                Track tweet metrics and engagement
               </p>
             </div>
             <span className="text-accent text-lg">&rarr;</span>

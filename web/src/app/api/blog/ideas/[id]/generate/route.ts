@@ -8,6 +8,7 @@ import {
   writeArticle,
   auditArticleNumbers,
   type TopicPlan,
+  type TopTweetExample,
 } from "@/lib/blogGeneration";
 
 export const maxDuration = 300;
@@ -101,6 +102,28 @@ export async function POST(
     // Phase 2.5: Facts extraction
     const facts = await extractFacts(topic, analysisSteps, client, send);
 
+    // Fetch top-performing tweets for prompt context
+    let topTweets: TopTweetExample[] = [];
+    try {
+      const topRes = await fetch(`${RAILWAY_QUERY_URL}/tweet-metrics/top?limit=5`, {
+        headers: railwayHeaders(),
+        signal: AbortSignal.timeout(5000),
+      });
+      if (topRes.ok) {
+        const topData = await topRes.json();
+        topTweets = (topData.tweets || []).map((t: Record<string, unknown>) => ({
+          tweet_text: t.tweet_text || "",
+          impressions: Number(t.impressions) || 0,
+          likes: Number(t.likes) || 0,
+          retweets: Number(t.retweets) || 0,
+          link_clicks: Number(t.link_clicks) || 0,
+          engagement_rate: Number(t.engagement_rate) || 0,
+        }));
+      }
+    } catch {
+      // Non-critical — continue without top tweets
+    }
+
     // Phase 3: Writing
     const { bodyContent, wordCount, tweet1, tweet2 } = await writeArticle(
       topic,
@@ -108,7 +131,8 @@ export async function POST(
       dsConfig,
       client,
       send,
-      facts
+      facts,
+      topTweets
     );
 
     // Phase 3.5: Audit numbers
