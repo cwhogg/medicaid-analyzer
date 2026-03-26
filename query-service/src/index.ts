@@ -545,10 +545,23 @@ app.use("/tweet-metrics", async (c, next) => {
   return next();
 });
 
-// Save/update tweet metrics
+// Save/update tweet metrics (single or bulk)
 app.post("/tweet-metrics", async (c) => {
   try {
     const body = await c.req.json();
+
+    // Bulk mode: { metrics: [...] }
+    if (Array.isArray(body.metrics)) {
+      let saved = 0;
+      for (const item of body.metrics) {
+        if (!item.id) continue;
+        await saveTweetMetrics(item);
+        saved++;
+      }
+      return c.json({ ok: true, saved });
+    }
+
+    // Single mode
     if (!body.id) {
       return c.json({ error: "id is required" }, 400);
     }

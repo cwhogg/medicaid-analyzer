@@ -77,6 +77,92 @@ function truncate(s: string, len: number): string {
   return s.length > len ? s.slice(0, len) + "..." : s;
 }
 
+// Parse CSV text into array of objects, handling quoted fields
+function parseCSV(text: string): Record<string, string>[] {
+  const lines = text.split(/\r?\n/).filter((l) => l.trim());
+  if (lines.length < 2) return [];
+
+  // Parse a single CSV line respecting quoted fields
+  const parseLine = (line: string): string[] => {
+    const fields: string[] = [];
+    let current = "";
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (inQuotes && line[i + 1] === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (ch === "," && !inQuotes) {
+        fields.push(current.trim());
+        current = "";
+      } else {
+        current += ch;
+      }
+    }
+    fields.push(current.trim());
+    return fields;
+  };
+
+  const headers = parseLine(lines[0]).map((h) => h.replace(/^\uFEFF/, ""));
+  const rows: Record<string, string>[] = [];
+  for (let i = 1; i < lines.length; i++) {
+    const values = parseLine(lines[i]);
+    if (values.length < 2) continue;
+    const row: Record<string, string> = {};
+    headers.forEach((h, j) => {
+      row[h] = values[j] || "";
+    });
+    rows.push(row);
+  }
+  return rows;
+}
+
+interface CSVPreviewRow {
+  tweet_id: string;
+  tweet_text: string;
+  impressions: number;
+  likes: number;
+  retweets: number;
+  replies: number;
+  bookmarks: number;
+  link_clicks: number;
+  profile_clicks: number;
+  matched_idea_id?: string;
+  matched_title?: string;
+}
+
+// Map X analytics CSV columns to our schema
+// X CSV columns: "Tweet id", "Tweet text", "impressions", "engagements", "engagement rate",
+// "retweets", "replies", "likes", "user profile clicks", "url clicks", "hashtag clicks",
+// "detail expands", "permalink clicks", "media views", "media engagements", "bookmarks"
+function mapCSVRow(row: Record<string, string>): Omit<CSVPreviewRow, "matched_idea_id" | "matched_title"> {
+  // Normalize header lookup (case-insensitive, trim whitespace)
+  const get = (keys: string[]): string => {
+    for (const k of keys) {
+      for (const [header, val] of Object.entries(row)) {
+        if (header.toLowerCase().trim() === k.toLowerCase()) return val;
+      }
+    }
+    return "";
+  };
+
+  return {
+    tweet_id: get(["Tweet id", "tweet id", "Tweet ID", "id"]),
+    tweet_text: get(["Tweet text", "tweet text", "Tweet Text", "text"]).slice(0, 500),
+    impressions: parseInt(get(["impressions", "Impressions"])) || 0,
+    likes: parseInt(get(["likes", "Likes"])) || 0,
+    retweets: parseInt(get(["retweets", "Retweets"])) || 0,
+    replies: parseInt(get(["replies", "Replies"])) || 0,
+    bookmarks: parseInt(get(["bookmarks", "Bookmarks"])) || 0,
+    link_clicks: parseInt(get(["url clicks", "URL clicks", "Url clicks", "link clicks", "link_clicks", "permalink clicks"])) || 0,
+    profile_clicks: parseInt(get(["user profile clicks", "User profile clicks", "profile clicks", "profile_clicks"])) || 0,
+  };
+}
+
 function TweetsPage() {
   const searchParams = useSearchParams();
   const key = searchParams.get("key");
@@ -87,7 +173,10 @@ function TweetsPage() {
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState<string | null>(null);
   const [forms, setForms] = useState<Record<string, MetricsForm>>({});
-  const [tab, setTab] = useState<"entry" | "dashboard">("entry");
+  const [tab, setTab] = useState<"entry" | "upload" | "dashboard">("entry");
+  const [csvPreview, setCsvPreview] = useState<CSVPreviewRow[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadResult, setUploadResult] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     if (!key) {
@@ -217,6 +306,88 @@ function TweetsPage() {
     }
   };
 
+  const handleCSVFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadResult(null);
+
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const text = ev.target?.result as string;
+      const rows = parseCSV(text);
+      if (rows.length === 0) {
+        setUploadResult("No data rows found in CSV");
+        return;
+      }
+
+      // Build tweet ID -> idea lookup from loaded ideas
+      const tweetIdToIdea: Record<string, BlogIdea> = {};
+      for (const idea of ideas) {
+        const tid = idea.data?.tweetId;
+        if (tid) tweetIdToIdea[tid] = idea;
+      }
+
+      const preview: CSVPreviewRow[] = rows.map((row) => {
+        const mapped = mapCSVRow(row);
+        const matchedIdea = tweetIdToIdea[mapped.tweet_id];
+        return {
+          ...mapped,
+          matched_idea_id: matchedIdea?.id,
+          matched_title: matchedIdea?.data?.title,
+        };
+      });
+
+      // Filter to rows with at least impressions > 0
+      const valid = preview.filter((r) => r.tweet_id && r.impressions > 0);
+      setCsvPreview(valid.length > 0 ? valid : preview.filter((r) => r.tweet_id));
+      setUploadResult(`Parsed ${rows.length} rows, ${valid.length} with impressions data`);
+    };
+    reader.readAsText(file);
+  };
+
+  const handleBulkUpload = async () => {
+    if (!key || csvPreview.length === 0) return;
+    setUploading(true);
+    setUploadResult(null);
+
+    try {
+      const metrics = csvPreview.map((row) => ({
+        id: row.matched_idea_id || `tw_${row.tweet_id}`,
+        blog_idea_id: row.matched_idea_id || undefined,
+        tweet_id: row.tweet_id,
+        tweet_text: row.tweet_text,
+        impressions: row.impressions,
+        likes: row.likes,
+        retweets: row.retweets,
+        replies: row.replies,
+        bookmarks: row.bookmarks,
+        link_clicks: row.link_clicks,
+        profile_clicks: row.profile_clicks,
+      }));
+
+      const res = await fetch(`/api/admin/tweets?key=${encodeURIComponent(key)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ metrics }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        setUploadResult(`Upload failed: ${(err as { error?: string }).error || "Unknown error"}`);
+      } else {
+        const data = await res.json();
+        setUploadResult(`Saved ${data.saved || metrics.length} tweet metrics`);
+        setCsvPreview([]);
+        // Refresh dashboard data
+        fetchData();
+      }
+    } catch {
+      setUploadResult("Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   if (error === "not_found") {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -264,6 +435,16 @@ function TweetsPage() {
           }`}
         >
           Enter Metrics ({ideas.length})
+        </button>
+        <button
+          onClick={() => setTab("upload")}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            tab === "upload"
+              ? "bg-accent text-white"
+              : "bg-white/[0.05] text-muted hover:text-foreground"
+          }`}
+        >
+          Upload CSV
         </button>
         <button
           onClick={() => setTab("dashboard")}
@@ -426,6 +607,120 @@ function TweetsPage() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* CSV Upload */}
+      {tab === "upload" && (
+        <div className="space-y-4">
+          <div className="card p-6">
+            <h2 className="text-sm font-semibold text-foreground mb-2">
+              Upload X Analytics CSV
+            </h2>
+            <p className="text-xs text-muted mb-4">
+              Export from{" "}
+              <a
+                href="https://analytics.x.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-accent hover:underline"
+              >
+                analytics.x.com
+              </a>
+              {" "}&#8594; Tweets &#8594; Export data. The CSV should have columns like
+              &ldquo;Tweet id&rdquo;, &ldquo;impressions&rdquo;, &ldquo;likes&rdquo;, etc.
+            </p>
+
+            <input
+              type="file"
+              accept=".csv,text/csv"
+              onChange={handleCSVFile}
+              className="block w-full text-sm text-muted file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-accent file:text-white hover:file:bg-accent/80 file:cursor-pointer"
+            />
+
+            {uploadResult && (
+              <p className={`text-xs mt-3 ${uploadResult.includes("failed") ? "text-red-400" : "text-green-400"}`}>
+                {uploadResult}
+              </p>
+            )}
+          </div>
+
+          {/* CSV Preview */}
+          {csvPreview.length > 0 && (
+            <div className="card p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-foreground">
+                  Preview ({csvPreview.length} tweets)
+                </h3>
+                <button
+                  onClick={handleBulkUpload}
+                  disabled={uploading}
+                  className="px-4 py-2 bg-accent text-white rounded text-sm font-medium hover:bg-accent/80 disabled:opacity-50"
+                >
+                  {uploading ? "Uploading..." : `Save ${csvPreview.length} tweets`}
+                </button>
+              </div>
+
+              <div className="relative">
+                <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-surface to-transparent pointer-events-none z-10" />
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm min-w-[800px]">
+                    <thead>
+                      <tr className="text-left text-muted">
+                        <th className="pb-2 pr-3">Tweet</th>
+                        <th className="pb-2 pr-3">Matched Post</th>
+                        <th className="pb-2 pr-3 text-right">Impr.</th>
+                        <th className="pb-2 pr-3 text-right">Likes</th>
+                        <th className="pb-2 pr-3 text-right">RTs</th>
+                        <th className="pb-2 pr-3 text-right">Replies</th>
+                        <th className="pb-2 pr-3 text-right">Clicks</th>
+                        <th className="pb-2 text-right">Bookmarks</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {csvPreview.map((row, i) => (
+                        <tr key={i} className="border-t border-rule-light">
+                          <td className="py-2 pr-3 text-xs max-w-[250px]">
+                            <span className="block truncate" title={row.tweet_text}>
+                              {truncate(row.tweet_text, 60)}
+                            </span>
+                            <span className="text-[10px] text-muted font-mono">
+                              {row.tweet_id}
+                            </span>
+                          </td>
+                          <td className="py-2 pr-3 text-xs">
+                            {row.matched_title ? (
+                              <span className="text-green-400">{truncate(row.matched_title, 40)}</span>
+                            ) : (
+                              <span className="text-muted">no match</span>
+                            )}
+                          </td>
+                          <td className="py-2 pr-3 text-right font-mono text-xs">
+                            {formatNumber(row.impressions)}
+                          </td>
+                          <td className="py-2 pr-3 text-right font-mono text-xs">
+                            {formatNumber(row.likes)}
+                          </td>
+                          <td className="py-2 pr-3 text-right font-mono text-xs">
+                            {formatNumber(row.retweets)}
+                          </td>
+                          <td className="py-2 pr-3 text-right font-mono text-xs">
+                            {formatNumber(row.replies)}
+                          </td>
+                          <td className="py-2 pr-3 text-right font-mono text-xs">
+                            {formatNumber(row.link_clicks)}
+                          </td>
+                          <td className="py-2 text-right font-mono text-xs">
+                            {formatNumber(row.bookmarks)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
