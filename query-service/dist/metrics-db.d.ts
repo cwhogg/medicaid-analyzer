@@ -130,3 +130,13 @@ export interface TweetMetricsInput {
 export declare function saveTweetMetrics(input: TweetMetricsInput): Promise<void>;
 export declare function getTweetMetrics(id?: string): Promise<Record<string, unknown> | Record<string, unknown>[]>;
 export declare function getTopPerformingTweets(limit?: number): Promise<Record<string, unknown>[]>;
+export interface PageViewInput {
+    path: string;
+    referrer?: string;
+    utm_source?: string;
+    utm_medium?: string;
+    utm_campaign?: string;
+    ip?: string;
+}
+export declare function recordPageView(input: PageViewInput): Promise<void>;
+export declare function getTrafficSources(days?: number): Promise<Record<string, unknown>>;

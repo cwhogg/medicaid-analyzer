@@ -1,6 +1,8 @@
 import * as Sentry from "@sentry/nextjs";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Playfair_Display, Lora, Merriweather, DM_Sans, JetBrains_Mono } from "next/font/google";
+import PageViewTracker from "@/components/PageViewTracker";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -62,6 +64,9 @@ export default function RootLayout({
       <body
         className={`${playfair.variable} ${lora.variable} ${merriweather.variable} ${dmSans.variable} ${jetbrainsMono.variable} font-sans antialiased bg-background text-foreground`}
       >
+        <Suspense fallback={null}>
+          <PageViewTracker />
+        </Suspense>
         {children}
       </body>
     </html>

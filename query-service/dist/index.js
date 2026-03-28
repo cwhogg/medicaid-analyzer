@@ -4,7 +4,7 @@ import { createWriteStream, createReadStream, existsSync, readdirSync, statSync,
 import { pipeline } from "stream/promises";
 import { Readable } from "stream";
 import { initDB, executeSQL, reloadViews, isReady } from "./db.js";
-import { initMetricsDB, recordMetrics, getMetrics, getDetailedUsers, getDailyQueries, getRetention, recordFeedItem, getFeedItems, recordFeedback, getFeedback, saveShare, getShare, saveBlogIdeas, getBlogIdeas, getBlogIdea, updateBlogIdea, deleteBlogIdea, saveTweetMetrics, getTweetMetrics, getTopPerformingTweets } from "./metrics-db.js";
+import { initMetricsDB, recordMetrics, getMetrics, getDetailedUsers, getDailyQueries, getRetention, recordFeedItem, getFeedItems, recordFeedback, getFeedback, saveShare, getShare, saveBlogIdeas, getBlogIdeas, getBlogIdea, updateBlogIdea, deleteBlogIdea, saveTweetMetrics, getTweetMetrics, getTopPerformingTweets, recordPageView, getTrafficSources } from "./metrics-db.js";
 const DATA_DIR = process.env.DATA_DIR || "/data";
 const app = new Hono();
 const API_KEY = process.env.RAILWAY_API_KEY || "";
@@ -506,6 +506,47 @@ app.delete("/blog-ideas/:id", async (c) => {
     catch (err) {
         const message = err instanceof Error ? err.message : "Failed to delete idea";
         console.error("Blog idea delete error:", message);
+        return c.json({ error: message }, 500);
+    }
+});
+// --- Page Views ---
+// Record page view (public — lightweight beacon, no auth)
+app.post("/pageview", async (c) => {
+    try {
+        const body = await c.req.json();
+        if (!body.path || typeof body.path !== "string") {
+            return c.json({ error: "path is required" }, 400);
+        }
+        await recordPageView({
+            path: body.path.slice(0, 500),
+            referrer: body.referrer?.slice(0, 1000) || undefined,
+            utm_source: body.utm_source?.slice(0, 100) || undefined,
+            utm_medium: body.utm_medium?.slice(0, 100) || undefined,
+            utm_campaign: body.utm_campaign?.slice(0, 200) || undefined,
+            ip: body.ip || undefined,
+        });
+        return c.json({ ok: true });
+    }
+    catch (err) {
+        const message = err instanceof Error ? err.message : "Failed to record page view";
+        console.error("Page view error:", message);
+        return c.json({ error: message }, 500);
+    }
+});
+// Traffic sources (auth required — admin only)
+app.get("/traffic-sources", async (c) => {
+    const auth = c.req.header("Authorization");
+    if (API_KEY && auth !== `Bearer ${API_KEY}`) {
+        return c.json({ error: "Unauthorized" }, 401);
+    }
+    try {
+        const days = parseInt(c.req.query("days") || "30", 10);
+        const data = await getTrafficSources(Math.min(days, 90));
+        return c.json(data);
+    }
+    catch (err) {
+        const message = err instanceof Error ? err.message : "Failed to fetch traffic sources";
+        console.error("Traffic sources error:", message);
         return c.json({ error: message }, 500);
     }
 });

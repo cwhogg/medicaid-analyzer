@@ -358,12 +358,12 @@ Passive padding: "it can be seen that...", "there has been an increase in..."
 ## Twitter thread (REQUIRED — include at the very end)
 After the article, output a separator line "---TWEETS---" followed by exactly two lines:
 - TWEET1: Under 250 chars. No hashtags, no links. Feature a specific surprising number from the VERIFIED FACTS OBJECT (if provided). Vary the format — sometimes lead with the number, sometimes lead with the implication, sometimes ask a question. Do NOT always use the "[stat] — [context]" format.
-- TWEET2: The article title on its own line, then a blank line, then the bare URL. Do NOT prefix with "Read more in this blog post:" — just the title and URL. Format: "{title}\n\nhttps://www.openhealthdatahub.com/blog/{slug}"
+- TWEET2: The article title on its own line, then a blank line, then the bare URL with UTM tracking. Do NOT prefix with "Read more in this blog post:" — just the title and URL. Format: "{title}\n\nhttps://www.openhealthdatahub.com/blog/{slug}?utm_source=twitter&utm_medium=social&utm_campaign={slug}"
 
 Example output format:
 ---TWEETS---
 TWEET1: Every state that had an obesity rate below 25% in 2014 has now crossed that line. Colorado, the leanest, went from 21.3% to 25.0%.
-TWEET2: Has Obesity Gotten Worse in Every State Since 2014?\n\nhttps://www.openhealthdatahub.com/blog/has-obesity-gotten-worse-in-every-state-since-2014${
+TWEET2: Has Obesity Gotten Worse in Every State Since 2014?\n\nhttps://www.openhealthdatahub.com/blog/has-obesity-gotten-worse-in-every-state-since-2014?utm_source=twitter&utm_medium=social&utm_campaign=has-obesity-gotten-worse-in-every-state-since-2014${
       topTweets.length > 0
         ? `\n\n## TOP-PERFORMING TWEET EXAMPLES (learn from what worked)\nThese tweets got the highest engagement. Study their patterns:\n${topTweets
             .map(

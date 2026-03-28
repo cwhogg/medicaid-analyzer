@@ -163,6 +163,18 @@ export async function initMetricsDB() {
       profile_clicks INTEGER DEFAULT 0
     )
   `);
+    await metricsDb.run(`
+    CREATE TABLE IF NOT EXISTS page_views (
+      timestamp BIGINT NOT NULL,
+      path VARCHAR NOT NULL,
+      referrer VARCHAR,
+      referrer_domain VARCHAR,
+      utm_source VARCHAR,
+      utm_medium VARCHAR,
+      utm_campaign VARCHAR,
+      ip VARCHAR
+    )
+  `);
     // Backfill dataset='medicaid' on all NULL rows (pre-filtering era, before 2026-03-02)
     await metricsDb.run(`UPDATE feed_items SET dataset = 'medicaid' WHERE dataset IS NULL`);
     await metricsDb.run(`UPDATE query_log SET dataset = 'medicaid' WHERE dataset IS NULL`);
@@ -755,5 +767,132 @@ export async function getTopPerformingTweets(limit = 20) {
     LIMIT ?
   `, limit));
     return rows;
+}
+// --- Page Views ---
+const MAX_PAGE_VIEWS = 50_000;
+const PV_PRUNE_INTERVAL = 500;
+let pvInsertCount = 0;
+function extractDomain(referrer) {
+    try {
+        return new URL(referrer).hostname.replace(/^www\./, "");
+    }
+    catch {
+        return "";
+    }
+}
+export async function recordPageView(input) {
+    if (!metricsDb)
+        throw new Error("Metrics DB not initialized");
+    const domain = input.referrer ? extractDomain(input.referrer) : "";
+    await metricsDb.run(`INSERT INTO page_views (timestamp, path, referrer, referrer_domain, utm_source, utm_medium, utm_campaign, ip)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, Date.now(), input.path, input.referrer || null, domain || null, input.utm_source || null, input.utm_medium || null, input.utm_campaign || null, input.ip || null);
+    // Prune old page views periodically
+    pvInsertCount++;
+    if (pvInsertCount % PV_PRUNE_INTERVAL === 0) {
+        try {
+            const count = await metricsDb.all(`SELECT COUNT(*) as cnt FROM page_views`);
+            if (count[0] && count[0].cnt > MAX_PAGE_VIEWS) {
+                await metricsDb.run(`
+          DELETE FROM page_views WHERE timestamp <= (
+            SELECT timestamp FROM page_views ORDER BY timestamp DESC LIMIT 1 OFFSET ${MAX_PAGE_VIEWS}
+          )
+        `);
+            }
+        }
+        catch (err) {
+            console.error("Page views prune error:", err);
+        }
+    }
+}
+export async function getTrafficSources(days = 30) {
+    if (!metricsDb)
+        throw new Error("Metrics DB not initialized");
+    const since = Date.now() - days * 86400000;
+    const f = EXCLUDE_IP_CLAUSE.replace(/\bip\b/g, "pv.ip");
+    // Total views
+    const totalRow = allToNumbers(await metricsDb.all(`SELECT COUNT(*) as total FROM page_views pv WHERE pv.timestamp >= ? AND ${f}`, since));
+    const total = Number(totalRow[0]?.total ?? 0);
+    // Source breakdown: classify into twitter, google, direct, other
+    const sourceRows = allToNumbers(await metricsDb.all(`
+    SELECT
+      CASE
+        WHEN utm_source = 'twitter' OR referrer_domain IN ('twitter.com', 't.co', 'x.com') THEN 'twitter'
+        WHEN referrer_domain IN ('google.com', 'google.co.uk', 'google.ca', 'google.com.au') THEN 'google'
+        WHEN referrer_domain IN ('bing.com', 'duckduckgo.com', 'yahoo.com', 'baidu.com') THEN 'search_other'
+        WHEN referrer_domain IS NULL OR referrer_domain = '' THEN 'direct'
+        ELSE 'referral'
+      END as source,
+      COUNT(*) as views
+    FROM page_views pv
+    WHERE pv.timestamp >= ? AND ${f}
+    GROUP BY source
+    ORDER BY views DESC
+  `, since));
+    // Referrer domains (for "referral" detail)
+    const domainRows = allToNumbers(await metricsDb.all(`
+    SELECT referrer_domain, COUNT(*) as views
+    FROM page_views pv
+    WHERE pv.timestamp >= ? AND referrer_domain IS NOT NULL AND referrer_domain != '' AND ${f}
+    GROUP BY referrer_domain
+    ORDER BY views DESC
+    LIMIT 20
+  `, since));
+    // Top pages
+    const pageRows = allToNumbers(await metricsDb.all(`
+    SELECT path, COUNT(*) as views
+    FROM page_views pv
+    WHERE pv.timestamp >= ? AND ${f}
+    GROUP BY path
+    ORDER BY views DESC
+    LIMIT 30
+  `, since));
+    // Daily views (last N days)
+    const dailyRows = allToNumbers(await metricsDb.all(`
+    SELECT
+      STRFTIME(DATE_TRUNC('day', EPOCH_MS(pv.timestamp)), '%Y-%m-%d') as day,
+      COUNT(*) as views,
+      COUNT(DISTINCT pv.ip) as unique_visitors
+    FROM page_views pv
+    WHERE pv.timestamp >= ? AND ${f}
+    GROUP BY day
+    ORDER BY day DESC
+  `, since));
+    // UTM campaign performance
+    const campaignRows = allToNumbers(await metricsDb.all(`
+    SELECT utm_campaign, utm_source, COUNT(*) as views
+    FROM page_views pv
+    WHERE pv.timestamp >= ? AND utm_campaign IS NOT NULL AND ${f}
+    GROUP BY utm_campaign, utm_source
+    ORDER BY views DESC
+    LIMIT 30
+  `, since));
+    // Blog page views specifically
+    const blogRows = allToNumbers(await metricsDb.all(`
+    SELECT path, COUNT(*) as views,
+      COUNT(*) FILTER (WHERE utm_source = 'twitter' OR referrer_domain IN ('twitter.com', 't.co', 'x.com')) as from_twitter,
+      COUNT(*) FILTER (WHERE referrer_domain IN ('google.com', 'google.co.uk', 'google.ca', 'google.com.au')) as from_google,
+      COUNT(*) FILTER (WHERE referrer_domain IS NULL OR referrer_domain = '') as from_direct
+    FROM page_views pv
+    WHERE pv.timestamp >= ? AND path LIKE '/blog/%' AND ${f}
+    GROUP BY path
+    ORDER BY views DESC
+    LIMIT 30
+  `, since));
+    return {
+        total,
+        days,
+        sources: sourceRows.map((r) => ({ source: r.source, views: Number(r.views) })),
+        domains: domainRows.map((r) => ({ domain: r.referrer_domain, views: Number(r.views) })),
+        topPages: pageRows.map((r) => ({ path: r.path, views: Number(r.views) })),
+        daily: dailyRows.map((r) => ({ day: r.day, views: Number(r.views), uniqueVisitors: Number(r.unique_visitors) })),
+        campaigns: campaignRows.map((r) => ({ campaign: r.utm_campaign, source: r.utm_source, views: Number(r.views) })),
+        blogPosts: blogRows.map((r) => ({
+            path: r.path,
+            views: Number(r.views),
+            fromTwitter: Number(r.from_twitter),
+            fromGoogle: Number(r.from_google),
+            fromDirect: Number(r.from_direct),
+        })),
+    };
 }
 //# sourceMappingURL=metrics-db.js.map
