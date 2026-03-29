@@ -25,10 +25,12 @@ export default function Home() {
       <Navbar />
       <main className="min-h-screen">
         <Hero />
+        <SampleAnalyses />
+        <Features />
 
         {/* Dataset highlights */}
         <section className="max-w-[1080px] mx-auto px-4 sm:px-8">
-          <div className="section-label">Available Datasets</div>
+          <div className="section-label">Browse by Dataset</div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {DATASET_METAS.map((meta) => (
               <DatasetCard key={meta.key} meta={meta} />
@@ -36,9 +38,7 @@ export default function Home() {
           </div>
         </section>
 
-        <SampleAnalyses />
         <LiveDemo />
-        <Features />
       </main>
       <Footer />
     </>

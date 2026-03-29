@@ -8,18 +8,20 @@ export function Hero() {
     <section className="text-center py-12 sm:py-16">
       <div className="max-w-[820px] mx-auto px-4 sm:px-8">
         <h2 className="font-headline text-[2rem] sm:text-[2.5rem] md:text-[2.75rem] font-bold leading-[1.15] text-foreground mb-6 animate-fade-in-up">
-          Making Public Health{" "}<br className="hidden sm:inline" />Data Accessible
+          Ask Anything About{" "}<br className="hidden sm:inline" />Public Health Data
         </h2>
         <p className="font-subhead italic text-[1.0625rem] leading-[1.7] text-body max-w-[640px] mx-auto mb-10 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-          Ask questions in plain English about Medicaid claims, Medicare physician spending,
-          and population health surveys. AI translates your words into SQL and returns real
-          answers from federal datasets.
+          Just type a question. AI figures out which of our seven federal datasets to query,
+          generates SQL, and returns real answers — no need to pick a dataset first.
         </p>
 
         <div className="flex flex-col items-center gap-6 mb-10 animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
-          <Link href="/datasets" className="btn-primary inline-flex items-center justify-center gap-2 w-full sm:w-auto">
-            Ask Your First Question
+          <Link href="/analyze" className="btn-primary inline-flex items-center justify-center gap-2 w-full sm:w-auto">
+            Start Exploring
             <ArrowRight className="w-4 h-4" />
+          </Link>
+          <Link href="/datasets" className="text-[0.8125rem] text-muted hover:text-body transition-colors">
+            Or browse datasets &rarr;
           </Link>
           <QueryCounter />
         </div>
@@ -27,7 +29,7 @@ export function Hero() {
 
       {/* Stats row */}
       <div className="max-w-[1140px] mx-auto px-4 sm:px-8 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
-        <div className="grid grid-cols-2 sm:grid-cols-7 border-t-2 border-foreground border-b border-rule">
+        <div className="grid grid-cols-2 sm:grid-cols-7 border-t-2 border-foreground sm:border-b sm:border-rule">
           <div className="stat-cell">
             <div className="font-headline text-[1.75rem] sm:text-[2.375rem] font-bold text-foreground leading-[1.1] tracking-tight">227M</div>
             <div className="text-[0.8125rem] font-semibold tracking-[0.04em] uppercase text-body mt-1">Spending Records</div>

@@ -6,21 +6,21 @@ const steps = [
     icon: MessageSquare,
     title: "Ask a Question",
     description:
-      "Type a question in plain English about any dataset. No SQL knowledge required — just ask what you want to know about Medicaid spending, Medicare services, or population health trends.",
+      "Type a question in plain English — no need to pick a dataset. AI automatically identifies which of the seven datasets to query, including cross-dataset questions that span multiple sources.",
   },
   {
     number: "02",
     icon: Layers,
     title: "AI Generates SQL",
     description:
-      "Claude translates your question into a precise DuckDB query and executes it against raw federal data. The generated SQL is shown so you can verify exactly what was queried.",
+      "Claude identifies the right dataset, builds an analysis plan, and generates precise DuckDB SQL — including cross-dataset JOINs when your question spans multiple sources.",
   },
   {
     number: "03",
     icon: BarChart3,
     title: "See Results",
     description:
-      "View tables, charts, and AI-generated insights from your query. Export results to CSV, refine with follow-up questions, or explore the data from a different angle.",
+      "View tables, charts, and AI-generated insights from your query. Cross-dataset results are synthesized into a single narrative. Export to CSV or refine with follow-ups.",
   },
 ];
 
