@@ -16,6 +16,16 @@ function isYearOrIdColumn(colName: string): boolean {
   return /^year$|_year$|^month$|_month$|^date$|_date$|npi|code|_id$|^id$|zip/.test(lower);
 }
 
+function isCountColumn(colName: string): boolean {
+  const lower = colName.toLowerCase();
+  return /discharge|claims|srvcs|services|beneficiar|benes|fills|supply|_cnt|_count|respondent|population|member|participant|_n$|^n_|^tot_benes|^tot_srvcs|^tot_clms|^tot_dschrgs/.test(lower);
+}
+
+function isDollarColumn(colName: string): boolean {
+  const lower = colName.toLowerCase();
+  return /paid|spending|cost|amount|payment|charge|price|pymt|chrg|drug_cst/.test(lower);
+}
+
 function isDecimalColumn(colName: string): boolean {
   const lower = colName.toLowerCase();
   return /avg|mean|average|rate|pct|percent|prevalence|ratio|proportion|per_/.test(lower);
@@ -27,7 +37,8 @@ function formatCell(value: unknown, colName?: string): string {
   if (dateFormatted) return dateFormatted;
   if (typeof value === "number") {
     if (colName && isYearOrIdColumn(colName)) return String(value);
-    if (colName && /paid|spending|cost|amount|payment|charge|price/i.test(colName)) {
+    if (colName && isCountColumn(colName)) return Math.round(value).toLocaleString();
+    if (colName && isDollarColumn(colName)) {
       return "$" + Math.round(value).toLocaleString();
     }
     if (colName && isDecimalColumn(colName)) {

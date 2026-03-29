@@ -38,9 +38,14 @@ const COLORS = [
   "#C2410C",
 ];
 
+function isCountColumn(colName: string): boolean {
+  const lower = colName.toLowerCase();
+  return /discharge|claims|srvcs|services|beneficiar|benes|fills|supply|_cnt|_count|respondent|population|member|participant|_n$|^n_|^tot_benes|^tot_srvcs|^tot_clms|^tot_dschrgs/.test(lower);
+}
+
 function isDollarColumn(colName: string): boolean {
   const lower = colName.toLowerCase();
-  return /paid|spending|cost|amount|payment|charge|price/.test(lower);
+  return /paid|spending|cost|amount|payment|charge|price|pymt|chrg|drug_cst/.test(lower);
 }
 
 function isDecimalColumn(colName: string): boolean {
@@ -50,7 +55,8 @@ function isDecimalColumn(colName: string): boolean {
 
 function formatValue(value: unknown, colName?: string): string {
   if (typeof value === "number") {
-    const dollar = colName ? isDollarColumn(colName) : false;
+    const count = colName ? isCountColumn(colName) : false;
+    const dollar = colName ? !count && isDollarColumn(colName) : false;
     const decimal = colName ? isDecimalColumn(colName) : false;
     const prefix = dollar ? "$" : "";
     if (Math.abs(value) >= 1e9) return `${prefix}${(value / 1e9).toFixed(1)}B`;
