@@ -8,11 +8,12 @@ export function Hero() {
     <section className="text-center py-12 sm:py-16">
       <div className="max-w-[820px] mx-auto px-4 sm:px-8">
         <h2 className="font-headline text-[2rem] sm:text-[2.5rem] md:text-[2.75rem] font-bold leading-[1.15] text-foreground mb-6 animate-fade-in-up">
-          Ask Anything About{" "}<br className="hidden sm:inline" />Public Health Data
+          Making Public Health{" "}<br className="hidden sm:inline" />Data Accessible
         </h2>
         <p className="font-subhead italic text-[1.0625rem] leading-[1.7] text-body max-w-[640px] mx-auto mb-10 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-          Just type a question. AI figures out which of our seven federal datasets to query,
-          generates SQL, and returns real answers — no need to pick a dataset first.
+          Ask questions in plain English about Medicaid claims, Medicare physician spending,
+          and population health surveys. AI translates your words into SQL and returns real
+          answers from federal datasets.
         </p>
 
         <div className="flex flex-col items-center gap-6 mb-10 animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
