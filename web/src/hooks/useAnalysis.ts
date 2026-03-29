@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef } from "react";
 import { saveAnalysis, type StoredAnalysis } from "@/lib/queryStore";
+import type { ConceptExtraction, DatasetSelection } from "@/lib/datasetRouter";
 
 const MAX_STEPS = 5; // step 0 = plan, steps 1-4 = SQL queries
 
@@ -19,7 +20,7 @@ export interface AnalysisStep {
   error: string | null;
 }
 
-export type AnalysisStatus = "idle" | "planning" | "running" | "complete" | "error" | "cancelled";
+export type AnalysisStatus = "idle" | "routing" | "planning" | "running" | "complete" | "error" | "cancelled" | "clarifying";
 
 interface AnalysisState {
   sessionId: string | null;
@@ -31,6 +32,11 @@ interface AnalysisState {
   summary: string | null;
   status: AnalysisStatus;
   error: string | null;
+  // Unified pipeline fields
+  conceptExtraction: ConceptExtraction | null;
+  datasetSelection: DatasetSelection | null;
+  detectedDatasets: string[] | null;
+  clarification: { question: string; options: string[] } | null;
 }
 
 interface CompletedStep {
@@ -59,6 +65,9 @@ export interface PriorContext {
 export function useAnalysis() {
   const abortRef = useRef<AbortController | null>(null);
   const planRef = useRef<string[] | null>(null);
+  // Store resolved datasets for passing to subsequent API calls
+  const resolvedDatasetsRef = useRef<string[] | null>(null);
+  const joinStrategyRef = useRef<string | null>(null);
 
   const [state, setState] = useState<AnalysisState>({
     sessionId: null,
@@ -70,7 +79,352 @@ export function useAnalysis() {
     summary: null,
     status: "idle",
     error: null,
+    conceptExtraction: null,
+    datasetSelection: null,
+    detectedDatasets: null,
+    clarification: null,
   });
+
+  const runAnalysisPipeline = useCallback(
+    async (
+      question: string,
+      sessionId: string,
+      abortController: AbortController,
+      dataset: string,
+      years: number[] | null,
+      priorContext: PriorContext | null,
+      clarificationAnswer?: string,
+    ) => {
+      const completedSteps: CompletedStep[] = [];
+      const isAutoMode = dataset === "auto";
+
+      // --- Routing steps (auto mode only) ---
+      if (isAutoMode) {
+        // Step -2: Concept extraction
+        setState((prev) => ({ ...prev, status: "routing" }));
+
+        const conceptResponse = await fetch("/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            question,
+            dataset: "auto",
+            sessionId,
+            stepIndex: -2,
+          }),
+          signal: abortController.signal,
+        });
+
+        if (!conceptResponse.ok) {
+          const errData = await conceptResponse.json().catch(() => ({}));
+          throw new Error(errData.error || `Concept extraction failed: ${conceptResponse.status}`);
+        }
+
+        const conceptData = await conceptResponse.json();
+        if (abortController.signal.aborted) {
+          setState((prev) => ({ ...prev, status: "cancelled" }));
+          return;
+        }
+
+        setState((prev) => ({
+          ...prev,
+          conceptExtraction: conceptData.conceptExtraction,
+        }));
+
+        // Step -1: Dataset selection
+        const selectionResponse = await fetch("/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            question,
+            dataset: "auto",
+            sessionId,
+            stepIndex: -1,
+            ...(clarificationAnswer ? { clarificationAnswer } : {}),
+          }),
+          signal: abortController.signal,
+        });
+
+        if (!selectionResponse.ok) {
+          const errData = await selectionResponse.json().catch(() => ({}));
+          throw new Error(errData.error || `Dataset selection failed: ${selectionResponse.status}`);
+        }
+
+        const selectionData = await selectionResponse.json();
+        if (abortController.signal.aborted) {
+          setState((prev) => ({ ...prev, status: "cancelled" }));
+          return;
+        }
+
+        setState((prev) => ({
+          ...prev,
+          datasetSelection: selectionData.datasetSelection,
+        }));
+
+        // Check if clarification is needed
+        if (selectionData.clarification && !clarificationAnswer) {
+          setState((prev) => ({
+            ...prev,
+            status: "clarifying",
+            clarification: selectionData.clarification,
+            detectedDatasets: selectionData.datasetSelection?.datasets || null,
+          }));
+          return; // Stop here; user must respond
+        }
+
+        // Store resolved datasets
+        const resolved = selectionData.datasetSelection?.datasets || ["medicaid"];
+        resolvedDatasetsRef.current = resolved;
+        joinStrategyRef.current = selectionData.datasetSelection?.joinStrategy || "none";
+
+        setState((prev) => ({
+          ...prev,
+          detectedDatasets: resolved,
+          status: "planning",
+        }));
+      }
+
+      // --- Analysis steps (0 through MAX_STEPS-1) ---
+      for (let stepIndex = 0; stepIndex < MAX_STEPS; stepIndex++) {
+        if (abortController.signal.aborted) {
+          setState((prev) => ({ ...prev, status: "cancelled" }));
+          return;
+        }
+
+        // Step 0 is plan-only — don't push a placeholder step card
+        if (stepIndex === 0) {
+          // Keep status as "planning" — no step card created
+        } else {
+          // Push placeholder step card for SQL steps
+          const planTitle = planRef.current?.[stepIndex - 1];
+          const placeholderTitle = planTitle ? planTitle.split(":")[0] : "";
+          setState((prev) => ({
+            ...prev,
+            status: "running",
+            steps: [
+              ...prev.steps,
+              {
+                stepIndex,
+                title: placeholderTitle,
+                sql: null,
+                chartType: "table",
+                columns: [],
+                rows: [],
+                insight: null,
+                status: "generating_sql",
+                error: null,
+              },
+            ],
+          }));
+        }
+
+        // Build request body
+        const requestBody: Record<string, unknown> = {
+          question,
+          years: years ?? null,
+          dataset: isAutoMode ? "auto" : dataset,
+          sessionId,
+          stepIndex,
+          previousSteps: completedSteps,
+          ...(stepIndex === 0 && priorContext ? { priorContext } : {}),
+        };
+
+        // Include resolved datasets for auto mode (step 0+)
+        if (isAutoMode && resolvedDatasetsRef.current) {
+          requestBody.resolvedDatasets = resolvedDatasetsRef.current;
+          requestBody.joinStrategy = joinStrategyRef.current;
+        }
+
+        // Call API
+        const apiResponse = await fetch("/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestBody),
+          signal: abortController.signal,
+        });
+
+        if (!apiResponse.ok) {
+          const errData = await apiResponse.json().catch(() => ({}));
+          throw new Error(errData.error || `API error: ${apiResponse.status}`);
+        }
+
+        const data = await apiResponse.json();
+
+        if (abortController.signal.aborted) {
+          setState((prev) => ({ ...prev, status: "cancelled" }));
+          return;
+        }
+
+        // Step 0: plan-only response — store plan and continue to step 1
+        if (stepIndex === 0) {
+          if (data.plan) {
+            planRef.current = data.plan;
+            setState((prev) => ({
+              ...prev,
+              plan: data.plan,
+              planReasoning: data.reasoning || null,
+              complexity: data.complexity || null,
+            }));
+          }
+          completedSteps.push({
+            stepIndex: 0,
+            title: "Analysis Plan",
+            sql: null,
+            chartType: "table",
+            columns: [],
+            rows: [],
+            resultSummary: null,
+            insight: data.reasoning || null,
+            error: null,
+          });
+          continue;
+        }
+
+        // Handle revised plan from later steps
+        if (data.plan && stepIndex > 1) {
+          planRef.current = data.plan;
+          setState((prev) => ({ ...prev, plan: data.plan }));
+        }
+
+        const arrayIndex = stepIndex - 1;
+
+        // If a step has cannotAnswer, treat it as completed with the explanation
+        if (data.step?.cannotAnswer) {
+          setState((prev) => ({
+            ...prev,
+            steps: prev.steps.map((s, i) =>
+              i === arrayIndex
+                ? { ...s, title: data.step.title || "Cannot answer", sql: null, status: "complete" as const, insight: data.step.cannotAnswer }
+                : s
+            ),
+            ...(data.done ? { summary: data.summary || data.step.cannotAnswer, status: "complete" as const } : {}),
+          }));
+
+          completedSteps.push({
+            stepIndex,
+            title: data.step.title || "Cannot answer",
+            sql: null,
+            chartType: "table",
+            columns: [],
+            rows: [],
+            resultSummary: null,
+            insight: data.step.cannotAnswer,
+            error: null,
+          });
+
+          if (data.done) {
+            await saveToStore({
+              sessionId,
+              question,
+              plan: planRef.current || data.plan || null,
+              steps: completedSteps,
+              summary: data.summary || data.step.cannotAnswer,
+              dataset,
+            });
+            return;
+          }
+          continue;
+        }
+
+        // If done with just a summary (no more SQL)
+        if (data.done && !data.step?.sql) {
+          setState((prev) => ({
+            ...prev,
+            summary: data.summary || null,
+            status: "complete",
+            steps: prev.steps.slice(0, -1),
+          }));
+
+          await saveToStore({
+            sessionId,
+            question,
+            plan: planRef.current || data.plan || null,
+            steps: completedSteps,
+            summary: data.summary,
+            dataset,
+          });
+          return;
+        }
+
+        if (!data.step) {
+          throw new Error("API returned no step data.");
+        }
+
+        const step = data.step;
+        const stepColumns: string[] = step.columns || [];
+        const stepRows: unknown[][] = step.rows || [];
+        const stepError: string | null = step.error || null;
+
+        // Update step with results from server
+        setState((prev) => ({
+          ...prev,
+          steps: prev.steps.map((s, i) =>
+            i === arrayIndex
+              ? {
+                  ...s,
+                  stepIndex,
+                  title: step.title || `Step ${stepIndex}`,
+                  sql: step.sql,
+                  chartType: step.chartType || "table",
+                  columns: stepColumns,
+                  rows: stepRows,
+                  status: stepError ? "error" as const : "complete" as const,
+                  error: stepError,
+                  insight: step.insight || null,
+                }
+              : s
+          ),
+        }));
+
+        completedSteps.push({
+          stepIndex,
+          title: step.title || `Step ${stepIndex}`,
+          sql: step.sql,
+          chartType: step.chartType || "table",
+          columns: stepColumns,
+          rows: stepRows,
+          resultSummary: step.resultSummary || null,
+          insight: step.insight || null,
+          error: stepError,
+        });
+
+        if (data.done) {
+          setState((prev) => ({
+            ...prev,
+            summary: data.summary || null,
+            status: "complete",
+          }));
+
+          await saveToStore({
+            sessionId,
+            question,
+            plan: planRef.current || data.plan || null,
+            steps: completedSteps,
+            summary: data.summary,
+            dataset,
+          });
+          return;
+        }
+      }
+
+      // Reached max steps without "done"
+      setState((prev) => ({
+        ...prev,
+        status: "complete",
+        summary: prev.summary || "Analysis reached the maximum number of steps.",
+      }));
+
+      await saveToStore({
+        sessionId,
+        question,
+        plan: planRef.current,
+        steps: completedSteps,
+        summary: "Analysis reached the maximum number of steps.",
+        dataset,
+      });
+    },
+    []
+  );
 
   const startAnalysis = useCallback(
     async (question: string, years?: number[] | null, priorContext?: PriorContext | null, dataset: string = "medicaid") => {
@@ -85,6 +439,8 @@ export function useAnalysis() {
 
       const sessionId = crypto.randomUUID();
       planRef.current = null;
+      resolvedDatasetsRef.current = null;
+      joinStrategyRef.current = null;
 
       setState({
         sessionId,
@@ -94,247 +450,23 @@ export function useAnalysis() {
         complexity: null,
         steps: [],
         summary: null,
-        status: "planning",
+        status: dataset === "auto" ? "routing" : "planning",
         error: null,
+        conceptExtraction: null,
+        datasetSelection: null,
+        detectedDatasets: null,
+        clarification: null,
       });
 
       try {
-        const completedSteps: CompletedStep[] = [];
-
-        for (let stepIndex = 0; stepIndex < MAX_STEPS; stepIndex++) {
-          if (abortController.signal.aborted) {
-            setState((prev) => ({ ...prev, status: "cancelled" }));
-            return;
-          }
-
-          // Step 0 is plan-only — don't push a placeholder step card
-          if (stepIndex === 0) {
-            // Keep status as "planning" — no step card created
-          } else {
-            // Push placeholder step card for SQL steps
-            // Use plan title if available (plan[i] maps to stepIndex i+1)
-            const planTitle = planRef.current?.[stepIndex - 1];
-            // Extract just the title part before the colon (plan format is "Title: Purpose")
-            const placeholderTitle = planTitle ? planTitle.split(":")[0] : "";
-            setState((prev) => ({
-              ...prev,
-              status: "running",
-              steps: [
-                ...prev.steps,
-                {
-                  stepIndex,
-                  title: placeholderTitle,
-                  sql: null,
-                  chartType: "table",
-                  columns: [],
-                  rows: [],
-                  insight: null,
-                  status: "generating_sql",
-                  error: null,
-                },
-              ],
-            }));
-          }
-
-          // Call API
-          const apiResponse = await fetch("/api/analyze", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              question,
-              years: years ?? null,
-              dataset,
-              sessionId,
-              stepIndex,
-              previousSteps: completedSteps,
-              ...(stepIndex === 0 && priorContext ? { priorContext } : {}),
-            }),
-            signal: abortController.signal,
-          });
-
-          if (!apiResponse.ok) {
-            const errData = await apiResponse.json().catch(() => ({}));
-            throw new Error(errData.error || `API error: ${apiResponse.status}`);
-          }
-
-          const data = await apiResponse.json();
-
-          if (abortController.signal.aborted) {
-            setState((prev) => ({ ...prev, status: "cancelled" }));
-            return;
-          }
-
-          // Step 0: plan-only response — store plan and continue to step 1
-          if (stepIndex === 0) {
-            if (data.plan) {
-              planRef.current = data.plan;
-              setState((prev) => ({
-                ...prev,
-                plan: data.plan,
-                planReasoning: data.reasoning || null,
-                complexity: data.complexity || null,
-              }));
-            }
-            // Record in completedSteps for context, then continue to step 1
-            completedSteps.push({
-              stepIndex: 0,
-              title: "Analysis Plan",
-              sql: null,
-              chartType: "table",
-              columns: [],
-              rows: [],
-              resultSummary: null,
-              insight: data.reasoning || null,
-              error: null,
-            });
-            continue;
-          }
-
-          // Handle revised plan from later steps
-          if (data.plan && stepIndex > 1) {
-            planRef.current = data.plan;
-            setState((prev) => ({ ...prev, plan: data.plan }));
-          }
-
-          // Find the step's array index (step 1 = index 0, step 2 = index 1, etc.)
-          const arrayIndex = stepIndex - 1;
-
-          // If a step has cannotAnswer, treat it as completed with the explanation
-          if (data.step?.cannotAnswer) {
-            setState((prev) => ({
-              ...prev,
-              steps: prev.steps.map((s, i) =>
-                i === arrayIndex
-                  ? { ...s, title: data.step.title || "Cannot answer", sql: null, status: "complete" as const, insight: data.step.cannotAnswer }
-                  : s
-              ),
-              ...(data.done ? { summary: data.summary || data.step.cannotAnswer, status: "complete" as const } : {}),
-            }));
-
-            completedSteps.push({
-              stepIndex,
-              title: data.step.title || "Cannot answer",
-              sql: null,
-              chartType: "table",
-              columns: [],
-              rows: [],
-              resultSummary: null,
-              insight: data.step.cannotAnswer,
-              error: null,
-            });
-
-            if (data.done) {
-              await saveToStore({
-                sessionId,
-                question,
-                plan: planRef.current || data.plan || null,
-                steps: completedSteps,
-                summary: data.summary || data.step.cannotAnswer,
-                dataset,
-              });
-              return;
-            }
-            continue;
-          }
-
-          // If done with just a summary (no more SQL)
-          if (data.done && !data.step?.sql) {
-            setState((prev) => ({
-              ...prev,
-              summary: data.summary || null,
-              status: "complete",
-              // Remove the placeholder step we just pushed
-              steps: prev.steps.slice(0, -1),
-            }));
-
-            await saveToStore({
-              sessionId,
-              question,
-              plan: planRef.current || data.plan || null,
-              steps: completedSteps,
-              summary: data.summary,
-              dataset,
-            });
-            return;
-          }
-
-          if (!data.step) {
-            throw new Error("API returned no step data.");
-          }
-
-          const step = data.step;
-          const stepColumns: string[] = step.columns || [];
-          const stepRows: unknown[][] = step.rows || [];
-          const stepError: string | null = step.error || null;
-
-          // Update step with results from server
-          setState((prev) => ({
-            ...prev,
-            steps: prev.steps.map((s, i) =>
-              i === arrayIndex
-                ? {
-                    ...s,
-                    stepIndex,
-                    title: step.title || `Step ${stepIndex}`,
-                    sql: step.sql,
-                    chartType: step.chartType || "table",
-                    columns: stepColumns,
-                    rows: stepRows,
-                    status: stepError ? "error" as const : "complete" as const,
-                    error: stepError,
-                    insight: step.insight || null,
-                  }
-                : s
-            ),
-          }));
-
-          completedSteps.push({
-            stepIndex,
-            title: step.title || `Step ${stepIndex}`,
-            sql: step.sql,
-            chartType: step.chartType || "table",
-            columns: stepColumns,
-            rows: stepRows,
-            resultSummary: step.resultSummary || null,
-            insight: step.insight || null,
-            error: stepError,
-          });
-
-          // If done, set summary
-          if (data.done) {
-            setState((prev) => ({
-              ...prev,
-              summary: data.summary || null,
-              status: "complete",
-            }));
-
-            await saveToStore({
-              sessionId,
-              question,
-              plan: planRef.current || data.plan || null,
-              steps: completedSteps,
-              summary: data.summary,
-              dataset,
-            });
-            return;
-          }
-        }
-
-        // Reached max steps without "done"
-        setState((prev) => ({
-          ...prev,
-          status: "complete",
-          summary: prev.summary || "Analysis reached the maximum number of steps.",
-        }));
-
-        await saveToStore({
-          sessionId,
+        await runAnalysisPipeline(
           question,
-          plan: planRef.current,
-          steps: completedSteps,
-          summary: "Analysis reached the maximum number of steps.",
+          sessionId,
+          abortController,
           dataset,
-        });
+          years ?? null,
+          priorContext ?? null,
+        );
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") {
           setState((prev) => ({ ...prev, status: "cancelled" }));
@@ -347,7 +479,50 @@ export function useAnalysis() {
         }));
       }
     },
-    []
+    [runAnalysisPipeline]
+  );
+
+  const respondToClarification = useCallback(
+    async (answer: string) => {
+      const { sessionId, question } = state;
+      if (!sessionId || !question) return;
+
+      // Cancel any in-flight
+      if (abortRef.current) {
+        abortRef.current.abort();
+      }
+      const abortController = new AbortController();
+      abortRef.current = abortController;
+
+      setState((prev) => ({
+        ...prev,
+        status: "routing",
+        clarification: null,
+      }));
+
+      try {
+        await runAnalysisPipeline(
+          question,
+          sessionId,
+          abortController,
+          "auto",
+          null,
+          null,
+          answer,
+        );
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") {
+          setState((prev) => ({ ...prev, status: "cancelled" }));
+          return;
+        }
+        setState((prev) => ({
+          ...prev,
+          status: "error",
+          error: err instanceof Error ? err.message : "An unexpected error occurred",
+        }));
+      }
+    },
+    [state, runAnalysisPipeline]
   );
 
   const cancelAnalysis = useCallback(() => {
@@ -379,6 +554,10 @@ export function useAnalysis() {
       summary: analysis.summary,
       status: "complete",
       error: null,
+      conceptExtraction: null,
+      datasetSelection: null,
+      detectedDatasets: null,
+      clarification: null,
     });
   }, []);
 
@@ -387,6 +566,8 @@ export function useAnalysis() {
       abortRef.current.abort();
       abortRef.current = null;
     }
+    resolvedDatasetsRef.current = null;
+    joinStrategyRef.current = null;
     setState({
       sessionId: null,
       question: null,
@@ -397,12 +578,17 @@ export function useAnalysis() {
       summary: null,
       status: "idle",
       error: null,
+      conceptExtraction: null,
+      datasetSelection: null,
+      detectedDatasets: null,
+      clarification: null,
     });
   }, []);
 
   return {
     ...state,
     startAnalysis,
+    respondToClarification,
     cancelAnalysis,
     loadStoredAnalysis,
     clearAnalysis,

@@ -6,6 +6,8 @@ import { validateSQL } from "@/lib/sqlValidation";
 import { executeRemoteQuery } from "@/lib/railway";
 import { summarizeResults } from "@/lib/summarize";
 import { recordRequest, recordQuery, recordFeedItem } from "@/lib/metrics";
+import { extractConcepts, selectDatasets } from "@/lib/datasetRouter";
+import { buildCrossDatasetSchemaPrompt, buildCombinedDomainKnowledge, MULTI_DATASET_PREAMBLE, MULTI_DATASET_RULES } from "@/lib/crossDatasetSchema";
 
 export const maxDuration = 120;
 
@@ -39,6 +41,10 @@ interface AnalyzeRequest {
   stepIndex: number;
   previousSteps?: PreviousStep[];
   priorContext?: PriorContext | null;
+  // Unified pipeline fields (dataset="auto")
+  resolvedDatasets?: string[];
+  joinStrategy?: string;
+  clarificationAnswer?: string;
 }
 
 function buildConversationHistory(
@@ -231,7 +237,7 @@ async function generatePostExecutionInsight(
   try {
     const response = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
-      max_tokens: 256,
+      max_tokens: 512,
       temperature: 0,
       system: "You are a concise data analyst. Given SQL query results, write a 1-2 sentence insight citing specific numbers from the data. Be precise — only reference numbers that appear in the results. Do not speculate beyond the data shown. IMPORTANT: Never sum beneficiary counts across HCPCS codes or providers — beneficiaries overlap between codes/providers, so only report beneficiary counts per individual code or provider.",
       messages: [{
@@ -265,7 +271,7 @@ async function generatePostExecutionSummary(
 
     const response = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
-      max_tokens: 512,
+      max_tokens: 1024,
       temperature: 0,
       system: "You are a data analyst. Synthesize query results into a clear summary. Structure: (1) Direct answer with key numbers, (2) Most important findings, (3) Caveats or context. Only cite numbers from the actual results — never guess or extrapolate. IMPORTANT: Never sum beneficiary counts across HCPCS codes or providers — beneficiaries overlap between codes/providers, so only report beneficiary counts per individual code or provider.",
       messages: [{
@@ -311,8 +317,8 @@ export async function POST(request: NextRequest) {
     if (!question || typeof question !== "string") {
       return NextResponse.json({ error: "Question is required and must be a string." }, { status: 400 });
     }
-    if (question.length > 500) {
-      return NextResponse.json({ error: "Question must be under 500 characters." }, { status: 400 });
+    if (question.length > 1000) {
+      return NextResponse.json({ error: "Question must be under 1000 characters." }, { status: 400 });
     }
     if (question.trim().length === 0) {
       return NextResponse.json({ error: "Question cannot be empty." }, { status: 400 });
@@ -320,21 +326,85 @@ export async function POST(request: NextRequest) {
     if (!sessionId || typeof sessionId !== "string") {
       return NextResponse.json({ error: "sessionId is required." }, { status: 400 });
     }
-    if (typeof stepIndex !== "number" || stepIndex < 0 || stepIndex >= MAX_STEPS) {
-      return NextResponse.json({ error: `stepIndex must be 0-${MAX_STEPS - 1}.` }, { status: 400 });
+    if (typeof stepIndex !== "number" || stepIndex < -2 || stepIndex >= MAX_STEPS) {
+      return NextResponse.json({ error: `stepIndex must be -2 to ${MAX_STEPS - 1}.` }, { status: 400 });
     }
 
-    // Resolve dataset config
+    const isAutoMode = datasetKey === "auto";
+    const { resolvedDatasets, joinStrategy: resolvedJoinStrategy, clarificationAnswer } = body;
+
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ error: "Server configuration error." }, { status: 500 });
+    }
+
+    const client = new Anthropic({ apiKey });
+    let cumulativeInputTokens = 0;
+    let cumulativeOutputTokens = 0;
+
+    // --- Step -2: Concept Extraction (auto mode only) ---
+    if (isAutoMode && stepIndex === -2) {
+      try {
+        const concepts = await extractConcepts(client, question);
+        recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 200, totalMs: Date.now() - requestStart, cached: false, dataset: "auto" });
+        return NextResponse.json({
+          conceptExtraction: concepts,
+          stepIndex: -2,
+        }, { headers: { "X-RateLimit-Remaining": String(rateCheck.remaining) } });
+      } catch (err) {
+        console.error("[analyze] Concept extraction failed:", err);
+        return NextResponse.json({ error: "Failed to extract concepts from question." }, { status: 500 });
+      }
+    }
+
+    // --- Step -1: Dataset Selection (auto mode only) ---
+    if (isAutoMode && stepIndex === -1) {
+      try {
+        // Re-extract concepts (or could receive from client, but re-extracting is simpler)
+        const concepts = await extractConcepts(client, clarificationAnswer ? `${question} (User clarification: ${clarificationAnswer})` : question);
+        const selection = await selectDatasets(client, concepts, clarificationAnswer ? `${question} (User clarification: ${clarificationAnswer})` : question);
+
+        if (selection.ambiguous && !clarificationAnswer) {
+          recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 200, totalMs: Date.now() - requestStart, cached: false, dataset: "auto" });
+          return NextResponse.json({
+            datasetSelection: selection,
+            clarification: {
+              question: selection.clarificationQuestion,
+              options: selection.datasets,
+            },
+            stepIndex: -1,
+          }, { headers: { "X-RateLimit-Remaining": String(rateCheck.remaining) } });
+        }
+
+        recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 200, totalMs: Date.now() - requestStart, cached: false, dataset: "auto" });
+        return NextResponse.json({
+          datasetSelection: selection,
+          stepIndex: -1,
+        }, { headers: { "X-RateLimit-Remaining": String(rateCheck.remaining) } });
+      } catch (err) {
+        console.error("[analyze] Dataset selection failed:", err);
+        return NextResponse.json({ error: "Failed to select datasets." }, { status: 500 });
+      }
+    }
+
+    // --- Resolve dataset config (for step 0+) ---
+    // In auto mode with resolved datasets, use the first dataset's config for execution
+    // but build combined schemas for multi-dataset queries
+    const isMultiDataset = isAutoMode && resolvedDatasets && resolvedDatasets.length > 1;
+    const primaryDatasetKey = isAutoMode && resolvedDatasets?.length
+      ? resolvedDatasets[0]
+      : (datasetKey || "medicaid");
+
     let config;
     try {
-      config = getDataset(datasetKey || "medicaid");
+      config = getDataset(primaryDatasetKey);
     } catch {
       config = getDataset("medicaid");
     }
-    const selectedDataset = config.key;
+    const selectedDataset = isMultiDataset ? "auto" : config.key;
 
-    // Check if question is obviously outside dataset scope (only on first step)
-    if (stepIndex === 0 && config.checkDataScope) {
+    // Check if question is obviously outside dataset scope (only on first step, single-dataset)
+    if (stepIndex === 0 && !isMultiDataset && config.checkDataScope) {
       const scopeError = config.checkDataScope(question);
       if (scopeError) {
         recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 422, totalMs: Date.now() - requestStart, cached: false, dataset: selectedDataset });
@@ -346,9 +416,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Validate years if dataset supports year filtering
+    // Validate years if dataset supports year filtering (single-dataset only)
     let yearFilter: number[] | null = null;
-    if (config.yearFilter && Array.isArray(years) && years.length > 0) {
+    if (!isMultiDataset && config.yearFilter && Array.isArray(years) && years.length > 0) {
       const validYears = config.yearFilter.years;
       yearFilter = years
         .filter((y: unknown) => typeof y === "number" && validYears.includes(y))
@@ -356,13 +426,17 @@ export async function POST(request: NextRequest) {
       if (yearFilter.length === 0) yearFilter = null;
     }
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json({ error: "Server configuration error." }, { status: 500 });
-    }
+    // Build schema and domain knowledge
+    let schemaPrompt: string;
+    let domainKnowledge: string;
 
-    const client = new Anthropic({ apiKey });
-    const schemaPrompt = config.generateSchemaPrompt();
+    if (isMultiDataset && resolvedDatasets) {
+      schemaPrompt = buildCrossDatasetSchemaPrompt(resolvedDatasets);
+      domainKnowledge = `${MULTI_DATASET_PREAMBLE}\n\n${buildCombinedDomainKnowledge(resolvedDatasets)}\n\n${MULTI_DATASET_RULES}`;
+    } else {
+      schemaPrompt = config.generateSchemaPrompt();
+      domainKnowledge = config.domainKnowledge || "";
+    }
 
     let yearConstraint = "";
     if (yearFilter && config.buildYearConstraint) {
@@ -370,18 +444,16 @@ export async function POST(request: NextRequest) {
     }
 
     const remainingSteps = MAX_STEPS - stepIndex;
-    const domainKnowledge = config.domainKnowledge || "";
 
     const systemBlocks = buildSystemPrompt(schemaPrompt, yearConstraint, stepIndex, remainingSteps, domainKnowledge, stepIndex === 0 ? priorContext : null);
     const messages = buildConversationHistory(question, stepIndex, previousSteps);
 
-    let cumulativeInputTokens = 0;
-    let cumulativeOutputTokens = 0;
+    const maxTokens = isMultiDataset ? 8192 : 4096;
 
     const claudeStart = Date.now();
     const response = await client.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 4096,
+      max_tokens: maxTokens,
       temperature: 0,
       system: systemBlocks,
       messages,
@@ -439,6 +511,10 @@ export async function POST(request: NextRequest) {
         );
       }
       // Plan-only step — no SQL to execute, return immediately
+      if (isMultiDataset && resolvedDatasets) {
+        parsed.resolvedDatasets = resolvedDatasets;
+        parsed.joinStrategy = resolvedJoinStrategy;
+      }
       recordRequest({ timestamp: Date.now(), route: "/api/analyze", ip, status: 200, claudeMs, totalMs: Date.now() - requestStart, cached: false, inputTokens: cumulativeInputTokens, outputTokens: cumulativeOutputTokens, dataset: selectedDataset });
       return NextResponse.json(parsed, {
         headers: { "X-RateLimit-Remaining": String(rateCheck.remaining) },
@@ -474,10 +550,10 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: validation.error }, { status: 400 });
       }
 
-      // Execute SQL via Railway
+      // Execute SQL via Railway (use primary dataset config — all share same Railway URL)
       const railwayStart = Date.now();
       try {
-        const result = await executeRemoteQuery(sql, selectedDataset);
+        const result = await executeRemoteQuery(sql, config.key);
         railwayMs = Date.now() - railwayStart;
         parsed.step.columns = result.columns;
         parsed.step.rows = result.rows;
@@ -498,7 +574,7 @@ export async function POST(request: NextRequest) {
 
             const retryResponse = await client.messages.create({
               model: "claude-sonnet-4-6",
-              max_tokens: 4096,
+              max_tokens: maxTokens,
               temperature: 0,
               system: systemBlocks,
               messages: retryMessages,
@@ -526,7 +602,7 @@ export async function POST(request: NextRequest) {
                 }
                 const retryValidation = validateSQL(fixedSql);
                 if (retryValidation.valid) {
-                  const retryResult = await executeRemoteQuery(fixedSql, selectedDataset);
+                  const retryResult = await executeRemoteQuery(fixedSql, config.key);
                   railwayMs = Date.now() - railwayStart;
                   parsed.step.sql = fixedSql;
                   parsed.step.columns = retryResult.columns;
@@ -630,6 +706,12 @@ export async function POST(request: NextRequest) {
         },
         dataset: selectedDataset,
       });
+    }
+
+    // Include resolved datasets info for unified mode
+    if (isMultiDataset && resolvedDatasets) {
+      parsed.resolvedDatasets = resolvedDatasets;
+      parsed.joinStrategy = resolvedJoinStrategy;
     }
 
     return NextResponse.json(parsed, {

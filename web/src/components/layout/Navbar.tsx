@@ -109,6 +109,7 @@ export function Navbar() {
 
   const topLinks = [
     { href: "/", label: "Home", active: pathname === "/" },
+    { href: "/analyze", label: "Analyze", active: pathname === "/analyze" },
   ];
   const bottomLinks = [
     { href: "/blog", label: "Blog", active: pathname.startsWith("/blog") },
@@ -280,6 +281,17 @@ export function Navbar() {
                 )}
               >
                 Home
+              </Link>
+
+              <Link
+                href="/analyze"
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  "block px-3 py-2.5 rounded-sm text-sm font-semibold uppercase tracking-wider transition-colors",
+                  pathname === "/analyze" ? "text-accent bg-red-50" : "text-foreground hover:text-accent hover:bg-background"
+                )}
+              >
+                Analyze
               </Link>
 
               {/* Mobile datasets section */}
