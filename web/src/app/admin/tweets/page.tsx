@@ -37,6 +37,26 @@ interface TweetMetric {
   engagement_rate?: number;
 }
 
+interface AnalysisInsight {
+  category: string;
+  title: string;
+  detail: string;
+  examples: string[];
+}
+
+interface AnalysisRecommendation {
+  priority: "high" | "medium" | "low";
+  category: string;
+  action: string;
+  rationale: string;
+}
+
+interface AnalysisResult {
+  summary: string;
+  insights: AnalysisInsight[];
+  recommendations: AnalysisRecommendation[];
+}
+
 interface MetricsForm {
   tweet_id: string;
   impressions: string;
@@ -151,15 +171,15 @@ function mapCSVRow(row: Record<string, string>): Omit<CSVPreviewRow, "matched_id
   };
 
   return {
-    tweet_id: get(["Tweet id", "tweet id", "Tweet ID", "id"]),
-    tweet_text: get(["Tweet text", "tweet text", "Tweet Text", "text"]).slice(0, 500),
+    tweet_id: get(["Tweet id", "tweet id", "Tweet ID", "Post id", "post id", "id"]),
+    tweet_text: get(["Tweet text", "tweet text", "Tweet Text", "Post text", "post text", "text"]).slice(0, 500),
     impressions: parseInt(get(["impressions", "Impressions"])) || 0,
     likes: parseInt(get(["likes", "Likes"])) || 0,
-    retweets: parseInt(get(["retweets", "Retweets"])) || 0,
+    retweets: (parseInt(get(["retweets", "Retweets", "Reposts", "reposts", "Shares", "shares"])) || 0),
     replies: parseInt(get(["replies", "Replies"])) || 0,
     bookmarks: parseInt(get(["bookmarks", "Bookmarks"])) || 0,
     link_clicks: parseInt(get(["url clicks", "URL clicks", "Url clicks", "link clicks", "link_clicks", "permalink clicks"])) || 0,
-    profile_clicks: parseInt(get(["user profile clicks", "User profile clicks", "profile clicks", "profile_clicks"])) || 0,
+    profile_clicks: parseInt(get(["user profile clicks", "User profile clicks", "Profile visits", "profile visits", "profile clicks", "profile_clicks"])) || 0,
   };
 }
 
@@ -173,10 +193,14 @@ function TweetsPage() {
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState<string | null>(null);
   const [forms, setForms] = useState<Record<string, MetricsForm>>({});
-  const [tab, setTab] = useState<"entry" | "upload" | "dashboard">("entry");
+  const [tab, setTab] = useState<"entry" | "upload" | "dashboard" | "analyze">("entry");
   const [csvPreview, setCsvPreview] = useState<CSVPreviewRow[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<string | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [analysisTweetCount, setAnalysisTweetCount] = useState(0);
 
   const fetchData = useCallback(async () => {
     if (!key) {
@@ -456,6 +480,16 @@ function TweetsPage() {
         >
           Performance ({topTweets.length})
         </button>
+        <button
+          onClick={() => setTab("analyze")}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            tab === "analyze"
+              ? "bg-accent text-white"
+              : "bg-white/[0.05] text-muted hover:text-foreground"
+          }`}
+        >
+          Analyze
+        </button>
       </div>
 
       {/* Metrics Entry */}
@@ -720,6 +754,173 @@ function TweetsPage() {
                 </div>
               </div>
             </div>
+          )}
+        </div>
+      )}
+
+      {/* Analyze */}
+      {tab === "analyze" && (
+        <div className="space-y-4">
+          <div className="card p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-sm font-semibold text-foreground">
+                  AI Performance Analysis
+                </h2>
+                <p className="text-xs text-muted mt-1">
+                  Analyze tweet metrics to find patterns and get recommendations for the blog bot pipeline.
+                </p>
+              </div>
+              <button
+                onClick={async () => {
+                  if (!key) return;
+                  setAnalyzing(true);
+                  setAnalysisError(null);
+                  try {
+                    const res = await fetch(
+                      `/api/admin/tweets/analyze?key=${encodeURIComponent(key)}`,
+                      {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ tweets: topTweets }),
+                      }
+                    );
+                    if (!res.ok) {
+                      const err = await res.json().catch(() => ({}));
+                      setAnalysisError(
+                        (err as { error?: string }).error || "Analysis failed"
+                      );
+                    } else {
+                      const data = await res.json();
+                      setAnalysis(data.analysis);
+                      setAnalysisTweetCount(data.tweet_count || 0);
+                    }
+                  } catch {
+                    setAnalysisError("Analysis request failed");
+                  } finally {
+                    setAnalyzing(false);
+                  }
+                }}
+                disabled={analyzing || topTweets.length === 0}
+                className="px-4 py-2 bg-accent text-white rounded-lg text-sm font-medium hover:bg-accent/80 disabled:opacity-50 whitespace-nowrap"
+              >
+                {analyzing ? (
+                  <span className="flex items-center gap-2">
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    Analyzing...
+                  </span>
+                ) : (
+                  `Run Analysis (${topTweets.length} tweets)`
+                )}
+              </button>
+            </div>
+
+            {topTweets.length === 0 && (
+              <p className="text-xs text-muted">
+                No tweet metrics available. Upload metrics first in the other tabs.
+              </p>
+            )}
+
+            {analysisError && (
+              <p className="text-xs text-red-400 mt-2">{analysisError}</p>
+            )}
+          </div>
+
+          {analysis && (
+            <>
+              {/* Summary */}
+              <div className="card p-5">
+                <h3 className="text-sm font-semibold text-foreground mb-2">
+                  Summary
+                  <span className="text-xs text-muted font-normal ml-2">
+                    ({analysisTweetCount} tweets analyzed)
+                  </span>
+                </h3>
+                <p className="text-sm text-body leading-relaxed">
+                  {analysis.summary}
+                </p>
+              </div>
+
+              {/* Insights */}
+              <div className="card p-5">
+                <h3 className="text-sm font-semibold text-foreground mb-3">
+                  Insights
+                </h3>
+                <div className="space-y-4">
+                  {analysis.insights.map((insight, i) => (
+                    <div key={i} className="border-l-2 border-accent/40 pl-4">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-[10px] uppercase tracking-wider text-muted bg-white/[0.05] px-1.5 py-0.5 rounded">
+                          {insight.category.replace(/_/g, " ")}
+                        </span>
+                        <h4 className="text-sm font-medium text-foreground">
+                          {insight.title}
+                        </h4>
+                      </div>
+                      <p className="text-xs text-body leading-relaxed">
+                        {insight.detail}
+                      </p>
+                      {insight.examples && insight.examples.length > 0 && (
+                        <div className="mt-2 space-y-1">
+                          {insight.examples.map((ex, j) => (
+                            <p
+                              key={j}
+                              className="text-xs text-muted italic pl-3 border-l border-white/[0.06]"
+                            >
+                              &ldquo;{truncate(ex, 120)}&rdquo;
+                            </p>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Recommendations */}
+              <div className="card p-5">
+                <h3 className="text-sm font-semibold text-foreground mb-3">
+                  Recommendations
+                </h3>
+                <div className="space-y-3">
+                  {analysis.recommendations.map((rec, i) => (
+                    <div
+                      key={i}
+                      className="bg-white/[0.02] rounded-lg p-4 border border-white/[0.06]"
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-xs font-mono text-muted">
+                          {i + 1}.
+                        </span>
+                        <span
+                          className={`text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded ${
+                            rec.priority === "high"
+                              ? "bg-red-500/20 text-red-400"
+                              : rec.priority === "medium"
+                              ? "bg-yellow-500/20 text-yellow-400"
+                              : "bg-blue-500/20 text-blue-400"
+                          }`}
+                        >
+                          {rec.priority}
+                        </span>
+                        <span className="text-[10px] uppercase tracking-wider text-muted bg-white/[0.05] px-1.5 py-0.5 rounded">
+                          {rec.category.replace(/_/g, " ")}
+                        </span>
+                      </div>
+                      <p className="text-sm text-foreground font-medium mb-1">
+                        {rec.action}
+                      </p>
+                      <p className="text-xs text-muted leading-relaxed">
+                        {rec.rationale}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
           )}
         </div>
       )}
