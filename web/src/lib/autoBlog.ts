@@ -120,7 +120,7 @@ CRITICAL: Your analysisQuestions MUST be answerable using ONLY the columns liste
 ${schemaPrompt}
 
 Generate exactly 5 distinct blog post ideas. Each idea should have:
-- title: Pick ONE of these approaches: (1) A surprising question that challenges assumptions ("Are Rural Hospitals Actually More Expensive?"), (2) A declarative finding that stops scrolling ("The $4 Billion Procedure Nobody Talks About"), (3) A contradiction that demands explanation ("Medicare Spending Dropped, But Patients Got Sicker"). 50-70 chars. Never use colon-separated labels like "Topic: Subtitle".
+- title: Pick ONE of these approaches: (1) A declarative finding that stops scrolling ("The $4 Billion Procedure Nobody Talks About"), (2) A contradiction that demands explanation ("Medicare Spending Dropped, But Patients Got Sicker"), (3) An assertive claim with implied stakes ("Sleep Debt Is Stealing Years From Young Adults"). 50-70 chars. NEVER use a question as the title — questions get 4-8x fewer impressions than declarative statements. Never use colon-separated labels like "Topic: Subtitle".
 - description: 2-3 sentences structured as: (1) The surprising finding the data will reveal, (2) Why a healthcare analyst or journalist should care, (3) The tension or unanswered question that makes this worth reading.
 - provocativeAngle: One sentence describing the "so what" — the implication that makes a reader stop scrolling. This should be the interpretive lens for the article, not just a restatement of the data.
 - targetKeywords: array of 3-5 SEO keywords
@@ -162,7 +162,7 @@ ${existingTitles.map((t) => `- ${t}`).join("\n") || "(none yet)"}`;
     model: "claude-sonnet-4-6",
     max_tokens: 256,
     temperature: 0,
-    system: `You rank blog post ideas. Pick the single best idea from the list based on: (1) how compelling the title is, (2) whether the analysis questions will yield interesting data, (3) shareability. Return ONLY the zero-based index number of the best idea (e.g. "2"). No explanation.`,
+    system: `You rank blog post ideas. Pick the single best idea from the list based on: (1) personal health impact — topics about conditions, risks, or outcomes that affect individuals directly outperform system/industry analysis by 3-4x on social media, (2) how compelling and declarative the title is (reject any title phrased as a question), (3) whether the analysis questions will yield a specific surprising number, (4) shareability — would someone retweet this? Return ONLY the zero-based index number of the best idea (e.g. "2"). No explanation.`,
     messages: [
       {
         role: "user",
