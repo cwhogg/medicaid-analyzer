@@ -172,7 +172,7 @@ export async function extractConcepts(
   question: string,
 ): Promise<ConceptExtraction> {
   const response = await client.messages.create({
-    model: "claude-sonnet-4-20250514",
+    model: "claude-sonnet-4-6",
     max_tokens: 512,
     temperature: 0,
     system: CONCEPT_EXTRACTION_SYSTEM,
@@ -250,7 +250,7 @@ export async function selectDatasets(
   question: string,
 ): Promise<DatasetSelection> {
   const response = await client.messages.create({
-    model: "claude-sonnet-4-20250514",
+    model: "claude-sonnet-4-6",
     max_tokens: 512,
     temperature: 0,
     system: DATASET_SELECTION_SYSTEM,

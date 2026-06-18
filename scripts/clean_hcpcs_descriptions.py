@@ -14,7 +14,7 @@ import httpx
 
 # --- Config ---
 BATCH_SIZE = 100
-MODEL = "claude-sonnet-4-20250514"
+MODEL = "claude-sonnet-4-6"
 MAX_TOKENS = 4096
 PARQUET_LOOKUP = "web/public/data/hcpcs_lookup.parquet"
 PARQUET_SUMMARY = "web/public/data/hcpcs_summary.parquet"
