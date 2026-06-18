@@ -236,7 +236,7 @@ async function generatePostExecutionInsight(
 ): Promise<{ text: string; inputTokens: number; outputTokens: number } | null> {
   try {
     const response = await client.messages.create({
-      model: "claude-haiku-4-5-20251001",
+      model: "claude-haiku-4-5",
       max_tokens: 512,
       temperature: 0,
       system: "You are a concise data analyst. Given SQL query results, write a 1-2 sentence insight citing specific numbers from the data. Be precise — only reference numbers that appear in the results. Do not speculate beyond the data shown. IMPORTANT: Never sum beneficiary counts across HCPCS codes or providers — beneficiaries overlap between codes/providers, so only report beneficiary counts per individual code or provider.",
@@ -270,7 +270,7 @@ async function generatePostExecutionSummary(
     ).join("\n\n");
 
     const response = await client.messages.create({
-      model: "claude-haiku-4-5-20251001",
+      model: "claude-haiku-4-5",
       max_tokens: 1024,
       temperature: 0,
       system: "You are a data analyst. Synthesize query results into a clear summary. Structure: (1) Direct answer with key numbers, (2) Most important findings, (3) Caveats or context. Only cite numbers from the actual results — never guess or extrapolate. IMPORTANT: Never sum beneficiary counts across HCPCS codes or providers — beneficiaries overlap between codes/providers, so only report beneficiary counts per individual code or provider.",

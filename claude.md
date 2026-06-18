@@ -141,7 +141,7 @@ Build GlassCard, Navbar, Footer, formatters. Final polish pass. **Verification**
 - Pin all dependency versions in `package.json`. Do not use `latest` or `*` version ranges.
 
 ### API Cost Control
-- Use `claude-sonnet-4-20250514` (not Opus) for the NL-to-SQL API route.
+- Use `claude-sonnet-4-6` (not Opus) for the NL-to-SQL API route.
 - Set `max_tokens: 1024` on Claude API calls — SQL responses do not need more.
 - Temperature must be `0` for deterministic SQL generation.
 
