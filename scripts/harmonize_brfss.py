@@ -21,7 +21,7 @@ import pyreadstat
 
 # ── Configuration ──────────────────────────────────────────────────────
 
-YEARS = [2014, 2015, 2016, 2017, 2018, 2019, 2020, 2023, 2024]
+YEARS = [2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
 DOWNLOAD_DIR = Path("data/brfss_xpt")
 OUTPUT_PATH = Path("data/brfss_harmonized.parquet")
 BRFSS_2023_PATH = Path("/Users/cwhogg/Downloads/brfss_2023.parquet")
@@ -49,7 +49,7 @@ COLUMN_RENAMES: dict[str, list[str]] = {
     "_AGE80": [],
     "_AGE_G": [],
     "_IMPRACE": [],
-    "_RACEGR3": [],
+    "_RACEGR3": ["_RACEGR4"],  # _RACEGR4 in 2022 (same codes)
     "EDUCA": [],
     "_EDUCAG": [],
     "INCOME3": [],  # 2023 only (11 categories) — older years have INCOME2
@@ -81,7 +81,7 @@ COLUMN_RENAMES: dict[str, list[str]] = {
     "CHCCOPD3": [],
     "ADDEPEV3": [],
     "CHCKDNY2": [],
-    "HAVARTH4": ["HAVARTH3"],
+    "HAVARTH4": ["HAVARTH5", "HAVARTH3"],  # HAVARTH5 in 2021
     "CHCSCNC1": ["CHCSCNCR"],
     "CHCOCNC1": ["CHCOCNCR"],
     "_MICHD": [],

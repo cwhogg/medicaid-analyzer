@@ -121,12 +121,12 @@ export const DATASET_METAS: DatasetMeta[] = [
     subtitle: "CDC Behavioral Risk Factor Survey",
     icon: BarChart3,
     stats: [
-      { label: "Respondents", value: "~4M" },
-      { label: "Years", value: "2014-2020, 2023-2024" },
+      { label: "Respondents", value: "~4.9M" },
+      { label: "Years", value: "2014-2024" },
       { label: "Columns", value: "99" },
     ],
     description:
-      "Explore population health trends, risk factors, chronic conditions, SDOH, ACEs, and demographics across all 50 states and DC over 9 survey years.",
+      "Explore population health trends, risk factors, chronic conditions, SDOH, ACEs, and demographics across all 50 states and DC over 11 survey years.",
     sampleAnalyses: [
       "Which states saw the biggest rise in obesity since 2014?",
       "How does childhood adversity (ACEs) correlate with depression?",

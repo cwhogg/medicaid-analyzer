@@ -87,8 +87,8 @@ Table: medicare_partd
   data_year (INTEGER)
 Key concepts: drug spending, prescriptions, brand vs generic, opioids, insulin, GLP-1 drugs, specialty drugs, prescribing patterns.
 
-═══ 5. brfss ═══ CDC BRFSS population health survey. 4M respondents. Years: 2014–2020, 2023–2024 (gap: no 2021-2022).
-Table: brfss (99 columns)
+═══ 5. brfss ═══ CDC BRFSS population health survey. 4.9M respondents. Years: 2014–2024.
+Table: brfss (key columns below; many more raw CDC variables exist)
   survey_year (INTEGER), _STATE (FIPS code)
   Demographics: SEXVAR (1=M,2=F), _AGEG5YR (age groups), _IMPRACE (race/ethnicity), EDUCA (education)
   Health status: GENHLTH (1=Excellent..5=Poor), PHYSHLTH (unhealthy days), MENTHLTH (unhealthy days)

@@ -2,7 +2,7 @@ import { registerDataset } from "@/lib/datasets";
 import { generateBRFSSSchemaPrompt } from "@/lib/brfssSchemas";
 import { brfssVariableGroups } from "@/lib/variableMeta";
 
-const BRFSS_YEARS = [2024, 2023, 2020, 2019, 2018, 2017, 2016, 2015, 2014];
+const BRFSS_YEARS = [2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014];
 
 function buildYearConstraint(years: number[]): string {
   if (years.length === 1) {
@@ -21,7 +21,7 @@ registerDataset({
   envApiKeyKey: "RAILWAY_API_KEY",
 
   generateSchemaPrompt: generateBRFSSSchemaPrompt,
-  systemPromptPreamble: "You are a SQL expert that translates natural language questions into DuckDB SQL for BRFSS (Behavioral Risk Factor Surveillance System) 2014-2024 survey data spanning ~4 million respondents across 9 survey years.",
+  systemPromptPreamble: "You are a SQL expert that translates natural language questions into DuckDB SQL for BRFSS (Behavioral Risk Factor Surveillance System) 2014-2024 survey data spanning ~4.9 million respondents across 11 survey years (2014-2024).",
   systemPromptRules: `Rules:
 - Return ONLY the SQL query, nothing else. No markdown, no explanation, no code fences.
 - EXCEPTION: If the question cannot be answered from available columns, return exactly: CANNOT_ANSWER: followed by a clear explanation.
@@ -34,9 +34,9 @@ registerDataset({
 - Prefer CDC calculated variables (prefixed with _) over raw survey variables when available.
 - For days variables (PHYSHLTH, MENTHLTH, POORHLTH), treat 88 as 0 days, exclude 77 and 99.
 - Include sample_n (unweighted count of valid respondents) alongside weighted estimates for context.
-- For trend queries, GROUP BY survey_year and ORDER BY survey_year. Note: 2021-2022 are not in the data.
-- For income analysis: use INCOME2/_INCOMG for 2014-2020, INCOME3/_INCOMG1 for 2023-2024. Do NOT mix across eras.
-- SDOH, ACE, marijuana method-of-use, and emotional support variables are 2024 only. Filter to survey_year = 2024 when querying these.`,
+- For trend queries, GROUP BY survey_year and ORDER BY survey_year. All years 2014-2024 are present, but many variables are only asked in some years.
+- For income analysis: use INCOME2/_INCOMG for 2014-2020, INCOME3/_INCOMG1 for 2021-2024. Do NOT mix across eras.
+- SDOH, ACE, marijuana method-of-use, and emotional support variables are rotating optional modules (see schema for years). Default to survey_year = 2024 unless the user asks for another year; for trends, note that participating states change year to year.`,
   retrySystemPromptRules: `Rules:
 - Return ONLY the SQL query, nothing else. No markdown, no explanation, no code fences.
 - Always include a LIMIT clause (max 10000).
@@ -44,7 +44,7 @@ registerDataset({
 - Use DuckDB SQL syntax.
 - Use _LLCPWT for weighted estimates.
 - Add readable labels via CASE WHEN for coded values.
-- For trends, GROUP BY survey_year. Note 2021-2022 gap.`,
+- For trends, GROUP BY survey_year.`,
 
   pageTitle: "Analyze Population Health",
   pageSubtitle: "Ask questions about BRFSS population health survey data (2014-2024) in natural language",
@@ -64,8 +64,8 @@ registerDataset({
   ],
 
   resultCaveat: {
-    title: "BRFSS survey data (2014-2020, 2023-2024)",
-    text: "Self-reported survey data weighted for population representativeness. 2021-2022 not included. New in 2024: SDOH, ACEs, marijuana use, emotional support modules. Use for directional insight, not causal claims.",
+    title: "BRFSS survey data (2014-2024)",
+    text: "Self-reported survey data weighted for population representativeness. Some variables are only asked in certain years; optional modules (SDOH, ACEs, marijuana, emotional support) cover different states each year. Use for directional insight, not causal claims.",
     borderColor: "border-sky-500/30",
     titleColor: "text-sky-300",
   },
@@ -86,20 +86,19 @@ registerDataset({
 
   domainKnowledge: `## BRFSS Domain Knowledge
 - BRFSS is the world's largest continuously conducted telephone health survey (CDC, annual since 1984)
-- This dataset spans 9 survey years: 2014-2020, 2023, and 2024 (~4M total respondents, ~400-490K per year)
-- 2021-2022 are excluded due to major variable renames at the 2021 boundary
+- This dataset spans 11 survey years: 2014-2024 (~4.9M total respondents, ~400-490K per year)
 - All 50 states + DC + territories are represented each year
 - Self-reported data: may underestimate stigmatized behaviors (smoking, drinking) and overestimate healthy behaviors (exercise)
 - Phone-based sample: may underrepresent populations without phone access
 - Survey weights (_LLCPWT) adjust for probability of selection and non-response — ALWAYS use for population estimates
 - Calculated variables (prefixed with _) are pre-cleaned by CDC and preferred over raw variables
-- Income variable caveat: INCOME2 (8 categories) is used in 2014-2020, INCOME3 (11 categories) is used in 2023-2024 — they are NOT compatible for cross-year comparison without rebinning
+- Income variable caveat: INCOME2 (8 categories) is used in 2014-2020, INCOME3 (11 categories) is used in 2021-2024 — they are NOT compatible for cross-year comparison without rebinning
 - Key health disparities: chronic conditions cluster by income, education, race; rural/urban gaps are significant
 - Mental health: MENTHLTH captures "frequent mental distress" (14+ days) as a key population health indicator
 - Obesity prevalence varies dramatically by state (20-40%) and has been trending upward over the decade
 - Smoking prevalence has been declining steadily over this period
 - BRFSS underestimates some conditions compared to clinical data (e.g., diabetes prevalence is ~12% in BRFSS vs ~14% clinically)
-- 2024 new modules: Social Determinants of Health (SDOH), Adverse Childhood Experiences (ACEs), Marijuana Use methods, Emotional Support — these are 2024-only
+- Optional modules: Social Determinants of Health (SDOH, 2022+), Adverse Childhood Experiences (ACEs, 2019+), Marijuana Use methods (2022+), Emotional Support (2014-2017, 2022+)
 - Optional modules (ACEs, marijuana, firearms, sexual orientation) have limited state coverage — note this in results
-- Some columns are only available in certain years (e.g., CHCCOPD3 from 2019+, PRIMINS1 in 2023-2024, SDOH/ACEs in 2024 only) — see schema for availability notes`,
+- Some columns are only available in certain years (e.g., CHCCOPD3 from 2021+, PRIMINS1 in 2023-2024, SDOH from 2022+) — see schema for availability notes`,
 });
