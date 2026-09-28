@@ -1,0 +1,5412 @@
+{
+ "SDDSRVYR": {
+  "label": "Data release cycle",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "RIDSTATR": {
+  "label": "Interview/Examination status",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "RIAGENDR": {
+  "label": "Gender",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "RIDAGEYR": {
+  "label": "Age in years at screening",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "RIDAGEMN": {
+  "label": "Age in months at screening - 0 to 24 mos",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "RIDRETH1": {
+  "label": "Race/Hispanic origin",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "RIDRETH3": {
+  "label": "Race/Hispanic origin w/ NH Asian",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "RIDEXMON": {
+  "label": "Six-month time period",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "RIDEXAGM": {
+  "label": "Age in months at exam - 0 to 19 years",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "DMQMILIZ": {
+  "label": "Served active duty in US Armed Forces",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "DMDBORN4": {
+  "label": "Country of birth",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "DMDYRUSR": {
+  "label": "Length of time in US",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "DMDEDUC2": {
+  "label": "Education level - Adults 20+",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "DMDMARTZ": {
+  "label": "Marital status",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "RIDEXPRG": {
+  "label": "Pregnancy status at exam",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "DMDHHSIZ": {
+  "label": "Total number of people in the Household",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "DMDHRGND": {
+  "label": "HH ref person\u0092s gender",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "DMDHRAGZ": {
+  "label": "HH ref person\u0092s age in years",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "DMDHREDZ": {
+  "label": "HH ref person\u0092s education level",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "DMDHRMAZ": {
+  "label": "HH ref person\u0092s marital status",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "DMDHSEDZ": {
+  "label": "HH ref person\u0092s spouse\u0092s education level",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "WTINT2YR": {
+  "label": "Full sample 2-year interview weight",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "WTMEC2YR": {
+  "label": "Full sample 2-year MEC exam weight",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "SDMVSTRA": {
+  "label": "Masked variance pseudo-stratum",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "SDMVPSU": {
+  "label": "Masked variance pseudo-PSU",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "INDFMPIR": {
+  "label": "Ratio of family income to poverty",
+  "file": "DEMO_L.xpt",
+  "component": "Demographics"
+ },
+ "WTDRD1": {
+  "label": "Dietary day one sample weight",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "WTDR2D": {
+  "label": "Dietary two-day sample weight",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1DRSTZ": {
+  "label": "Dietary recall status",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1EXMER": {
+  "label": "Interviewer ID code",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRABF": {
+  "label": "Breast-fed infant (either day)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRDINT": {
+  "label": "Number of days of intake",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1DBIH": {
+  "label": "# of days b/w intake and HH interview",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1DAY": {
+  "label": "Intake day of the week",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1LANG": {
+  "label": "Language respondent used mostly",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1MRESP": {
+  "label": "Main respondent for this interview",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1HELP": {
+  "label": "Helped in responding for this interview",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DBQ095Z": {
+  "label": "Type of table salt used",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DBD100": {
+  "label": "How often add salt to food at table",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRQSPREP": {
+  "label": "Salt used in preparation?",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1STY": {
+  "label": "Salt used at table yesterday?",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1SKY": {
+  "label": "Type of salt used yesterday",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRQSDIET": {
+  "label": "On special diet?",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRQSDT1": {
+  "label": "Weight loss/Low calorie diet",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRQSDT2": {
+  "label": "Low fat/Low cholesterol diet",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRQSDT3": {
+  "label": "Low salt/Low sodium diet",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRQSDT4": {
+  "label": "Sugar free/Low sugar diet",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRQSDT5": {
+  "label": "Low fiber diet",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRQSDT6": {
+  "label": "High fiber diet",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRQSDT7": {
+  "label": "Diabetic diet",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRQSDT8": {
+  "label": "Weight gain/Muscle building diet",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRQSDT9": {
+  "label": "Low carbohydrate diet",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRQSDT10": {
+  "label": "High protein diet",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRQSDT11": {
+  "label": "Gluten-free/Celiac diet",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRQSDT12": {
+  "label": "Renal/Kidney diet",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRQSDT91": {
+  "label": "Other special diet",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TNUMF": {
+  "label": "Number of foods/beverages reported",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TKCAL": {
+  "label": "Energy (kcal)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TPROT": {
+  "label": "Protein (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TCARB": {
+  "label": "Carbohydrate (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TSUGR": {
+  "label": "Total sugars (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TFIBE": {
+  "label": "Dietary fiber (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TTFAT": {
+  "label": "Total fat (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TSFAT": {
+  "label": "Total saturated fatty acids (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TMFAT": {
+  "label": "Total monounsaturated fatty acids (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TPFAT": {
+  "label": "Total polyunsaturated fatty acids (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TCHOL": {
+  "label": "Cholesterol (mg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TATOC": {
+  "label": "Vitamin E as alpha-tocopherol (mg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TATOA": {
+  "label": "Added alpha-tocopherol (Vitamin E) (mg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TRET": {
+  "label": "Retinol (mcg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TVARA": {
+  "label": "Vitamin A, RAE (mcg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TACAR": {
+  "label": "Alpha-carotene (mcg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TBCAR": {
+  "label": "Beta-carotene (mcg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TCRYP": {
+  "label": "Beta-cryptoxanthin (mcg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TLYCO": {
+  "label": "Lycopene (mcg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TLZ": {
+  "label": "Lutein + zeaxanthin (mcg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TVB1": {
+  "label": "Thiamin (Vitamin B1) (mg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TVB2": {
+  "label": "Riboflavin (Vitamin B2) (mg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TNIAC": {
+  "label": "Niacin (mg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TVB6": {
+  "label": "Vitamin B6 (mg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TFOLA": {
+  "label": "Total folate (mcg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TFA": {
+  "label": "Folic acid (mcg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TFF": {
+  "label": "Food folate (mcg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TFDFE": {
+  "label": "Folate, DFE (mcg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TCHL": {
+  "label": "Total choline (mg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TVB12": {
+  "label": "Vitamin B12 (mcg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TB12A": {
+  "label": "Added vitamin B12 (mcg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TVC": {
+  "label": "Vitamin C (mg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TVD": {
+  "label": "Vitamin D (D2 + D3) (mcg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TVK": {
+  "label": "Vitamin K (mcg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TCALC": {
+  "label": "Calcium (mg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TPHOS": {
+  "label": "Phosphorus (mg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TMAGN": {
+  "label": "Magnesium (mg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TIRON": {
+  "label": "Iron (mg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TZINC": {
+  "label": "Zinc (mg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TCOPP": {
+  "label": "Copper (mg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TSODI": {
+  "label": "Sodium (mg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TPOTA": {
+  "label": "Potassium (mg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TSELE": {
+  "label": "Selenium (mcg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TCAFF": {
+  "label": "Caffeine (mg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TTHEO": {
+  "label": "Theobromine (mg)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TALCO": {
+  "label": "Alcohol (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TMOIS": {
+  "label": "Moisture (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TS040": {
+  "label": "SFA 4:0 (Butanoic) (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TS060": {
+  "label": "SFA 6:0 (Hexanoic) (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TS080": {
+  "label": "SFA 8:0 (Octanoic) (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TS100": {
+  "label": "SFA 10:0 (Decanoic) (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TS120": {
+  "label": "SFA 12:0 (Dodecanoic) (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TS140": {
+  "label": "SFA 14:0 (Tetradecanoic) (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TS160": {
+  "label": "SFA 16:0 (Hexadecanoic) (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TS180": {
+  "label": "SFA 18:0 (Octadecanoic) (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TM161": {
+  "label": "MFA 16:1 (Hexadecenoic) (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TM181": {
+  "label": "MFA 18:1 (Octadecenoic) (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TM201": {
+  "label": "MFA 20:1 (Eicosenoic) (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TM221": {
+  "label": "MFA 22:1 (Docosenoic) (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TP182": {
+  "label": "PFA 18:2 (Octadecadienoic) (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TP183": {
+  "label": "PFA 18:3 (Octadecatrienoic) (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TP184": {
+  "label": "PFA 18:4 (Octadecatetraenoic) (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TP204": {
+  "label": "PFA 20:4 (Eicosatetraenoic) (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TP205": {
+  "label": "PFA 20:5 (Eicosapentaenoic) (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TP225": {
+  "label": "PFA 22:5 (Docosapentaenoic) (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TP226": {
+  "label": "PFA 22:6 (Docosahexaenoic) (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1_300": {
+  "label": "Compare food consumed yesterday to usual",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1_320Z": {
+  "label": "Total plain water drank yesterday (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1_330Z": {
+  "label": "Total tap water drank yesterday (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1BWATZ": {
+  "label": "Total bottled water drank yesterday (gm)",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR1TWSZ": {
+  "label": "Tap water source",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD340": {
+  "label": "Shellfish eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD350A": {
+  "label": "Clams eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD350AQ": {
+  "label": "# of times clams eaten in past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD350B": {
+  "label": "Crabs eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD350BQ": {
+  "label": "# of times crabs eaten in past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD350C": {
+  "label": "Crayfish eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD350CQ": {
+  "label": "# of times crayfish eaten past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD350D": {
+  "label": "Lobsters eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD350DQ": {
+  "label": "# of times lobsters eaten past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD350E": {
+  "label": "Mussels eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD350EQ": {
+  "label": "# of times mussels eaten in past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD350F": {
+  "label": "Oysters eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD350FQ": {
+  "label": "# of times oysters eaten in past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD350G": {
+  "label": "Scallops eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD350GQ": {
+  "label": "# of times scallops eaten past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD350H": {
+  "label": "Shrimp eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD350HQ": {
+  "label": "# of times shrimp eaten in past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD350I": {
+  "label": "Other shellfish eaten past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD350IQ": {
+  "label": "# of times other shellfish eaten",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD350J": {
+  "label": "Other unknown shellfish eaten past 30 d",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD350JQ": {
+  "label": "# of times other unknown shellfish eaten",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD350K": {
+  "label": "Refused on shellfish eaten past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD360": {
+  "label": "Fish eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370A": {
+  "label": "Breaded fish products eaten past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370AQ": {
+  "label": "# of times breaded fish products eaten",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370B": {
+  "label": "Tuna eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370BQ": {
+  "label": "# of times tuna eaten in past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370C": {
+  "label": "Bass eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370CQ": {
+  "label": "# of times bass eaten in past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370D": {
+  "label": "Catfish eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370DQ": {
+  "label": "# of times catfish eaten in past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370E": {
+  "label": "Cod eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370EQ": {
+  "label": "# of times cod eaten in past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370F": {
+  "label": "Flatfish eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370FQ": {
+  "label": "# of times flatfish eaten past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370G": {
+  "label": "Haddock eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370GQ": {
+  "label": "# of times haddock eaten in past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370H": {
+  "label": "Mackerel eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370HQ": {
+  "label": "# of times mackerel eaten past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370I": {
+  "label": "Perch eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370IQ": {
+  "label": "# of times perch eaten in past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370J": {
+  "label": "Pike eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370JQ": {
+  "label": "# of times pike eaten in past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370K": {
+  "label": "Pollock eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370KQ": {
+  "label": "# of times pollock eaten in past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370L": {
+  "label": "Porgy eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370LQ": {
+  "label": "# of times porgy eaten in past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370M": {
+  "label": "Salmon eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370MQ": {
+  "label": "# of times salmon eaten in past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370N": {
+  "label": "Sardines eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370NQ": {
+  "label": "# of times sardines eaten past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370O": {
+  "label": "Sea bass eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370OQ": {
+  "label": "# of times sea bass eaten past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370P": {
+  "label": "Shark eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370PQ": {
+  "label": "# of times shark eaten in past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370Q": {
+  "label": "Swordfish eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370QQ": {
+  "label": "# of times swordfish eaten past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370R": {
+  "label": "Trout eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370RQ": {
+  "label": "# of times trout eaten in past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370S": {
+  "label": "Walleye eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370SQ": {
+  "label": "# of times walleye eaten in past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370T": {
+  "label": "Other fish eaten during past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370TQ": {
+  "label": "# of times other fish eaten past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370U": {
+  "label": "Other unknown fish eaten in past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370UQ": {
+  "label": "# of times other unknown fish eaten",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DRD370V": {
+  "label": "Refused on fish eaten past 30 days",
+  "file": "DR1TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2DRSTZ": {
+  "label": "Dietary recall status",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2EXMER": {
+  "label": "Interviewer ID code",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2DBIH": {
+  "label": "# of days b/w intake and HH interview",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2DAY": {
+  "label": "Intake day of the week",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2LANG": {
+  "label": "Language respondent used mostly",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2MRESP": {
+  "label": "Main respondent for this interview",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2HELP": {
+  "label": "Helped in responding for this interview",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TNUMF": {
+  "label": "Number of foods/beverages reported",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2STY": {
+  "label": "Salt used at table yesterday?",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2SKY": {
+  "label": "Type of salt used yesterday",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TKCAL": {
+  "label": "Energy (kcal)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TPROT": {
+  "label": "Protein (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TCARB": {
+  "label": "Carbohydrate (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TSUGR": {
+  "label": "Total sugars (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TFIBE": {
+  "label": "Dietary fiber (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TTFAT": {
+  "label": "Total fat (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TSFAT": {
+  "label": "Total saturated fatty acids (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TMFAT": {
+  "label": "Total monounsaturated fatty acids (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TPFAT": {
+  "label": "Total polyunsaturated fatty acids (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TCHOL": {
+  "label": "Cholesterol (mg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TATOC": {
+  "label": "Vitamin E as alpha-tocopherol (mg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TATOA": {
+  "label": "Added alpha-tocopherol (Vitamin E) (mg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TRET": {
+  "label": "Retinol (mcg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TVARA": {
+  "label": "Vitamin A, RAE (mcg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TACAR": {
+  "label": "Alpha-carotene (mcg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TBCAR": {
+  "label": "Beta-carotene (mcg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TCRYP": {
+  "label": "Beta-cryptoxanthin (mcg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TLYCO": {
+  "label": "Lycopene (mcg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TLZ": {
+  "label": "Lutein + zeaxanthin (mcg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TVB1": {
+  "label": "Thiamin (Vitamin B1) (mg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TVB2": {
+  "label": "Riboflavin (Vitamin B2) (mg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TNIAC": {
+  "label": "Niacin (mg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TVB6": {
+  "label": "Vitamin B6 (mg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TFOLA": {
+  "label": "Total folate (mcg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TFA": {
+  "label": "Folic acid (mcg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TFF": {
+  "label": "Food folate (mcg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TFDFE": {
+  "label": "Folate, DFE (mcg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TCHL": {
+  "label": "Total choline (mg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TVB12": {
+  "label": "Vitamin B12 (mcg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TB12A": {
+  "label": "Added vitamin B12 (mcg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TVC": {
+  "label": "Vitamin C (mg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TVD": {
+  "label": "Vitamin D (D2 + D3) (mcg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TVK": {
+  "label": "Vitamin K (mcg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TCALC": {
+  "label": "Calcium (mg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TPHOS": {
+  "label": "Phosphorus (mg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TMAGN": {
+  "label": "Magnesium (mg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TIRON": {
+  "label": "Iron (mg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TZINC": {
+  "label": "Zinc (mg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TCOPP": {
+  "label": "Copper (mg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TSODI": {
+  "label": "Sodium (mg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TPOTA": {
+  "label": "Potassium (mg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TSELE": {
+  "label": "Selenium (mcg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TCAFF": {
+  "label": "Caffeine (mg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TTHEO": {
+  "label": "Theobromine (mg)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TALCO": {
+  "label": "Alcohol (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TMOIS": {
+  "label": "Moisture (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TS040": {
+  "label": "SFA 4:0 (Butanoic) (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TS060": {
+  "label": "SFA 6:0 (Hexanoic) (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TS080": {
+  "label": "SFA 8:0 (Octanoic) (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TS100": {
+  "label": "SFA 10:0 (Decanoic) (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TS120": {
+  "label": "SFA 12:0 (Dodecanoic) (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TS140": {
+  "label": "SFA 14:0 (Tetradecanoic) (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TS160": {
+  "label": "SFA 16:0 (Hexadecanoic) (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TS180": {
+  "label": "SFA 18:0 (Octadecanoic) (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TM161": {
+  "label": "MFA 16:1 (Hexadecenoic) (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TM181": {
+  "label": "MFA 18:1 (Octadecenoic) (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TM201": {
+  "label": "MFA 20:1 (Eicosenoic) (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TM221": {
+  "label": "MFA 22:1 (Docosenoic) (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TP182": {
+  "label": "PFA 18:2 (Octadecadienoic) (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TP183": {
+  "label": "PFA 18:3 (Octadecatrienoic) (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TP184": {
+  "label": "PFA 18:4 (Octadecatetraenoic) (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TP204": {
+  "label": "PFA 20:4 (Eicosatetraenoic) (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TP205": {
+  "label": "PFA 20:5 (Eicosapentaenoic) (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TP225": {
+  "label": "PFA 22:5 (Docosapentaenoic) (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TP226": {
+  "label": "PFA 22:6 (Docosahexaenoic) (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2_300": {
+  "label": "Compare food consumed yesterday to usual",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2_320Z": {
+  "label": "Total plain water drank yesterday (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2_330Z": {
+  "label": "Total tap water drank yesterday (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2BWATZ": {
+  "label": "Total bottled water drank yesterday (gm)",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DR2TWSZ": {
+  "label": "Tap water source",
+  "file": "DR2TOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSDCOUNT": {
+  "label": "Total # of Dietary Supplements Taken",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSDANCNT": {
+  "label": "Total # of Antacids Taken",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSD010": {
+  "label": "Any Dietary Supplements Taken?",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSD010AN": {
+  "label": "Any Antacids Taken?",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTKCAL": {
+  "label": "Energy (kcal)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTPROT": {
+  "label": "Protein (gm)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTCARB": {
+  "label": "Carbohydrate (gm)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTSUGR": {
+  "label": "Total sugars (gm)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTFIBE": {
+  "label": "Dietary fiber (gm)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTTFAT": {
+  "label": "Total fat (gm)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTSFAT": {
+  "label": "Total saturated fatty acids (gm)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTMFAT": {
+  "label": "Total monounsaturated fatty acids (gm)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTPFAT": {
+  "label": "Total polyunsaturated fatty acids (gm)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTCHOL": {
+  "label": "Cholesterol (mg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTLYCO": {
+  "label": "Lycopene (mcg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTLZ": {
+  "label": "Lutein + zeaxanthin (mcg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTVB1": {
+  "label": "Thiamin (Vitamin B1) (mg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTVB2": {
+  "label": "Riboflavin (Vitamin B2) (mg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTNIAC": {
+  "label": "Niacin (mg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTVB6": {
+  "label": "Vitamin B6 (mg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTFA": {
+  "label": "Folic acid (mcg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTFDFE": {
+  "label": "Folate, DFE (mcg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTCHL": {
+  "label": "Total choline (mg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTVB12": {
+  "label": "Vitamin B12 (mcg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTVC": {
+  "label": "Vitamin C (mg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTVK": {
+  "label": "Vitamin K (mcg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTVD": {
+  "label": "Vitamin D (D2 + D3) (mcg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTCALC": {
+  "label": "Calcium (mg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTPHOS": {
+  "label": "Phosphorus (mg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTMAGN": {
+  "label": "Magnesium (mg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTIRON": {
+  "label": "Iron (mg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTZINC": {
+  "label": "Zinc (mg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTCOPP": {
+  "label": "Copper (mg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTSODI": {
+  "label": "Sodium (mg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTPOTA": {
+  "label": "Potassium (mg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTSELE": {
+  "label": "Selenium (mcg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTCAFF": {
+  "label": "Caffeine (mg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "DSQTIODI": {
+  "label": "Iodine (mcg)",
+  "file": "DSQTOT_L.xpt",
+  "component": "Dietary"
+ },
+ "BAXMSTAT": {
+  "label": "MRT exam status",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAXRXNC": {
+  "label": "Reason for partial MRT exam",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAXRXND": {
+  "label": "Reason for not done MRT exam",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAX5STAT": {
+  "label": "Eligibility for Condition 5",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAQ110": {
+  "label": "Can stand on your own?",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAQ121": {
+  "label": "Are you currently wearing a leg brace?",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAQ125": {
+  "label": "Injury to foot, leg, or hip",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAQ132": {
+  "label": "Problems with dizzy, past 24 hours",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAQ140": {
+  "label": "Last 12 months, fallen due to dizziness",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAQ150": {
+  "label": "Do you have neck pain now?",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAQ160": {
+  "label": "Have you ever had surgery on your neck?",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAQ170": {
+  "label": "Neck problem lasted more than 6 weeks",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAQ201": {
+  "label": "Can you move head 30 degrees left/right?",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAQ173": {
+  "label": "Are you okay to begin this balance test?",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAXPF11": {
+  "label": "MRT cond. 1, trial 1, eyes open",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAXTC11": {
+  "label": "MRT cond. 1, trial 1, time",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAARFC11": {
+  "label": "MRT cond. 1, trial 1, reason stopped",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAXPF12": {
+  "label": "MRT cond. 1, trial 2, eyes open",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAXTC12": {
+  "label": "MRT cond. 1, trial 2, time",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAARFC12": {
+  "label": "MRT cond. 1, trial 2, reason stopped",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAXPF21": {
+  "label": "MRT cond. 2, trial 1, eyes closed",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAXTC21": {
+  "label": "MRT cond. 2, trial 1, time",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAARFC21": {
+  "label": "MRT cond. 2, trial 1, reason stopped",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAXPF22": {
+  "label": "MRT cond. 2, trial 2, eyes closed",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAXTC22": {
+  "label": "MRT cond. 2, trial 2, time",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAARFC22": {
+  "label": "MRT cond. 2, trial 2, reason stopped",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAXPF31": {
+  "label": "MRT cond. 3, trial 1, eyes open",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAXTC31": {
+  "label": "MRT cond. 3, trial 1, time",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAARFC31": {
+  "label": "MRT cond. 3, trial 1, reason stopped",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAXPF32": {
+  "label": "MRT cond. 3, trial 2, eyes open",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAXTC32": {
+  "label": "MRT cond. 3, trial 2, time",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAARFC32": {
+  "label": "MRT cond. 3, trial 2, reason stopped",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAXPF41": {
+  "label": "MRT cond. 4, trial 1, eyes closed",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAXTC41": {
+  "label": "MRT cond. 4, trial 1, time",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAARFC41": {
+  "label": "MRT cond. 4, trial 1, reason stopped",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAXPF42": {
+  "label": "MRT cond. 4, trial 2, eyes closed",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAXTC42": {
+  "label": "MRT cond. 4, trial 2, time",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAARFC42": {
+  "label": "MRT cond. 4, trial 2, reason stopped",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAXPF51": {
+  "label": "MRT cond. 5, trial 1, eyes closed",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAXTC51": {
+  "label": "MRT cond. 5, trial 1, time",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAARFC51": {
+  "label": "MRT cond. 5, trial 1, reason stopped",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAXPF52": {
+  "label": "MRT cond. 5, trial 2, eyes closed",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAXTC52": {
+  "label": "MRT cond. 5, trial 2, time",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BAARFC52": {
+  "label": "MRT cond. 5, trial 2, reason stopped",
+  "file": "BAX_L.xpt",
+  "component": "Examination"
+ },
+ "BMDSTATS": {
+  "label": "Body Measures Component Status Code",
+  "file": "BMX_L.xpt",
+  "component": "Examination"
+ },
+ "BMXWT": {
+  "label": "Weight (kg)",
+  "file": "BMX_L.xpt",
+  "component": "Examination"
+ },
+ "BMIWT": {
+  "label": "Weight Comment",
+  "file": "BMX_L.xpt",
+  "component": "Examination"
+ },
+ "BMXRECUM": {
+  "label": "Recumbent Length (cm)",
+  "file": "BMX_L.xpt",
+  "component": "Examination"
+ },
+ "BMIRECUM": {
+  "label": "Recumbent Length Comment",
+  "file": "BMX_L.xpt",
+  "component": "Examination"
+ },
+ "BMXHEAD": {
+  "label": "Head Circumference (cm)",
+  "file": "BMX_L.xpt",
+  "component": "Examination"
+ },
+ "BMIHEAD": {
+  "label": "Head Circumference Comment",
+  "file": "BMX_L.xpt",
+  "component": "Examination"
+ },
+ "BMXHT": {
+  "label": "Standing Height (cm)",
+  "file": "BMX_L.xpt",
+  "component": "Examination"
+ },
+ "BMIHT": {
+  "label": "Standing Height Comment",
+  "file": "BMX_L.xpt",
+  "component": "Examination"
+ },
+ "BMXBMI": {
+  "label": "Body Mass Index (kg/m**2)",
+  "file": "BMX_L.xpt",
+  "component": "Examination"
+ },
+ "BMDBMIC": {
+  "label": "BMI Category - Children/Youth",
+  "file": "BMX_L.xpt",
+  "component": "Examination"
+ },
+ "BMXLEG": {
+  "label": "Upper Leg Length (cm)",
+  "file": "BMX_L.xpt",
+  "component": "Examination"
+ },
+ "BMILEG": {
+  "label": "Upper Leg Length Comment",
+  "file": "BMX_L.xpt",
+  "component": "Examination"
+ },
+ "BMXARML": {
+  "label": "Upper Arm Length (cm)",
+  "file": "BMX_L.xpt",
+  "component": "Examination"
+ },
+ "BMIARML": {
+  "label": "Upper Arm Length Comment",
+  "file": "BMX_L.xpt",
+  "component": "Examination"
+ },
+ "BMXARMC": {
+  "label": "Arm Circumference (cm)",
+  "file": "BMX_L.xpt",
+  "component": "Examination"
+ },
+ "BMIARMC": {
+  "label": "Arm Circumference Comment",
+  "file": "BMX_L.xpt",
+  "component": "Examination"
+ },
+ "BMXWAIST": {
+  "label": "Waist Circumference (cm)",
+  "file": "BMX_L.xpt",
+  "component": "Examination"
+ },
+ "BMIWAIST": {
+  "label": "Waist Circumference Comment",
+  "file": "BMX_L.xpt",
+  "component": "Examination"
+ },
+ "BMXHIP": {
+  "label": "Hip Circumference (cm)",
+  "file": "BMX_L.xpt",
+  "component": "Examination"
+ },
+ "BMIHIP": {
+  "label": "Hip Circumference Comment",
+  "file": "BMX_L.xpt",
+  "component": "Examination"
+ },
+ "BPAOARM": {
+  "label": "Arm selected - oscillometric",
+  "file": "BPXO_L.xpt",
+  "component": "Examination"
+ },
+ "BPAOCSZ": {
+  "label": "Coded cuff size - oscillometric",
+  "file": "BPXO_L.xpt",
+  "component": "Examination"
+ },
+ "BPXOSY1": {
+  "label": "Systolic - 1st oscillometric reading",
+  "file": "BPXO_L.xpt",
+  "component": "Examination"
+ },
+ "BPXODI1": {
+  "label": "Diastolic - 1st oscillometric reading",
+  "file": "BPXO_L.xpt",
+  "component": "Examination"
+ },
+ "BPXOSY2": {
+  "label": "Systolic - 2nd oscillometric reading",
+  "file": "BPXO_L.xpt",
+  "component": "Examination"
+ },
+ "BPXODI2": {
+  "label": "Diastolic - 2nd oscillometric reading",
+  "file": "BPXO_L.xpt",
+  "component": "Examination"
+ },
+ "BPXOSY3": {
+  "label": "Systolic - 3rd oscillometric reading",
+  "file": "BPXO_L.xpt",
+  "component": "Examination"
+ },
+ "BPXODI3": {
+  "label": "Diastolic - 3rd oscillometric reading",
+  "file": "BPXO_L.xpt",
+  "component": "Examination"
+ },
+ "BPXOPLS1": {
+  "label": "Pulse - 1st oscillometric reading",
+  "file": "BPXO_L.xpt",
+  "component": "Examination"
+ },
+ "BPXOPLS2": {
+  "label": "Pulse - 2nd oscillometric reading",
+  "file": "BPXO_L.xpt",
+  "component": "Examination"
+ },
+ "BPXOPLS3": {
+  "label": "Pulse - 3rd oscillometric reading",
+  "file": "BPXO_L.xpt",
+  "component": "Examination"
+ },
+ "LUAXSTAT": {
+  "label": "Elastography exam status",
+  "file": "LUX_L.xpt",
+  "component": "Examination"
+ },
+ "LUARXNC": {
+  "label": "Reason for partial exam",
+  "file": "LUX_L.xpt",
+  "component": "Examination"
+ },
+ "LUARXND": {
+  "label": "Reason exam not done",
+  "file": "LUX_L.xpt",
+  "component": "Examination"
+ },
+ "LUARXIN": {
+  "label": "Reason ineligible",
+  "file": "LUX_L.xpt",
+  "component": "Examination"
+ },
+ "LUAPNME": {
+  "label": "Exam wand type",
+  "file": "LUX_L.xpt",
+  "component": "Examination"
+ },
+ "LUANMVGP": {
+  "label": "Count:complete measures from final wand",
+  "file": "LUX_L.xpt",
+  "component": "Examination"
+ },
+ "LUANMTGP": {
+  "label": "Count:measures attempted with final wand",
+  "file": "LUX_L.xpt",
+  "component": "Examination"
+ },
+ "LUXSMED": {
+  "label": "Median stiffness (E), kilopascals (kPa)",
+  "file": "LUX_L.xpt",
+  "component": "Examination"
+ },
+ "LUXSIQR": {
+  "label": "Stiffness E interquartile range (IQRe)",
+  "file": "LUX_L.xpt",
+  "component": "Examination"
+ },
+ "LUXSIQRM": {
+  "label": "Ratio: Stiffness IQRe / median E",
+  "file": "LUX_L.xpt",
+  "component": "Examination"
+ },
+ "LUXCAPM": {
+  "label": "Median CAP, decibels per meter (dB/m)",
+  "file": "LUX_L.xpt",
+  "component": "Examination"
+ },
+ "LUXCPIQR": {
+  "label": "CAP interquartile range (IQRc)",
+  "file": "LUX_L.xpt",
+  "component": "Examination"
+ },
+ "WTPH2YR": {
+  "label": "Phlebotomy 2 Year Weight",
+  "file": "AGP_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXAGP": {
+  "label": "alpha-1-acid glycoprotein (g/L)",
+  "file": "AGP_L.xpt",
+  "component": "Laboratory"
+ },
+ "URXUMA": {
+  "label": "Albumin, urine (ug/mL)",
+  "file": "ALB_CR_L.xpt",
+  "component": "Laboratory"
+ },
+ "URXUMS": {
+  "label": "Albumin, urine (mg/L)",
+  "file": "ALB_CR_L.xpt",
+  "component": "Laboratory"
+ },
+ "URDUMALC": {
+  "label": "Albumin, urine comment code",
+  "file": "ALB_CR_L.xpt",
+  "component": "Laboratory"
+ },
+ "URXUCR": {
+  "label": "Creatinine, urine (mg/dL)",
+  "file": "ALB_CR_L.xpt",
+  "component": "Laboratory"
+ },
+ "URXCRS": {
+  "label": "Creatinine, urine (umol/L)",
+  "file": "ALB_CR_L.xpt",
+  "component": "Laboratory"
+ },
+ "URDUCRLC": {
+  "label": "Creatinine, urine comment code",
+  "file": "ALB_CR_L.xpt",
+  "component": "Laboratory"
+ },
+ "URDACT": {
+  "label": "Albumin creatinine ratio (mg/g)",
+  "file": "ALB_CR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXBA": {
+  "label": "Butyrylcholinesterase Activity (U/mL)",
+  "file": "BCHE_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDBALC": {
+  "label": "Butyrylcholinesterase Act comt code",
+  "file": "BCHE_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXCH": {
+  "label": "Butyrylcholinesterase Con (ng/mL)",
+  "file": "BCHE_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDCHLC": {
+  "label": "Butyrylcholinesterase Conc comt code",
+  "file": "BCHE_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSATSI": {
+  "label": "Alanine Aminotransferase (ALT) (IU/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSAL": {
+  "label": "Albumin, refrigerated serum (g/dL)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDSALSI": {
+  "label": "Albumin, refrigerated serum (g/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSAPSI": {
+  "label": "Alkaline Phosphatase (ALP) (IU/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSASSI": {
+  "label": "Aspartate Aminotransferase (AST) (IU/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSC3SI": {
+  "label": "Bicarbonate (mmol/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSBU": {
+  "label": "Blood Urea Nitrogen (mg/dL)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDSBUSI": {
+  "label": "Blood Urea Nitrogen (mmol/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSCLSI": {
+  "label": "Chloride (mmol/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSCK": {
+  "label": "Creatine Phosphokinase (CPK) (U/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSCR": {
+  "label": "Creatinine, refrigerated serum (mg/dL)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDSCRSI": {
+  "label": "Creatinine, refrigerated serum (umol/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSGB": {
+  "label": "Globulin (g/dL)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDSGBSI": {
+  "label": "Globulin (g/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSGL": {
+  "label": "Glucose, refrigerated serum (mg/dL)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDSGLSI": {
+  "label": "Glucose, refrigerated serum (mmol/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSGTSI": {
+  "label": "Gamma Glutamyl Transferase (GGT) (IU/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDSGTLC": {
+  "label": "GGT Comment Code",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSIR": {
+  "label": "Iron, refrigerated serum (\u00b5g/dL)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDSIRSI": {
+  "label": "Iron, refrigerated serum (umol/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSLDSI": {
+  "label": "Lactate Dehydrogenase (LDH) (U/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXMAGN": {
+  "label": "Magnesium (mg/dL)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSOSSI": {
+  "label": "Osmolality (mmol/Kg)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSPH": {
+  "label": "Phosphorus (mg/dL)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDSPHSI": {
+  "label": "Phosphorus (mmol/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSKSI": {
+  "label": "Potassium (mmol/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSNASI": {
+  "label": "Sodium (mmol/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSTB": {
+  "label": "Total Bilirubin (mg/dL)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDSTBSI": {
+  "label": "Total Bilirubin (umol/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDSTBLC": {
+  "label": "Total Bilirubin Comment Code",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSCA": {
+  "label": "Total Calcium (mg/dL)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDSCASI": {
+  "label": "Total Calcium (mmol/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSCH": {
+  "label": "Cholesterol, refrigerated serum (mg/dL)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDSCHSI": {
+  "label": "Cholesterol, refrigerated serum (mmol/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSTP": {
+  "label": "Total Protein (g/dL)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDSTPSI": {
+  "label": "Total Protein (g/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSTR": {
+  "label": "Triglycerides, refrig serum (mg/dL)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDSTRSI": {
+  "label": "Triglycerides, refrig serum (mmol/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSUA": {
+  "label": "Uric acid (mg/dL)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDSUASI": {
+  "label": "Uric acid (umol/L)",
+  "file": "BIOPRO_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXWBCSI": {
+  "label": "White blood cell count (1000 cells/uL)",
+  "file": "CBC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXLYPCT": {
+  "label": "Lymphocyte percent (%)",
+  "file": "CBC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXMOPCT": {
+  "label": "Monocyte percent (%)",
+  "file": "CBC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXNEPCT": {
+  "label": "Segmented neutrophils percent (%)",
+  "file": "CBC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXEOPCT": {
+  "label": "Eosinophils percent (%)",
+  "file": "CBC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXBAPCT": {
+  "label": "Basophils percent (%)",
+  "file": "CBC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDLYMNO": {
+  "label": "Lymphocyte number (1000 cells/uL)",
+  "file": "CBC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDMONO": {
+  "label": "Monocyte number (1000 cells/uL)",
+  "file": "CBC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDNENO": {
+  "label": "Segmented neutrophils num (1000 cell/uL)",
+  "file": "CBC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDEONO": {
+  "label": "Eosinophils number (1000 cells/uL)",
+  "file": "CBC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDBANO": {
+  "label": "Basophils number (1000 cells/uL)",
+  "file": "CBC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXRBCSI": {
+  "label": "Red blood cell count (million cells/uL)",
+  "file": "CBC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXHGB": {
+  "label": "Hemoglobin (g/dL)",
+  "file": "CBC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXHCT": {
+  "label": "Hematocrit (%)",
+  "file": "CBC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXMCVSI": {
+  "label": "Mean cell volume (fL)",
+  "file": "CBC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXMC": {
+  "label": "Mean Cell Hgb Conc. (g/dL)",
+  "file": "CBC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXMCHSI": {
+  "label": "Mean cell hemoglobin (pg)",
+  "file": "CBC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXRDW": {
+  "label": "Red cell distribution width (%)",
+  "file": "CBC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPLTSI": {
+  "label": "Platelet count (1000 cells/uL)",
+  "file": "CBC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXMPSI": {
+  "label": "Mean platelet volume (fL)",
+  "file": "CBC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXNRBC": {
+  "label": "Nucleated red blood cells (/100 WBC)",
+  "file": "CBC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXCOT": {
+  "label": "Cotinine, Serum (ng/mL)",
+  "file": "COT_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDCOTLC": {
+  "label": "Cotinine, Serum Comment Code",
+  "file": "COT_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXHCOT": {
+  "label": "Hydroxycotinine, Serum (ng/mL)",
+  "file": "COT_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDHCOLC": {
+  "label": "Hydroxycotinine, Serum Comment Code",
+  "file": "COT_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPAN": {
+  "label": "alpha-Linolenic acid (C18:3n-3) (%)",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPANLC": {
+  "label": "alpha-Linolenic acid (C18:3n-3) cmt code",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXP1A": {
+  "label": "Arachidic acid (C20:0) (%)",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDP1ALC": {
+  "label": "Arachidic acid (C20:0) comment code",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPRA": {
+  "label": "Arachidonic acid (C20:4n-6) (%)",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPRALC": {
+  "label": "Arachidonic acid (C20:4n-6) comment code",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPDA": {
+  "label": "Docosanoic acid (C22:0) (%)",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPDALC": {
+  "label": "Docosanoic acid (C22:0) comment code",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPHA": {
+  "label": "Docosahexaenoic acid (C22:6n-3) (%)",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPHALC": {
+  "label": "Docosahexaenoic acid (C22:6n-3) cmt code",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPD3": {
+  "label": "Docosapentaenoic acid 3 (C22:5n-3) (%)",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPD3LC": {
+  "label": "Docosapentaenoic acid 3 (C22:5n-3) cmt",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPD6": {
+  "label": "Docosapentaenoic acid (C22:5n-6) (%)",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPD6LC": {
+  "label": "Docosapentaenoic acid (C22:5n-6) cmt cd",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPTA": {
+  "label": "Docosatetraenoic acid (C22:4n-6) (%)",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPTALC": {
+  "label": "Docosatetraenoic acid (C22:4n-6) cmt cd",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPED": {
+  "label": "11,14-Eicosadienoic acid (C20:2n6) (%)",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPEDLC": {
+  "label": "11,14-Eicosadienoic acid(C20:2n6) cmt cd",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXP1E": {
+  "label": "11-Eicosenoic acid (C20:1n-9) (%)",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDP1ELC": {
+  "label": "11-Eicosenoic acid (C20:1n-9) cmt code",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPPE": {
+  "label": "Eicosapentaenoic acid (C20:5n-3) (%)",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPPELC": {
+  "label": "Eicosapentaenoic acid (C20:5n-3) cmt cd",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPLG": {
+  "label": "gamma-Linolenic acid (C18:3n-6) (%)",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPLGLC": {
+  "label": "gamma-Linolenic acid (C18:3n-6) cmt code",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPGH": {
+  "label": "homo-gamma-Linolenic acid(C20:3n-6) (%)",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPGHLC": {
+  "label": "homo-gamma-Linolenic acd (C20:3n-6) cmt",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXP1G": {
+  "label": "Tetracosanoic acid (C24:0) (%)",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDP1GLC": {
+  "label": "Tetracosanoic acid (C24:0) comment code",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPNL": {
+  "label": "Linoleic acid (C18:2n-6) (%)",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPNLLC": {
+  "label": "Linoleic acid (C18:2n-6) comment code",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPMR": {
+  "label": "Myristic acid (C14:0) (%)",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPMRLC": {
+  "label": "Myristic acid (C14:0) comment code",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPNR": {
+  "label": "15-Tetracosenoic acid (C24:1n9) (%)",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPNRLC": {
+  "label": "15-Tetracosenoic acid(C24:1n9) comt code",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPOL": {
+  "label": "Oleic acid (C18:1n-9) (%)",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPOLLC": {
+  "label": "Oleic acid (C18:1n-9) comment code",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPPL": {
+  "label": "Palmitoleic acid (16:1n-7) (%)",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPPLLC": {
+  "label": "Palmitoleic acid (16:1n-7) comment code",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPPM": {
+  "label": "Palmitic acid (C16:0) (%)",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPPMLC": {
+  "label": "Palmitic acid (C16:0) comment code",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPST": {
+  "label": "Stearic acid (C18:0) (%)",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPSTLC": {
+  "label": "Stearic acid (C18:0) comment code",
+  "file": "FAR_L.xpt",
+  "component": "Laboratory"
+ },
+ "PHQ020": {
+  "label": "Coffee or tea with cream or sugar?",
+  "file": "FASTQX_L.xpt",
+  "component": "Laboratory"
+ },
+ "PHACOFHR": {
+  "label": "Coffee/tea fast time (hours)",
+  "file": "FASTQX_L.xpt",
+  "component": "Laboratory"
+ },
+ "PHACOFMN": {
+  "label": "Coffee/tea fast time (minutes)",
+  "file": "FASTQX_L.xpt",
+  "component": "Laboratory"
+ },
+ "PHQ030": {
+  "label": "Alcohol, such as beer, wine, or liquor?",
+  "file": "FASTQX_L.xpt",
+  "component": "Laboratory"
+ },
+ "PHAALCHR": {
+  "label": "Alcohol fast time (hours)",
+  "file": "FASTQX_L.xpt",
+  "component": "Laboratory"
+ },
+ "PHAALCMN": {
+  "label": "Alcohol fast time (minutes)",
+  "file": "FASTQX_L.xpt",
+  "component": "Laboratory"
+ },
+ "PHQ040": {
+  "label": "Gum, mints, lozenges or cough drops",
+  "file": "FASTQX_L.xpt",
+  "component": "Laboratory"
+ },
+ "PHAGUMHR": {
+  "label": "Gum, mints cough drops fast time (hours)",
+  "file": "FASTQX_L.xpt",
+  "component": "Laboratory"
+ },
+ "PHAGUMMN": {
+  "label": "Gum, mints, cough fast time (minutes)",
+  "file": "FASTQX_L.xpt",
+  "component": "Laboratory"
+ },
+ "PHQ050": {
+  "label": "Antacids, laxatives, or anti-diarrheals?",
+  "file": "FASTQX_L.xpt",
+  "component": "Laboratory"
+ },
+ "PHAANTHR": {
+  "label": "Antacids, laxatives fast time (hours)",
+  "file": "FASTQX_L.xpt",
+  "component": "Laboratory"
+ },
+ "PHAANTMN": {
+  "label": "Antacids, laxatives fast time (minutes)",
+  "file": "FASTQX_L.xpt",
+  "component": "Laboratory"
+ },
+ "PHQ060": {
+  "label": "Dietary supplements?",
+  "file": "FASTQX_L.xpt",
+  "component": "Laboratory"
+ },
+ "PHASUPHR": {
+  "label": "Dietary supplements fast time (hours)",
+  "file": "FASTQX_L.xpt",
+  "component": "Laboratory"
+ },
+ "PHASUPMN": {
+  "label": "Dietary supplements fast time (minutes)",
+  "file": "FASTQX_L.xpt",
+  "component": "Laboratory"
+ },
+ "PHAFSTHR": {
+  "label": "Total length of 'food fast' (hours)",
+  "file": "FASTQX_L.xpt",
+  "component": "Laboratory"
+ },
+ "PHAFSTMN": {
+  "label": "Total length of 'food fast' (minutes)",
+  "file": "FASTQX_L.xpt",
+  "component": "Laboratory"
+ },
+ "PHDSESNZ": {
+  "label": "Session in which SP was examined",
+  "file": "FASTQX_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXFER": {
+  "label": "Ferritin(ng/mL)",
+  "file": "FERTIN_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDFERSI": {
+  "label": "Ferritin(\u00b5g/L)",
+  "file": "FERTIN_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDRF7SI": {
+  "label": "Total Folate, RBC (nmol/L)",
+  "file": "FFMR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXRF1SI": {
+  "label": "5-Methyl-tetrahydrofolate, RBC (nmol/L)",
+  "file": "FFMR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDRF1LC": {
+  "label": "5-Methyl-tetrahydrofolate, RBC cmt",
+  "file": "FFMR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXRF2SI": {
+  "label": "Folic acid, RBC (nmol/L)",
+  "file": "FFMR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDRF2LC": {
+  "label": "Folic acid, RBC cmt",
+  "file": "FFMR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXRF3SI": {
+  "label": "5-Formyl-tetrahydrofolate, RBC (nmol/L)",
+  "file": "FFMR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDRF3LC": {
+  "label": "5-Formyl-tetrahydrofolate, RBC cmt",
+  "file": "FFMR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXRF4SI": {
+  "label": "Tetrahydrofolate, RBC (nmol/L)",
+  "file": "FFMR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDRF4LC": {
+  "label": "Tetrahydrofolate, RBC cmt",
+  "file": "FFMR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXRF5SI": {
+  "label": "5,10-Methenyl-tetrahydrofolate (nmol/L)",
+  "file": "FFMR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDRF5LC": {
+  "label": "5,10-Methenyl-tetrahydrofolate, RBC cmt",
+  "file": "FFMR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXRF6SI": {
+  "label": "MeFox oxidation product, RBC (nmol/L)",
+  "file": "FFMR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDRF6LC": {
+  "label": "MeFox oxidation product, RBC cmt",
+  "file": "FFMR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDRFO": {
+  "label": "RBC folate (ng/mL)",
+  "file": "FOLATE_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDRFOSI": {
+  "label": "RBC folate (nmol/L)",
+  "file": "FOLATE_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDFOTSI": {
+  "label": "Serum total folate (nmol/L)",
+  "file": "FOLFMS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDFOT": {
+  "label": "Serum total folate (ng/mL)",
+  "file": "FOLFMS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSF1SI": {
+  "label": "5-Methyl-tetrahydrofolate (nmol/L)",
+  "file": "FOLFMS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDSF1LC": {
+  "label": "5-Methyl-tetrahydrofolate cmt",
+  "file": "FOLFMS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSF2SI": {
+  "label": "Folic acid (nmol/L)",
+  "file": "FOLFMS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDSF2LC": {
+  "label": "Folic acid cmt",
+  "file": "FOLFMS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSF3SI": {
+  "label": "5-Formyl-tetrahydrofolate (nmol/L)",
+  "file": "FOLFMS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDSF3LC": {
+  "label": "5-Formyl-tetrahydrofolate cmt",
+  "file": "FOLFMS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSF4SI": {
+  "label": "Tetrahydrofolate (nmol/L)",
+  "file": "FOLFMS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDSF4LC": {
+  "label": "Tetrahydrofolate cmt",
+  "file": "FOLFMS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSF5SI": {
+  "label": "5,10-Methenyl-tetrahydrofolate (nmol/L)",
+  "file": "FOLFMS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDSF5LC": {
+  "label": "5,10-Methenyl-tetrahydrofolate cmt",
+  "file": "FOLFMS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSF6SI": {
+  "label": "Mefox oxidation product (nmol/L)",
+  "file": "FOLFMS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDSF6LC": {
+  "label": "Mefox oxidation product cmt",
+  "file": "FOLFMS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXGH": {
+  "label": "Glycohemoglobin (%)",
+  "file": "GHB_L.xpt",
+  "component": "Laboratory"
+ },
+ "WTSAF2YR": {
+  "label": "Fasting Subsample 2 Year MEC Weight",
+  "file": "GLU_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXGLU": {
+  "label": "Fasting Glucose (mg/dL)",
+  "file": "GLU_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDGLUSI": {
+  "label": "Fasting Glucose (mmol/L)",
+  "file": "GLU_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDHDD": {
+  "label": "Direct HDL-Cholesterol (mg/dL)",
+  "file": "HDL_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDHDDSI": {
+  "label": "Direct HDL-Cholesterol (mmol/L)",
+  "file": "HDL_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXHA": {
+  "label": "Hepatitis A antibody",
+  "file": "HEPA_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXHBC": {
+  "label": "Hepatitis B core antibody",
+  "file": "HEPBD_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDHBG": {
+  "label": "Hepatitis B surface antigen",
+  "file": "HEPBD_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDHD": {
+  "label": "Hepatitis D antibody (anti-HDV)",
+  "file": "HEPBD_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXHBS": {
+  "label": "Hepatitis B Surface Antibody",
+  "file": "HEPB_S_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXHCR": {
+  "label": "Hepatitis C RNA",
+  "file": "HEPC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDHCI": {
+  "label": "Hepatitis C Antibody (confirmed)",
+  "file": "HEPC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXHCG": {
+  "label": "Hepatitis C Genotype",
+  "file": "HEPC_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDHEG": {
+  "label": "Hepatitis E IgG (anti-HEV)",
+  "file": "HEPE_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDHEM": {
+  "label": "Hepatitis E IgM (anti-HEV)",
+  "file": "HEPE_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXHSCRP": {
+  "label": "HS C-Reactive Protein (mg/L)",
+  "file": "HSCRP_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDHRPLC": {
+  "label": "HS C-Reactive Protein Comment Code",
+  "file": "HSCRP_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXIHG": {
+  "label": "Mercury, inorganic (ug/L)",
+  "file": "IHGEM_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDIHGSI": {
+  "label": "Mercury, inorganic (nmol/L)",
+  "file": "IHGEM_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDIHGLC": {
+  "label": "Mercury, inorganic comment code",
+  "file": "IHGEM_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXBGE": {
+  "label": "Mercury, ethyl (ug/L)",
+  "file": "IHGEM_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDBGESI": {
+  "label": "Mercury, ethyl (nmol/L)",
+  "file": "IHGEM_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDBGELC": {
+  "label": "Mercury, ethyl comment code",
+  "file": "IHGEM_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXBGM": {
+  "label": "Mercury, methyl (ug/L)",
+  "file": "IHGEM_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDBGMSI": {
+  "label": "Mercury, methyl (nmol/L)",
+  "file": "IHGEM_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDBGMLC": {
+  "label": "Mercury, methyl comment code",
+  "file": "IHGEM_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXIN": {
+  "label": "Insulin (uU/mL)",
+  "file": "INS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDINSI": {
+  "label": "Insulin (pmol/L)",
+  "file": "INS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDINLC": {
+  "label": "Insulin Comment Code",
+  "file": "INS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXBPB": {
+  "label": "Blood lead (ug/dL)",
+  "file": "PBCD_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDBPBSI": {
+  "label": "Blood lead (umol/L)",
+  "file": "PBCD_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDBPBLC": {
+  "label": "Blood lead comment code",
+  "file": "PBCD_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXBCD": {
+  "label": "Blood cadmium (ug/L)",
+  "file": "PBCD_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDBCDSI": {
+  "label": "Blood cadmium (nmol/L)",
+  "file": "PBCD_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDBCDLC": {
+  "label": "Blood cadmium comment code",
+  "file": "PBCD_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXTHG": {
+  "label": "Blood mercury, total (ug/L)",
+  "file": "PBCD_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDTHGSI": {
+  "label": "Blood mercury, total (nmol/L)",
+  "file": "PBCD_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDTHGLC": {
+  "label": "Blood mercury, total comment code",
+  "file": "PBCD_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXBSE": {
+  "label": "Blood selenium (ug/L)",
+  "file": "PBCD_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDBSESI": {
+  "label": "Blood selenium (umol/L)",
+  "file": "PBCD_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDBSELC": {
+  "label": "Blood selenium comment code",
+  "file": "PBCD_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXBMN": {
+  "label": "Blood manganese (ug/L)",
+  "file": "PBCD_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDBMNSI": {
+  "label": "Blood manganese (nmol/L)",
+  "file": "PBCD_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDBMNLC": {
+  "label": "Blood manganese comment code",
+  "file": "PBCD_L.xpt",
+  "component": "Laboratory"
+ },
+ "WTSPF2YR": {
+  "label": "PFAS subsample weight",
+  "file": "PFAS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPFDE": {
+  "label": "Perfluorodecanoic acid (ng/mL)",
+  "file": "PFAS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPFDEL": {
+  "label": "Perfluorodecanoic acid Comment Code",
+  "file": "PFAS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPFHS": {
+  "label": "Perfluorohexane sulfonic acid (ng/mL)",
+  "file": "PFAS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPFHSL": {
+  "label": "Perfluorohexane sulfonic acid Comt Code",
+  "file": "PFAS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXMPAH": {
+  "label": "2-(N-methyl-PFOSA)acetic acid (ng/mL)",
+  "file": "PFAS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDMPAHL": {
+  "label": "2-(N-methyl-PFOSA) acetic acid Comt Code",
+  "file": "PFAS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPFNA": {
+  "label": "Perfluorononanoic acid (ng/mL)",
+  "file": "PFAS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPFNAL": {
+  "label": "Perfluorononanoic acid Comment Code",
+  "file": "PFAS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPFUA": {
+  "label": "Perfluoroundecanoic acid (ng/mL)",
+  "file": "PFAS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPFUAL": {
+  "label": "Perfluoroundecanoic acid Comment Code",
+  "file": "PFAS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXNFOA": {
+  "label": "n-perfluorooctanoic acid (ng/mL)",
+  "file": "PFAS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDNFOAL": {
+  "label": "n-perfluorooctanoic acid Comment Code",
+  "file": "PFAS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXBFOA": {
+  "label": "Br. perfluorooctanoic acid iso (ng/mL)",
+  "file": "PFAS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDBFOAL": {
+  "label": "Br. perfluorooctanoic acid iso Comt Code",
+  "file": "PFAS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXNFOS": {
+  "label": "n-perfluorooctane sulfonic acid (ng/mL)",
+  "file": "PFAS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDNFOSL": {
+  "label": "n-perfluorooctane sulfonic Comt Code",
+  "file": "PFAS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXMFOS": {
+  "label": "Sm-PFOS (ng/mL)",
+  "file": "PFAS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDMFOSL": {
+  "label": "Sm-PFOS Comment Code",
+  "file": "PFAS_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXTC": {
+  "label": "Total Cholesterol (mg/dL)",
+  "file": "TCHOL_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDTCSI": {
+  "label": "Total Cholesterol (mmol/L)",
+  "file": "TCHOL_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXTFR": {
+  "label": "Transferrin receptor (mg/L)",
+  "file": "TFR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDTFRSI": {
+  "label": "Transferrin receptor (nmol/L)",
+  "file": "TFR_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXTLG": {
+  "label": "Triglyceride (mg/dL)",
+  "file": "TRIGLY_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDTRSI": {
+  "label": "Triglyceride (mmol/L)",
+  "file": "TRIGLY_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDLDL": {
+  "label": "LDL-Cholesterol, Friedewald (mg/dL)",
+  "file": "TRIGLY_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDLDLSI": {
+  "label": "LDL-Cholesterol, Friedewald (mmol/L)",
+  "file": "TRIGLY_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDLDLM": {
+  "label": "LDL-Cholesterol, Martin-Hopkins (mg/dL)",
+  "file": "TRIGLY_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDLDMSI": {
+  "label": "LDL-Cholesterol, Martin-Hopkins (mmol/L)",
+  "file": "TRIGLY_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDLDLN": {
+  "label": "LDL-Cholesterol, NIH equation 2 (mg/dL)",
+  "file": "TRIGLY_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDLDNSI": {
+  "label": "LDL-Cholesterol, NIH equation 2 (mmol/L)",
+  "file": "TRIGLY_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBX17H": {
+  "label": "17a-hydroxyprogesterone (ng/dL)",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBD17HSI": {
+  "label": "17a-hydroxyprogesterone (nmol/L)",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBD17HLC": {
+  "label": "17a-hydroxyprogesterone Comment Code",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXAND": {
+  "label": "Androstenedione (ng/dL)",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDANDSI": {
+  "label": "Androstenedione (nmol/L)",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDANDLC": {
+  "label": "Androstenedione Comment Code",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXAMH": {
+  "label": "Anti-Mullerian hormone (ng/mL)",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDAMHSI": {
+  "label": "Anti-Mullerian hormone (pmol/L)",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDAMHLC": {
+  "label": "Anti-Mullerian hormone Comment Code",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXDHE": {
+  "label": "DHEAS (\u00b5g/dL)",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDDHESI": {
+  "label": "DHEAS (\u00b5mol/L)",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDDHELC": {
+  "label": "DHEAS Comment Code",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXEST": {
+  "label": "Estradiol (pg/mL)",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDESTSI": {
+  "label": "Estradiol (pmol/L)",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDESTLC": {
+  "label": "Estradiol Comment Code",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXESO": {
+  "label": "Estrone (ng/dL)",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDESOSI": {
+  "label": "Estrone (pmol/L)",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDESOLC": {
+  "label": "Estrone Comment Code",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXES1": {
+  "label": "Estrone Sulfate (pg/mL)",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDES1SI": {
+  "label": "Estrone Sulfate (pmol/L)",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDES1LC": {
+  "label": "Estrone Sulfate Comment Code",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXFSH": {
+  "label": "Follicle Stimulating Hormone (mIU/mL)",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDFSHLC": {
+  "label": "FSH Comment Code",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXLUH": {
+  "label": "Luteinizing Hormone (mIU/mL)",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDLUHLC": {
+  "label": "Luteinizing Hormone Comment Code",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXPG4": {
+  "label": "Progesterone (ng/dL)",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPG4SI": {
+  "label": "Progesterone (nmol/L)",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDPG4LC": {
+  "label": "Progesterone Comment Code",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXSHBG": {
+  "label": "SHBG (nmol/L)",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDSHGLC": {
+  "label": "SHBG Comment Code",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXTST": {
+  "label": "Testosterone, total (ng/dL)",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDTSTSI": {
+  "label": "Testosterone, total (nmol/L)",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDTSTLC": {
+  "label": "Testosterone comment code",
+  "file": "TST_L.xpt",
+  "component": "Laboratory"
+ },
+ "URXPREG": {
+  "label": "Urine Pregnancy Result",
+  "file": "UCPREG_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVIDMS": {
+  "label": "25OHD2+25OHD3 (nmol/L)",
+  "file": "VID_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVIDLC": {
+  "label": "25OHD2+25OHD3 comment code",
+  "file": "VID_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVD2MS": {
+  "label": "25OHD2 (nmol/L)",
+  "file": "VID_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVD2LC": {
+  "label": "25OHD2 comment code",
+  "file": "VID_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVD3MS": {
+  "label": "25OHD3 (nmol/L)",
+  "file": "VID_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVD3LC": {
+  "label": "25OHD3 comment code",
+  "file": "VID_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVE3MS": {
+  "label": "epi-25OHD3 (nmol/L)",
+  "file": "VID_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVE3LC": {
+  "label": "epi-25OHD3 comment code",
+  "file": "VID_L.xpt",
+  "component": "Laboratory"
+ },
+ "WTSVOC2Y": {
+  "label": "VOC Subsample Weight",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBX2DF": {
+  "label": "Blood 2,5-Dimethylfuran (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBD2DFLC": {
+  "label": "Blood 2,5-Dimethylfuran Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXV06": {
+  "label": "Blood Hexane (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDV06LC": {
+  "label": "Blood Hexane Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXV07N": {
+  "label": "Blood Heptane (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDV07LC": {
+  "label": "Blood Heptane Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXV08N": {
+  "label": "Blood Octane (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDV08LC": {
+  "label": "Blood Octane Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXV1D": {
+  "label": "Blood 1,2-Dichlorobenzene (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDV1DLC": {
+  "label": "Blood 1,2-Dichlorobenzene Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXV2A": {
+  "label": "Blood 1,2-Dichloroethane (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDV2ALC": {
+  "label": "Blood 1,2-Dichloroethane Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXV3B": {
+  "label": "Blood 1,3-Dichlorobenzene (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDV3BLC": {
+  "label": "Blood 1,3-Dichlorobenzene Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXV4C": {
+  "label": "Blood Tetrachloroethene (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDV4CLC": {
+  "label": "Blood Tetrachloroethene Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVAPN": {
+  "label": "Blood a-pinene (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVAPLC": {
+  "label": "Blood a-pinene Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVBF": {
+  "label": "Blood Bromoform (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVBFLC": {
+  "label": "Blood Bromoform Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVBM": {
+  "label": "Blood Bromodichloromethane (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVBMLC": {
+  "label": "Blood Bromodichloromethane Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVBZ": {
+  "label": "Blood Benzene (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVBZLC": {
+  "label": "Blood Benzene Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVBZN": {
+  "label": "Blood Benzonitrile (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVZBLC": {
+  "label": "Blood Benzonitrile Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVC6": {
+  "label": "Blood Cyclohexane (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVC6LC": {
+  "label": "Blood Cyclohexane Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVCB": {
+  "label": "Blood Chlorobenzene (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVCBLC": {
+  "label": "Blood Chlorobenzene Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVCF": {
+  "label": "Blood Chloroform (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVCFLC": {
+  "label": "Blood Chloroform Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVCM": {
+  "label": "Blood Dibromochloromethane (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVCMLC": {
+  "label": "Blood Dibromochloromethane Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVCT": {
+  "label": "Blood Carbon Tetrachloride (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVCTLC": {
+  "label": "Blood Carbon Tetrachloride Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVDB": {
+  "label": "Blood 1,4-Dichlorobenzene (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVDBLC": {
+  "label": "Blood 1,4-Dichlorobenzene Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVDEE": {
+  "label": "Blood Diethyl Ether (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVEELC": {
+  "label": "Blood Diethyl Ether Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVEA": {
+  "label": "Blood Ethyl Acetate (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVEALC": {
+  "label": "Blood Ethyl Acetate Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVEB": {
+  "label": "Blood Ethylbenzene (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVEBLC": {
+  "label": "Blood Ethylbenzene Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVEC": {
+  "label": "Blood Chloroethane (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVECLC": {
+  "label": "Blood Chloroethane Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVFN": {
+  "label": "Blood Furan (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVFNLC": {
+  "label": "Blood Furan Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVIBN": {
+  "label": "Blood Isobutyronitrile (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVIBLC": {
+  "label": "Blood Isobutyronitrile Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVIPB": {
+  "label": "Blood Isopropylbenzene (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVIPLC": {
+  "label": "Blood Isopropylbenzene Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVMC": {
+  "label": "Blood Methylene Chloride (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVMCLC": {
+  "label": "Blood Methylene Chloride Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVMCP": {
+  "label": "Blood Methylcyclopentane (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVMPLC": {
+  "label": "Blood Methylcyclopentane Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVME": {
+  "label": "Blood MTBE (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVMELC": {
+  "label": "Blood MTBE Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVMIK": {
+  "label": "Blood Methyl Isobutyl Ketone (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVMKLC": {
+  "label": "Blood Methyl Isobutyl Ketone Comt Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVOX": {
+  "label": "Blood o-Xylene (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVOXLC": {
+  "label": "Blood o-Xylene Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVST": {
+  "label": "Blood Styrene (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVSTLC": {
+  "label": "Blood Styrene Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVTC": {
+  "label": "Blood Trichloroethene (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVTCLC": {
+  "label": "Blood Trichloroethene Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVTE": {
+  "label": "Blood 1,1,1-Trichloroethane (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVTELC": {
+  "label": "Blood 1,1,1-Trichloroethane Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVTHF": {
+  "label": "Blood Tetrahydrofuran (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVHTLC": {
+  "label": "Blood Tetrahydrofuran Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVTO": {
+  "label": "Blood Toluene (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVTOLC": {
+  "label": "Blood Toluene Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVTP": {
+  "label": "Blood 1,2,3-Trichloropropane (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVTPLC": {
+  "label": "Blood 1,2,3-Trichloropropane Comt Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBXVXY": {
+  "label": "Blood m-/p-Xylene (ng/mL)",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "LBDVXYLC": {
+  "label": "Blood m-/p-Xylene Comment Code",
+  "file": "VOCWB_L.xpt",
+  "component": "Laboratory"
+ },
+ "ACD010A": {
+  "label": "Speak English at home-Non-Hispanics",
+  "file": "ACQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "ACD010B": {
+  "label": "Speak Spanish at home-Non-Hispanics",
+  "file": "ACQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "ACD010C": {
+  "label": "Other language at home-Non-Hispanics",
+  "file": "ACQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "ACD040": {
+  "label": "Language(s) spoken at home-Hispanics",
+  "file": "ACQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "ALQ111": {
+  "label": "Ever had a drink of any kind of alcohol",
+  "file": "ALQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "ALQ121": {
+  "label": "Past 12 mos how often drink alc bev",
+  "file": "ALQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "ALQ130": {
+  "label": "Avg # alcoholic drinks/day/past 12 mos",
+  "file": "ALQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "ALQ142": {
+  "label": "# days have 4/5 drinks/past 12 mos",
+  "file": "ALQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "ALQ270": {
+  "label": "# times 4/5 drinks in 2hrs/past 12 mos",
+  "file": "ALQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "ALQ280": {
+  "label": "# times 8+ drinks in 1 day/past 12 mos",
+  "file": "ALQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "ALQ151": {
+  "label": "Ever have 4/5 or more drinks every day",
+  "file": "ALQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "ALQ170": {
+  "label": "# times 4/5 drinks on occasion/past mo",
+  "file": "ALQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "AUQ054": {
+  "label": "General condition of hearing",
+  "file": "AUQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "AUQ410A": {
+  "label": "Cause of hearing loss-Genetic/Hereditary",
+  "file": "AUQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "AUQ410B": {
+  "label": "Cause of hearing loss-Ear infections",
+  "file": "AUQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "AUQ410C": {
+  "label": "Cause of hearing loss-Ear diseases",
+  "file": "AUQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "AUQ410D": {
+  "label": "Cause of hearing loss-Illness/Infections",
+  "file": "AUQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "AUQ410E": {
+  "label": "Cause of hearing loss-Drugs/Medications",
+  "file": "AUQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "AUQ410F": {
+  "label": "Cause of hearing loss-Head/Neck injury",
+  "file": "AUQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "AUQ410G": {
+  "label": "Cause of hearing loss-Loud brief noise",
+  "file": "AUQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "AUQ410H": {
+  "label": "Cause of hearing loss-Long-term noise",
+  "file": "AUQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "AUQ410I": {
+  "label": "Cause of hearing loss-Aging",
+  "file": "AUQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "AUQ410J": {
+  "label": "Cause of hearing loss-Others",
+  "file": "AUQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "AUQ144": {
+  "label": "Last time hearing tested by specialist?",
+  "file": "AUQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "AUQ101": {
+  "label": "Difficult to follow conversation w/noise",
+  "file": "AUQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "BAQ321A": {
+  "label": "Past 12 months, problems with vertigo",
+  "file": "BAQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "BAQ321B": {
+  "label": "Past 12 months, prblms w/blurring vision",
+  "file": "BAQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "BAQ321C": {
+  "label": "Past 12 months, problems with unsteady",
+  "file": "BAQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "BAQ321D": {
+  "label": "Past 12 months, problems w/light-headed",
+  "file": "BAQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "BAQ341": {
+  "label": "Past 12 months, which bothered the most?",
+  "file": "BAQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "BAQ391A": {
+  "label": "Episodes with nausea or vomiting?",
+  "file": "BAQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "BAQ391B": {
+  "label": "Episodes with migraine/severe headache?",
+  "file": "BAQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "BAQ401": {
+  "label": "Balance prevent you from doing things",
+  "file": "BAQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "BAQ421": {
+  "label": "How much of a problem was balance?",
+  "file": "BAQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "BAQ431": {
+  "label": "Ever see health professional for balance",
+  "file": "BAQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "BAQ491": {
+  "label": "Ever tried to treat balance problems?",
+  "file": "BAQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "BAQ530": {
+  "label": "Past 5 years, how many times fallen?",
+  "file": "BAQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "BAQ550": {
+  "label": "Past 12 months, number of times fallen?",
+  "file": "BAQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "BAQ560": {
+  "label": "Past 12 mnths, have injury from falling?",
+  "file": "BAQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "BPQ020": {
+  "label": "Ever told you had high blood pressure",
+  "file": "BPQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "BPQ030": {
+  "label": "Told had high blood pressure - 2+ times",
+  "file": "BPQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "BPQ150": {
+  "label": "Taking high blood pressure medication",
+  "file": "BPQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "BPQ080": {
+  "label": "Doctor told you - high cholesterol level",
+  "file": "BPQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "BPQ101D": {
+  "label": "Taking meds to lower blood cholesterol?",
+  "file": "BPQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBQ010": {
+  "label": "Ever breastfed or fed breastmilk",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBD030": {
+  "label": "Age stopped breastfeeding (days)",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBD041": {
+  "label": "Age first fed formula (days)",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBD050": {
+  "label": "Age stopped receiving formula (days)",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBD055": {
+  "label": "Age started other food/beverage",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBD061": {
+  "label": "Age first fed milk (days)",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBQ073A": {
+  "label": "Type of milk first fed - whole milk",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBQ073B": {
+  "label": "Type of milk first fed - 2% milk",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBQ073C": {
+  "label": "Type of milk first fed - 1% milk",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBQ073D": {
+  "label": "Type of milk first fed - fat free milk",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBQ073E": {
+  "label": "Type of milk first fed - soy milk",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBQ073U": {
+  "label": "Type of milk first fed - other",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBQ301": {
+  "label": "Community/Government meals delivered",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBQ330": {
+  "label": "Eat meals at Community/Senior center",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBQ360": {
+  "label": "Attend kindergarten thru high school",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBQ370": {
+  "label": "School serves school lunches",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBD381": {
+  "label": "# of times/week get school lunch",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBQ390": {
+  "label": "School lunch free, reduced or full price",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBQ400": {
+  "label": "School serve complete breakfast each day",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBD411": {
+  "label": "# of times/week get school breakfast",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBQ421": {
+  "label": "School breakfast free/reduced/full price",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBQ424": {
+  "label": "Summer program meal free/reduced price",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBQ930": {
+  "label": "Main meal planner/preparer",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBQ935": {
+  "label": "Shared meal planning/preparing duty",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBQ940": {
+  "label": "Main food shopper",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DBQ945": {
+  "label": "Shared food shopping duty",
+  "file": "DBQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DEQ034A": {
+  "label": "Stay in the shade?",
+  "file": "DEQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DEQ034C": {
+  "label": "Wear a long sleeved shirt",
+  "file": "DEQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DEQ034D": {
+  "label": "Use sunscreen?",
+  "file": "DEQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DIQ010": {
+  "label": "Doctor told you have diabetes",
+  "file": "DIQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DID040": {
+  "label": "Age when first told you had diabetes",
+  "file": "DIQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DIQ160": {
+  "label": "Ever told you have prediabetes",
+  "file": "DIQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DIQ180": {
+  "label": "Had blood tested past three years",
+  "file": "DIQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DIQ050": {
+  "label": "Taking insulin now",
+  "file": "DIQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DID060": {
+  "label": "How long taking insulin",
+  "file": "DIQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DIQ060U": {
+  "label": "Unit of measure (month/year)",
+  "file": "DIQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DIQ070": {
+  "label": "Take diabetic pills to lower blood sugar",
+  "file": "DIQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DPQ010": {
+  "label": "Have little interest in doing things",
+  "file": "DPQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DPQ020": {
+  "label": "Feeling down, depressed, or hopeless",
+  "file": "DPQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DPQ030": {
+  "label": "Trouble sleeping or sleeping too much",
+  "file": "DPQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DPQ040": {
+  "label": "Feeling tired or having little energy",
+  "file": "DPQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DPQ050": {
+  "label": "Poor appetite or overeating",
+  "file": "DPQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DPQ060": {
+  "label": "Feeling bad about yourself",
+  "file": "DPQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DPQ070": {
+  "label": "Trouble concentrating on things",
+  "file": "DPQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DPQ080": {
+  "label": "Moving or speaking slowly or too fast",
+  "file": "DPQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DPQ090": {
+  "label": "Thought you would be better off dead",
+  "file": "DPQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "DPQ100": {
+  "label": "Difficulty these problems have caused",
+  "file": "DPQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "ECD070A": {
+  "label": "Weight at birth, pounds",
+  "file": "ECQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "ECD070B": {
+  "label": "Weight at birth, ounces",
+  "file": "ECQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "ECQ080": {
+  "label": "Weight more/less than 5.5 lbs",
+  "file": "ECQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "ECQ090": {
+  "label": "Weight more/less than 9.0 lbs",
+  "file": "ECQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "WHQ030E": {
+  "label": "How do you consider your child's weight",
+  "file": "ECQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ080E": {
+  "label": "Your child was overweight",
+  "file": "ECQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ021": {
+  "label": "Difficulty seeing even w/glasses",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ041": {
+  "label": "Difficulty hearing even w/hearing aids",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ050": {
+  "label": "Use equip or assistance for walking",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ060": {
+  "label": "Difficulty walking 100 yds w/o equipment",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ080": {
+  "label": "Difficulty walking 100 yards",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ160": {
+  "label": "Difficulty with self-care",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ100": {
+  "label": "Difficulty being understood inside HH",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ110": {
+  "label": "Difficulty being understood outside HH",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ120": {
+  "label": "Difficulty learning things",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ170": {
+  "label": "Difficulty remembering things",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ180": {
+  "label": "Difficulty concentrating",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ190": {
+  "label": "Difficulty accepting change",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ130": {
+  "label": "Difficulty controlling behavior",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ200": {
+  "label": "Difficulty making friends",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ140": {
+  "label": "How often very anxious/nervous/worried",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ150": {
+  "label": "How often very sad/depressed",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNDCDI": {
+  "label": "CFM Disability Indicator for 5-17 years",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ410": {
+  "label": "Difficulty seeing even w/glasses",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ430": {
+  "label": "Difficulty hearing even w/hearing aids",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ440": {
+  "label": "Difficulty walking or climbing steps",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ450": {
+  "label": "Difficulty communicating",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ460": {
+  "label": "Difficulty remembering or concentrating",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ470": {
+  "label": "Difficulty with self-care",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ480": {
+  "label": "Difficulty raising a 2-liter bottle",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ490": {
+  "label": "Difficulty using hands and fingers",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ510": {
+  "label": "How often feel worried/nervous/anxious",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ520": {
+  "label": "Level of feeling worried/nervous/anxious",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ530": {
+  "label": "How often feel depressed",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNQ540": {
+  "label": "Level of feeling depressed",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNDADI": {
+  "label": "WG-SS Disability Indicator 18+",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FNDAEDI": {
+  "label": "WG-SS Enhanced Disability Indicator 18+",
+  "file": "FNQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD032A": {
+  "label": "HH Worried run out of food",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD032B": {
+  "label": "HH Food didn't last",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD032C": {
+  "label": "HH Couldn't afford balanced meals",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD041": {
+  "label": "HH Adults cut size or skip meals",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD052": {
+  "label": "HH How often adults cut size/skip meals",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD061": {
+  "label": "HH Eat less than should",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD071": {
+  "label": "HH Hungry, but didn't eat",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD081": {
+  "label": "HH Lost weight, no money for food",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD092": {
+  "label": "HH Adults not eat whole day",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD102": {
+  "label": "HH How often adults not eat for day",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSDAD": {
+  "label": "Adult food security category",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD151": {
+  "label": "HH Emergency food received",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSQ165": {
+  "label": "HH FS benefit: ever received",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD165N": {
+  "label": "HH FS benefit: # of people ever received",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSQ012": {
+  "label": "HH FS benefit: receive in last 12 months",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD012N": {
+  "label": "HH FS benefit: # of people received(12m)",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD230": {
+  "label": "HH FS benefit: currently receive",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD230N": {
+  "label": "HH FS benefit: #people currently receive",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD795": {
+  "label": "HH FS benefit: # of months received",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD225": {
+  "label": "HH FS benefit: time since last received",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD235": {
+  "label": "HH FS benefit: amount received last time",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD162": {
+  "label": "HH WIC benefit: receive in last 12 month",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSQ760": {
+  "label": "HH WIC benefit: received in last 30 days",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD760N": {
+  "label": "HH WIC benefit: no. people received",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSQ653": {
+  "label": "CH WIC benefit: ever received",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD660ZC": {
+  "label": "CH WIC benefit: currently receive",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD675": {
+  "label": "CH WIC benefit: received in infancy",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD680": {
+  "label": "CH WIC benefit: received b/w 1-4 yrs old",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSD670ZC": {
+  "label": "CH WIC benefit: # of months received",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSQ690": {
+  "label": "CH WIC benefit: Mom received while preg.",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "FSQ695": {
+  "label": "CH WIC benefit: starting month of preg.",
+  "file": "FSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "HEQ010": {
+  "label": "Ever told you have Hepatitis B?",
+  "file": "HEQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "HIQ011": {
+  "label": "Covered by health insurance",
+  "file": "HIQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "HIQ032A": {
+  "label": "Covered by private insurance",
+  "file": "HIQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "HIQ032B": {
+  "label": "Covered by Medicare",
+  "file": "HIQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "HIQ032C": {
+  "label": "Covered by Medi-Gap",
+  "file": "HIQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "HIQ032D": {
+  "label": "Covered by Medicaid",
+  "file": "HIQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "HIQ032E": {
+  "label": "Covered by CHIP",
+  "file": "HIQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "HIQ032F": {
+  "label": "Covered by military health care",
+  "file": "HIQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "HIQ032H": {
+  "label": "Covered by state-sponsored health plan",
+  "file": "HIQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "HIQ032I": {
+  "label": "Covered by other government insurance",
+  "file": "HIQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "HIQ210": {
+  "label": "Time when no insurance in past year?",
+  "file": "HIQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "HOD051": {
+  "label": "Number of rooms in home",
+  "file": "HOQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "HSQ590": {
+  "label": "Blood ever tested for HIV virus?",
+  "file": "HSQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "HUQ010": {
+  "label": "General health condition",
+  "file": "HUQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "HUQ030": {
+  "label": "Routine place to go for healthcare",
+  "file": "HUQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "HUQ042": {
+  "label": "Type place most often go for healthcare",
+  "file": "HUQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "HUQ055": {
+  "label": "Past 12 months had video conf w/Dr?",
+  "file": "HUQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "HUQ090": {
+  "label": "Seen mental health professional/past yr",
+  "file": "HUQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "IMQ011": {
+  "label": "Received Hepatitis A vaccine",
+  "file": "IMQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "IMQ060": {
+  "label": "Received HPV vaccine (Females)",
+  "file": "IMQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "IMQ070": {
+  "label": "Received HPV vaccine (Males)",
+  "file": "IMQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "IMQ090": {
+  "label": "Age first dose HPV",
+  "file": "IMQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "IMQ100": {
+  "label": "Received HPV, # of doses",
+  "file": "IMQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "INDFMMPI": {
+  "label": "Family monthly poverty level index",
+  "file": "INQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "INDFMMPC": {
+  "label": "Family monthly poverty level category",
+  "file": "INQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "INQ300": {
+  "label": "Family has savings more than $20,000",
+  "file": "INQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "IND310": {
+  "label": "Total savings/cash assets for the family",
+  "file": "INQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "KIQ022": {
+  "label": "Ever told you had weak/failing kidneys?",
+  "file": "KIQ_U_L.xpt",
+  "component": "Questionnaire"
+ },
+ "KIQ025": {
+  "label": "Received dialysis in past 12 months?",
+  "file": "KIQ_U_L.xpt",
+  "component": "Questionnaire"
+ },
+ "KIQ005": {
+  "label": "How often have urinary leakage?",
+  "file": "KIQ_U_L.xpt",
+  "component": "Questionnaire"
+ },
+ "KIQ010": {
+  "label": "How much urine lose each time?",
+  "file": "KIQ_U_L.xpt",
+  "component": "Questionnaire"
+ },
+ "KIQ042": {
+  "label": "Leak urine during physical activities?",
+  "file": "KIQ_U_L.xpt",
+  "component": "Questionnaire"
+ },
+ "KIQ044": {
+  "label": "Urinated before reaching the toilet?",
+  "file": "KIQ_U_L.xpt",
+  "component": "Questionnaire"
+ },
+ "KIQ052": {
+  "label": "How much were daily activities affected?",
+  "file": "KIQ_U_L.xpt",
+  "component": "Questionnaire"
+ },
+ "KIQ481": {
+  "label": "How many times wake up and urinate?",
+  "file": "KIQ_U_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ010": {
+  "label": "Ever been told you have asthma",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ035": {
+  "label": "Still have asthma",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ040": {
+  "label": "Had asthma attack in past year",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ050": {
+  "label": "Emergency care visit for asthma/past yr",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "AGQ030": {
+  "label": "Did SP have episode of hay fever/past yr",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ053": {
+  "label": "Taking treatment for anemia/past 3 mos",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ149": {
+  "label": "Menstrual periods started yet?",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ160A": {
+  "label": "Doctor ever said you had arthritis",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ195": {
+  "label": "Which type of arthritis was it?",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ160B": {
+  "label": "Ever told had congestive heart failure",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ160C": {
+  "label": "Ever told you had coronary heart disease",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ160D": {
+  "label": "Ever told you had angina/angina pectoris",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ160E": {
+  "label": "Ever told you had heart attack",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ160F": {
+  "label": "Ever told you had a stroke",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ160M": {
+  "label": "Ever told you had thyroid problem",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ170M": {
+  "label": "Do you still have thyroid problem",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ160P": {
+  "label": "Ever told you had COPD, emphysema, ChB",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ160L": {
+  "label": "Ever told you had any liver condition",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ170L": {
+  "label": "Do you still have a liver condition",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ500": {
+  "label": "Ever told you had any liver condition",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ510A": {
+  "label": "Liver condition: Fatty liver",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ510B": {
+  "label": "Liver condition: Liver fibrosis",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ510C": {
+  "label": "Liver condition: Liver cirrhosis",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ510D": {
+  "label": "Liver condition: Viral hepatitis",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ510E": {
+  "label": "Liver condition: Autoimmune hepatitis",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ510F": {
+  "label": "Liver condition: Other liver disease",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ550": {
+  "label": "Has DR ever said you have gallstones",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ560": {
+  "label": "Ever had gallbladder surgery?",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ220": {
+  "label": "Ever told you had cancer or malignancy",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ230A": {
+  "label": "1st cancer - what kind was it?",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ230B": {
+  "label": "2nd cancer - what kind was it?",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ230C": {
+  "label": "3rd cancer - what kind was it?",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "MCQ230D": {
+  "label": "More than 3 kinds of cancer",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "OSQ230": {
+  "label": "Any metal objects inside your body?",
+  "file": "MCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "OCD150": {
+  "label": "Type of work done last week",
+  "file": "OCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "OCQ180": {
+  "label": "Number of hours worked in the last week",
+  "file": "OCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "OCQ210": {
+  "label": "Usually work 35 or more hours per week",
+  "file": "OCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "OCQ215": {
+  "label": "Number of days usually worked per week",
+  "file": "OCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "OCQ383": {
+  "label": "Main reason did not work last week",
+  "file": "OCQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "OHQ845": {
+  "label": "Rate the health of your teeth and gums",
+  "file": "OHQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "OHQ620": {
+  "label": "How often last yr. had aching in mouth?",
+  "file": "OHQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "OHQ630": {
+  "label": "How often felt bad because of mouth?",
+  "file": "OHQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "OHQ640": {
+  "label": "Last yr had diff w/ job because of mouth",
+  "file": "OHQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "OHQ660": {
+  "label": "Last yr avoid some food because of mouth",
+  "file": "OHQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "OHQ670": {
+  "label": "Last yr couldn't eat because of mouth",
+  "file": "OHQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "OHQ680": {
+  "label": "Last yr embarrassed because of mouth",
+  "file": "OHQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "PAQ706": {
+  "label": "Days physically active at least 60 min.",
+  "file": "PAQY_L.xpt",
+  "component": "Questionnaire"
+ },
+ "PAQ711": {
+  "label": "Hours per day TV/ videos watched?",
+  "file": "PAQY_L.xpt",
+  "component": "Questionnaire"
+ },
+ "PAD790Q": {
+  "label": "Frequency of moderate LTPA",
+  "file": "PAQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "PAD790U": {
+  "label": "Moderate LTPA unit (day/week/month/year)",
+  "file": "PAQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "PAD800": {
+  "label": "Minutes moderate LTPA",
+  "file": "PAQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "PAD810Q": {
+  "label": "Frequency of vigorous LTPA",
+  "file": "PAQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "PAD810U": {
+  "label": "Vigorous LTPA unit (day/week/month/year)",
+  "file": "PAQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "PAD820": {
+  "label": "Minutes vigorous LTPA",
+  "file": "PAQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "PAD680": {
+  "label": "Minutes sedentary activity",
+  "file": "PAQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "PUQ100": {
+  "label": "Products used in home to control insects",
+  "file": "PUQMEC_L.xpt",
+  "component": "Questionnaire"
+ },
+ "PUQ110": {
+  "label": "Products used to kill weeds?",
+  "file": "PUQMEC_L.xpt",
+  "component": "Questionnaire"
+ },
+ "RHQ010": {
+  "label": "Age when first menstrual period occurred",
+  "file": "RHQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "RHQ031": {
+  "label": "Had regular periods in past 12 months",
+  "file": "RHQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "RHD043": {
+  "label": "Reason not having regular periods",
+  "file": "RHQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "RHQ060": {
+  "label": "Age at last menstrual period",
+  "file": "RHQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "RHQ078": {
+  "label": "Ever treated for a pelvic infection/PID?",
+  "file": "RHQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "RHQ131": {
+  "label": "Ever been pregnant?",
+  "file": "RHQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "RHD143": {
+  "label": "Are you pregnant now?",
+  "file": "RHQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "RHD167": {
+  "label": "Total number of deliveries",
+  "file": "RHQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "RHQ200": {
+  "label": "Now breastfeeding a child?",
+  "file": "RHQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "RHD280": {
+  "label": "Had a hysterectomy?",
+  "file": "RHQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "RHQ305": {
+  "label": "Had both ovaries removed?",
+  "file": "RHQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "RHQ332": {
+  "label": "Age when both ovaries removed",
+  "file": "RHQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "RXQ510": {
+  "label": "Dr told to take daily low-dose aspirin?",
+  "file": "RXQASA_L.xpt",
+  "component": "Questionnaire"
+ },
+ "RXQ515": {
+  "label": "Followed advice, took low-dose aspirin?",
+  "file": "RXQASA_L.xpt",
+  "component": "Questionnaire"
+ },
+ "RXQ520": {
+  "label": "Taking low-dose aspirin on your own?",
+  "file": "RXQASA_L.xpt",
+  "component": "Questionnaire"
+ },
+ "RXQ033": {
+  "label": "Taken prescription medicine, past month",
+  "file": "RXQ_RX_L.xpt",
+  "component": "Questionnaire"
+ },
+ "RXQ050": {
+  "label": "Number of prescription medicines taken",
+  "file": "RXQ_RX_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SLQ300": {
+  "label": "Usual sleep time on weekdays or workdays",
+  "file": "SLQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SLQ310": {
+  "label": "Usual wake time on weekdays or workdays",
+  "file": "SLQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SLD012": {
+  "label": "Sleep hours - weekdays or workdays",
+  "file": "SLQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SLQ320": {
+  "label": "Usual sleep time on weekends",
+  "file": "SLQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SLQ330": {
+  "label": "Usual wake time on weekends",
+  "file": "SLQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SLD013": {
+  "label": "Sleep hours - weekends",
+  "file": "SLQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMD460": {
+  "label": "# of people who live here smoke tobacco?",
+  "file": "SMQFAM_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMD470": {
+  "label": "# of people who smoke inside this home?",
+  "file": "SMQFAM_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMQ681": {
+  "label": "Smoked tobacco last 5 days?",
+  "file": "SMQRTU_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMQ690A": {
+  "label": "Used last 5 days - Cigarettes",
+  "file": "SMQRTU_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMQ710": {
+  "label": "# days smoked cigarettes last 5 days",
+  "file": "SMQRTU_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMQ720": {
+  "label": "# cigarettes smoked per day",
+  "file": "SMQRTU_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMQ725": {
+  "label": "When did resp. smoke last cigarette?",
+  "file": "SMQRTU_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMQ690B": {
+  "label": "Used last 5 days - Pipes",
+  "file": "SMQRTU_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMQ740": {
+  "label": "# days smoked pipe over last 5 days",
+  "file": "SMQRTU_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMQ690C": {
+  "label": "Used last 5 days - Cigars",
+  "file": "SMQRTU_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMQ770": {
+  "label": "# days smoked cigars over last 5 days",
+  "file": "SMQRTU_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMQ690G": {
+  "label": "Used last 5 days - Hookah, water pipes",
+  "file": "SMQRTU_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMQ845": {
+  "label": "# days smoked water pipe last 5 days",
+  "file": "SMQRTU_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMQ846": {
+  "label": "Used last 5 days - E-cigarettes",
+  "file": "SMQRTU_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMQ849": {
+  "label": "# days used e-cigarettes last 5 days",
+  "file": "SMQRTU_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMQ851": {
+  "label": "Used smokeless tobacco last 5 days?",
+  "file": "SMQRTU_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMQ690D": {
+  "label": "Used last 5 days - Chewing tobacco",
+  "file": "SMQRTU_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMQ690E": {
+  "label": "Used last 5 days - Snuff",
+  "file": "SMQRTU_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMQ690K": {
+  "label": "Used last 5 days - Other smokeless",
+  "file": "SMQRTU_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMQ863": {
+  "label": "Used nicotine replacement last 5 days?",
+  "file": "SMQRTU_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMQ690F": {
+  "label": "Used last 5 days - Patch, gum, other",
+  "file": "SMQRTU_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMDANY": {
+  "label": "Used any tobacco product last 5 days?",
+  "file": "SMQRTU_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMQ020": {
+  "label": "Smoked at least 100 cigarettes in life",
+  "file": "SMQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMQ040": {
+  "label": "Do you now smoke cigarettes?",
+  "file": "SMQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMD641": {
+  "label": "# days smoked cigs during past 30 days",
+  "file": "SMQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMD650": {
+  "label": "Avg # cigarettes/day during past 30 days",
+  "file": "SMQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMD100MN": {
+  "label": "Cigarette Menthol indicator",
+  "file": "SMQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMQ621": {
+  "label": "Cigarettes smoked in entire life",
+  "file": "SMQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMD630": {
+  "label": "Age first smoked whole cigarette",
+  "file": "SMQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "SMAQUEX2": {
+  "label": "Questionnaire Mode Flag",
+  "file": "SMQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "VTQ231A": {
+  "label": "Use moth balls or toilet deodorizers?",
+  "file": "VTQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "VTQ233A": {
+  "label": "Past 3 days inhale smoke for 10 minutes",
+  "file": "VTQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "VTQ233B": {
+  "label": "When did you last inhale smoke for 10min",
+  "file": "VTQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "VTQ244A": {
+  "label": "Did you pump gas into your car?",
+  "file": "VTQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "VTD244B": {
+  "label": "Long ago did you pump gas in your car?",
+  "file": "VTQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "VTQ261A": {
+  "label": "In last 48 hrs use dry cleaning solvent?",
+  "file": "VTQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "VTD261B": {
+  "label": "Long since use dry cleaning solvents?",
+  "file": "VTQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "VTQ271A": {
+  "label": "In last 48 hrs, bathe for 5+ minutes?",
+  "file": "VTQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "VTD271B": {
+  "label": "How long, in hrs, since you bathed?",
+  "file": "VTQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "VTQ281A": {
+  "label": "In past 48 hrs breathe paint fumes?",
+  "file": "VTQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "VTD281B": {
+  "label": "How long, since breathed paint fumes?",
+  "file": "VTQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "WHD010": {
+  "label": "Current self-reported height (inches)",
+  "file": "WHQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "WHD020": {
+  "label": "Current self-reported weight (pounds)",
+  "file": "WHQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "WHD050": {
+  "label": "Self-reported weight - 1 yr ago (pounds)",
+  "file": "WHQ_L.xpt",
+  "component": "Questionnaire"
+ },
+ "WHQ070": {
+  "label": "Tried to lose weight in past year",
+  "file": "WHQ_L.xpt",
+  "component": "Questionnaire"
+ }
+}

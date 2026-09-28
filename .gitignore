@@ -25,3 +25,10 @@ scripts/.hcpcs_clean_checkpoint.json
 web/public/duckdb-eh.wasm
 web/public/duckdb-browser-eh.worker.js
 .vercel
+
+# Local BRFSS/NHANES build artifacts (uploaded to Railway, too large for git)
+data/*.parquet
+data/brfss_full/
+data/brfss_xpt/
+data/nhanes_xpt/
+data/.DS_Store

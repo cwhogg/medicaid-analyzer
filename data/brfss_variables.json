@@ -1,0 +1,6895 @@
+{
+ "_STATE": {
+  "label": "STATE FIPS CODE",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "SEXVAR": {
+  "label": "SEX OF RESPONDENT",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_SEX": {
+  "label": "CALCULATED SEX VARIABLE",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_AGEG5YR": {
+  "label": "REPORTED AGE IN FIVE-YEAR AGE CATEGORIES",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_AGE80": {
+  "label": "IMPUTED AGE VALUE COLLAPSED ABOVE 80",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_AGE_G": {
+  "label": "IMPUTED AGE IN SIX GROUPS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_IMPRACE": {
+  "label": "IMPUTED RACE/ETHNICITY VALUE",
+  "years": [
+   2014,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_RACEGR3": {
+  "label": "COMPUTED FIVE LEVEL RACE/ETHNICITY CATEG",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "EDUCA": {
+  "label": "EDUCATION LEVEL",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_EDUCAG": {
+  "label": "COMPUTED LEVEL OF EDUCATION COMPLETED CA",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "INCOME3": {
+  "label": "INCOME LEVEL",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "INCOME2": {
+  "label": "INCOME LEVEL",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "_INCOMG1": {
+  "label": "COMPUTED INCOME CATEGORIES",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "_INCOMG": {
+  "label": "COMPUTED INCOME CATEGORIES",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "MARITAL": {
+  "label": "MARITAL STATUS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "EMPLOY1": {
+  "label": "EMPLOYMENT STATUS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "VETERAN3": {
+  "label": "ARE YOU A VETERAN",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CHILDREN": {
+  "label": "NUMBER OF CHILDREN IN HOUSEHOLD",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "GENHLTH": {
+  "label": "GENERAL HEALTH",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "PHYSHLTH": {
+  "label": "NUMBER OF DAYS PHYSICAL HEALTH NOT GOOD",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "MENTHLTH": {
+  "label": "NUMBER OF DAYS MENTAL HEALTH NOT GOOD",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "POORHLTH": {
+  "label": "POOR PHYSICAL OR MENTAL HEALTH",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_RFHLTH": {
+  "label": "ADULTS WITH GOOD OR BETTER HEALTH",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_PHYS14D": {
+  "label": "COMPUTED PHYSICAL HEALTH STATUS",
+  "years": [
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_MENT14D": {
+  "label": "COMPUTED MENTAL HEALTH STATUS",
+  "years": [
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "BPHIGH6": {
+  "label": null,
+  "years": [
+   2015,
+   2017,
+   2019,
+   2023
+  ]
+ },
+ "CVDINFR4": {
+  "label": "EVER DIAGNOSED WITH HEART ATTACK",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CVDCRHD4": {
+  "label": "EVER DIAGNOSED WITH ANGINA OR CORONARY H",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CVDSTRK3": {
+  "label": "EVER DIAGNOSED WITH A STROKE",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "ASTHMA3": {
+  "label": "EVER TOLD HAD ASTHMA",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "ASTHNOW": {
+  "label": "STILL HAVE ASTHMA",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "DIABETE4": {
+  "label": "(EVER TOLD) YOU HAD DIABETES",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CHCCOPD3": {
+  "label": "EVER TOLD YOU HAD C.O.P.D. EMPHYSEMA OR",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "ADDEPEV3": {
+  "label": "(EVER TOLD) YOU HAD A DEPRESSIVE DISORDE",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CHCKDNY2": {
+  "label": "EVER TOLD YOU HAVE KIDNEY DISEASE?",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "HAVARTH4": {
+  "label": "TOLD HAVE ARTHRITIS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CHCSCNC1": {
+  "label": "(EVER TOLD) (YOU HAD) SKIN CANCER THAT I",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CHCOCNC1": {
+  "label": "(EVER TOLD) (YOU HAD) MELANOMA OR ANY OT",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_MICHD": {
+  "label": "RESPONDENTS THAT HAVE EVER REPORTED HAVI",
+  "years": [
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "PRIMINS1": {
+  "label": null,
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "PERSDOC3": {
+  "label": "HAVE PERSONAL HEALTH CARE PROVIDER?",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "MEDCOST1": {
+  "label": "COULD NOT AFFORD TO SEE DOCTOR",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CHECKUP1": {
+  "label": "LENGTH OF TIME SINCE LAST ROUTINE CHECKU",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_HLTHPL1": {
+  "label": null,
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "_HCVU653": {
+  "label": null,
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "EXERANY2": {
+  "label": "EXERCISE IN PAST 30 DAYS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_TOTINDA": {
+  "label": "LEISURE TIME PHYSICAL ACTIVITY CALCULATE",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "SMOKE100": {
+  "label": "SMOKED AT LEAST 100 CIGARETTES",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_SMOKER3": {
+  "label": "COMPUTED SMOKING STATUS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_CURECI2": {
+  "label": null,
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "ALCDAY4": {
+  "label": "DAYS IN PAST 30 HAD ALCOHOLIC BEVERAGE",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_RFBING6": {
+  "label": "BINGE DRINKING CALCULATED VARIABLE",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_RFDRHV8": {
+  "label": null,
+  "years": [
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_DRNKWK2": {
+  "label": null,
+  "years": [
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_BMI5": {
+  "label": "COMPUTED BODY MASS INDEX",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_BMI5CAT": {
+  "label": "COMPUTED BODY MASS INDEX CATEGORIES",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_RFBMI5": {
+  "label": "OVERWEIGHT OR OBESE CALCULATED VARIABLE",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "FLUSHOT7": {
+  "label": "ADULT FLU SHOT/SPRAY PAST 12 MOS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "PNEUVAC4": {
+  "label": "PNEUMONIA SHOT EVER",
+  "years": [
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "HIVTST7": {
+  "label": "EVER TESTED H.I.V.",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_FLSHOT7": {
+  "label": "FLU SHOT CALCULATED VARIABLE",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "DEAF": {
+  "label": "ARE YOU DEAF OR DO YOU HAVE SERIOUS DIFF",
+  "years": [
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "BLIND": {
+  "label": "BLIND OR DIFFICULTY SEEING",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "DECIDE": {
+  "label": "DIFFICULTY CONCENTRATING OR REMEMBERING",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "DIFFWALK": {
+  "label": "DIFFICULTY WALKING OR CLIMBING STAIRS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "DIFFDRES": {
+  "label": "DIFFICULTY DRESSING OR BATHING",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "DIFFALON": {
+  "label": "DIFFICULTY DOING ERRANDS ALONE",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "SEATBELT": {
+  "label": "HOW OFTEN USE SEATBELTS IN CAR?",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2020,
+   2023
+  ]
+ },
+ "SDHBILLS": {
+  "label": "WERE YOU NOT ABLE TO PAY YOUR BILLS?",
+  "years": [
+   2017,
+   2023,
+   2024
+  ]
+ },
+ "SDHEMPLY": {
+  "label": "HAVE YOU LOST EMPLOYMENT OR HAD HOURS RE",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "SDHFOOD1": {
+  "label": "HOW OFTEN DID THE FOOD THAT YOU BOUGHT N",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "SDHTRNSP": {
+  "label": "HAS A LACK OF RELIABLE TRANSPORTATION KE",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "SDHUTILS": {
+  "label": "WERE YOU NOT ABLE TO PAY UTILITY BILLS O",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "SDLONELY": {
+  "label": "HOW OFTEN DO YOU FEEL LONELY?",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "ACEADNED": {
+  "label": "DID AN ADULT MAKE SURE BASIC NEEDS WERE",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "ACEADSAF": {
+  "label": "DID AN ADULT MAKE YOU FEEL SAFE AND PROT",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "ACEDEPRS": {
+  "label": "LIVE WITH ANYONE DEPRESSED, MENTALLY ILL",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "ACEDIVRC": {
+  "label": "WERE YOUR PARENTS DIVORCED/SEPERATED?",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "ACEDRINK": {
+  "label": "LIVE WITH A PROBLEM DRINKER/ALCOHOLIC?",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "ACEDRUGS": {
+  "label": "LIVE WITH ANYONE WHO USED ILLEGAL DRUGS",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "ACEHURT1": {
+  "label": "HOW OFTEN DID A PARENT PHYSICALLY HURT Y",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "ACEHVSEX": {
+  "label": "HOW OFTEN DID ANYONE EVER FORCE YOU TO H",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "ACEPRISN": {
+  "label": "LIVE WITH ANYONE WHO SERVED TIME IN PRIS",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "ACEPUNCH": {
+  "label": "HOW OFTEN DID YOUR PARENTS BEAT EACH OTH",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "ACESWEAR": {
+  "label": "HOW OFTEN DID A PARENT SWEAR AT YOU?",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "ACETOUCH": {
+  "label": "HOW OFTEN DID ANYONE EVER TOUCH YOU SEXU",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "ACETTHEM": {
+  "label": "HOW OFTEN DID ANYONE MAKE YOU TOUCH THEM",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "MARIJAN1": {
+  "label": "DURING THE PAST 30 DAYS, ON HOW MANY DAY",
+  "years": [
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "MARJSMOK": {
+  "label": "DID YOU SMOKE MARIJUANA OR CANNABIS?",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "MARJEAT": {
+  "label": "DID YOU EAT MARIJUANA OR CANNABIS?",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "MARJVAPE": {
+  "label": "DID YOU VAPE MARIJUANA OR CANNABIS?",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "MARJDAB": {
+  "label": "DID YOU DAB MARIJUANA OR CANNABIS?",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "MARJOTHR": {
+  "label": "DID YOU USE MARIJUANA OR CANNABIS SOME O",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "EMTSUPRT": {
+  "label": "HOW OFTEN GET EMOTIONAL SUPPORT NEEDED",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2023,
+   2024
+  ]
+ },
+ "LSATISFY": {
+  "label": "SATISFACTION WITH LIFE",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2023,
+   2024
+  ]
+ },
+ "_LLCPWT": {
+  "label": "FINAL WEIGHT: LAND-LINE AND CELL-PHONE D",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_STSTR": {
+  "label": "SAMPLE DESIGN STRATIFICATION VARIABLE",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_PSU": {
+  "label": "PRIMARY SAMPLING UNIT",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "survey_year": {
+  "label": null,
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "ACTIN11_": {
+  "label": "ESTIMATED ACTIVITY INTENSITY FOR FIRST A",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "ACTIN12_": {
+  "label": "ESTIMATED ACTIVITY INTENSITY FOR FIRST A",
+  "years": [
+   2019
+  ]
+ },
+ "ACTIN13_": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "ACTIN21_": {
+  "label": "ESTIMATED ACTIVITY INTENSITY FOR SECOND",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "ACTIN22_": {
+  "label": "ESTIMATED ACTIVITY INTENSITY FOR SECOND",
+  "years": [
+   2019
+  ]
+ },
+ "ACTIN23_": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "ADANXEV": {
+  "label": "EVER TOLD YOU HAD AN ANXIETY DISORDER",
+  "years": [
+   2015
+  ]
+ },
+ "ADDEPEV2": {
+  "label": "EVER TOLD YOU HAD A DEPRESSIVE DISORDER",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "ADDOWN": {
+  "label": "DAYS FELT DOWN, DEPRESSED OR HOPELESS",
+  "years": [
+   2015
+  ]
+ },
+ "ADDOWN1": {
+  "label": "FELT DOWN, DEPRESSED OR HOPELESS",
+  "years": [
+   2018
+  ]
+ },
+ "ADEAT1": {
+  "label": "DAYS ATE TOO LITTLE OR TOO MUCH",
+  "years": [
+   2015
+  ]
+ },
+ "ADENERGY": {
+  "label": "DAYS WERE TIRED OR HAD LITTLE ENERGY",
+  "years": [
+   2015
+  ]
+ },
+ "ADFAIL": {
+  "label": "DAYS FELT LIKE FAILURE OR LET FAMILY DOW",
+  "years": [
+   2015
+  ]
+ },
+ "ADMOVE": {
+  "label": "DAYS TALKED TO MOVE SLOWER OR FASTER THA",
+  "years": [
+   2015
+  ]
+ },
+ "ADPLEAS1": {
+  "label": "HAD LITTLE PLEASURE DOING THINGS",
+  "years": [
+   2018
+  ]
+ },
+ "ADPLEASR": {
+  "label": "DAYS HAD LITTLE PLEASURE DOING THINGS",
+  "years": [
+   2015
+  ]
+ },
+ "ADSLEEP": {
+  "label": "DAYS HAD TROUBLE WITH SLEEP",
+  "years": [
+   2015,
+   2017,
+   2018
+  ]
+ },
+ "ADTHINK": {
+  "label": "DAYS HAD TROUBLE CONCENTRATING",
+  "years": [
+   2015
+  ]
+ },
+ "ARTHDIS2": {
+  "label": "DOES ARTHRITIS AFFECT WHETHER YOU WORK",
+  "years": [
+   2015,
+   2017,
+   2019,
+   2023
+  ]
+ },
+ "ARTHEDU": {
+  "label": "EVER TAKEN CLASS IN MANAGING ARTHRITIS O",
+  "years": [
+   2015,
+   2017,
+   2019,
+   2023
+  ]
+ },
+ "ARTHEXER": {
+  "label": "DR. SUGGEST USE OF PHYSICAL ACTIVITY OR",
+  "years": [
+   2015,
+   2017,
+   2019,
+   2023,
+   2024
+  ]
+ },
+ "ARTHSOCL": {
+  "label": "SOCIAL ACTIVITIES LIMITED BECAUSE OF JOI",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "ARTHWGT": {
+  "label": "DR. SUGGEST LOSE WEIGHT FOR ARTHRITIS OR",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "ARTTODAY": {
+  "label": "WHAT CAN YOU DO BECAUSE OF ARTHRITIS OR",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "ASACTLIM": {
+  "label": "ACTIVITIES LIMITED DUE TO ASTHMA DURING",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017
+  ]
+ },
+ "ASATTACK": {
+  "label": "ASTHMA DURING PAST 12 MONTHS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017
+  ]
+ },
+ "ASBIADVC": {
+  "label": "OFFERED ADVICE ABOUT WHAT LEVEL OF DRINK",
+  "years": [
+   2014,
+   2017,
+   2019
+  ]
+ },
+ "ASBIALCH": {
+  "label": "ASKED DURING CHECKUP IF YOU DRINK ALCHOH",
+  "years": [
+   2014,
+   2017,
+   2019
+  ]
+ },
+ "ASBIBING": {
+  "label": "ASKED WHETHER YOU DRANK [5 FOR MEN /4 FO",
+  "years": [
+   2014,
+   2017,
+   2019
+  ]
+ },
+ "ASBIDRNK": {
+  "label": "ASKED IN PERSON OR BY FORM HOW MUCH YOU",
+  "years": [
+   2014,
+   2017,
+   2019
+  ]
+ },
+ "ASBIRDUC": {
+  "label": "WERE YOU ADVISED TO REDUCE OR QUIT YOUR",
+  "years": [
+   2014,
+   2017,
+   2019
+  ]
+ },
+ "ASDRVIST": {
+  "label": "URGENT ASTHMA TREATMENT DURING PAST 12 M",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017
+  ]
+ },
+ "ASERVIST": {
+  "label": "EMERGENCY ASTHMA CARE DURING PAST 12 MON",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017
+  ]
+ },
+ "ASINHALR": {
+  "label": "TIMES USED ASTHMA INHALER DURING AN ATTA",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017
+  ]
+ },
+ "ASNOSLEP": {
+  "label": "SLEEP DIFFICULTY DUE TO ASTHMA DURING PA",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017
+  ]
+ },
+ "ASPIRIN": {
+  "label": "HOW OFTEN DO YOU TAKE AN ASPIRIN",
+  "years": [
+   2019,
+   2023
+  ]
+ },
+ "ASPUNSAF": {
+  "label": "HEALTH MAKES TAKING ASPIRIN UNSAFE",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "ASRCHKUP": {
+  "label": "ROUTINE ASTHMA CARE DURING PAST 12 MONTH",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017
+  ]
+ },
+ "ASTHMAGE": {
+  "label": "AGE AT ASTHMA DIAGNOSIS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017
+  ]
+ },
+ "ASTHMED3": {
+  "label": "DAYS USED PRESCRIBED PREVENTATIVE ASTHMA",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017
+  ]
+ },
+ "ASYMPTOM": {
+  "label": "ASTHMA SYMPTOMS DURING PAST 30 DAYS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017
+  ]
+ },
+ "AVEDRNK2": {
+  "label": "AVG ALCOHOLIC DRINKS PER DAY IN PAST 30",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "AVEDRNK3": {
+  "label": "AVG ALCOHOLIC DRINKS PER DAY IN PAST 30",
+  "years": [
+   2019,
+   2020,
+   2023
+  ]
+ },
+ "AVEDRNK4": {
+  "label": "AVG ALCOHOLIC DRINKS PER DAY IN PAST 30",
+  "years": [
+   2024
+  ]
+ },
+ "BEANDAY_": {
+  "label": "COMPUTED BEAN INTAKE IN TIMES PER DAY",
+  "years": [
+   2015
+  ]
+ },
+ "BIRTHSEX": {
+  "label": "ARE YOU MALE OR FEMALE?",
+  "years": [
+   2019,
+   2020,
+   2023
+  ]
+ },
+ "BLDSTFIT": {
+  "label": "WAS TEST PART OF COLOGUARD TEST?",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "BLDSTOL1": {
+  "label": "EVER HAD BLOOD STOOL TEST USING HOME KIT",
+  "years": [
+   2020
+  ]
+ },
+ "BLDSTOOL": {
+  "label": "EVER HAD BLOOD STOOL TEST USING HOME KIT",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2018,
+   2019
+  ]
+ },
+ "BLDSUGAR": {
+  "label": "HOW OFTEN CHECK BLOOD FOR GLUCOSE",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "BLOODCHO": {
+  "label": "EVER HAD BLOOD CHOLESTEROL CHECKED",
+  "years": [
+   2015
+  ]
+ },
+ "BPALCADV": {
+  "label": "HLTH CARE PRO EVER ADVISED REDUCED ALCOH",
+  "years": [
+   2017
+  ]
+ },
+ "BPALCHOL": {
+  "label": "REDUCE ALCOHOL USE FOR BP?",
+  "years": [
+   2017
+  ]
+ },
+ "BPEATADV": {
+  "label": "HLTH CARE PRO EVER ADVISED CHANGE IN EAT",
+  "years": [
+   2017
+  ]
+ },
+ "BPEATHBT": {
+  "label": "CHANGE EATING HABITS FOR BP?",
+  "years": [
+   2017
+  ]
+ },
+ "BPEXER": {
+  "label": "EXERCISING TO LOWER BP?",
+  "years": [
+   2017
+  ]
+ },
+ "BPEXRADV": {
+  "label": "HLTH CARE PRO EVER ADVISED EXERCISE TO R",
+  "years": [
+   2017
+  ]
+ },
+ "BPHI2MR": {
+  "label": "TOLD HAD HIGH BP DURING 2+ VISITS TO HLT",
+  "years": [
+   2017
+  ]
+ },
+ "BPMEDADV": {
+  "label": "HLTH CARE PRO EVER ADVISED MEDS TO REDUC",
+  "years": [
+   2017
+  ]
+ },
+ "BPMEDS": {
+  "label": "CURRENTLY TAKING BLOOD PRESSURE MEDICATI",
+  "years": [
+   2015,
+   2017,
+   2019
+  ]
+ },
+ "BPMEDS1": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "BPSALT": {
+  "label": "REDUCE SALT INTAKE TO LOWER BP?",
+  "years": [
+   2017
+  ]
+ },
+ "BPSLTADV": {
+  "label": "HLTH CARE PRO EVER ADVISED USING LESS SA",
+  "years": [
+   2017
+  ]
+ },
+ "CADULT": {
+  "label": "ARE YOU 18 YEARS OF AGE OR OLDER?",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "CADULT1": {
+  "label": "ARE YOU 18 YEARS OF AGE OR OLDER?",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CAGEG": {
+  "label": "FOUR LEVEL CHILD AGE",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "CALRINFO": {
+  "label": "WHEN CALORIE INFORMATION IS AVAILABLE IN",
+  "years": [
+   2016
+  ]
+ },
+ "CAREGIV1": {
+  "label": "PROVIDED REGULAR CARE FOR FAMILY OR FRIE",
+  "years": [
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CARERCVD": {
+  "label": "SATISFIED WITH CARE RECEIVED",
+  "years": [
+   2014,
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "CASTHDX2": {
+  "label": "HLTH PRO EVER SAID CHILD HAS ASTHMA",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CASTHNO2": {
+  "label": "CHILD STILL HAVE ASTHMA?",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CCLGHOUS": {
+  "label": "DO YOU LIVE IN COLLEGE HOUSING?",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CDASSIST": {
+  "label": "NEED ASSISTANCE WITH DAY-TO_DAY ACTIVITI",
+  "years": [
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "CDDISCU1": {
+  "label": "HAVE YOU DISCUSSED YOUR DIFFICULTIES WIT",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "CDDISCUS": {
+  "label": "HAVE YOU DISCUSSED YOUR CONFUSION OR MEM",
+  "years": [
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "CDHELP": {
+  "label": "WHEN YOU NEED HELP WITH DAY-TO-DAY ACTIV",
+  "years": [
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "CDHOUS1": {
+  "label": "GIVEN UP DAY-TO-DAY CHORES DUE TO DIFFIC",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "CDHOUSE": {
+  "label": "GIVEN UP DAY-TO-DAY CHORES DUE TO CONFUS",
+  "years": [
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "CDSOCIA1": {
+  "label": "DOES DIFFICULTIES WITH THINKING OR MEMOR",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "CDSOCIAL": {
+  "label": "DOES CONFUSION OR MEMORY LOSS INTERFERE",
+  "years": [
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "CDWORRY": {
+  "label": "ARE YOU WORRIED ABOUT THESE DIFFICULTIES",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "CELLFON2": {
+  "label": "IS THIS A CELLULAR TELEPHONE?",
+  "years": [
+   2014,
+   2015
+  ]
+ },
+ "CELLFON3": {
+  "label": "CELLULAR TELEPHONE",
+  "years": [
+   2015
+  ]
+ },
+ "CELLFON4": {
+  "label": "CELLULAR TELEPHONE",
+  "years": [
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "CELLFON5": {
+  "label": "IS THIS A CELL PHONE?",
+  "years": [
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CELLSEX": {
+  "label": "ARE YOU MALE OR FEMALE?",
+  "years": [
+   2019,
+   2020
+  ]
+ },
+ "CELLSEX2": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "CELLSEX3": {
+  "label": "ARE YOU MALE OR FEMALE?",
+  "years": [
+   2024
+  ]
+ },
+ "CELPHON1": {
+  "label": "CELLULAR TELEPHONE",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "CELPHONE": {
+  "label": "CELLULAR TELEPHONE",
+  "years": [
+   2019,
+   2020
+  ]
+ },
+ "CELSXBRT": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "CERVSCRN": {
+  "label": "HAVE YOU EVER HAD A CERVICAL CANCER SCRE",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "CHCCOPD1": {
+  "label": "(EVER TOLD) YOU HAVE (COPD) CHRONIC OBST",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "CHCCOPD2": {
+  "label": "(EVER TOLD) YOU HAD (COPD) CHRONIC OBSTR",
+  "years": [
+   2019,
+   2020
+  ]
+ },
+ "CHCKDNY1": {
+  "label": "(EVER TOLD) YOU HAVE KIDNEY DISEASE?",
+  "years": [
+   2018
+  ]
+ },
+ "CHCKIDNY": {
+  "label": "(EVER TOLD) YOU HAVE KIDNEY DISEASE?",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017
+  ]
+ },
+ "CHKHEMO3": {
+  "label": "TIMES CHECKED FOR GLYCOSYLATED HEMOGLOBI",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CHOLCHK": {
+  "label": "HOW LONG SINCE CHOLESTEROL CHECKED",
+  "years": [
+   2015
+  ]
+ },
+ "CHOLCHK1": {
+  "label": "HOW LONG SINCE CHOLESTEROL CHECKED",
+  "years": [
+   2017
+  ]
+ },
+ "CHOLCHK2": {
+  "label": "HOW LONG SINCE CHOLESTEROL CHECKED",
+  "years": [
+   2019
+  ]
+ },
+ "CHOLCHK3": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "CHOLMED1": {
+  "label": "CURRENTLY TAKING MEDICINE FOR HIGH CHOLE",
+  "years": [
+   2017
+  ]
+ },
+ "CHOLMED2": {
+  "label": "CURRENTLY TAKING MEDICINE FOR HIGH CHOLE",
+  "years": [
+   2019
+  ]
+ },
+ "CHOLMED3": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "CIMEMLO1": {
+  "label": "HAVE YOU EXPERIENCED DIFFICULTIES WITH T",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "CIMEMLOS": {
+  "label": "HAVE YOU EXPERIENCED CONFUSION OR MEMORY",
+  "years": [
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "CNCRAGE": {
+  "label": "AGE TOLD HAD CANCER",
+  "years": [
+   2014,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CNCRDIFF": {
+  "label": "HOW MANY TYPES OF CANCER?",
+  "years": [
+   2014,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CNCRTYP1": {
+  "label": "TYPE OF CANCER",
+  "years": [
+   2014,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "CNCRTYP2": {
+  "label": "TYPE OF CANCER",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "COLGHOUS": {
+  "label": "DO YOU LIVE IN COLLEGE HOUSING?",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "COLGSEX": {
+  "label": "ARE YOU MALE OR FEMALE?",
+  "years": [
+   2019,
+   2020
+  ]
+ },
+ "COLNCNCR": {
+  "label": "EVER HAD ANY OTHER KIND OF TEST FOR COLO",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "COLNSCPY": {
+  "label": "HAVE YOU EVER HAD A COLONOSCOPY?",
+  "years": [
+   2020
+  ]
+ },
+ "COLNSIGM": {
+  "label": "EVER HAD A COLONOSCOPY, SIGMOIDOSCOPY, O",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "COLNTES1": {
+  "label": "HOW LONG HAS IT BEEN SINCE YOU HAD COLON",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "COLNTEST": {
+  "label": "HOW LONG HAS IT BEEN SINCE YOU HAD COLON",
+  "years": [
+   2020
+  ]
+ },
+ "COPDBRTH": {
+  "label": "DID YOU HAVE SHORTNESS OF BREATH?",
+  "years": [
+   2017,
+   2018
+  ]
+ },
+ "COPDBTST": {
+  "label": "HAVE YOU EVER BEEN GIVEN A BREATHING TES",
+  "years": [
+   2017,
+   2018
+  ]
+ },
+ "COPDCOGH": {
+  "label": "DID YOU HAVE A COUGH?",
+  "years": [
+   2017,
+   2018
+  ]
+ },
+ "COPDFLEM": {
+  "label": "DID YOU COUGH UP PHLEGM?",
+  "years": [
+   2017,
+   2018
+  ]
+ },
+ "COPDSMOK": {
+  "label": "HOW MANY YEARS HAVE YOU SMOKED TOBACCO P",
+  "years": [
+   2017,
+   2018
+  ]
+ },
+ "COVACGE1": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "COVIDACT": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "COVIDNU2": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "COVIDPO1": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "COVIDSM1": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "COVIDVA1": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "CPDEMO1": {
+  "label": "DO YOU HAVE A CELL PHONE FOR PERSONAL US",
+  "years": [
+   2014,
+   2015,
+   2016
+  ]
+ },
+ "CPDEMO1A": {
+  "label": "DO YOU HAVE A CELL PHONE FOR PERSONAL US",
+  "years": [
+   2017
+  ]
+ },
+ "CPDEMO1B": {
+  "label": "DO YOU HAVE A CELL PHONE FOR PERSONAL US",
+  "years": [
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "CPDEMO1C": {
+  "label": "DO YOU HAVE A CELL PHONE FOR YOUR PERSON",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "CRGVALZD": {
+  "label": "DOES PERSON BEING CARED FOR HAVE ALZHEIM",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CRGVEXPT": {
+  "label": "DO YOU EXPECT TO HAVE A RELATIVE YOU WIL",
+  "years": [
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023
+  ]
+ },
+ "CRGVHOU1": {
+  "label": "MANAGED HOUSEHOLD TASKS",
+  "years": [
+   2019,
+   2020,
+   2023
+  ]
+ },
+ "CRGVHOU2": {
+  "label": "MANAGED HOUSEHOLD TASKS",
+  "years": [
+   2024
+  ]
+ },
+ "CRGVHOUS": {
+  "label": "MANAGED HOUSEHOLD TASKS",
+  "years": [
+   2015,
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "CRGVHRS1": {
+  "label": "HOW MANY HOURS DO YOU PROVIDE CARE FOR P",
+  "years": [
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023
+  ]
+ },
+ "CRGVHRS2": {
+  "label": "HOW MANY HOURS DO YOU PROVIDE CARE FOR P",
+  "years": [
+   2024
+  ]
+ },
+ "CRGVLNG1": {
+  "label": "HOW LONG PROVIDED CARE FOR PERSON.",
+  "years": [
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023
+  ]
+ },
+ "CRGVLNG2": {
+  "label": "HOW LONG PROVIDED CARE FOR PERSON.",
+  "years": [
+   2024
+  ]
+ },
+ "CRGVMST2": {
+  "label": "WHICH SUPPORT DO YOU MOST NEED THAT YOU",
+  "years": [
+   2015,
+   2016,
+   2017
+  ]
+ },
+ "CRGVMST3": {
+  "label": "WHICH SUPPORT DO YOU MOST NEED THAT YOU",
+  "years": [
+   2018
+  ]
+ },
+ "CRGVNURS": {
+  "label": "HELP WITH NURSING OR MEDICAL TASKS",
+  "years": [
+   2024
+  ]
+ },
+ "CRGVPER1": {
+  "label": "MANAGED PERSONAL CARE",
+  "years": [
+   2019,
+   2020,
+   2023
+  ]
+ },
+ "CRGVPER2": {
+  "label": "MANAGED PERSONAL CARE",
+  "years": [
+   2024
+  ]
+ },
+ "CRGVPERS": {
+  "label": "MANAGED PERSONAL CARE",
+  "years": [
+   2015,
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "CRGVPRB1": {
+  "label": "WHAT IS THE MAJOR HEALTH PROBLEM, ILLNES",
+  "years": [
+   2015
+  ]
+ },
+ "CRGVPRB2": {
+  "label": "WHAT IS THE MAJOR HEALTH PROBLEM, ILLNES",
+  "years": [
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "CRGVPRB3": {
+  "label": "WHAT IS THE MAJOR HEALTH PROBLEM, ILLNES",
+  "years": [
+   2019,
+   2020,
+   2023
+  ]
+ },
+ "CRGVPRB4": {
+  "label": "WHAT IS THE MAIN HEALTH PROBLEM, ILLNESS",
+  "years": [
+   2024
+  ]
+ },
+ "CRGVREL1": {
+  "label": "RELATIONSHIP OF PERSON TO WHOM YOU ARE G",
+  "years": [
+   2015,
+   2016
+  ]
+ },
+ "CRGVREL2": {
+  "label": "RELATIONSHIP OF PERSON TO WHOM YOU ARE G",
+  "years": [
+   2017,
+   2018
+  ]
+ },
+ "CRGVREL3": {
+  "label": "RELATIONSHIP OF PERSON TO WHOM YOU ARE G",
+  "years": [
+   2019
+  ]
+ },
+ "CRGVREL4": {
+  "label": "RELATIONSHIP OF PERSON TO WHOM YOU ARE G",
+  "years": [
+   2020,
+   2023
+  ]
+ },
+ "CRGVREL5": {
+  "label": "RELATIONSHIP OF PERSON TO WHOM YOU ARE G",
+  "years": [
+   2024
+  ]
+ },
+ "CRVCLCNC": {
+  "label": "TIME SINCE LAST CERVICAL CANCER SCREENIN",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "CRVCLHPV": {
+  "label": "HAVE AN H.P.V. TEST AND RECENT CERVICAL",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "CRVCLPAP": {
+  "label": "HAVE A PAP TEST AND RECENT CERVICAL CANC",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "CSRVCLIN": {
+  "label": "PARTICIPATE IN CLINICAL TRIAL AS PART OF",
+  "years": [
+   2014,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CSRVCTL1": {
+  "label": "IS PAIN UNDER CONTROL?",
+  "years": [
+   2014,
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "CSRVCTL2": {
+  "label": "IS PAIN UNDER CONTROL?",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CSRVDEIN": {
+  "label": "EVER DENIED INSURANCE COVERAGE BECAUSE O",
+  "years": [
+   2014,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CSRVDOC1": {
+  "label": "WHAT TYPE OF DOCTOR PROVIDES MAJORITY OF",
+  "years": [
+   2014,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CSRVINSR": {
+  "label": "DID HEALTH INSURANCE PAY FOR ALL OF YOUR",
+  "years": [
+   2014,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CSRVINST": {
+  "label": "INSTRUCTIONS WRITTEN OR PRINTED",
+  "years": [
+   2014,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CSRVPAIN": {
+  "label": "CURRENTLY HAVE PHYSICAL PAIN FROM CANCER",
+  "years": [
+   2014,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CSRVRTRN": {
+  "label": "EVER RECEIVE INSTRUCTIONS FROM A DOCTOR",
+  "years": [
+   2014,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CSRVSUM": {
+  "label": "DID YOU RECEIVE A SUMMARY OF CANCER TREA",
+  "years": [
+   2014,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CSRVTRT1": {
+  "label": "CURRENTLY RECEIVING TREATMENT FOR CANCER",
+  "years": [
+   2014,
+   2016
+  ]
+ },
+ "CSRVTRT2": {
+  "label": "CURRENTLY RECEIVING TREATMENT FOR CANCER",
+  "years": [
+   2017,
+   2018
+  ]
+ },
+ "CSRVTRT3": {
+  "label": "CURRENTLY RECEIVING TREATMENT FOR CANCER",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CSTATE": {
+  "label": "ARE YOU A RESIDENT OF [STATE]?",
+  "years": [
+   2014,
+   2015
+  ]
+ },
+ "CSTATE1": {
+  "label": "DO YOU CURRENTLY LIVE IN  ____(STATE)___",
+  "years": [
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CTELENM1": {
+  "label": "CORRECT TELEPHONE NUMBER?",
+  "years": [
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CTELENUM": {
+  "label": "CORRECT TELEPHONE NUMBER?",
+  "years": [
+   2014,
+   2015
+  ]
+ },
+ "CTELNUM1": {
+  "label": "CORRECT PHONE NUMBER?",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "CVDASPRN": {
+  "label": "TAKE ASPIRIN DAILY OR EVERY OTHER DAY",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "DELAYME1": {
+  "label": "DELAYED GETTING MEDICAL CARE",
+  "years": [
+   2018
+  ]
+ },
+ "DELAYMED": {
+  "label": "DELAYED GETTING MEDICAL CARE",
+  "years": [
+   2014,
+   2016,
+   2017
+  ]
+ },
+ "DIABAGE2": {
+  "label": "AGE WHEN TOLD HAD DIABETES",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "DIABAGE3": {
+  "label": "AGE WHEN TOLD DIABETES",
+  "years": [
+   2019,
+   2020
+  ]
+ },
+ "DIABAGE4": {
+  "label": "AGE WHEN FIRST TOLD YOU HAD DIABETES",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "DIABEDU": {
+  "label": "EVER TAKEN CLASS IN MANAGING DIABETES",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "DIABEDU1": {
+  "label": "WHEN WAS THE LAST TIME YOU TOOK A COURSE",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "DIABEYE": {
+  "label": "EVER TOLD DIABETES HAS AFFECTED EYES",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "DIABEYE1": {
+  "label": "WHEN WAS THE LAST TIME A THEY TOOK A PHO",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "DIABTYPE": {
+  "label": "WHAT TYPE OF DIABETES DO YOU HAVE?",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "DISPCODE": {
+  "label": "FINAL DISPOSITION",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "DLYOTHER": {
+  "label": "DELAYED GETTING MEDICAL CARE OTHER RESPO",
+  "years": [
+   2014,
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "DOCTDIAB": {
+  "label": "TIMES SEEN HEALTH PROFESSIONAL FOR DIABE",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "DRADVISE": {
+  "label": "DOCTOR ADVISED REDUCED SODIUM/SALT INTAK",
+  "years": [
+   2014,
+   2015,
+   2017,
+   2019
+  ]
+ },
+ "DRNK3GE5": {
+  "label": "BINGE DRINKING",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "DRNKANY5": {
+  "label": "DRINK ANY ALCOHOLIC BEVERAGES IN PAST 30",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "DRNKANY6": {
+  "label": "DRINK ANY ALCOHOLIC BEVERAGES IN PAST 30",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "DRNKDRI2": {
+  "label": "DID YOU DRIVE AFTER HAVING TOO MUCH TO D",
+  "years": [
+   2014,
+   2016,
+   2018,
+   2020,
+   2023
+  ]
+ },
+ "DROCDY3_": {
+  "label": "COMPUTED DRINK-OCCASIONS-PER-DAY",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "DROCDY4_": {
+  "label": "COMPUTED DRINK-OCCASIONS-PER-DAY",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "DRVISITS": {
+  "label": "DOCTOR VISITS PAST 12 MONTHS",
+  "years": [
+   2014,
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "ECIGARET": {
+  "label": "HAVE YOU EVER USED AN E-CIGARETTE OR OTH",
+  "years": [
+   2016,
+   2017,
+   2018,
+   2020
+  ]
+ },
+ "ECIGNOW": {
+  "label": "DO YOU NOW USE E-CIGARETTES, EVERY DAY,",
+  "years": [
+   2016,
+   2017,
+   2018,
+   2020
+  ]
+ },
+ "ECIGNOW2": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "ECIGNOW3": {
+  "label": "DO YOU NOW USE E-CIGARETTES, OR VAPING P",
+  "years": [
+   2024
+  ]
+ },
+ "EXACTOT1": {
+  "label": "FIRST ACTIVITY OTHER RESPONSE DESCRIPTIO",
+  "years": [
+   2015
+  ]
+ },
+ "EXACTOT2": {
+  "label": "SECOND ACTIVITY OTHER RESPONSE DESCRIPTI",
+  "years": [
+   2015
+  ]
+ },
+ "EXERHMM1": {
+  "label": "MINUTES OR HOURS WALKING, RUNNING, JOGGI",
+  "years": [
+   2015,
+   2017,
+   2019,
+   2023
+  ]
+ },
+ "EXERHMM2": {
+  "label": "MINUTES OR HOURS WALKING, RUNNING, JOGGI",
+  "years": [
+   2015,
+   2017,
+   2019,
+   2023
+  ]
+ },
+ "EXEROFT1": {
+  "label": "HOW MANY TIMES WALKING, RUNNING, JOGGING",
+  "years": [
+   2015,
+   2017,
+   2019,
+   2023
+  ]
+ },
+ "EXEROFT2": {
+  "label": "HOW MANY TIMES WALKING, RUNNING, JOGGING",
+  "years": [
+   2015,
+   2017,
+   2019,
+   2023
+  ]
+ },
+ "EXRACT11": {
+  "label": "TYPE OF PHYSICAL ACTIVITY",
+  "years": [
+   2015,
+   2017,
+   2019
+  ]
+ },
+ "EXRACT12": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "EXRACT21": {
+  "label": "OTHER TYPE OF PHYSICAL ACTIVITY GIVING M",
+  "years": [
+   2015,
+   2017,
+   2019
+  ]
+ },
+ "EXRACT22": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "EYEEXAM": {
+  "label": "LAST EYE EXAM WHERE PUPILS WERE DILATED",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017
+  ]
+ },
+ "EYEEXAM1": {
+  "label": "LAST EYE EXAM WHERE PUPILS WERE DILATED",
+  "years": [
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "FALL12MN": {
+  "label": "HAD FALL PAST TWELVE MONTHS",
+  "years": [
+   2014,
+   2016,
+   2018,
+   2020,
+   2023
+  ]
+ },
+ "FALLINJ2": {
+  "label": "INJURED IN FALL",
+  "years": [
+   2014,
+   2016
+  ]
+ },
+ "FALLINJ3": {
+  "label": "INJURED IN FALL",
+  "years": [
+   2018
+  ]
+ },
+ "FALLINJ4": {
+  "label": "INJURED IN FALL",
+  "years": [
+   2020
+  ]
+ },
+ "FALLINJ5": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "FC601_": {
+  "label": "ESTIMATED FUNCTIONAL CAPACITY",
+  "years": [
+   2019,
+   2023
+  ]
+ },
+ "FC60_": {
+  "label": "ESTIMATED FUNCTIONAL CAPACITY",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "FEELNERV": {
+  "label": "FELT NERVOUS, ANXIOUS OR ON EDGE",
+  "years": [
+   2018
+  ]
+ },
+ "FEETCHK": {
+  "label": "TIMES FEET CHECK FOR SORES/IRRITATIONS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "FEETCHK2": {
+  "label": "HOW OFTEN CHECK FEET FOR SORES OR IRRITA",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017
+  ]
+ },
+ "FEETCHK3": {
+  "label": "HOW OFTEN CHECK FEET FOR SORES OR IRRITA",
+  "years": [
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "FEETSORE": {
+  "label": "EVER HAD FEET SORES OR IRRITATIONS LASTI",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "FIREARM4": {
+  "label": "ANY FIREARMS IN HOME",
+  "years": [
+   2017
+  ]
+ },
+ "FIREARM5": {
+  "label": "ANY FIREARMS IN HOME",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "FIRSTAID": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "FLSHTMY2": {
+  "label": "WHEN RECEIVED MOST RECENT SEASONAL FLU S",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "FLSHTMY3": {
+  "label": "WHEN RECEIVED MOST RECENT SEASONAL FLU S",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "FMONTH": {
+  "label": "FILE MONTH",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "FOODSTMP": {
+  "label": "DURING THE PAST 12 MONTHS HAVE YOU RECEI",
+  "years": [
+   2019,
+   2023,
+   2024
+  ]
+ },
+ "FRENCHF1": {
+  "label": "HOW OFTEN DO YOU EAT FRENCH FRIES OR FRI",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "FRNCHDA_": {
+  "label": "FRENCH FRY INTAKE IN TIMES PER DAY",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "FRUIT1": {
+  "label": "HOW MANY TIMES DID YOU EAT FRUIT?",
+  "years": [
+   2015
+  ]
+ },
+ "FRUIT2": {
+  "label": "HOW MANY TIMES DID YOU EAT FRUIT?",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "FRUITJU1": {
+  "label": "HOW MANY TIMES DID YOU DRINK 100 PERCENT",
+  "years": [
+   2015
+  ]
+ },
+ "FRUITJU2": {
+  "label": "HOW MANY TIMES DID YOU DRINK 100 PERCENT",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "FRUTDA1_": {
+  "label": "COMPUTED FRUIT INTAKE IN TIMES PER DAY",
+  "years": [
+   2015
+  ]
+ },
+ "FRUTDA2_": {
+  "label": "COMPUTED FRUIT INTAKE IN TIMES PER DAY",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "FTJUDA1_": {
+  "label": "COMPUTED FRUIT JUICE INTAKE IN TIMES PER",
+  "years": [
+   2015
+  ]
+ },
+ "FTJUDA2_": {
+  "label": "COMPUTED FRUIT JUICE INTAKE IN TIMES PER",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "FVBEANS": {
+  "label": "HOW MANY TIMES DID YOU EAT BEANS OR LENT",
+  "years": [
+   2015
+  ]
+ },
+ "FVGREEN": {
+  "label": "HOW MANY TIMES DID YOU EAT DARK GREEN VE",
+  "years": [
+   2015
+  ]
+ },
+ "FVGREEN1": {
+  "label": "HOW MANY TIMES DID YOU EAT DARK GREEN VE",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "FVORANG": {
+  "label": "HOW MANY TIMES DID YOU EAT ORANGE-COLORE",
+  "years": [
+   2015
+  ]
+ },
+ "GRENDA1_": {
+  "label": "COMPUTED DARK GREEN VEGETABLE INTAKE IN",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "GRENDAY_": {
+  "label": "COMPUTED DARK GREEN VEGETABLE INTAKE IN",
+  "years": [
+   2015
+  ]
+ },
+ "GUNLOAD": {
+  "label": "ANY FIREARMS LOADED",
+  "years": [
+   2017,
+   2023,
+   2024
+  ]
+ },
+ "HADHYST2": {
+  "label": "HAD HYSTERECTOMY",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "HADMAM": {
+  "label": "HAVE YOU EVER HAD A MAMMOGRAM",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "HADPAP2": {
+  "label": "EVER HAD A PAP TEST",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "HADSEX": {
+  "label": "HAVE YOU HAVE SEXUAL INTERCOURSE?",
+  "years": [
+   2024
+  ]
+ },
+ "HADSGCO1": {
+  "label": "WAS LAST TEST A SIGMOIDOSCOPY OR COLONOS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2018,
+   2019
+  ]
+ },
+ "HADSIGM3": {
+  "label": "EVER HAD SIGMOIDOSCOPY/COLONOSCOPY",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2018,
+   2019
+  ]
+ },
+ "HADSIGM4": {
+  "label": "EVER HAD SIGMOIDOSCOPY/COLONOSCOPY",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "HAREHAB1": {
+  "label": "OUTPATIENT REHAB AFTER HEART ATTACK HOSP",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "HASYMP1": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "HASYMP2": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "HASYMP3": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "HASYMP4": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "HASYMP5": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "HASYMP6": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "HAVECFS": {
+  "label": "STILL HAVE CHRONIC FATIGUE SYNDROME OR M",
+  "years": []
+ },
+ "HAVEHEPB": {
+  "label": "TOLD  HAD HEPATITIS B",
+  "years": [
+   2019,
+   2020
+  ]
+ },
+ "HAVEHEPC": {
+  "label": "STILL HAVE HEPATITIS C",
+  "years": [
+   2019,
+   2020
+  ]
+ },
+ "HEATTBCO": {
+  "label": "HAVE YOU HEARD OF HEATED TOBACCO PRODUCT",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "HEIGHT3": {
+  "label": "REPORTED HEIGHT IN FEET AND INCHES",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "HHADULT": {
+  "label": "NUMBER OF ADULTS IN HOUSEHOLD",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "HIVRISK4": {
+  "label": "DO ANY HIGH RISK SITUATIONS APPLY",
+  "years": [
+   2016
+  ]
+ },
+ "HIVRISK5": {
+  "label": "DO ANY HIGH RISK SITUATIONS APPLY",
+  "years": [
+   2017,
+   2018,
+   2019,
+   2020,
+   2024
+  ]
+ },
+ "HIVTSTD3": {
+  "label": "MONTH AND YEAR OF LAST HIV TEST",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "HLTHCVR1": {
+  "label": "PRIMARY HEALTH INSURANCE COVERAGE",
+  "years": [
+   2014,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "HLTHPLN1": {
+  "label": "HAVE ANY HEALTH CARE COVERAGE",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "HOMBPCHK": {
+  "label": "TOLD CHECK BLOOD PRESSURE AT HOME",
+  "years": [
+   2019
+  ]
+ },
+ "HOMRGCHK": {
+  "label": "REGULARLY CHECK BLOOD PRESSURE AT HOME",
+  "years": [
+   2019
+  ]
+ },
+ "HOWLONG": {
+  "label": "HOW LONG SINCE LAST MAMMOGRAM",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "HOWSAFE1": {
+  "label": "NEIGHBORHOOD SAFE FROM CRIME",
+  "years": [
+   2017,
+   2024
+  ]
+ },
+ "HPLSTTST": {
+  "label": "HOW LONG SINCE YOUR LAST HPV TEST?",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "HPVADSH1": {
+  "label": "NUMBER OF HPV SHOTS RECEIVED",
+  "years": [
+   2024
+  ]
+ },
+ "HPVADSHT": {
+  "label": "NUMBER OF HPV SHOTS RECEIVED",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023
+  ]
+ },
+ "HPVADVC2": {
+  "label": "EVER HAD THE HPV VACCINATION?",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "HPVADVC3": {
+  "label": "EVER HAD THE HPV VACCINATION?",
+  "years": [
+   2019
+  ]
+ },
+ "HPVADVC4": {
+  "label": "EVER HAD AN H.P.V. VACCINATION?",
+  "years": [
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "HPVDSHT": {
+  "label": null,
+  "years": [
+   2024
+  ]
+ },
+ "HPVTEST": {
+  "label": "HAVE YOU EVER HAD AN HPV TEST?",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "HTIN4": {
+  "label": "COMPUTED HEIGHT IN INCHES",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "HTM4": {
+  "label": "COMPUTED HEIGHT IN METERS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "ICFQSTVR": {
+  "label": null,
+  "years": [
+   2024
+  ]
+ },
+ "IDATE": {
+  "label": "INTERVIEW DATE",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "IDAY": {
+  "label": "INTERVIEW DAY",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "IMFVPLA1": {
+  "label": "WHERE DID YOU GET YOUR LAST FLU SHOT/VAC",
+  "years": [
+   2019,
+   2020
+  ]
+ },
+ "IMFVPLA4": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "IMFVPLA5": {
+  "label": "WHERE DID YOU GET YOUR LAST FLU SHOT/VAC",
+  "years": [
+   2024
+  ]
+ },
+ "IMFVPLAC": {
+  "label": "WHERE DID YOU GET YOUR LAST FLU SHOT/VAC",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "IMONTH": {
+  "label": "INTERVIEW MONTH",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "INDORTAN": {
+  "label": "TIMES USED AN INDOOR TANNING DEVICE",
+  "years": [
+   2018,
+   2019
+  ]
+ },
+ "INSULIN": {
+  "label": "NOW TAKING INSULIN",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "INSULIN1": {
+  "label": "NOW TAKING INSULIN",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "INTERNET": {
+  "label": "INTERNET USE IN THE PAST 30 DAYS?",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017
+  ]
+ },
+ "IYEAR": {
+  "label": "INTERVIEW YEAR",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "JOINPAI1": {
+  "label": "HOW BAD WAS JOINT PAIN",
+  "years": [
+   2017
+  ]
+ },
+ "JOINPAI2": {
+  "label": "HOW BAD WAS JOINT PAIN",
+  "years": [
+   2019,
+   2023
+  ]
+ },
+ "JOINPAIN": {
+  "label": "HOW BAD WAS JOINT PAIN",
+  "years": [
+   2015
+  ]
+ },
+ "LADULT": {
+  "label": "ARE YOU 18 YEARS OF AGE OR OLDER?",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "LADULT1": {
+  "label": "ARE YOU 18 YEARS OF AGE OR OLDER?",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "LANDLINE": {
+  "label": "DO YOU ALSO HAVE A LANDLINE TELEPHONE?",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "LANDSEX": {
+  "label": "ARE YOU MALE OR FEMALE?",
+  "years": [
+   2019,
+   2020
+  ]
+ },
+ "LANDSEX2": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "LANDSEX3": {
+  "label": "ARE YOU MALE OR FEMALE?",
+  "years": [
+   2024
+  ]
+ },
+ "LASTDEN3": {
+  "label": "LAST VISITED DENTIST OR DENTAL CLINIC",
+  "years": [
+   2014,
+   2016
+  ]
+ },
+ "LASTDEN4": {
+  "label": "LAST VISITED DENTIST OR DENTAL CLINIC",
+  "years": [
+   2018,
+   2020,
+   2024
+  ]
+ },
+ "LASTPAP2": {
+  "label": "HOW LONG SINCE LAST PAP TEST",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "LASTSIG3": {
+  "label": "TIME SINCE LAST SIGMOIDOSCOPY/COLONOSCOP",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2018,
+   2019
+  ]
+ },
+ "LASTSIG4": {
+  "label": "TIME SINCE LAST SIGMOIDOSCOPY/COLONOSCOP",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "LASTSMK2": {
+  "label": "INTERVAL SINCE LAST SMOKED",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "LCSCTSC1": {
+  "label": "DID YOU HAVE A CT OR CAT SCAN?",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "LCSCTSCN": {
+  "label": "DID YOU HAVE A CT OR CAT SCAN?",
+  "years": [
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "LCSCTWHN": {
+  "label": "WHEN DID YOU HAVE YOUR MOST RECENT CT OR",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "LCSFIRST": {
+  "label": "HOW OLD WHEN YOU FIRST STARTED SMOKING?",
+  "years": [
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "LCSLAST": {
+  "label": "HOW OLD WHEN YOU LAST SMOKED?",
+  "years": [
+   2017,
+   2018,
+   2019,
+   2020,
+   2023
+  ]
+ },
+ "LCSLAST_": {
+  "label": "HOW OLD WHEN YOU LAST SMOKED?",
+  "years": [
+   2024
+  ]
+ },
+ "LCSNUMCG": {
+  "label": "ON AVERAGE, HOW MANY CIGARETTES DO YOU S",
+  "years": [
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "LCSNUMC_": {
+  "label": "ON AVERAGE, HOW MANY CIGARETTES DO YOU S",
+  "years": [
+   2024
+  ]
+ },
+ "LCSSCNCR": {
+  "label": "WERE ANY CT OR CAT SCANS DONE TO CHECK F",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "LENGEXAM": {
+  "label": "HOW LONG SINCE LAST BREAST PHYSICAL EXAM",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2018
+  ]
+ },
+ "LMTJOIN3": {
+  "label": "LIMITED BECAUSE OF JOINT SYMPTOMS",
+  "years": [
+   2015,
+   2017,
+   2019,
+   2023
+  ]
+ },
+ "LNDSXBRT": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "LOADULK2": {
+  "label": "ANY LOADED FIREARMS ALSO UNLOCKED",
+  "years": [
+   2017,
+   2023,
+   2024
+  ]
+ },
+ "LONGWTCH": {
+  "label": "HOW LONG WATCHING SALT/SODIUM INTAKE",
+  "years": [
+   2014,
+   2015
+  ]
+ },
+ "LSTBLDS3": {
+  "label": "TIME SINCE LAST BLOOD STOOL TEST",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2018,
+   2019
+  ]
+ },
+ "LSTBLDS4": {
+  "label": "HOW LONG SINCE YOU HAD BLOOD STOOL TEST?",
+  "years": [
+   2020
+  ]
+ },
+ "LSTCOVRG": {
+  "label": "TIME SINCE LAST HAD HEALTH CARE COVERAGE",
+  "years": [
+   2014,
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "MARIJANA": {
+  "label": "DURING THE PAST 30 DAYS, ON HOW MANY DAY",
+  "years": [
+   2016,
+   2017
+  ]
+ },
+ "MAXDRNKS": {
+  "label": "MOST DRINKS ON SINGLE OCCASION PAST 30 D",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "MAXVO21_": {
+  "label": "ESTIMATED AGE-GENDER SPECIFIC MAXIMUM OX",
+  "years": [
+   2019,
+   2023
+  ]
+ },
+ "MAXVO2_": {
+  "label": "ESTIMATED AGE-GENDER SPECIFIC MAXIMUM OX",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "MEDADVIC": {
+  "label": "HOW DIFFICULT IS IT FOR YOU TO GET ADVIC",
+  "years": [
+   2016
+  ]
+ },
+ "MEDBILL1": {
+  "label": "CURRENTLY HAVE HEALTH CARE BILLS",
+  "years": [
+   2014,
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "MEDICARE": {
+  "label": "DO YOU HAVE MEDICARE?",
+  "years": [
+   2014,
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "MEDSCOS1": {
+  "label": "COULD NOT GET MEDICINE DUE TO COST",
+  "years": [
+   2017,
+   2018
+  ]
+ },
+ "MEDSCOST": {
+  "label": "COULD NOT GET MEDICINE DUE TO COST",
+  "years": [
+   2014,
+   2016
+  ]
+ },
+ "MEDSHEPB": {
+  "label": "CURRENTLY TAKING MEDICINE FOR HEPATITIS",
+  "years": [
+   2019,
+   2020
+  ]
+ },
+ "MENTCIGS": {
+  "label": "DO YOU USUALLY SMOKE MENTHOL CIGARETTES?",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "MENTECIG": {
+  "label": "DO YOU USUALLY USE MENTHOL E-CIGARETTES?",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "METVL11_": {
+  "label": "ACTIVITY MET VALUE FOR FIRST ACTIVITY",
+  "years": [
+   2015,
+   2017,
+   2019
+  ]
+ },
+ "METVL12_": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "METVL21_": {
+  "label": "ACTIVITY MET VALUE FOR SECOND ACTIVITY",
+  "years": [
+   2015,
+   2017,
+   2019
+  ]
+ },
+ "METVL22_": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "MISTMNT": {
+  "label": "RECEIVING MEDICINE OR TREATMENT FROM HEA",
+  "years": [
+   2015
+  ]
+ },
+ "MSCODE": {
+  "label": "METROPOLITAN STATUS CODE",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "NOBCUSE6": {
+  "label": "WHAT WAS MAIN REASON FOR NOT DOING ANYTH",
+  "years": [
+   2017
+  ]
+ },
+ "NOBCUSE7": {
+  "label": "WHAT WAS MAIN REASON FOR NOT DOING ANYTH",
+  "years": [
+   2019
+  ]
+ },
+ "NOBCUSE8": {
+  "label": "WHAT WAS MAIN REASON FOR NOT DOING ANYTH",
+  "years": [
+   2024
+  ]
+ },
+ "NOCOV121": {
+  "label": "WITHOUT HEALTH CARE COVERAGE PAST 12 MON",
+  "years": [
+   2014,
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "NUMADULT": {
+  "label": "NUMBER OF ADULTS IN HOUSEHOLD",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "NUMBURN2": {
+  "label": "NUMBER OF SUNBURNS IN PAST 12 MONTHS",
+  "years": [
+   2016
+  ]
+ },
+ "NUMBURN3": {
+  "label": "NUMBER OF SUNBURNS IN PAST 12 MONTHS",
+  "years": [
+   2018,
+   2019
+  ]
+ },
+ "NUMHHOL2": {
+  "label": "HOUSEHOLD TELEPHONES",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017
+  ]
+ },
+ "NUMHHOL3": {
+  "label": "HOUSEHOLD TELEPHONES",
+  "years": [
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "NUMHHOL4": {
+  "label": "HOUSEHOLD LANDLINE TELEPHONES",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "NUMMEN": {
+  "label": "NUMBER OF ADULT MEN IN HOUSEHOLD",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "NUMPHON2": {
+  "label": "RESIDENTIAL PHONES",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017
+  ]
+ },
+ "NUMPHON3": {
+  "label": "RESIDENTIAL PHONES",
+  "years": [
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "NUMPHON4": {
+  "label": "RESIDENTIAL LANDLINE PHONES",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "NUMWOMEN": {
+  "label": "NUMBER OF ADULT WOMEN IN HOUSEHOLD",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "ORNGDAY_": {
+  "label": "COMPUTED ORANGE-COLORED VEGETABLE INTAKE",
+  "years": [
+   2015
+  ]
+ },
+ "PA1MIN_": {
+  "label": "MINUTES OF TOTAL PHYSICAL ACTIVITY PER W",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "PA1VIGM_": {
+  "label": "MINUTES OF TOTAL VIGOROUS PHYSICAL ACTIV",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "PA2MIN_": {
+  "label": "MINUTES OF TOTAL PHYSICAL ACTIVITY PER W",
+  "years": [
+   2019
+  ]
+ },
+ "PA2VIGM_": {
+  "label": "MINUTES OF TOTAL VIGOROUS PHYSICAL ACTIV",
+  "years": [
+   2019
+  ]
+ },
+ "PA3MIN_": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "PA3VIGM_": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "PADUR1_": {
+  "label": "MINUTES OF FIRST ACTIVITY",
+  "years": [
+   2015,
+   2017,
+   2019,
+   2023
+  ]
+ },
+ "PADUR2_": {
+  "label": "MINUTES OF SECOND ACTIVITY",
+  "years": [
+   2015,
+   2017,
+   2019,
+   2023
+  ]
+ },
+ "PAFREQ1_": {
+  "label": "PHYSICAL ACTIVITY FREQUENCY PER WEEK FOR",
+  "years": [
+   2015,
+   2017,
+   2019,
+   2023
+  ]
+ },
+ "PAFREQ2_": {
+  "label": "PHYSICAL ACTIVITY FREQUENCY PER WEEK FOR",
+  "years": [
+   2015,
+   2017,
+   2019,
+   2023
+  ]
+ },
+ "PAINACT2": {
+  "label": "HOW MANY DAYS HARD TO DO USUAL ACTIVITIE",
+  "years": [
+   2014,
+   2016
+  ]
+ },
+ "PAMIN11_": {
+  "label": "MINUTES OF PHYSICAL ACTIVITY PER WEEK FO",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "PAMIN12_": {
+  "label": "MINUTES OF PHYSICAL ACTIVITY PER WEEK FO",
+  "years": [
+   2019
+  ]
+ },
+ "PAMIN13_": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "PAMIN21_": {
+  "label": "MINUTES OF PHYSICAL ACTIVITY PER WEEK FO",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "PAMIN22_": {
+  "label": "MINUTES OF PHYSICAL ACTIVITY PER WEEK FO",
+  "years": [
+   2019
+  ]
+ },
+ "PAMIN23_": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "PAMISS1_": {
+  "label": "MISSING PHYSICAL ACTIVITY DATA",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "PAMISS2_": {
+  "label": "MISSING PHYSICAL ACTIVITY DATA",
+  "years": [
+   2019
+  ]
+ },
+ "PAMISS3_": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "PAVIG11_": {
+  "label": "MINUTES OF VIGOROUS PHYSICAL ACTIVITY PE",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "PAVIG12_": {
+  "label": "MINUTES OF VIGOROUS PHYSICAL ACTIVITY PE",
+  "years": [
+   2019
+  ]
+ },
+ "PAVIG13_": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "PAVIG21_": {
+  "label": "MINUTES OF VIGOROUSPHYSICAL ACTIVITY PER",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "PAVIG22_": {
+  "label": "MINUTES OF VIGOROUSPHYSICAL ACTIVITY PER",
+  "years": [
+   2019
+  ]
+ },
+ "PAVIG23_": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "PCDMDEC1": {
+  "label": "WHO MADE THE DECISION WITH YOU TO HAVE P",
+  "years": [
+   2018,
+   2020
+  ]
+ },
+ "PCDMDECN": {
+  "label": "WHO MADE THE DECISION WITH YOU TO HAVE P",
+  "years": [
+   2015,
+   2016
+  ]
+ },
+ "PCPSAAD2": {
+  "label": "HAS A HEALTH PROFESSIONAL EVER TALKED WI",
+  "years": [
+   2014,
+   2015,
+   2016
+  ]
+ },
+ "PCPSAAD3": {
+  "label": "HAS A HEALTH PROFESSIONAL EVER TALKED WI",
+  "years": [
+   2018,
+   2020
+  ]
+ },
+ "PCPSADE1": {
+  "label": "WHY WAS PSA TEST DONE?",
+  "years": [
+   2015,
+   2018,
+   2020
+  ]
+ },
+ "PCPSADI1": {
+  "label": "HAS A HEALTH PROFESSIONAL EVER TALKED WI",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2018,
+   2020
+  ]
+ },
+ "PCPSARE1": {
+  "label": "HAS A DOCTOR EVER RECOMMENDED THAT YOU H",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2018,
+   2020
+  ]
+ },
+ "PCPSARS1": {
+  "label": "WHAT WAS THE MAIN REASON YOU HAD THIS PS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2018,
+   2020
+  ]
+ },
+ "PCPSARS2": {
+  "label": "WHAT WAS THE MAIN REASON YOU HAD THIS PS",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "PCSTALK2": {
+  "label": "DID YOU TALK ABOUT THE ADVANTAGES OR DIS",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "PDIABTS1": {
+  "label": "WHEN WAS YOUR LAST BLOOD TEST FOR HIGH B",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "PDIABTST": {
+  "label": "HAD A TEST FOR HIGH BLOOD SUGAR IN PAST",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "PFPPRVN2": {
+  "label": "DID YOU DO ANYTHING TO KEEP FROM GETTING",
+  "years": [
+   2017
+  ]
+ },
+ "PFPPRVN3": {
+  "label": "DID YOU DO ANYTHING TO KEEP FROM GETTING",
+  "years": [
+   2019
+  ]
+ },
+ "PFPPRVN4": {
+  "label": "DID YOU DO ANYTHING TO KEEP FROM GETTING",
+  "years": [
+   2024
+  ]
+ },
+ "PNEUVAC3": {
+  "label": "PNEUMONIA SHOT EVER",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017
+  ]
+ },
+ "POTADA1_": {
+  "label": "COMPUTED POTATO SERVINGS PER DAY",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "POTATOE1": {
+  "label": "HOW OFTEN DO YOU EAT FRENCH FRIES OR FRI",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "PREDIAB1": {
+  "label": "EVER BEEN TOLD YOU HAVE PRE-DIABETES OR",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "PREDIAB2": {
+  "label": "EVER BEEN TOLD YOU HAVE PRE-DIABETES OR",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "PREGNANT": {
+  "label": "PREGNANCY STATUS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "PRIRHEPC": {
+  "label": "WERE YOU TREATED FOR HEPATITIS C PRIOR T",
+  "years": [
+   2019,
+   2020
+  ]
+ },
+ "PROFEXAM": {
+  "label": "EVER HAD BREAST PHYSICAL EXAM BY DOCTOR",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2018
+  ]
+ },
+ "PSASUGS1": {
+  "label": "WHO FIRST SUGGESTED THIS P.S.A. TEST?",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "PSATEST1": {
+  "label": "EVER HAD PSA TEST",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2018,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "PSATIME": {
+  "label": "TIME SINCE LAST PSA TEST",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2018,
+   2020
+  ]
+ },
+ "PSATIME1": {
+  "label": "TIME SINCE MOST RECENT PSA TEST",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "PVTRESD1": {
+  "label": "PRIVATE RESIDENCE?",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "PVTRESD2": {
+  "label": "DO YOU LIVE IN A PRIVATE RESIDENCE?",
+  "years": [
+   2014,
+   2015
+  ]
+ },
+ "PVTRESD3": {
+  "label": "DO YOU LIVE IN A PRIVATE RESIDENCE?",
+  "years": [
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "QLACTLM2": {
+  "label": "ACTIVITY LIMITATION DUE TO HEALTH PROBLE",
+  "years": [
+   2014,
+   2015,
+   2016
+  ]
+ },
+ "QLHLTH2": {
+  "label": "HOW MANY DAYS FULL OF ENERGY IN PAST 30",
+  "years": [
+   2014,
+   2016
+  ]
+ },
+ "QLMENTL2": {
+  "label": "HOW MANY DAYS DEPRESSED IN PAST 30 DAYS",
+  "years": [
+   2014,
+   2016
+  ]
+ },
+ "QLSTRES2": {
+  "label": "HOW MANY DAYS FELT ANXIOUS IN PAST 30 DA",
+  "years": [
+   2014,
+   2016
+  ]
+ },
+ "QSTLANG": {
+  "label": "LANGUAGE IDENTIFIER",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "QSTVER": {
+  "label": "QUESTIONNAIRE VERSION IDENTIFIER",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "RCHISLA1": {
+  "label": null,
+  "years": [
+   2014
+  ]
+ },
+ "RCSBIRTH": {
+  "label": null,
+  "years": [
+   2014
+  ]
+ },
+ "RCSBRAC1": {
+  "label": null,
+  "years": []
+ },
+ "RCSGEND1": {
+  "label": "SEX OF CHILD",
+  "years": [
+   2023
+  ]
+ },
+ "RCSGENDR": {
+  "label": "GENDER OF CHILD",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "RCSRACE1": {
+  "label": null,
+  "years": [
+   2014
+  ]
+ },
+ "RCSRLTN2": {
+  "label": "RELATIONSHIP TO CHILD",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "RCSXBRTH": {
+  "label": "CHILD\u00b4S SEX AT BIRT",
+  "years": [
+   2023
+  ]
+ },
+ "RDUCHART": {
+  "label": "TAKE ASPIRIN TO REDUCE CHANCE OF HEART A",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "RDUCSTRK": {
+  "label": "TAKE ASPIRIN TO REDUCE CHANCE OF STROKE",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "RENTHOM1": {
+  "label": "OWN OR RENT HOME",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "RESPSLC1": {
+  "label": "RESPONDENT SELECTION",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "RESPSLCT": {
+  "label": "RESPONDENT SELECTION",
+  "years": [
+   2019,
+   2020
+  ]
+ },
+ "RLIVPAIN": {
+  "label": "TAKE ASPIRIN TO RELIEVE PAIN",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "RMVTETH3": {
+  "label": "NUMBER OF PERMANENT TEETH REMOVED",
+  "years": [
+   2014,
+   2016
+  ]
+ },
+ "RMVTETH4": {
+  "label": "NUMBER OF PERMANENT TEETH REMOVED",
+  "years": [
+   2018,
+   2020,
+   2024
+  ]
+ },
+ "RRATWRK2": {
+  "label": "HOW DO YOU FEEL YOU WERE TREATED AT WORK",
+  "years": [
+   2014,
+   2023
+  ]
+ },
+ "RRCLASS2": {
+  "label": "HOW DO OTHER PEOPLE USUALLY CLASSIFY YOU",
+  "years": [
+   2014
+  ]
+ },
+ "RRCLASS3": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "RRCOGNT2": {
+  "label": "HOW OFTEN DO YOU THINK ABOUT YOUR RACE?",
+  "years": [
+   2014,
+   2023
+  ]
+ },
+ "RREMTSM2": {
+  "label": "TIMES PAST 30 DAYS FELT EMOTIONALLY UPSE",
+  "years": [
+   2014
+  ]
+ },
+ "RRHCARE3": {
+  "label": "WHEN SEEKING HEALTH CARE PAST 12 MONTHS,",
+  "years": [
+   2014
+  ]
+ },
+ "RRHCARE4": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "RRPHYSM2": {
+  "label": "TIMES PAST 30 DAYS FELT PHYSICAL SYMPTOM",
+  "years": [
+   2014,
+   2023
+  ]
+ },
+ "RRTREAT": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "RSNMRJN1": {
+  "label": "WHAT WAS THE REASON YOU USED MARIJUANA?",
+  "years": [
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "RSNMRJNA": {
+  "label": null,
+  "years": [
+   2017
+  ]
+ },
+ "SAFETIME": {
+  "label": "SAFE TIME TO TALK?",
+  "years": [
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "SCNTLPAD": {
+  "label": "HOW WERE YOU GENERALLY PAID FOR THE WORK",
+  "years": [
+   2014,
+   2015
+  ]
+ },
+ "SCNTLWK1": {
+  "label": "HOW MANY HOURS PER WEEK DID YOU WORK",
+  "years": [
+   2014,
+   2015
+  ]
+ },
+ "SCNTMEL1": {
+  "label": "TIMES PAST 12 MONTHS WORRIED/STRESSED AB",
+  "years": [
+   2014,
+   2015
+  ]
+ },
+ "SCNTMNY1": {
+  "label": "TIMES PAST 12 MONTHS WORRIED/STRESSED AB",
+  "years": [
+   2014,
+   2015
+  ]
+ },
+ "SCNTPAID": {
+  "label": "HOW ARE YOU GENERALLY PAID FOR THE WORK",
+  "years": [
+   2014,
+   2015
+  ]
+ },
+ "SCNTVOT1": {
+  "label": "DID YOU VOTE IN THE LAST PRESIDENTIAL EL",
+  "years": [
+   2014
+  ]
+ },
+ "SCNTWRK1": {
+  "label": "HOW MANY HOURS PER WEEK DO YOU WORK",
+  "years": [
+   2014,
+   2015
+  ]
+ },
+ "SDHFOOD": {
+  "label": "NO MONEY FOR FOOD?",
+  "years": [
+   2017
+  ]
+ },
+ "SDHMEALS": {
+  "label": "NO MONEY FOR BALANCED MEALS?",
+  "years": [
+   2017
+  ]
+ },
+ "SDHMONEY": {
+  "label": "HOW DO YOUR FINANCES USUALLY WORK OUT AT",
+  "years": [
+   2017
+  ]
+ },
+ "SDHMOVE": {
+  "label": "HOW MANY TIMES HAVE YOU MOVED?",
+  "years": [
+   2017
+  ]
+ },
+ "SDHSTRE1": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "SDHSTRES": {
+  "label": "HOW OFTEN HAVE YOU FELT THIS KIND OF STR",
+  "years": [
+   2017
+  ]
+ },
+ "SDNATES1": {
+  "label": "HOW LONG SINCE YOU HAD STOOL DNA?",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "SDNATEST": {
+  "label": "HOW LONG SINCE YOU HAD STOOL DNA?",
+  "years": [
+   2020
+  ]
+ },
+ "SEQNO": {
+  "label": "ANNUAL SEQUENCE NUMBER",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "SHAREBP": {
+  "label": "HOW DO YOU SHARE YOUR BLOOD PRESSURE NUM",
+  "years": [
+   2019
+  ]
+ },
+ "SHINGLE2": {
+  "label": "HAVE YOU EVER HAD THE SHINGLES OR ZOSTER",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "SIGMSCPY": {
+  "label": "HAVE YOU EVER HAD A SIGMOIDOSCOPY?",
+  "years": [
+   2020
+  ]
+ },
+ "SIGMTES1": {
+  "label": "HOW LONG HAS IT BEEN SINCE YOU HAD SIGMO",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "SIGMTEST": {
+  "label": "HOW LONG HAS IT BEEN SINCE YOU HAD SIGMO",
+  "years": [
+   2020
+  ]
+ },
+ "SLEPBRTH": {
+  "label": "HAS ANYONE EVER OBSERVED THAT YOU STOP B",
+  "years": [
+   2017,
+   2018
+  ]
+ },
+ "SLEPDAY1": {
+  "label": "OVER THE LAST 2 WEEKS, HOW MANY DAYS DID",
+  "years": [
+   2017,
+   2018
+  ]
+ },
+ "SLEPSNO2": {
+  "label": "HAVE YOU EVER BEEN TOLD THAT YOU SNORE L",
+  "years": [
+   2017,
+   2018
+  ]
+ },
+ "SLEPTIM1": {
+  "label": "HOW MUCH TIME DO YOU SLEEP",
+  "years": [
+   2014,
+   2016,
+   2017,
+   2018,
+   2020
+  ]
+ },
+ "SMALSTOL": {
+  "label": "EVER HAD STOOL TEST?",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "SMOKDAY2": {
+  "label": "FREQUENCY OF DAYS NOW SMOKING",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "SOFEMALE": {
+  "label": "SEXUAL ORIENTATION",
+  "years": [
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "SOMALE": {
+  "label": "SEXUAL ORIENTATION",
+  "years": [
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "SSBFRUT2": {
+  "label": "HOW OFTEN DID YOU DRINK SUGAR-SWEETENED",
+  "years": [
+   2016
+  ]
+ },
+ "SSBFRUT3": {
+  "label": "HOW OFTEN DID YOU DRINK SUGAR-SWEETENED",
+  "years": [
+   2017,
+   2024
+  ]
+ },
+ "SSBSUGR2": {
+  "label": "HOW OFTEN DID YOU DRINK REGULAR SODA OR",
+  "years": [
+   2016,
+   2017,
+   2024
+  ]
+ },
+ "STATERE1": {
+  "label": "RESIDENT OF STATE",
+  "years": [
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "STATERES": {
+  "label": "RESIDENT OF STATE",
+  "years": [
+   2014,
+   2015,
+   2016
+  ]
+ },
+ "STOLTEST": {
+  "label": "HOW LONG SINCE YOU HAD STOOL TEST?",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "STOOLDN2": {
+  "label": "EVER HAD STOOL DNA TEST?",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "STOOLDNA": {
+  "label": "EVER HAD STOOL DNA TEST?",
+  "years": [
+   2020
+  ]
+ },
+ "STOPSMK2": {
+  "label": "STOPPED SMOKING IN PAST 12 MONTHS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "STOPWORY": {
+  "label": "BEEN BOTHERED BY NOT BEING ABLE TO STOP",
+  "years": [
+   2018
+  ]
+ },
+ "STREHAB1": {
+  "label": "OUTPATIENT REHAB AFTER HOSP STAY FOR STR",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "STRENGTH": {
+  "label": "HOW MANY TIMES DID YOU DO PHYSICAL ACTIV",
+  "years": [
+   2015,
+   2017,
+   2019,
+   2023
+  ]
+ },
+ "STRFREQ_": {
+  "label": "STRENGTH ACTIVITY FREQUENCY PER WEEK",
+  "years": [
+   2015,
+   2017,
+   2019,
+   2023
+  ]
+ },
+ "STRSYMP1": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "STRSYMP2": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "STRSYMP3": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "STRSYMP4": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "STRSYMP5": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "STRSYMP6": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "SUNPRTCT": {
+  "label": "HOW OFTEN PROTECT YOURSELF FROM THE SUN",
+  "years": [
+   2018,
+   2019
+  ]
+ },
+ "SXORIENT": {
+  "label": "SEXUAL ORIENTATION OR GENDER IDENTITY",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017
+  ]
+ },
+ "TETANUS": {
+  "label": "RECEIVED TETANUS SHOT SINCE 2005?",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017
+  ]
+ },
+ "TETANUS1": {
+  "label": "RECEIVED TETANUS SHOT SINCE 2005?",
+  "years": [
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "TOLDCFS": {
+  "label": "TOLD HAD CHRONIC FATIGUE SYNDROME OR MYA",
+  "years": []
+ },
+ "TOLDHEPC": {
+  "label": "TOLD HAD HEPATITIS C",
+  "years": [
+   2019,
+   2020
+  ]
+ },
+ "TOLDHI2": {
+  "label": "EVER TOLD BLOOD CHOLESTEROL HIGH",
+  "years": [
+   2015,
+   2017,
+   2019
+  ]
+ },
+ "TOLDHI3": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "TRETHEPC": {
+  "label": "TREATED FOR HEPATITIS C",
+  "years": [
+   2019,
+   2020
+  ]
+ },
+ "TRNSGNDR": {
+  "label": "DO YOU CONSIDER YOURSELF TO BE TRANSGEND",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023
+  ]
+ },
+ "TYPCNTR7": {
+  "label": "WHAT DID YOU DO TO KEEP YOU FROM GETTING",
+  "years": [
+   2017
+  ]
+ },
+ "TYPCNTR8": {
+  "label": "WHAT DID YOU DO TO KEEP YOU FROM GETTING",
+  "years": [
+   2019
+  ]
+ },
+ "TYPCNTR9": {
+  "label": "WHAT DID YOU DO TO KEEP YOU FROM GETTING",
+  "years": [
+   2024
+  ]
+ },
+ "UNDRSTND": {
+  "label": "HOW DIFFICULT IS IT FOR YOU TO UNDERSTAN",
+  "years": [
+   2016
+  ]
+ },
+ "USEEQUIP": {
+  "label": "HEALTH PROBLEMS REQUIRING SPECIAL EQUIPM",
+  "years": [
+   2014,
+   2015,
+   2016
+  ]
+ },
+ "USEMRJN1": {
+  "label": "DURING THE PAST 30 DAYS, HOW DID YOU PRI",
+  "years": [
+   2017
+  ]
+ },
+ "USEMRJN2": {
+  "label": "DURING THE PAST 30 DAYS, HOW DID YOU PRI",
+  "years": [
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "USEMRJN4": {
+  "label": "DURING THE PAST 30 DAYS, HOW DID YOU PRI",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "USEMRJNA": {
+  "label": "DURING THE PAST 30 DAYS, HOW DID YOU USE",
+  "years": [
+   2016
+  ]
+ },
+ "USENOW3": {
+  "label": "USE OF SMOKELESS TOBACCO PRODUCTS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "VCLNTES2": {
+  "label": "HOW LONG HAS IT BEEN SINCE YOU HAD VIRTU",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "VCLNTEST": {
+  "label": "HOW LONG HAS IT BEEN SINCE YOU HAD VIRTU",
+  "years": [
+   2020
+  ]
+ },
+ "VEGEDA1_": {
+  "label": "COMPUTED OTHER VEGETABLE INTAKE IN TIMES",
+  "years": [
+   2015
+  ]
+ },
+ "VEGEDA2_": {
+  "label": "COMPUTED OTHER VEGETABLE INTAKE IN TIMES",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "VEGETAB1": {
+  "label": "HOW MANY TIMES DID YOU EAT OTHER VEGETAB",
+  "years": [
+   2015
+  ]
+ },
+ "VEGETAB2": {
+  "label": "HOW OFTEN DO YOU EAT FRENCH FRIES OR FRI",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "VICTRCT4": {
+  "label": "HLTH CARE PRO SAID NOW HAVE CATARACTS",
+  "years": [
+   2015
+  ]
+ },
+ "VIDFCLT2": {
+  "label": "DIFFICULTY RECOGNIZING FRIEND ACROSS STR",
+  "years": [
+   2015
+  ]
+ },
+ "VIEYEXM2": {
+  "label": "WHEN LAST EYEXAM",
+  "years": [
+   2015
+  ]
+ },
+ "VIGLUMA2": {
+  "label": "HLTH CARE PRO EVER SAID HAVE GLAUCOMA",
+  "years": [
+   2015
+  ]
+ },
+ "VIINSUR2": {
+  "label": "EYE CARE HEALTH INSURANCE",
+  "years": [
+   2015
+  ]
+ },
+ "VIMACDG2": {
+  "label": "HLTH CARE PRO EVER SAID HAVE MACULAR DEG",
+  "years": [
+   2015
+  ]
+ },
+ "VINOCRE2": {
+  "label": "REASON DID NOT USE EYE DOC PAST 12 MOS",
+  "years": [
+   2015
+  ]
+ },
+ "VIPRFVS2": {
+  "label": "LAST TIME VISITED EYE CARE PROVIDER",
+  "years": [
+   2015
+  ]
+ },
+ "VIRCOLO1": {
+  "label": "HAVE YOU EVER HAD A VIRTUAL COLONOSCOPY?",
+  "years": [
+   2023,
+   2024
+  ]
+ },
+ "VIRCOLON": {
+  "label": "HAVE YOU EVER HAD A VIRTUAL COLONOSCOPY?",
+  "years": [
+   2020
+  ]
+ },
+ "VIREDIF3": {
+  "label": "DIFFICULTY READING TYPED TEXT",
+  "years": [
+   2015
+  ]
+ },
+ "WEIGHT2": {
+  "label": "REPORTED WEIGHT IN POUNDS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "WHEREBP": {
+  "label": "WHERE DO YOU GET BLOOD PRESSURE TAKEN",
+  "years": [
+   2019
+  ]
+ },
+ "WHRTST10": {
+  "label": "LOCATION OF LAST HIV TEST",
+  "years": [
+   2014,
+   2015
+  ]
+ },
+ "WKDAYOUT": {
+  "label": "HOW OFTEN OUTSIDE ON WEEKDAYS",
+  "years": [
+   2018,
+   2019
+  ]
+ },
+ "WKENDOUT": {
+  "label": "HOW OFTEN OUTSIDE ON WEEKENDS",
+  "years": [
+   2018,
+   2019
+  ]
+ },
+ "WORKCFS": {
+  "label": "HOW MANY HOURS A WEEK ARE YOU BEEN ABLE",
+  "years": []
+ },
+ "WRITTEN": {
+  "label": "HOW DIFFICULT IS IT FOR YOU TO UNDERSTAN",
+  "years": [
+   2016
+  ]
+ },
+ "WTCHSALT": {
+  "label": "WATCHING SODIUM OR SALT INTAKE",
+  "years": [
+   2014,
+   2015,
+   2017,
+   2019
+  ]
+ },
+ "WTKG3": {
+  "label": "COMPUTED WEIGHT IN KILOGRAMS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_AGE65YR": {
+  "label": "REPORTED AGE IN TWO AGE GROUPS CALCULATE",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_AIDTST3": {
+  "label": "EVER BEEN TESTED FOR HIV CALCULATED VARI",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "_AIDTST4": {
+  "label": "EVER BEEN TESTED FOR HIV CALCULATED VARI",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_ALTETH2": {
+  "label": "ADULTS AGED 65+ WHO HAVE HAD ALL THEIR N",
+  "years": [
+   2014,
+   2016
+  ]
+ },
+ "_ALTETH3": {
+  "label": "ADULTS AGED 65+ WHO HAVE HAD ALL THEIR N",
+  "years": [
+   2018,
+   2020,
+   2024
+  ]
+ },
+ "_ASTHMS1": {
+  "label": "COMPUTED ASTHMA STATUS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_CASTHM1": {
+  "label": "CURRENT ASTHMA CALCULATED VARIABLE",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_CHISPNC": {
+  "label": "CHILD HISPANIC, LATINO/A, OR SPANISH ORI",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_CHLDCNT": {
+  "label": "COMPUTED NUMBER OF CHILDREN IN HOUSEHOLD",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_CHOLCH1": {
+  "label": "CHOLESTEROL CHECKED CALCULATED VARIABLE",
+  "years": [
+   2017
+  ]
+ },
+ "_CHOLCH2": {
+  "label": "CHOLESTEROL CHECKED CALCULATED VARIABLE",
+  "years": [
+   2019
+  ]
+ },
+ "_CHOLCH3": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "_CHOLCHK": {
+  "label": "CHOLESTEROL CHECKED CALCULATED VARIABLE",
+  "years": [
+   2015
+  ]
+ },
+ "_CLLCPWT": {
+  "label": "FINAL CHILD WEIGHT: LAND-LINE AND CELL-P",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_CLNSCP2": {
+  "label": "RESPONDENTS AGED 45-75 WHO HAVE HAD A CO",
+  "years": [
+   2024
+  ]
+ },
+ "_CLNSCPY": {
+  "label": "RESPONDENTS AGED 50-75 WHO HAVE HAD A CO",
+  "years": [
+   2020
+  ]
+ },
+ "_COL10YR": {
+  "label": "RESPONDENTS AGED 50-75 WHO HAVE HAD A CO",
+  "years": [
+   2014,
+   2016,
+   2018
+  ]
+ },
+ "_CPRACE": {
+  "label": "PREFERRED CHILD RACE CATEGORIES",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "_CRACE1": {
+  "label": "CHILD NON-HISPANIC RACE INCLUDING MULTIR",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_CRCREC": {
+  "label": "RESPONDENTS AGED 50-75 WHO HAVE FULLY ME",
+  "years": [
+   2014,
+   2016,
+   2018
+  ]
+ },
+ "_CRCREC1": {
+  "label": "RESPONDENTS AGED 50-75 WHO HAVE FULLY ME",
+  "years": [
+   2020
+  ]
+ },
+ "_CRCREC3": {
+  "label": "RESPONDENTS AGED 45-75 WHO HAVE FULLY ME",
+  "years": [
+   2024
+  ]
+ },
+ "_CRVSCRN": {
+  "label": "FEMALE RESPONDENTS THAT HAVE HAD A CERVI",
+  "years": [
+   2024
+  ]
+ },
+ "_CURECIG": {
+  "label": "CURRENT E-CIGARETTE USER CALCULATED VARI",
+  "years": [
+   2016,
+   2017
+  ]
+ },
+ "_DENVST2": {
+  "label": "ADULTS WHO HAVE VISITED A DENTIST, DENTA",
+  "years": [
+   2014,
+   2016
+  ]
+ },
+ "_DENVST3": {
+  "label": "ADULTS WHO HAVE VISITED A DENTIST, DENTA",
+  "years": [
+   2018,
+   2020,
+   2024
+  ]
+ },
+ "_DRDXAR1": {
+  "label": "RESPONDENTS DIAGNOSED WITH ARTHRITIS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018
+  ]
+ },
+ "_DRDXAR2": {
+  "label": "RESPONDENTS DIAGNOSED WITH ARTHRITIS",
+  "years": [
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_DRNKDRV": {
+  "label": "DRINKING AND DRIVING",
+  "years": [
+   2016,
+   2018,
+   2020,
+   2023
+  ]
+ },
+ "_DRNKDY4": {
+  "label": "COMPUTED NUMBER OF DRINKS OF ALCOHOL BEV",
+  "years": [
+   2014
+  ]
+ },
+ "_DRNKMO4": {
+  "label": "COMPUTED TOTAL NUMBER DRINKS A MONTH",
+  "years": [
+   2014
+  ]
+ },
+ "_DUALCOR": {
+  "label": "DUAL PHONE USE CORRECTION FACTOR",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_DUALUSE": {
+  "label": "DUAL PHONE USE CATEGORIES",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_ECIGSTS": {
+  "label": "COMPUTED E-CIGARETTE USER STATUS",
+  "years": [
+   2016,
+   2017
+  ]
+ },
+ "_EXTETH2": {
+  "label": "RISK FACTOR FOR HAVING HAD PERMANENT TEE",
+  "years": [
+   2014,
+   2016
+  ]
+ },
+ "_EXTETH3": {
+  "label": "RISK FACTOR FOR HAVING HAD PERMANENT TEE",
+  "years": [
+   2018,
+   2020,
+   2024
+  ]
+ },
+ "_FOBTFS": {
+  "label": "RESPONDENTS AGED 50-75 WHO HAVE HAD A BL",
+  "years": [
+   2014,
+   2016,
+   2018
+  ]
+ },
+ "_FRT16": {
+  "label": "REPORTED CONSUMING FRUIT >16/DAY",
+  "years": [
+   2015
+  ]
+ },
+ "_FRT16A": {
+  "label": "REPORTED CONSUMING FRUIT >16/DAY",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "_FRTLT1": {
+  "label": "CONSUME FRUIT 1 OR MORE TIMES PER DAY",
+  "years": [
+   2015
+  ]
+ },
+ "_FRTLT1A": {
+  "label": "CONSUME FRUIT 1 OR MORE TIMES PER DAY",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "_FRTRES1": {
+  "label": "MISSING ANY FRUIT RESPONSES",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "_FRTRESP": {
+  "label": "MISSING ANY FRUIT RESPONSES",
+  "years": [
+   2015
+  ]
+ },
+ "_FRUITE1": {
+  "label": "FRUIT EXCLUSION FROM ANALYSES",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "_FRUITEX": {
+  "label": "FRUIT EXCLUSION FROM ANALYSES",
+  "years": [
+   2015
+  ]
+ },
+ "_FRUTSU1": {
+  "label": "TOTAL FRUITS CONSUMED PER DAY",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "_FRUTSUM": {
+  "label": "TOTAL FRUITS CONSUMED PER DAY",
+  "years": [
+   2015
+  ]
+ },
+ "_FS5YR": {
+  "label": "RESPONDENTS AGED 50-75 WHO HAVE HAD A SI",
+  "years": [
+   2014,
+   2016,
+   2018
+  ]
+ },
+ "_HADCOLN": {
+  "label": "HAD COLONOSCOPY CALCULATED VARIABLE",
+  "years": [
+   2024
+  ]
+ },
+ "_HADSIGM": {
+  "label": "HAD SIGMOIDOSCOPY CALCULATED VARIABLE",
+  "years": [
+   2024
+  ]
+ },
+ "_HFOB3YR": {
+  "label": "RESPONDENTS AGED 50-75 WHO HAVE HAD A BL",
+  "years": [
+   2014,
+   2016,
+   2018
+  ]
+ },
+ "_HISPANC": {
+  "label": "HISPANIC, LATINO/A, OR SPANISH ORIGIN CA",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_HPV5YR1": {
+  "label": "FEMALE RESPONDENTS WITH AN INTACT CERVIX",
+  "years": [
+   2024
+  ]
+ },
+ "_IMPCAGE": {
+  "label": "IMPUTED CHILD AGE",
+  "years": [
+   2014
+  ]
+ },
+ "_IMPCRAC": {
+  "label": "Imputed Child Race/Ethnicity",
+  "years": [
+   2014
+  ]
+ },
+ "_IMPCSEX": {
+  "label": "IMPUTED CHILD GENDER",
+  "years": [
+   2014
+  ]
+ },
+ "_IMPEDUC": {
+  "label": "IMPUTED EDUCATION LEVEL",
+  "years": [
+   2014
+  ]
+ },
+ "_IMPHOME": {
+  "label": "IMPUTED RENT OR OWN HOME STATUS",
+  "years": [
+   2014
+  ]
+ },
+ "_IMPMRTL": {
+  "label": "IMPUTED MARITAL STATUS",
+  "years": [
+   2014
+  ]
+ },
+ "_IMPNPH": {
+  "label": "IMPUTED NUMBER OF PHONES",
+  "years": [
+   2014
+  ]
+ },
+ "_LCSAGE": {
+  "label": "LUNG CANCER SCREENING AGE GROUPS",
+  "years": [
+   2024
+  ]
+ },
+ "_LCSCTSN": {
+  "label": "HAD CHEST CT SCAN FOR LUNG CANCER",
+  "years": [
+   2024
+  ]
+ },
+ "_LCSELIG": {
+  "label": "USPSTF ELIGIBILITY FOR SCREENING",
+  "years": [
+   2024
+  ]
+ },
+ "_LCSPSTF": {
+  "label": "MEET USPSTF LUNG CANCER SCREENING GUIDEL",
+  "years": [
+   2024
+  ]
+ },
+ "_LCSSMKG": {
+  "label": "SMOKING GROUP",
+  "years": [
+   2024
+  ]
+ },
+ "_LCSYQTS": {
+  "label": "NUMBER OF YEARS SINCE QUIT SMOKING CIGAR",
+  "years": [
+   2024
+  ]
+ },
+ "_LCSYSMK": {
+  "label": "NUMBER OF YEARS SMOKED CIGARETTES",
+  "years": [
+   2024
+  ]
+ },
+ "_LLCPWT2": {
+  "label": "TRUNCATED DESIGN WEIGHT USED IN ADULT CO",
+  "years": [
+   2014,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_LMTACT1": {
+  "label": "LIMITED USUAL ACTIVITIES",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "_LMTACT2": {
+  "label": "LIMITED USUAL ACTIVITIES",
+  "years": [
+   2019
+  ]
+ },
+ "_LMTSCL1": {
+  "label": "LIMITED SOCIAL ACTIVITIES",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "_LMTWRK1": {
+  "label": "LIMITED WORK ACTIVITIES",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "_LMTWRK2": {
+  "label": "LIMITED WORK ACTIVITIES",
+  "years": [
+   2019
+  ]
+ },
+ "_LTASTH1": {
+  "label": "LIFETIME ASTHMA CALCULATED VARIABLE",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_MAM402Y": {
+  "label": "WOMEN RESPONDENTS AGED 40-74 WHO HAVE HA",
+  "years": [
+   2024
+  ]
+ },
+ "_MAM5021": {
+  "label": "WOMEN RESPONDENTS AGED 50-74 WHO HAVE HA",
+  "years": [
+   2014,
+   2016
+  ]
+ },
+ "_MAM5022": {
+  "label": "WOMEN RESPONDENTS AGED 50-74 WHO HAVE HA",
+  "years": [
+   2018
+  ]
+ },
+ "_MAM5023": {
+  "label": "WOMEN RESPONDENTS AGED 50-74 WHO HAVE HA",
+  "years": [
+   2020
+  ]
+ },
+ "_MAM502Y": {
+  "label": "WOMEN RESPONDENTS AGED 50+ WHO HAVE HAD",
+  "years": [
+   2014
+  ]
+ },
+ "_METSTAT": {
+  "label": "METROPOLITAN STATUS",
+  "years": [
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_MINAC11": {
+  "label": "MINUTES OF PHYSICAL ACTIVITY PER WEEK FO",
+  "years": [
+   2015,
+   2017,
+   2019
+  ]
+ },
+ "_MINAC12": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "_MINAC21": {
+  "label": "MINUTES OF PHYSICAL ACTIVITY PER WEEK FO",
+  "years": [
+   2015,
+   2017,
+   2019
+  ]
+ },
+ "_MINAC22": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "_MISFRT1": {
+  "label": "THE NUMBER OF MISSING FRUIT RESPONSES",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "_MISFRTN": {
+  "label": "THE NUMBER OF MISSING FRUIT RESPONSES",
+  "years": [
+   2015
+  ]
+ },
+ "_MISVEG1": {
+  "label": "THE NUMBER OF MISSING VEGETABLE RESPONSE",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "_MISVEGN": {
+  "label": "THE NUMBER OF MISSING VEGETABLE RESPONSE",
+  "years": [
+   2015
+  ]
+ },
+ "_MRACE1": {
+  "label": "CALCULATED NON-HISPANIC RACE INCLUDING M",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_PA150R2": {
+  "label": "150 MINUTE PHYSICAL ACTIVITY CALCULATED",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "_PA150R3": {
+  "label": "150 MINUTE PHYSICAL ACTIVITY CALCULATED",
+  "years": [
+   2019
+  ]
+ },
+ "_PA150R4": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "_PA30021": {
+  "label": "300 MINUTE PHYSICAL ACTIVITY 2-LEVEL CAL",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "_PA30022": {
+  "label": "300 MINUTE PHYSICAL ACTIVITY 2-LEVEL CAL",
+  "years": [
+   2019
+  ]
+ },
+ "_PA30023": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "_PA300R2": {
+  "label": "300 MINUTE PHYSICAL ACTIVITY CALCULATED",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "_PA300R3": {
+  "label": "300 MINUTE PHYSICAL ACTIVITY CALCULATED",
+  "years": [
+   2019
+  ]
+ },
+ "_PA300R4": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "_PACAT1": {
+  "label": "PHYSICAL ACTIVITY CATEGORIES",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "_PACAT2": {
+  "label": "PHYSICAL ACTIVITY CATEGORIES",
+  "years": [
+   2019
+  ]
+ },
+ "_PACAT3": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "_PACKDAY": {
+  "label": "NUMBER OF PACKS OF CIGARETTES SMOKED PER",
+  "years": [
+   2024
+  ]
+ },
+ "_PACKYRS": {
+  "label": "YEARS SMOKED REPORTED PACKS PER DAY",
+  "years": [
+   2024
+  ]
+ },
+ "_PAINDX1": {
+  "label": "PHYSICAL ACTIVITY INDEX",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "_PAINDX2": {
+  "label": "PHYSICAL ACTIVITY INDEX",
+  "years": [
+   2019
+  ]
+ },
+ "_PAINDX3": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "_PAPHPV1": {
+  "label": "FEMALE RESPONDENTS WITH AN INTACT CERVIX",
+  "years": [
+   2024
+  ]
+ },
+ "_PAREC1": {
+  "label": "AEROBIC AND STRENGTHENING GUIDELINE",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "_PAREC2": {
+  "label": "AEROBIC AND STRENGTHENING GUIDELINE",
+  "years": [
+   2019
+  ]
+ },
+ "_PAREC3": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "_PASTAE1": {
+  "label": "AEROBIC AND STRENGTHENING (2-LEVEL)",
+  "years": [
+   2015,
+   2017
+  ]
+ },
+ "_PASTAE2": {
+  "label": "AEROBIC AND STRENGTHENING (2-LEVEL)",
+  "years": [
+   2019
+  ]
+ },
+ "_PASTAE3": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "_PASTRNG": {
+  "label": "MUSCLE STRENGTHENING RECOMMENDATION",
+  "years": [
+   2015,
+   2017,
+   2019,
+   2023
+  ]
+ },
+ "_PNEUMO2": {
+  "label": "PNEUMONIA VACCINATION CALCULATED VARIABL",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017
+  ]
+ },
+ "_PNEUMO3": {
+  "label": "PNEUMONIA VACCINATION CALCULATED VARIABL",
+  "years": [
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_PRACE1": {
+  "label": "COMPUTED PREFERRED RACE",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020
+  ]
+ },
+ "_RACE": {
+  "label": "COMPUTED RACE-ETHNICITY GROUPING",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_RACEG21": {
+  "label": "COMPUTED NON-HISPANIC WHITES/ALL OTHERS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_RACEPRV": {
+  "label": "COMPUTED RACE GROUPS USED FOR INTERNET P",
+  "years": [
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_RACE_G1": {
+  "label": "COMPUTED RACE GROUPS USED FOR INTERNET P",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019
+  ]
+ },
+ "_RAWRAKE": {
+  "label": "RAW WEIGHTING FACTOR USED IN RAKING",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_RFBLDS2": {
+  "label": "RESPONDENTS AGED 50+ WHO HAVE HAD A BLOO",
+  "years": [
+   2014
+  ]
+ },
+ "_RFBLDS3": {
+  "label": "RESPONDENTS AGED 50-75 WHO HAVE HAD A BL",
+  "years": [
+   2014,
+   2016,
+   2018
+  ]
+ },
+ "_RFBLDS4": {
+  "label": "RESPONDENTS AGED 50-75 WHO HAVE HAD A BL",
+  "years": [
+   2020
+  ]
+ },
+ "_RFBLDS6": {
+  "label": "RESPONDENTS AGED 45-75 WHO HAVE HAD A ST",
+  "years": [
+   2024
+  ]
+ },
+ "_RFCHOL": {
+  "label": "HIGH CHOLESTEROL CALCULATED VARIABLE",
+  "years": [
+   2015
+  ]
+ },
+ "_RFCHOL1": {
+  "label": "HIGH CHOLESTEROL CALCULATED VARIABLE",
+  "years": [
+   2017
+  ]
+ },
+ "_RFCHOL2": {
+  "label": "HIGH CHOLESTEROL CALCULATED VARIABLE",
+  "years": [
+   2019
+  ]
+ },
+ "_RFCHOL3": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "_RFDRHV4": {
+  "label": "HEAVY ALCOHOL CONSUMPTION  CALCULATED VA",
+  "years": [
+   2014
+  ]
+ },
+ "_RFDRMN4": {
+  "label": "ADULT MEN HEAVY ALCOHOL CONSUMPTION CALC",
+  "years": [
+   2014
+  ]
+ },
+ "_RFDRWM4": {
+  "label": "ADULT WOMEN HEAVY ALCOHOL CONSUMPTION CA",
+  "years": [
+   2014
+  ]
+ },
+ "_RFHYPE5": {
+  "label": "HIGH BLOOD PRESSURE CALCULATED VARIABLE",
+  "years": [
+   2015,
+   2017,
+   2019
+  ]
+ },
+ "_RFHYPE6": {
+  "label": null,
+  "years": [
+   2023
+  ]
+ },
+ "_RFMAM21": {
+  "label": "WOMEN RESPONDENTS AGED 40+ WHO HAVE HAD",
+  "years": [
+   2018
+  ]
+ },
+ "_RFMAM22": {
+  "label": "WOMEN RESPONDENTS AGED 40+ WHO HAVE HAD",
+  "years": [
+   2020
+  ]
+ },
+ "_RFMAM23": {
+  "label": "WOMEN RESPONDENTS AGED 40+ WHO HAVE HAD",
+  "years": [
+   2024
+  ]
+ },
+ "_RFMAM2Y": {
+  "label": "WOMEN RESPONDENTS AGED 40+ WHO HAVE HAD",
+  "years": [
+   2014,
+   2016
+  ]
+ },
+ "_RFPAP32": {
+  "label": "WOMEN RESPONDENTS AGED 18+ WHO HAVE HAD",
+  "years": [
+   2014
+  ]
+ },
+ "_RFPAP33": {
+  "label": "WOMEN RESPONDENTS AGED 21-65 WHO HAVE HA",
+  "years": [
+   2014,
+   2016
+  ]
+ },
+ "_RFPAP34": {
+  "label": "WOMEN RESPONDENTS AGED 21-65 WHO HAVE HA",
+  "years": [
+   2018
+  ]
+ },
+ "_RFPAP35": {
+  "label": "WOMEN RESPONDENTS AGED 21-65 WHO HAVE HA",
+  "years": [
+   2020
+  ]
+ },
+ "_RFPAP37": {
+  "label": "FEMALE RESPONDENTS WITH AN INTACT CERVIX",
+  "years": [
+   2024
+  ]
+ },
+ "_RFPSA21": {
+  "label": "MALE RESPONDENTS AGED 40+ WHO HAVE HAD A",
+  "years": [
+   2014,
+   2016
+  ]
+ },
+ "_RFPSA22": {
+  "label": "MALE RESPONDENTS AGED 40+ WHO HAVE HAD A",
+  "years": [
+   2018
+  ]
+ },
+ "_RFPSA23": {
+  "label": "MALE RESPONDENTS AGED 40+ WHO HAVE HAD A",
+  "years": [
+   2020
+  ]
+ },
+ "_RFSEAT2": {
+  "label": "ALWAYS OR NEARLY ALWAYS WEAR SEAT BELTS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2020,
+   2023
+  ]
+ },
+ "_RFSEAT3": {
+  "label": "ALWAYS WEAR SEAT BELTS",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2020,
+   2023
+  ]
+ },
+ "_RFSIGM2": {
+  "label": "RESPONDENTS AGED 50 OR OLDER WHO HAVE HA",
+  "years": [
+   2014
+  ]
+ },
+ "_RFSMOK3": {
+  "label": "CURRENT SMOKING CALCULATED VARIABLE",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_SBONTI2": {
+  "label": "RESPONDENTS AGED 45-75 WHO HAVE HAD A SI",
+  "years": [
+   2024
+  ]
+ },
+ "_SBONTIM": {
+  "label": "RESPONDENTS AGED 50-75 WHO HAVE HAD A SI",
+  "years": [
+   2020
+  ]
+ },
+ "_SGMS102": {
+  "label": "RESPONDENTS AGED 45-75 WHO HAVE HAD A SI",
+  "years": [
+   2024
+  ]
+ },
+ "_SGMS10Y": {
+  "label": "RESPONDENTS AGED 50-75 WHO HAVE HAD A SI",
+  "years": [
+   2020
+  ]
+ },
+ "_SGMSCP2": {
+  "label": "RESPONDENTS AGED 45-75 WHO HAVE HAD A SI",
+  "years": [
+   2024
+  ]
+ },
+ "_SGMSCPY": {
+  "label": "RESPONDENTS AGED 50-75 WHO HAVE HAD A SI",
+  "years": [
+   2020
+  ]
+ },
+ "_STOLDN2": {
+  "label": "RESPONDENTS AGED 45-75 WHO HAVE HAD A ST",
+  "years": [
+   2024
+  ]
+ },
+ "_STOLDNA": {
+  "label": "RESPONDENTS AGED 50-75 WHO HAVE HAD A ST",
+  "years": [
+   2020
+  ]
+ },
+ "_STRWT": {
+  "label": "STRATUM WEIGHT",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_URBSTAT": {
+  "label": "URBAN/RURAL STATUS",
+  "years": [
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ },
+ "_VEG23": {
+  "label": "REPORTED CONSUMING VEGETABLES >23/DAY",
+  "years": [
+   2015
+  ]
+ },
+ "_VEG23A": {
+  "label": "REPORTED CONSUMING VEGETABLES >23/DAY",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "_VEGESU1": {
+  "label": "TOTAL VEGETABLES CONSUMED PER DAY",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "_VEGESUM": {
+  "label": "TOTAL VEGETABLES CONSUMED PER DAY",
+  "years": [
+   2015
+  ]
+ },
+ "_VEGETE1": {
+  "label": "VEGETABLE EXCLUSION FROM ANALYSES",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "_VEGETEX": {
+  "label": "VEGETABLE EXCLUSION FROM ANALYSES",
+  "years": [
+   2015
+  ]
+ },
+ "_VEGLT1": {
+  "label": "CONSUME VEGETABLES 1 OR MORE TIMES PER D",
+  "years": [
+   2015
+  ]
+ },
+ "_VEGLT1A": {
+  "label": "CONSUME VEGETABLES 1 OR MORE TIMES PER D",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "_VEGRES1": {
+  "label": "MISSING ANY VEGETABLE RESPONSES",
+  "years": [
+   2017,
+   2019
+  ]
+ },
+ "_VEGRESP": {
+  "label": "MISSING ANY VEGETABLE RESPONSES",
+  "years": [
+   2015
+  ]
+ },
+ "_VIRCOL2": {
+  "label": "RESPONDENTS AGED 45-75 WHO HAVE HAD A VI",
+  "years": [
+   2024
+  ]
+ },
+ "_VIRCOLN": {
+  "label": "RESPONDENTS AGED 50-75 WHO HAVE HAD A VI",
+  "years": [
+   2020
+  ]
+ },
+ "_WT2RAKE": {
+  "label": "DESIGN WEIGHT USED IN RAKING",
+  "years": [
+   2014,
+   2015,
+   2016,
+   2017,
+   2018,
+   2019,
+   2020,
+   2023,
+   2024
+  ]
+ }
+}
