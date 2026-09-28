@@ -28,6 +28,7 @@ registerDataset({
 - Always include a LIMIT clause (max 10000) unless the query is a single aggregated row.
 - Only use SELECT statements.
 - Use DuckDB SQL syntax.
+- Never use SELECT * in the outer query — the table has 800+ columns. Select only the columns you need.
 - ALWAYS use _LLCPWT survey weight for population estimates and prevalence calculations.
 - ALWAYS exclude Don't Know/Refused codes (7, 9, 77, 99 as appropriate) from calculations.
 - ALWAYS provide readable labels via CASE WHEN for coded values — never return raw numeric codes without labels.
@@ -42,6 +43,7 @@ registerDataset({
 - Always include a LIMIT clause (max 10000).
 - Only use SELECT statements.
 - Use DuckDB SQL syntax.
+- Never use SELECT * in the outer query — the table has 800+ columns. Select only the columns you need.
 - Use _LLCPWT for weighted estimates.
 - Add readable labels via CASE WHEN for coded values.
 - For trends, GROUP BY survey_year.`,

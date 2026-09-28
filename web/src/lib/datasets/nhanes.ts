@@ -17,6 +17,7 @@ registerDataset({
 - EXCEPTION: If the question cannot be answered from available columns, return exactly: CANNOT_ANSWER: followed by a clear explanation.
 - Always include a LIMIT clause (max 10000) unless the query is a single aggregated row.
 - Only use SELECT statements. Use DuckDB SQL syntax.
+- Never use SELECT * in the outer query — the table has 1,000+ columns. Select only the columns you need.
 - ALWAYS use WTMEC2YR for weighted estimates when any exam or lab data is involved. Use WTINT2YR only for pure demographic/interview-only queries.
 - ALWAYS filter out NULLs and refusal codes (7, 9, 77, 99) before calculations.
 - ALWAYS provide readable labels via CASE WHEN for coded values — never return raw numeric codes.
@@ -29,6 +30,7 @@ registerDataset({
   retrySystemPromptRules: `Rules:
 - Return ONLY the SQL query. No markdown.
 - Always include LIMIT (max 10000). Only SELECT. DuckDB SQL.
+- Never use SELECT * in the outer query — the table has 1,000+ columns. Select only the columns you need.
 - Use WTMEC2YR for weighted estimates.
 - Filter NULLs and refusal codes. Add readable labels via CASE WHEN.
 - Single cycle (2021-2023), no trends.`,
