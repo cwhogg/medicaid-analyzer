@@ -1,7 +1,7 @@
 export function generateNHANESSchemaPrompt(): string {
   return `## NHANES 2021-2023 Survey Data
 
-You have ONE table: **nhanes** (11,933 rows, 94 columns, one row per survey participant)
+You have ONE table: **nhanes** (11,933 rows, ~1,080 columns, one row per survey participant)
 
 This is the CDC National Health and Nutrition Examination Survey (NHANES) — a nationally representative survey that combines interviews, physical examinations, and laboratory tests. Unlike BRFSS (phone survey, self-reported), NHANES includes actual clinical measurements: blood draws, blood pressure readings, body measurements, and standardized questionnaires administered in-person.
 
@@ -344,6 +344,34 @@ Short sleep: <7 hours. Long sleep: >9 hours.
 - \`HIQ032I\` — Covered by Indian Health Service (1=Yes)
 
 For insurance type questions, these are CHECK-ALL-THAT-APPLY (value is 1 if checked, NULL if not).
+
+---
+
+### Additional Variables (full 2021-2023 cycle)
+
+The nhanes table contains ~1,080 variables from every one-row-per-participant 2021-2023 file (names match CDC). Commonly used ones beyond those above:
+
+**Subsample weights (use instead of WTMEC2YR for these):** \`WTPH2YR\` (phlebotomy weight — preferred for blood lab analytes like vitamin D, lead, mercury, cotinine), \`WTSAF2YR\` (fasting subsample — insulin, fasting glucose), \`WTDRD1\` (dietary day-1 recall), \`WTSPF2YR\` (PFAS subsample).
+
+**Dietary intake — day-1 24-hour recall totals (weight WTDRD1; filter DR1DRSTZ = 1 for reliable recalls):** \`DR1TKCAL\` (kcal), \`DR1TPROT\` (protein g), \`DR1TCARB\` (carbohydrate g), \`DR1TSUGR\` (total sugars g), \`DR1TFIBE\` (fiber g), \`DR1TTFAT\` (total fat g), \`DR1TSODI\` (sodium mg), \`DR1TCAFF\` (caffeine mg), \`DR1TALCO\` (alcohol g). Food-group servings (e.g. fruit/vegetable servings) are NOT available — only nutrient totals.
+
+**Additional labs:** \`LBXVIDMS\` (vitamin D, 25OHD2+25OHD3 nmol/L; deficiency <30, inadequate 30-49), \`LBXIN\` (insulin uU/mL, fasting — WTSAF2YR), \`LBXBPB\` (blood lead ug/dL), \`LBXTHG\` (blood mercury ug/L), \`LBXCOT\` (serum cotinine ng/mL; >10 suggests active tobacco use), \`URDACT\` (urine albumin-to-creatinine ratio mg/g; >=30 = albuminuria), \`LBXPFNA\`/\`LBXNFOA\`/\`LBXPFHS\`/\`LBXPFDE\` (PFAS "forever chemicals" ng/mL — WTSPF2YR), \`LBXHBS\` (hepatitis B surface antibody: 1=Positive, 2=Negative).
+
+**Additional questionnaire items (weight WTINT2YR; 7/9 or 77/99 or 7777/9999 = DK/Refused):**
+- \`KIQ022\` (ever told weak/failing kidneys: 1=Yes, 2=No)
+- \`DIQ160\` (ever told prediabetes: 1=Yes, 2=No)
+- \`HUQ010\` (general health: 1=Excellent, 2=Very good, 3=Good, 4=Fair, 5=Poor)
+- \`HUQ030\` (routine place for healthcare: 1=Yes, 2=There is no place, 3=More than one place)
+- \`HUQ090\` (seen mental health professional in past year: 1=Yes, 2=No)
+- \`FSDAD\` (adult food security: 1=Full, 2=Marginal, 3=Low, 4=Very low food security)
+- \`WHQ070\` (tried to lose weight in past year: 1=Yes, 2=No); \`WHD020\` / \`WHD050\` (self-reported weight now / 1 year ago, pounds)
+- \`OHQ845\` (rate health of teeth and gums: 1=Excellent … 5=Poor)
+- \`AUQ054\` (hearing: 1=Excellent, 2=Good, 3=A little trouble, 4=Moderate trouble, 5=A lot of trouble, 6=Deaf)
+- \`DPQ100\` (difficulty depression symptoms caused: 0=Not at all, 1=Somewhat, 2=Very, 3=Extremely difficult)
+- \`HSQ590\` (blood ever tested for HIV: 1=Yes, 2=No); \`HEQ010\` (ever told hepatitis B: 1=Yes, 2=No)
+- \`RXQ033\` (taken prescription medicine in past month: 1=Yes, 2=No)
+- \`OCQ180\` (hours worked last week)
+- If a topic is not listed in this schema, return CANNOT_ANSWER and say the variable is not documented here rather than claiming NHANES never collects it.
 
 ---
 

@@ -226,6 +226,29 @@ FROM brfss WHERE ASTHMA3 IN (1, 2)
 - \`EMTSUPRT\` (How often get social/emotional support needed: 1=Always, 2=Usually, 3=Sometimes, 4=Rarely, 5=Never, 7=DK, 9=Refused)
 - \`LSATISFY\` (Overall life satisfaction: 1=Very satisfied, 2=Satisfied, 3=Dissatisfied, 4=Very dissatisfied, 7=DK, 9=Refused)
 
+**Additional Variables (raw CDC names; NULL in years not asked — always filter to the listed years):**
+- \`SLEPTIM1\` (hours of sleep in a 24-hour period: 1-24 hours, 77=DK, 99=Refused — 2014, 2016, 2018, 2020, 2022 core; 2017 subset of states). Short sleep = SLEPTIM1 < 7 among valid 1-24. Latest year with sleep data is 2022.
+- \`_FRUTSU1\` / \`_VEGESU1\` (total fruits / vegetables consumed per day, 2 implied decimals: divide by 100 for times per day — 2017, 2019, 2021)
+- \`_FRTLT1A\` / \`_VEGLT1A\` (consumed fruit / vegetables 1+ times per day: 1=Yes, 2=No, 9=DK/Missing — 2017, 2019, 2021)
+- \`TOLDHI3\` (ever told cholesterol is high: 1=Yes, 2=No, 7=DK, 9=Refused — 2021, 2023)
+- \`_RFCHOL3\` (calculated high cholesterol among those checked: 1=No, 2=Yes, 9=DK/Missing — 2021, 2023)
+- \`PREDIAB2\` (ever told pre-diabetes: 1=Yes, 2=Yes only during pregnancy, 3=No, 7=DK, 9=Refused — 2022-2024)
+- \`_URBSTAT\` (1=Urban, 2=Rural — 2018-2024); \`_METSTAT\` (1=Metropolitan, 2=Nonmetropolitan — 2018-2024)
+- \`FIREARM5\` (any firearms kept in or around home: 1=Yes, 2=No, 7=DK, 9=Refused — 2021-2024, optional module)
+- \`COVIDPOS\` (ever tested positive for COVID-19: 1=Yes, 2=No, 3=Positive home test only, 7=DK, 9=Refused — 2022)
+- \`COVIDVA1\` (received at least one COVID-19 vaccination: 1=Yes, 2=No, 7=DK, 9=Refused — 2022-2023)
+- \`CIMEMLOS\` (confusion or memory loss getting worse in past 12 months, adults 45+: 1=Yes, 2=No, 7=DK, 9=Refused — 2015-2022, optional module)
+- \`CAREGIV1\` (provided regular care to a family member/friend with a health problem in past 30 days: 1=Yes, 2=No, 7=DK, 8=Care recipient died, 9=Refused — 2015-2024, optional module)
+- \`SOMALE\` / \`SOFEMALE\` (sexual orientation, asked of males / females: 1=Gay or lesbian, 2=Straight, 3=Bisexual, 4=Something else, 7=DK, 9=Refused — 2018-2024, optional module). Combine with COALESCE(SOMALE, SOFEMALE).
+- \`TRNSGNDR\` (transgender: 1=Yes male-to-female, 2=Yes female-to-male, 3=Yes gender nonconforming, 4=No, 7=DK, 9=Refused — 2014-2023, optional module)
+- \`USENOW3\` (smokeless tobacco use: 1=Every day, 2=Some days, 3=Not at all, 7=DK, 9=Refused — 2014-2024)
+- \`SHINGLE2\` (ever had shingles/zoster vaccine: 1=Yes, 2=No, 7=DK, 9=Refused — 2014-2024)
+- \`_MAM5023\` (women 50-74 with a mammogram in past 2 years: 1=Yes, 2=No — 2020, 2022)
+- \`_DENVST3\` (visited a dentist or dental clinic in past year: 1=Yes, 2=No, 9=DK/Missing — 2018, 2020, 2022, 2024)
+- \`SDHSTRE1\` (how often felt stress: 1=Always, 2=Usually, 3=Sometimes, 4=Rarely, 5=Never, 7=DK, 9=Refused — 2022-2023)
+- \`SDHISOLT\` (how often feel socially isolated: same 1-5 scale — 2022)
+- The table also contains ~780 other raw CDC BRFSS variables (optional modules, calculated variables) not listed here. Only use columns listed in this schema; if a topic is not listed, return CANNOT_ANSWER and say the variable is not documented here rather than claiming BRFSS never collects it.
+
 **Survey Design:**
 - \`_LLCPWT\` (final weight — ALWAYS use for estimates)
 - \`_STSTR\` (sample design stratification)

@@ -88,7 +88,7 @@ Table: medicare_partd
 Key concepts: drug spending, prescriptions, brand vs generic, opioids, insulin, GLP-1 drugs, specialty drugs, prescribing patterns.
 
 ═══ 5. brfss ═══ CDC BRFSS population health survey. 4.9M respondents. Years: 2014–2024.
-Table: brfss (key columns below; many more raw CDC variables exist)
+Table: brfss (key columns below; also sleep hours SLEPTIM1, fruit/vegetable intake, cholesterol, pre-diabetes, urban/rural, firearms, COVID, sexual orientation, caregiving, and ~780 more raw CDC variables)
   survey_year (INTEGER), _STATE (FIPS code)
   Demographics: SEXVAR (1=M,2=F), _AGEG5YR (age groups), _IMPRACE (race/ethnicity), EDUCA (education)
   Health status: GENHLTH (1=Excellent..5=Poor), PHYSHLTH (unhealthy days), MENTHLTH (unhealthy days)
@@ -101,7 +101,7 @@ Table: brfss (key columns below; many more raw CDC variables exist)
 Key concepts: prevalence rates, self-reported conditions, health behaviors, risk factors, demographics, insurance coverage.
 
 ═══ 6. nhanes ═══ NHANES clinical examination survey. 12K participants. Cycle: 2021–2023 only (single cycle, no trends).
-Table: nhanes (94 columns)
+Table: nhanes (key columns below; ~1,080 variables in total incl. dietary totals, vitamin D, lead, PFAS, food security, kidney, healthcare use)
   Demographics: SEQN (respondent ID), RIAGENDR (1=M,2=F), RIDAGEYR (age), RIDRETH3 (race/ethnicity), DMDEDUC2, INDFMPIR (income-to-poverty ratio)
   Body measures: BMXWT (kg), BMXHT (cm), BMXBMI (kg/m²), BMXWAIST (cm)
   Blood pressure: BPXOSY1/2/3 (systolic), BPXODI1/2/3 (diastolic) — 3 readings each
