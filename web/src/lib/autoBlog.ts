@@ -12,6 +12,7 @@ import {
   type TopTweetExample,
 } from "@/lib/blogGeneration";
 import { postTweetThread, isTwitterConfigured } from "@/lib/twitter";
+import { generateFollowUps } from "@/lib/blogFollowUps";
 
 const RAILWAY_QUERY_URL = process.env.RAILWAY_QUERY_URL;
 const RAILWAY_API_KEY = process.env.RAILWAY_API_KEY;
@@ -268,6 +269,9 @@ export async function runDailyBlogPipeline(): Promise<{
     // Non-critical
   }
 
+  // Set once the idea is saved, so the catch block can record the failure
+  let savedIdea: { id: string; data: Record<string, unknown> } | null = null;
+
   try {
     // 3-4. Generate ideas and pick the best one
     const topic = await generateAndRankIdeas(persona, datasetKey, existingTitles, client);
@@ -299,6 +303,7 @@ export async function runDailyBlogPipeline(): Promise<{
         ideas: [{ id: ideaId, status: "queued", data: JSON.stringify(ideaData) }],
       }),
     });
+    savedIdea = { id: ideaId, data: ideaData };
 
     // 6. Generate article (analyses -> facts -> writing -> audit)
     const noop = () => {};
@@ -357,7 +362,8 @@ export async function runDailyBlogPipeline(): Promise<{
     }
 
     // 7. Publish to GitHub
-    await publishToGitHub(topic, bodyContent, wordCount, noop);
+    const followUps = await generateFollowUps(topic.title, bodyContent, client, dsConfig.key);
+    await publishToGitHub(topic, bodyContent, wordCount, noop, followUps);
 
     // 8. Wait for page to go live
     const isLive = await waitForLivePage(topic.slug);
@@ -404,6 +410,24 @@ export async function runDailyBlogPipeline(): Promise<{
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     console.error("Auto blog pipeline error:", message);
+    // Mark the idea failed with the error so it's visible in the admin blog tab
+    if (savedIdea) {
+      try {
+        const data = {
+          ...savedIdea.data,
+          status: "failed",
+          error: message,
+          updatedAt: Date.now(),
+        };
+        await fetch(`${RAILWAY_QUERY_URL}/blog-ideas/${savedIdea.id}`, {
+          method: "PATCH",
+          headers: railwayHeaders(),
+          body: JSON.stringify({ data, status: "failed" }),
+        });
+      } catch {
+        // Best effort
+      }
+    }
     return { skipped: false, persona: persona.name, dataset: datasetKey, error: message };
   }
 }
