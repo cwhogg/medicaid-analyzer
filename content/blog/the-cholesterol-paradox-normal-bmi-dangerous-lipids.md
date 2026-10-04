@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 628
 canonicalUrl: "https://www.openhealthdatahub.com/blog/the-cholesterol-paradox-normal-bmi-dangerous-lipids"
+followUps: [{"question":"What is the average total cholesterol and HDL level by BMI category (underweight, normal, overweight, obese) for adults aged 60 and older?","dataset":"nhanes"},{"question":"What is the weighted prevalence of high cholesterol (total cholesterol >= 240) by age group and race/ethnicity for adults with normal BMI?","dataset":"nhanes"},{"question":"How has the obesity rate changed from 2014 to 2024 among adults aged 40 to 59?","dataset":"brfss"}]
 ---
 
 Among adults 60 and older with normal BMI, **59.7% have high cholesterol**. Among obese adults in the same age group, the rate is 64.4%. That 4.7 percentage point gap is the entire case against using BMI as a primary cardiovascular risk screen in older populations.

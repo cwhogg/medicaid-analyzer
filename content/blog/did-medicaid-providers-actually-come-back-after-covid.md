@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 635
 canonicalUrl: "https://www.openhealthdatahub.com/blog/did-medicaid-providers-actually-come-back-after-covid"
+followUps: [{"question":"Which states had the highest total Medicaid spending per active provider in 2023?","dataset":"medicaid"},{"question":"How did total Medicaid spending in Missouri compare to Arkansas from 2019 to 2023 by year?","dataset":"medicaid"},{"question":"What are the top 10 provider specialties by total Medicaid spending in Missouri in 2023?","dataset":"medicaid"}]
 ---
 
 Across most of the country, Medicaid provider counts look roughly stable. Missouri tells a different story.

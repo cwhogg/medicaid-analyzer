@@ -5,6 +5,8 @@ import {
   type TopicPlan,
 } from "@/lib/blogGeneration";
 import { postTweetThread, isTwitterConfigured } from "@/lib/twitter";
+import Anthropic from "@anthropic-ai/sdk";
+import { generateFollowUps } from "@/lib/blogFollowUps";
 
 export const maxDuration = 180;
 
@@ -71,7 +73,11 @@ export async function POST(
   try {
     // Publish stored content to GitHub (no-op send since this isn't streaming)
     const noop = () => {};
-    const { isFirstPublish } = await publishToGitHub(topic, data.generatedContent, data.generatedWordCount || 0, noop);
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    const followUps = apiKey
+      ? await generateFollowUps(topic.title, data.generatedContent, new Anthropic({ apiKey }), data.dataset || "medicaid")
+      : [];
+    const { isFirstPublish } = await publishToGitHub(topic, data.generatedContent, data.generatedWordCount || 0, noop, followUps);
 
     // Tweet on first publish only — wait for Vercel deployment so the URL is live
     if (isFirstPublish && data.generatedTweet1 && data.generatedTweet2 && isTwitterConfigured()) {

@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 663
 canonicalUrl: "https://www.openhealthdatahub.com/blog/which-medical-schools-produce-the-most-underserved-state-doctors"
+followUps: [{"question":"What percentage of clinicians in each low-population state (Wyoming, Alaska, Montana, Vermont, Idaho) are in primary care specialties?","dataset":"dac"},{"question":"Which specialties have the highest share of clinicians practicing in Wyoming, Alaska, Montana, and Vermont combined?","dataset":"dac"},{"question":"How does the number of family medicine vs. internal medicine clinicians compare across states with fewer than 15,000 total clinicians?","dataset":"dac"}]
 ---
 
 Geographic maldistribution of clinicians is one of the most persistent problems in American healthcare. Wyoming has **3,580 total clinicians** serving the entire state. Alaska has 4,590. Against that backdrop, the question of which medical schools are actually moving graduates into these gaps has real stakes. The answer, at least by share of graduates placed, is a small liberal arts-affiliated school in Burlington, Vermont.

@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 567
 canonicalUrl: "https://www.openhealthdatahub.com/blog/the-waist-measurement-that-predicts-risk-better-than-bmi"
+followUps: [{"question":"What is the weighted prevalence of prediabetes and diabetes by BMI category (underweight, normal, overweight, obese) among adults?","dataset":"nhanes"},{"question":"What is the average waist circumference by age group and race/ethnicity for adults with a normal BMI (18.5-24.9)?","dataset":"nhanes"},{"question":"What percentage of adults have high HbA1c (>=5.7%) broken down by gender and age group?","dataset":"nhanes"}]
 ---
 
 Normal weight on the scale. High risk in the abdomen. For **5.89 million American adults**, those two facts coexist, and the standard clinical screening tool used to catch them is missing the signal entirely.

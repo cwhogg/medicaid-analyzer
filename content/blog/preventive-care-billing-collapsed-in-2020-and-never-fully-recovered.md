@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 666
 canonicalUrl: "https://www.openhealthdatahub.com/blog/preventive-care-billing-collapsed-in-2020-and-never-fully-recovered"
+followUps: [{"question":"What is the total Medicare spending and service count for G0438 and G0439 by year from 2013 to 2023?","dataset":"medicare"},{"question":"Which states have the lowest recovery in Internal Medicine services by 2023 compared to 2019?","dataset":"medicare"},{"question":"How has the rate of routine checkups or preventive care visits changed from 2014 to 2024 by age group?","dataset":"brfss"}]
 ---
 
 Preventive care billing in Medicare never bounced back. Four years after the pandemic disrupted routine visits, the numbers tell a story of structural contraction, not temporary delay.

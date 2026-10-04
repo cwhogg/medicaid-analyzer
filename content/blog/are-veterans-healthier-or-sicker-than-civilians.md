@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 789
 canonicalUrl: "https://www.openhealthdatahub.com/blog/are-veterans-healthier-or-sicker-than-civilians"
+followUps: [{"question":"What is the weighted prevalence of coronary heart disease by veteran status and age group?","dataset":"brfss"},{"question":"How has the COPD prevalence gap between veterans and non-veterans changed from 2014 to 2024?","dataset":"brfss"},{"question":"What is the depression prevalence by veteran status and sex for adults aged 25–44?","dataset":"brfss"}]
 ---
 
 ## The Answer Depends Entirely on Which Disease You're Counting

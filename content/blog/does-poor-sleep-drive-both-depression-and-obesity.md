@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 660
 canonicalUrl: "https://www.openhealthdatahub.com/blog/does-poor-sleep-drive-both-depression-and-obesity"
+followUps: [{"question":"What is the depression prevalence (PHQ-9 >= 10) by sleep duration category separately for obese vs. non-obese adults?","dataset":"nhanes"},{"question":"What is the average PHQ-9 score by BMI category and sex among adults?","dataset":"nhanes"},{"question":"How has the obesity rate changed from 2014 to 2024 among adults who report insufficient sleep?","dataset":"brfss"}]
 ---
 
 Short sleepers who are also obese screen positive for depression at rates over 50% higher than adequate sleepers. But the relationship between weight, sleep, and mental health doesn't run in the direction most people expect.

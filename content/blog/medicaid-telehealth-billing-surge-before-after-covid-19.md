@@ -9,6 +9,7 @@ ideaName: "Medicaid Claims Analyzer"
 status: published
 wordCount: 1910
 canonicalUrl: "https://medicaid-analyzer.vercel.app/blog/medicaid-telehealth-billing-surge-before-after-covid-19"
+followUps: [{"question":"Which states have the highest total Medicaid spending on CPT codes 90832, 90834, and 90837 in 2023?","dataset":"medicaid"},{"question":"Who are the top 20 highest-paid providers for psychotherapy services (CPT 90832, 90834, 90837) in the Medicaid dataset?","dataset":"medicaid"},{"question":"What is the monthly spending trend for telehealth-related Medicaid services from 2020 to 2024?","dataset":"medicaid"}]
 ---
 
 Medicaid's telehealth billing landscape was transformed by the COVID-19 pandemic in ways that few policy analysts fully anticipated — and the data now available through 2024 reveals a story far more complex than a simple spike-and-retreat. What began as an emergency workaround to keep vulnerable Medicaid beneficiaries connected to care has calcified into a permanent structural shift in how providers bill, how patients access services, and where federal and state dollars flow. Understanding the magnitude of that shift — and which providers, codes, and specialties drove it — is essential for anyone tracking Medicaid program integrity, access equity, or long-term fiscal sustainability.

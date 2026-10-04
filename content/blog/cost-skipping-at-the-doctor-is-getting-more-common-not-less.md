@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 621
 canonicalUrl: "https://www.openhealthdatahub.com/blog/cost-skipping-at-the-doctor-is-getting-more-common-not-less"
+followUps: [{"question":"How has the rate of skipping doctor visits due to cost changed from 2014 to 2024 among adults earning under $15,000 annually?","dataset":"brfss"},{"question":"What is the cost-skipping rate by education level among insured adults in each state in the most recent survey year?","dataset":"brfss"},{"question":"How does the prevalence of cost-skipping a doctor visit differ by employment status and income level across survey years 2014 to 2024?","dataset":"brfss"}]
 ---
 
 Having health insurance and being able to afford a doctor visit are two different things. Among insured adults who have been unemployed for less than a year and didn't graduate high school, **one in four skipped a doctor visit due to cost**. That's 25.0%, a rate that rivals what the lowest-income uninsured populations faced a decade ago.

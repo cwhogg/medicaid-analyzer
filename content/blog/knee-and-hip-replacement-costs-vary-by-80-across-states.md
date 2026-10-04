@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 598
 canonicalUrl: "https://www.openhealthdatahub.com/blog/knee-and-hip-replacement-costs-vary-by-80-across-states"
+followUps: [{"question":"Which states have the highest average beneficiary out-of-pocket cost per discharge for DRG 470 in 2023?","dataset":"medicare-inpatient"},{"question":"How has the average Medicare payment per discharge for DRG 470 changed from 2013 to 2023?","dataset":"medicare-inpatient"},{"question":"Which hospitals have the highest total Medicare inpatient spending for DRG 470 in 2023?","dataset":"medicare-inpatient"}]
 ---
 
 Joint replacement is supposed to be Medicare's showcase for value-based care. A decade of bundled payment experiments, quality reporting, and cost benchmarking has targeted exactly this procedure. Yet in 2023, Maryland Medicare pays **$23,530** per knee or hip replacement discharge while the national weighted average sits at $13,695. That's not a rounding error. It's a 2.49-to-1 ratio between the most and least expensive states.

@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 705
 canonicalUrl: "https://www.openhealthdatahub.com/blog/the-states-where-medicare-clinicians-refuse-full-assignment"
+followUps: [{"question":"What are the top 10 states by total number of Nurse Practitioners enrolled in Medicare?","dataset":"dac"},{"question":"Which specialties have the highest non-assignment rates among clinicians in Maryland and New York?","dataset":"dac"},{"question":"What is the gender breakdown of non-assignment clinicians for the top 10 specialties by non-assignment rate?","dataset":"dac"}]
 ---
 
 Two numbers that don't fit together: American Samoa has just 9 Medicare-enrolled clinicians, and 8 of them refuse full assignment. That 88.9% rate is the highest of any U.S. state or territory, and it sits alongside New York's 10,909 non-assignment clinicians, the largest absolute count in the country. One is a rounding error in terms of workforce size. The other represents a city-sized cohort of providers who can legally bill Medicare patients above the approved rate. Together, they illustrate how non-assignment is both a structural problem and a geographic one.

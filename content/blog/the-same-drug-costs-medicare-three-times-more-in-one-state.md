@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 96
 canonicalUrl: "https://www.openhealthdatahub.com/blog/the-same-drug-costs-medicare-three-times-more-in-one-state"
+followUps: [{"question":"Which states have the highest average Medicare Part D cost per claim in 2023?","dataset":"medicare-partd"},{"question":"What are the top 20 drugs with the greatest cost-per-claim gap between the highest and lowest states in 2023?","dataset":"medicare-partd"},{"question":"How has the average Medicare Part D cost per claim changed from 2013 to 2023 by state?","dataset":"medicare-partd"}]
 ---
 
 The query results for Analysis 1 appear to be empty — no columns or rows were returned. I can't fabricate specific numbers, drug names, state names, cost figures, or ratios, since none appear in the data provided.

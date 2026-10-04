@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 636
 canonicalUrl: "https://www.openhealthdatahub.com/blog/the-disability-surge-is-concentrated-in-one-age-group"
+followUps: [{"question":"How has the rate of difficulty concentrating changed from 2014 to 2024 among adults aged 35–44?","dataset":"brfss"},{"question":"What is the weighted prevalence of serious difficulty walking by age group (18–24, 25–34, 35–44, 45–54) in 2024?","dataset":"brfss"},{"question":"How has total Medicare Part D spending on antidepressants and ADHD medications changed from 2013 to 2023?","dataset":"medicare-partd"}]
 ---
 
 Among adults aged 35–44 who can't work, **78.5% report a disability.** That's not a rounding error or a data artifact. It's the highest disability rate of any employment category across the 25–44 age range, and it points to something shifting in the health profile of Americans who should be in their peak productive years.

@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 611
 canonicalUrl: "https://www.openhealthdatahub.com/blog/smoking-is-falling-but-who-got-left-behind"
+followUps: [{"question":"How has current smoking prevalence changed from 2014 to 2024 by income level?","dataset":"brfss"},{"question":"Which states have the highest smoking rates among adults without a high school diploma?","dataset":"brfss"},{"question":"What is the smoking prevalence by age group and education level in 2024?","dataset":"brfss"}]
 ---
 
 Over the past decade, smoking in America fell by roughly a third among adults without a high school diploma. That's a genuine public health achievement. It's also almost entirely beside the point.

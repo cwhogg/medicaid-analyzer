@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 648
 canonicalUrl: "https://www.openhealthdatahub.com/blog/women-now-outnumber-men-in-five-major-medical-specialties"
+followUps: [{"question":"What are the top 20 specialties by number of clinicians, broken down by gender?","dataset":"dac"},{"question":"Which states have the highest share of female orthopedic surgeons?","dataset":"dac"},{"question":"What are the top 10 specialties by total Medicare spending per clinician in 2023?","dataset":"medicare"}]
 ---
 
 Two numbers that don't belong together: Nurse Practitioners are **87.3% female**. Orthopedic surgeons are 8.6% female. Both figures describe the same Medicare-enrolled workforce in 2026.

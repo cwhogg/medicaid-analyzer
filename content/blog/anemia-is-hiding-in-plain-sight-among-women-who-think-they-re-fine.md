@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 688
 canonicalUrl: "https://www.openhealthdatahub.com/blog/anemia-is-hiding-in-plain-sight-among-women-who-think-they-re-fine"
+followUps: [{"question":"What is the anemia prevalence (hemoglobin < 12 g/dL) by income-to-poverty ratio group separately for Non-Hispanic Black and Non-Hispanic White women aged 20 to 64?","dataset":"nhanes"},{"question":"What is the average hemoglobin level by age group (20-34, 35-49, 50-64) for Non-Hispanic Black women vs Non-Hispanic White women?","dataset":"nhanes"},{"question":"What percentage of anemic Non-Hispanic Black women aged 20 to 49 have normocytic anemia (MCV >= 80) vs microcytic anemia (MCV < 80)?","dataset":"nhanes"}]
 ---
 
 31.2% of Non-Hispanic Black women aged 20 to 64 have anemia. Among Non-Hispanic White women in the same age group, that number is 7.8%. That four-fold gap is not a rounding error or a quirk of small samples. It is one of the starkest racial disparities in a common, treatable condition that rarely makes headlines.

@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 655
 canonicalUrl: "https://www.openhealthdatahub.com/blog/sleep-debt-is-stealing-years-from-young-adults"
+followUps: [{"question":"What is the weighted mean hsCRP by race/ethnicity and income group (PIR < 1.3 vs PIR >= 3.5) for adults aged 18-35?","dataset":"nhanes"},{"question":"What is the weighted prevalence of short sleep (< 7 hours) by age group and gender among adults aged 18-59?","dataset":"nhanes"},{"question":"How has the prevalence of poor mental health days (14+ days) changed from 2014 to 2024 among adults aged 18-29 by income level?","dataset":"brfss"}]
 ---
 
 A 25-year-old who sleeps five hours a night already has the inflammatory profile of a middle-aged adult. That's not a metaphor. It's what the numbers show.

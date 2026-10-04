@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 717
 canonicalUrl: "https://www.openhealthdatahub.com/blog/cardiac-stent-patients-pay-twice-as-much-out-of-pocket-in-some-states"
+followUps: [{"question":"Which hospitals have the highest average beneficiary cost-sharing for DRG 247 (percutaneous cardiovascular procedure with drug-eluting stent) in 2023?","dataset":"medicare-inpatient"},{"question":"How has the average beneficiary cost-sharing for cardiac DRGs (246, 247, 248) changed from 2013 to 2023?","dataset":"medicare-inpatient"},{"question":"Which states have the highest rates of cardiovascular disease diagnosis among Medicare-age adults (65+)?","dataset":"brfss"}]
 ---
 
 Where you live determines how much of a cardiac stent procedure lands in your mailbox. In Hawaii, Medicare patients undergoing percutaneous cardiac intervention paid a discharge-weighted average of **$9,436** out of pocket in 2023. In South Carolina, the equivalent figure was $4,306. Same federal program, same procedure category, more than twice the cost depending on your zip code.

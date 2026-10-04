@@ -9,6 +9,7 @@ ideaName: "Medicaid Claims Analyzer"
 status: published
 wordCount: 1986
 canonicalUrl: "https://medicaid-analyzer.vercel.app/blog/medicaid-rpm-spending-year-over-year-trends"
+followUps: [{"question":"Which states have the highest total Medicaid spending on RPM procedure codes 99453, 99454, 99457, and 99458 from 2019 to 2024?","dataset":"medicaid"},{"question":"Who are the top 20 highest-paid providers billing RPM codes 99453, 99454, 99457, or 99458 in Medicaid?","dataset":"medicaid"},{"question":"What is the annual Medicaid spending trend for each RPM code (99453, 99454, 99457, 99458) from 2019 to 2024?","dataset":"medicaid"}]
 ---
 
 Remote patient monitoring arrived in Medicaid claims data quietly — a handful of procedure codes, a few hundred thousand dollars, and a patient population that had historically been underserved by digital health innovation. Then the pandemic hit, and everything changed. Between 2019 and 2023, Medicaid RPM spending grew from under $900,000 to more than $12 million, a trajectory that few analysts predicted and that carries significant implications for how state Medicaid programs think about technology-enabled chronic disease management. But the story doesn't end with a triumphant growth curve. The 2024 data introduces a complication — the first year-over-year spending decline in the dataset — that demands careful interpretation.

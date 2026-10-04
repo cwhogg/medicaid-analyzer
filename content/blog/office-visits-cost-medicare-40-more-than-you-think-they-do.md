@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 764
 canonicalUrl: "https://www.openhealthdatahub.com/blog/office-visits-cost-medicare-40-more-than-you-think-they-do"
+followUps: [{"question":"What are the top 20 specialties by total Medicare spending on 99214 claims in facility vs office settings in 2023?","dataset":"medicare"},{"question":"How has the average Medicare payment for cataract removal (HCPCS 66984) changed from 2013 to 2023?","dataset":"medicare"},{"question":"Which states have the highest share of 99214 claims billed from facility settings in 2023?","dataset":"medicare"}]
 ---
 
 Office visits look like a fixed cost. A 30-minute appointment with an established patient, billed under 99214, seems like it should cost the same regardless of who owns the building. It doesn't.

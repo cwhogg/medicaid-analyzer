@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 521
 canonicalUrl: "https://www.openhealthdatahub.com/blog/prediabetes-is-now-the-statistical-norm-for-middle-aged-americans"
+followUps: [{"question":"What is the weighted prevalence of prediabetes (HbA1c 5.7–6.4%) by gender across age groups?","dataset":"nhanes"},{"question":"What is the average HbA1c level by BMI category for adults aged 40 to 69?","dataset":"nhanes"},{"question":"What are the top 10 specialties by total Medicare spending for endocrinology and diabetes-related care?","dataset":"medicare"}]
 ---
 
 Among adults in their 50s, abnormal blood sugar is now more common than normal blood sugar. That's not a projection or a worst-case scenario. It's the current population distribution.

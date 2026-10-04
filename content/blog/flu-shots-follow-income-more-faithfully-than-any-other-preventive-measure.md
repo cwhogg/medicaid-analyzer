@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 693
 canonicalUrl: "https://www.openhealthdatahub.com/blog/flu-shots-follow-income-more-faithfully-than-any-other-preventive-measure"
+followUps: [{"question":"How has flu vaccination prevalence changed from 2014 to 2024 by income level among all adults?","dataset":"brfss"},{"question":"What is the weighted flu vaccination rate by race/ethnicity and income level in 2023?","dataset":"brfss"},{"question":"What is the flu vaccination rate by age group and income level in 2023?","dataset":"brfss"}]
 ---
 
 Among adults who had a personal doctor and health coverage in 2023, **54.9%** of those earning $200,000 or more got a flu shot. Among those earning under $15,000, the rate was 39.1%. Same access, same coverage, 15.8 percentage points apart.

@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 630
 canonicalUrl: "https://www.openhealthdatahub.com/blog/the-same-procedure-costs-medicare-60-more-at-a-hospital"
+followUps: [{"question":"What is the total Medicare spending trend for nephrology from 2013 to 2023 by year?","dataset":"medicare"},{"question":"What are the top 10 most expensive gastroenterology procedures by average Medicare payment per service in 2023?","dataset":"medicare"},{"question":"Which states have the highest total Medicare spending on nephrology services in 2023?","dataset":"medicare"}]
 ---
 
 Medicare pays hospitals more than it pays independent clinics for identical procedures. That's not a bug in the payment system; it's a feature. And for a decade, providers have been deciding whether to exploit it or avoid it.

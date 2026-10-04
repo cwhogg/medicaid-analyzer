@@ -9,6 +9,7 @@ ideaName: "Medicaid Claims Analyzer"
 status: published
 wordCount: 1200
 canonicalUrl: "https://medicaid-analyzer.vercel.app/blog/top-medicaid-spending-procedures-2024"
+followUps: [{"question":"Which states have the highest total Medicaid spending on personal care services (T1019)?","dataset":"medicaid"},{"question":"What are the top 10 HCPCS codes by total Medicaid spending for office visits (99213) by state?","dataset":"medicaid"},{"question":"What are the top 10 specialties by total Medicare spending on office visits?","dataset":"medicare"}]
 ---
 
 Medicaid is the largest payer of healthcare services in the United States, covering over 90 million enrollees. But where does that money actually go? Using our dataset of 227 million claims records spanning January 2018 through September 2024, we ranked every HCPCS procedure code by total Medicaid payments to find the answer.

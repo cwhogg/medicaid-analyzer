@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 775
 canonicalUrl: "https://www.openhealthdatahub.com/blog/high-volume-outlier-providers-concentrate-medicare-risk-in-ten-zip-codes"
+followUps: [{"question":"What are the top 10 ZIP codes by total Medicare spending in 2023?","dataset":"medicare"},{"question":"What is the total Medicare spending by year for Ophthalmology providers in Florida from 2013 to 2023?","dataset":"medicare"},{"question":"What are the top 10 specialties by average Medicare payment per provider in 2023?","dataset":"medicare"}]
 ---
 
 Eight ZIP codes held top-tier concentrations of Medicare outlier providers for every single year between 2013 and 2023. Not most years. All eleven.

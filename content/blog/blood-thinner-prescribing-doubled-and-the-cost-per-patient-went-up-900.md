@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 695
 canonicalUrl: "https://www.openhealthdatahub.com/blog/blood-thinner-prescribing-doubled-and-the-cost-per-patient-went-up-900"
+followUps: [{"question":"How has rivaroxaban (the other major DOAC) total spending and cost per beneficiary changed from 2013 to 2023?","dataset":"medicare-partd"},{"question":"Which states have the highest total Medicare Part D spending on apixaban in 2023?","dataset":"medicare-partd"},{"question":"How has the prevalence of atrial fibrillation diagnosis differ by age group and gender in BRFSS survey data?","dataset":"brfss"}]
 ---
 
 Apixaban had 9,055 Medicare beneficiaries in 2013. By 2023, it had 4,191,162. That's not a drug gaining market share. That's a near-complete replacement of an entire therapeutic category, and it happened while the cost per patient rose 52%, from $2,723.05 to $4,149.72 per year.

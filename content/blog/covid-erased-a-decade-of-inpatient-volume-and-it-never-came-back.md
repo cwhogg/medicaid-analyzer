@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 683
 canonicalUrl: "https://www.openhealthdatahub.com/blog/covid-erased-a-decade-of-inpatient-volume-and-it-never-came-back"
+followUps: [{"question":"What are the top 20 DRGs by total Medicare inpatient discharges in 2019, and how do their 2023 discharge counts compare?","dataset":"medicare-inpatient"},{"question":"Which states have the lowest recovery rate (2023 vs 2019 total discharges) in Medicare inpatient volume?","dataset":"medicare-inpatient"},{"question":"How has total Medicare inpatient spending for DRG 470 (major joint replacement) changed from 2013 to 2023?","dataset":"medicare-inpatient"}]
 ---
 
 Four years after COVID emptied hospital wards, Medicare inpatient volume has not recovered. Across the 20 highest-volume diagnosis-related groups in 2019, **17 had not returned to 90% of their pre-pandemic discharge counts by 2023**. This isn't a story about a system still healing. It's a story about a system that may have permanently contracted.

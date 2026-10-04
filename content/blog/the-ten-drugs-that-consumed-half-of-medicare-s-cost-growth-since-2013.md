@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 630
 canonicalUrl: "https://www.openhealthdatahub.com/blog/the-ten-drugs-that-consumed-half-of-medicare-s-cost-growth-since-2013"
+followUps: [{"question":"How has apixaban's average cost per claim changed from 2013 to 2023?","dataset":"medicare-partd"},{"question":"What are the top 10 drugs by total Part D spending in 2023?","dataset":"medicare-partd"},{"question":"What is the weighted prevalence of diabetes and obesity by age group in BRFSS from 2018 to 2024?","dataset":"brfss"}]
 ---
 
 Ten drugs. Half the bill.

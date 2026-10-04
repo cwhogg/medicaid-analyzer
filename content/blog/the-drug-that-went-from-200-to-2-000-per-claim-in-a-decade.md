@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 620
 canonicalUrl: "https://www.openhealthdatahub.com/blog/the-drug-that-went-from-200-to-2-000-per-claim-in-a-decade"
+followUps: [{"question":"How has the average cost per claim for meperidine changed year by year from 2013 to 2023?","dataset":"medicare-partd"},{"question":"Which drugs had the largest percentage increase in cost per claim between 2013 and 2023, among drugs with at least 1,000 claims in both years?","dataset":"medicare-partd"},{"question":"How has total Medicare Part D spending on cetirizine changed from 2013 to 2023, broken down by year?","dataset":"medicare-partd"}]
 ---
 
 Meperidine HCl cost Medicare **$42.12 per claim in 2013**. By 2023, that number had reached **$1,068.88**. Over the same period, total claims for the drug fell from 13,593 to just 521. Higher prices, far fewer patients, and a cost-per-claim that grew more than 25-fold: this is what a pricing dynamic fully decoupled from demand looks like.

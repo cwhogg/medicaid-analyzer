@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 676
 canonicalUrl: "https://www.openhealthdatahub.com/blog/one-drug-ate-medicare-s-entire-drug-budget-growth-for-a-decade"
+followUps: [{"question":"How has total annual Part D spending on semaglutide changed year by year from 2013 to 2023?","dataset":"medicare-partd"},{"question":"What are the top 10 drugs by total Part D claims in 2023, and what is the average cost per claim for each?","dataset":"medicare-partd"},{"question":"Which states have the highest total Part D spending on apixaban in 2023?","dataset":"medicare-partd"}]
 ---
 
 Medicare Part D spent **$17.39 billion on apixaban in 2023**. In 2013, it spent $24.7 million on the same drug. That's not a typo.

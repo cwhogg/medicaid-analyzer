@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 631
 canonicalUrl: "https://www.openhealthdatahub.com/blog/wound-care-became-a-10-billion-medicare-billing-magnet"
+followUps: [{"question":"Which states have the highest total Medicare spending on wound care and debridement codes (97597, 97598, 15271) in 2023?","dataset":"medicare"},{"question":"What is the average Medicare payment per service for wound care codes by year from 2013 to 2023?","dataset":"medicare"},{"question":"What are the top 20 nurse practitioner providers by total Medicare payments in 2023?","dataset":"medicare"}]
 ---
 
 Wound care billing in Medicare has a concentration problem. One nurse practitioner in West Palm Beach billed **$18,491,753** in a single year using just 4 wound care codes. The 20th-ranked provider on the same list collected $6,076,700. That gap, nearly 3-to-1 between first and twentieth place, tells you something about how this specialty works.

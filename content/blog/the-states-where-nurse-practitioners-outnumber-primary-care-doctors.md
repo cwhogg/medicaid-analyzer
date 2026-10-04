@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 661
 canonicalUrl: "https://www.openhealthdatahub.com/blog/the-states-where-nurse-practitioners-outnumber-primary-care-doctors"
+followUps: [{"question":"What is the NP-to-primary care physician ratio for all 50 states, ranked highest to lowest?","dataset":"dac"},{"question":"What is the telehealth adoption rate for nurse practitioners vs family practice physicians in each state?","dataset":"dac"},{"question":"What is the total Medicare spending for nurse practitioners vs primary care physicians by state in 2023?","dataset":"medicare"}]
 ---
 
 At least 20 states now have more Medicare-enrolled nurse practitioners than primary care physicians. Mississippi's ratio has reached **2.962-to-1**, with 4,102 NPs against just 1,385 primary care physicians. The policy debate over NP scope of practice has, in many states, been overtaken by the enrollment data itself.

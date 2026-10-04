@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 736
 canonicalUrl: "https://www.openhealthdatahub.com/blog/the-hospitals-charging-medicare-8x-what-it-pays-them"
+followUps: [{"question":"Which states have the highest average charge-to-payment ratio across all hospitals in 2023?","dataset":"medicare-inpatient"},{"question":"How has the total submitted charges vs total Medicare payments gap changed from 2013 to 2023?","dataset":"medicare-inpatient"},{"question":"What are the top 10 DRGs by average charge-to-payment ratio across all hospitals in 2023?","dataset":"medicare-inpatient"}]
 ---
 
 One New Jersey hospital submitted $440 million in charges to Medicare in 2023. Medicare paid $15.7 million. That's a ratio of 28 to 1, and it's the highest in the country among hospitals with at least 500 discharges.

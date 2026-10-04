@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 1859
 canonicalUrl: "https://www.openhealthdatahub.com/blog/medicare-charge-to-payment-markup-ratio-by-specialty"
+followUps: [{"question":"What is the charge-to-payment ratio for anesthesia specialties by state from 2013 to 2023?","dataset":"medicare"},{"question":"What are the top 20 DRGs by total submitted charges vs Medicare payment in inpatient hospitals?","dataset":"medicare-inpatient"},{"question":"How has total Medicare spending for Emergency Medicine changed year by year from 2013 to 2023?","dataset":"medicare"}]
 ---
 
 The gap between what healthcare providers bill and what Medicare actually pays has long been one of the most revealing—and least understood—fault lines in American healthcare finance. While patients rarely see submitted charges directly, these numbers shape negotiations, influence policy, and expose structural tensions in how medical services are priced. A decade of Medicare data, spanning 2013 through 2023, offers an unprecedented window into which specialties and procedures carry the steepest markups—and what that means for the system as a whole.

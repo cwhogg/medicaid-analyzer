@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 623
 canonicalUrl: "https://www.openhealthdatahub.com/blog/poor-americans-have-older-blood-the-inflammation-gap"
+followUps: [{"question":"What is the weighted mean hsCRP by gender and income-to-poverty ratio group?","dataset":"nhanes"},{"question":"What is the prevalence of high hsCRP (above 3 mg/L) by age group and income-to-poverty ratio?","dataset":"nhanes"},{"question":"What is the weighted mean hsCRP by race/ethnicity and BMI category among current smokers?","dataset":"nhanes"}]
 ---
 
 **38.6% of adults below the poverty line carry high cardiovascular-risk inflammation levels. Among higher-income adults, that number is 24.0%.** That 14.6-percentage-point gap isn't explained away by obesity or smoking. It persists even among normal-weight people who have never smoked.

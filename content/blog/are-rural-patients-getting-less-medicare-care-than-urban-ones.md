@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 837
 canonicalUrl: "https://www.openhealthdatahub.com/blog/are-rural-patients-getting-less-medicare-care-than-urban-ones"
+followUps: [{"question":"Which specialties have the fewest rural Medicare providers relative to metro providers, ranked by metro-to-rural ratio?","dataset":"medicare"},{"question":"Which states have the highest total Medicare inpatient spending for DRGs commonly associated with delayed care like sepsis or stroke?","dataset":"medicare-inpatient"},{"question":"How has the weighted prevalence of no routine checkup in the past year changed from 2014 to 2024 by urban vs rural status?","dataset":"brfss"}]
 ---
 
 ## Are Rural Patients Getting Less Medicare Care Than Urban Ones?

@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 660
 canonicalUrl: "https://www.openhealthdatahub.com/blog/sepsis-is-now-medicare-s-single-biggest-expense"
+followUps: [{"question":"Which states have the highest total Medicare inpatient spending on DRG 871 from 2013 to 2023?","dataset":"medicare-inpatient"},{"question":"How has the average Medicare payment per discharge for DRG 871 changed by year from 2013 to 2023?","dataset":"medicare-inpatient"},{"question":"What is the weighted prevalence of sepsis risk factors — diabetes, obesity, and smoking — by age group in BRFSS data?","dataset":"brfss"}]
 ---
 
 Sepsis costs Medicare more than hip replacements, heart failure, and acute MI combined. Over the eleven years from 2013 to 2023, a single DRG code, 871 (septicemia or severe sepsis without mechanical ventilation greater than 96 hours, with major complication or comorbidity), generated **$77,974,339,350** in total Medicare payments. The next closest DRG, major hip and knee joint replacement (DRG 470), reached $44,712,706,219 over the same period. That's a gap of roughly $33 billion, and it comes from one code alone.

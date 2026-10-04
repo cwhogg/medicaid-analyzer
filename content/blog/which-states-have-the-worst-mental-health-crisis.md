@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 1917
 canonicalUrl: "https://www.openhealthdatahub.com/blog/which-states-have-the-worst-mental-health-crisis"
+followUps: [{"question":"What is the weighted prevalence of 14+ poor mental health days by age group and gender?","dataset":"brfss"},{"question":"What is the average number of poor mental health days by income level for each survey year from 2014 to 2024?","dataset":"brfss"},{"question":"Which states have the highest rates of no exercise in the past 30 days, and how do they overlap with high poor mental health states?","dataset":"brfss"}]
 ---
 
 ## A Nation Under Strain: Mapping America's Mental Health Crisis

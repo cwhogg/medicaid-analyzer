@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 626
 canonicalUrl: "https://www.openhealthdatahub.com/blog/transitional-care-billing-reveals-which-states-actually-discharge-patients-safely"
+followUps: [{"question":"Which states have the highest 30-day readmission rates for Medicare inpatient stays, and how does total inpatient spending compare across those states?","dataset":"medicare-inpatient"},{"question":"What is the total Medicare Part B spending on transitional care management codes (99495 and 99496) by state from 2013 to 2023?","dataset":"medicare"},{"question":"How has BRFSS-reported prevalence of cost-related barriers to seeing a doctor changed from 2014 to 2024 in Florida vs Virginia?","dataset":"brfss"}]
 ---
 
 Between Virginia's $2.00 per Medicaid enrollee in transitional care management spending and Florida's $0.02, there is a 100-fold gap. That gap is a proxy for something more consequential than billing patterns: it reflects how reliably states ensure that high-risk patients have a physician contact within two weeks of leaving the hospital.

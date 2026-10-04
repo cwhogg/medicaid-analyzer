@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 668
 canonicalUrl: "https://www.openhealthdatahub.com/blog/medicaid-s-mental-health-spending-boom-nobody-planned-for"
+followUps: [{"question":"Which states had the highest per-enrollee Medicaid behavioral health spending in 2024, and how did it compare to 2023?","dataset":"medicaid"},{"question":"Who are the top 20 highest-paid providers billing psychiatric and psychotherapy procedure codes in 2023?","dataset":"medicaid"},{"question":"How has the weighted prevalence of poor mental health days by income level changed from 2018 to 2024?","dataset":"brfss"}]
 ---
 
 Between 2018 and 2023, Medicaid spending on psychiatric evaluation, individual psychotherapy, and crisis intervention grew from $2.14 billion to **$5.52 billion**. That's more than 2.5x in five years, with no single federal policy driving it. The expansion happened across states, across provider types, and across procedure categories simultaneously. Then, in 2024, spending fell and claims dropped from 57.9 million to 48.1 million. What looked like a durable expansion may have been something more complicated.

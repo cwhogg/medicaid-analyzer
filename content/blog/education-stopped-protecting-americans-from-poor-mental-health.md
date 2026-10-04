@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 649
 canonicalUrl: "https://www.openhealthdatahub.com/blog/education-stopped-protecting-americans-from-poor-mental-health"
+followUps: [{"question":"What is the average number of poor mental health days per month by education level and age group in 2023-2024?","dataset":"brfss"},{"question":"How has the rate of 14+ poor mental health days changed from 2014 to 2024 for college graduates aged 18-44 by sex?","dataset":"brfss"},{"question":"Which states have the highest prevalence of 14+ poor mental health days among college-educated adults aged 18-44?","dataset":"brfss"}]
 ---
 
 College-educated adults aged 18-44 now report 14 or more poor mental health days per month at **41.8%**, compared to 24.6% among adults without a high school diploma. That gap used to run in the opposite direction.

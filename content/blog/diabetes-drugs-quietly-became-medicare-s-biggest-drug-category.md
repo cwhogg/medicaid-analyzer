@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 678
 canonicalUrl: "https://www.openhealthdatahub.com/blog/diabetes-drugs-quietly-became-medicare-s-biggest-drug-category"
+followUps: [{"question":"How has total Medicare Part D spending on SGLT2 inhibitors (empagliflozin, dapagliflozin, canagliflozin) changed from 2018 to 2023?","dataset":"medicare-partd"},{"question":"Which states have the highest total Medicare Part D spending on GLP-1 drugs (semaglutide, dulaglutide, liraglutide) in 2023?","dataset":"medicare-partd"},{"question":"What is the weighted prevalence of diagnosed diabetes by age group and income level in BRFSS 2023?","dataset":"brfss"}]
 ---
 
 Nineteen billion dollars. That's what Medicare Part D spent on GLP-1 agonists alone in 2023, up from $2.6 billion just five years earlier. At the same time, the number of claims for these drugs actually fell, from 2.6 million in 2018 to 14.1 million in 2023. Wait, that's not right: claims grew from 2.6 million to 14.1 million, but spending grew more than sevenfold. The math tells the story: each claim costs more, and there are far more of them.

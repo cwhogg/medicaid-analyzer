@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 633
 canonicalUrl: "https://www.openhealthdatahub.com/blog/medicare-pays-8x-more-per-day-of-drug-supply-in-some-states"
+followUps: [{"question":"How has the average cost per day of drug supply changed from 2013 to 2023 for each state?","dataset":"medicare-partd"},{"question":"What are the top 10 drugs by total spending in DC in 2023, with their cost per day of supply?","dataset":"medicare-partd"},{"question":"Which specialties prescribe the most Semaglutide claims under Medicare Part D in 2023?","dataset":"medicare-partd"}]
 ---
 
 Washington D.C. spent $5.21 per day of drug supply under Medicare Part D in 2023. In the lowest-cost state group, that same metric was $0.76 for the most common drug in their top 10. That's not a rounding error or a data artifact. It's a window into how dramatically a single federal program can fracture across geography.

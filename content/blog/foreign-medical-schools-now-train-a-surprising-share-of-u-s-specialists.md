@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 593
 canonicalUrl: "https://www.openhealthdatahub.com/blog/foreign-medical-schools-now-train-a-surprising-share-of-u-s-specialists"
+followUps: [{"question":"What are the top 20 specialties by number of clinicians in the CMS directory?","dataset":"dac"},{"question":"How many clinicians in each state practice Family Practice, Internal Medicine, or Psychiatry?","dataset":"dac"},{"question":"What is the gender breakdown of clinicians in Family Practice, Psychiatry, Internal Medicine, and Nephrology?","dataset":"dac"}]
 ---
 
 Graduates of non-top-50 medical schools now outnumber their top-50 counterparts in every major U.S. specialty examined. That's not a rounding error or a quirk of one underserved field. It holds across Family Practice, Psychiatry, Internal Medicine, and Nephrology.

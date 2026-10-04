@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 678
 canonicalUrl: "https://www.openhealthdatahub.com/blog/sepsis-severity-upcoding-looks-different-at-for-profit-hospitals"
+followUps: [{"question":"What is the average Medicare payment per sepsis discharge (DRGs 870, 871, 872) by hospital ownership type in 2023?","dataset":"medicare-inpatient"},{"question":"Which states have the highest share of sepsis discharges coded at DRG 871 (with CC) vs DRG 872 (without CC/MCC) in 2023?","dataset":"medicare-inpatient"},{"question":"How has total Medicare inpatient spending on sepsis DRGs 870, 871, and 872 changed from 2013 to 2023?","dataset":"medicare-inpatient"}]
 ---
 
 Sepsis coding in Medicare has a compression problem. The share of discharges coded at the highest severity tier (MCC) fell from **4.91% in 2013 to 3.1% in 2023**, even as the middle tier (CC, DRG 871) grew from 72.56% to **81.72%** over the same period. The lowest tier shrank too, from 22.53% to 15.18%. Almost everything is migrating toward the middle, and the middle pays well.

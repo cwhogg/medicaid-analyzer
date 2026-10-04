@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 852
 canonicalUrl: "https://www.openhealthdatahub.com/blog/does-exercising-regularly-actually-protect-against-depression"
+followUps: [{"question":"What is the average number of poor mental health days by sex and exercise status?","dataset":"brfss"},{"question":"Which states have the largest gap in poor mental health days between active and inactive adults?","dataset":"brfss"},{"question":"How has the rate of no leisure-time physical activity changed from 2014 to 2024 among adults with a depressive disorder?","dataset":"brfss"}]
 ---
 
 Adults aged 65+ who exercise report just **2.0 poor mental health days** per month. Their inactive peers report **3.8**. That 1.8-day gap is the largest absolute difference across all age groups — and it sits at the top of a pattern that holds without a single exception across the entire lifespan.

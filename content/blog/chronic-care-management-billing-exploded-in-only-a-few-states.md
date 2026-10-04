@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 566
 canonicalUrl: "https://www.openhealthdatahub.com/blog/chronic-care-management-billing-exploded-in-only-a-few-states"
+followUps: [{"question":"Which states have the highest total Medicare payments for chronic care management (CCM) codes in 2023?","dataset":"medicare"},{"question":"What are the top 10 specialties by total Medicare payments for chronic care management billing codes across all years?","dataset":"medicare"},{"question":"How has the number of distinct providers billing chronic care management codes changed by year from 2015 to 2023?","dataset":"medicare"}]
 ---
 
 Medicare's chronic care management program was supposed to spread broadly. Instead, the money went narrow.

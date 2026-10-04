@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 718
 canonicalUrl: "https://www.openhealthdatahub.com/blog/medicaid-s-addiction-treatment-billing-tripled-and-stayed-uneven"
+followUps: [{"question":"What are the top 10 states by average spending per claim for H0020 opioid treatment services?","dataset":"medicaid"},{"question":"Which providers have the highest total H2036 alcohol and drug services spending, and how many claims did each submit?","dataset":"medicaid"},{"question":"How has total Medicaid spending on H0015 intensive outpatient services changed year over year from 2018 to 2024?","dataset":"medicaid"}]
 ---
 
 Medicaid's Addiction Treatment Billing Tripled and Stayed Uneven

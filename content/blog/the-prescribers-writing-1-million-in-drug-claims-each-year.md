@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 622
 canonicalUrl: "https://www.openhealthdatahub.com/blog/the-prescribers-writing-1-million-in-drug-claims-each-year"
+followUps: [{"question":"How has the number of prescribers with over $1 million in total drug costs changed each year from 2013 to 2023?","dataset":"medicare-partd"},{"question":"What are the top 10 specialties by total Part D drug spending among prescribers with over $1 million in annual drug costs in 2023?","dataset":"medicare-partd"},{"question":"How has total Part D spending on semaglutide changed from 2018 to 2023?","dataset":"medicare-partd"}]
 ---
 
 4.55% of Medicare Part D prescribers now control more than half the program's entire drug bill.

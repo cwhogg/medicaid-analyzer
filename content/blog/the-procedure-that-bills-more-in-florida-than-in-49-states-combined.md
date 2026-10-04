@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 600
 canonicalUrl: "https://www.openhealthdatahub.com/blog/the-procedure-that-bills-more-in-florida-than-in-49-states-combined"
+followUps: [{"question":"Which states have the highest total Medicare spending for procedure code 94762 (overnight oxygen saturation measurement)?","dataset":"medicare"},{"question":"What are the top 10 specialties by average Medicare payment per provider in Florida compared to the national average?","dataset":"medicare"},{"question":"How has Florida's total Medicare Part B spending changed year by year from 2013 to 2023?","dataset":"medicare"}]
 ---
 
 Florida providers collected **$26.4 million** out of $46.4 million in total national Medicare payments for overnight oxygen saturation measurement (HCPCS 94762) in the most recent data. That's 56.8% of all national payments for a single procedure code, from a state that holds 6.55% of the country's Medicare providers.

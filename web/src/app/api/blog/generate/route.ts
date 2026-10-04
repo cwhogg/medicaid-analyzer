@@ -11,6 +11,7 @@ import {
   type TopicPlan,
 } from "@/lib/blogGeneration";
 import { postTweetThread, isTwitterConfigured } from "@/lib/twitter";
+import { generateFollowUps } from "@/lib/blogFollowUps";
 
 export const maxDuration = 300;
 
@@ -156,7 +157,8 @@ Return ONLY valid JSON, no markdown fences or explanation.`;
     );
 
     // --- Phase 4: Publish via GitHub ---
-    const { isFirstPublish } = await publishToGitHub(topic, bodyContent, wordCount, send);
+    const followUps = await generateFollowUps(topic.title, bodyContent, client, dsConfig.key);
+    const { isFirstPublish } = await publishToGitHub(topic, bodyContent, wordCount, send, followUps);
 
     // --- Phase 5: Tweet (first publish only, after deployment is live) ---
     if (isFirstPublish && tweet1 && tweet2 && isTwitterConfigured()) {

@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 713
 canonicalUrl: "https://www.openhealthdatahub.com/blog/facility-billing-captured-half-of-medicare-s-office-visit-dollars"
+followUps: [{"question":"Which specialties have the highest share of 99213 claims billed in facility settings in 2023?","dataset":"medicare"},{"question":"How has nephrology's total Medicare spending split between facility and office settings changed from 2013 to 2023?","dataset":"medicare"},{"question":"Which states have the highest share of E&M office visit claims (99211-99215) billed in facility settings in 2023?","dataset":"medicare"}]
 ---
 
 Two numbers that don't fit together at first glance: Medicare pays **$6.20** for a routine established patient visit (99211) in a facility setting, versus **$14.03** for the identical visit in a physician's office. That's a 55.8% gap. And yet, providers kept moving more of their billing into facility settings over the following decade, even as that gap held steady or widened.

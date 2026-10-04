@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 591
 canonicalUrl: "https://www.openhealthdatahub.com/blog/glp-1-drugs-rewrote-medicare-s-entire-drug-spending-curve-in-three-years"
+followUps: [{"question":"How has total Medicare Part D spending on semaglutide changed year by year from 2018 to 2023?","dataset":"medicare-partd"},{"question":"What are the top 10 drugs by total Medicare Part D spending in 2023, and how does semaglutide rank among them?","dataset":"medicare-partd"},{"question":"Which states have the highest total Medicare Part D spending on semaglutide in 2023?","dataset":"medicare-partd"}]
 ---
 
 Semaglutide cost Medicare **$9.67 billion** in 2023. Three years earlier, it cost $1.2 billion. That's not a trend line. It's a vertical wall.

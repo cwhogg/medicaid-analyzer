@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 585
 canonicalUrl: "https://www.openhealthdatahub.com/blog/a-handful-of-hospitals-dominate-medicare-s-inpatient-budget"
+followUps: [{"question":"Which states have the highest total Medicare inpatient spending in 2023?","dataset":"medicare-inpatient"},{"question":"What are the top 10 most expensive DRGs by average Medicare payment per discharge in 2023?","dataset":"medicare-inpatient"},{"question":"What is the total Medicare inpatient spending by year from 2013 to 2023?","dataset":"medicare-inpatient"}]
 ---
 
 Between 2013 and 2023, the top 10 hospitals' share of Medicare inpatient payments grew from 4.34% to **6.58%**. That's a 52% increase in concentration at the very top of the market, even as total Medicare inpatient spending fell.

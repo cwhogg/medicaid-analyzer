@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 545
 canonicalUrl: "https://www.openhealthdatahub.com/blog/one-state-pays-ten-times-more-per-medicaid-enrollee-than-its-neighbor"
+followUps: [{"question":"Which states have the highest Medicaid spending per enrollee in 2023, ranked from highest to lowest?","dataset":"medicaid"},{"question":"How has total Medicaid spending changed year by year from 2018 to 2023 for each state in the bottom spending decile?","dataset":"medicaid"},{"question":"What are the top 10 procedure categories by total Medicaid spending in Alaska from 2018 to 2023?","dataset":"medicaid"}]
 ---
 
 Between 2018 and 2023, Alaska's Medicaid spending per enrollee grew from $4,358 to $5,060. Kansas, three deciles lower, sits at $2,723. Those two numbers, from the same federal program, represent the same legal entitlement to healthcare coverage.

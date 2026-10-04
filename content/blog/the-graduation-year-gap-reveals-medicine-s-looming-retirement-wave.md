@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 638
 canonicalUrl: "https://www.openhealthdatahub.com/blog/the-graduation-year-gap-reveals-medicine-s-looming-retirement-wave"
+followUps: [{"question":"What are the top 20 specialties by share of clinicians who graduated before 1985?","dataset":"dac"},{"question":"How many cardiovascular disease clinicians are in each state, and what share graduated before 1985?","dataset":"dac"},{"question":"What is the total Medicare spending on cardiovascular disease specialties by year from 2013 to 2023?","dataset":"medicare"}]
 ---
 
 Medicine's retirement wave isn't evenly distributed. Cardiology is where it hits hardest.

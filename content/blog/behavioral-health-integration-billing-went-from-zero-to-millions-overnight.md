@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 632
 canonicalUrl: "https://www.openhealthdatahub.com/blog/behavioral-health-integration-billing-went-from-zero-to-millions-overnight"
+followUps: [{"question":"What are the top 10 states by total BHI code spending in 2024?","dataset":"medicaid"},{"question":"How many individual providers billed BHI codes each year from 2018 to 2024, and what was the average spending per provider?","dataset":"medicaid"},{"question":"Which states have the highest rates of no exercise in the past 30 days among adults with depression or poor mental health?","dataset":"brfss"}]
 ---
 
 Medicaid spent just $1.4 million on Behavioral Health Integration codes in 2018. By 2024, that number was **$14.2 million**. The entire growth curve is striking, but one year stands apart: 2023, when spending more than doubled in twelve months.

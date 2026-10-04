@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 713
 canonicalUrl: "https://www.openhealthdatahub.com/blog/personal-care-aides-bill-more-than-every-u-s-surgeon-combined"
+followUps: [{"question":"What is the annual T1019 spending trend from 2018 to 2024 broken down by the top 5 states?","dataset":"medicaid"},{"question":"Which states have the highest total Medicaid spending on T1019 per claim (average reimbursement per claim) across all years?","dataset":"medicaid"},{"question":"What are the top 20 Medicaid service codes by total spending from 2018 to 2024, excluding T1019 and T1020?","dataset":"medicaid"}]
 ---
 
 Medicaid spent **$126 billion** on personal care aides from 2018 through September 2024. Every surgeon in America, billing every office visit, generated $76 billion over the same period. The gap between those two numbers is $49.7 billion.

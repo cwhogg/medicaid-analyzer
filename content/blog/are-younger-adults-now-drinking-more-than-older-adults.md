@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 557
 canonicalUrl: "https://www.openhealthdatahub.com/blog/are-younger-adults-now-drinking-more-than-older-adults"
+followUps: [{"question":"How has binge drinking prevalence changed from 2014 to 2024 by age group?","dataset":"brfss"},{"question":"What is the heavy drinking prevalence by age group and sex in the most recent survey year?","dataset":"brfss"},{"question":"Which states have the highest binge drinking rates among adults aged 18 to 34?","dataset":"brfss"}]
 ---
 
 Binge drinking among adults under 35 has fallen steadily since 2016. That's the headline most people would expect. What the data actually shows is more complicated: younger adults are still the heaviest binge drinkers by a wide margin, but the gap between age groups is narrowing in ways that have little to do with young people getting sober.

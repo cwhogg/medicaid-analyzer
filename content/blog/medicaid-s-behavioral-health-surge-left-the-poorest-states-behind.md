@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 662
 canonicalUrl: "https://www.openhealthdatahub.com/blog/medicaid-s-behavioral-health-surge-left-the-poorest-states-behind"
+followUps: [{"question":"Which states have the highest total Medicaid spending on mental health and substance use services per provider?","dataset":"medicaid"},{"question":"How has obesity prevalence changed from 2014 to 2024 in West Virginia compared to DC and Maine?","dataset":"brfss"},{"question":"What percentage of adults reporting poor mental health days in the past 30 days varies by income level and state?","dataset":"brfss"}]
 ---
 
 Medicaid spent **$1,294.71 per enrollee** on behavioral health services in the District of Columbia in 2023. West Virginia, which has among the highest rates of substance use disorder in the country, spent $392.71. That 3.3-to-1 ratio is not a rounding error. It is a structural feature of how Medicaid behavioral health dollars flow across state lines.

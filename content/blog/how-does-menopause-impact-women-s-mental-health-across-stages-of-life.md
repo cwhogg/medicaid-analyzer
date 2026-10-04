@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 649
 canonicalUrl: "https://www.openhealthdatahub.com/blog/how-does-menopause-impact-women-s-mental-health-across-stages-of-life"
+followUps: [{"question":"What is the weighted prevalence of 14+ poor mental health days by income level for women aged 45-64?","dataset":"brfss"},{"question":"How has the average poor mental health days for women aged 18-24 changed from 2014 to 2024?","dataset":"brfss"},{"question":"What percentage of adults have clinically significant depression (PHQ-9 >= 10) by age group and gender?","dataset":"nhanes"}]
 ---
 
 Women's mental health burden doesn't peak at menopause. It peaks at 18.

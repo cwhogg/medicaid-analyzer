@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 603
 canonicalUrl: "https://www.openhealthdatahub.com/blog/ophthalmology-swallowed-more-medicare-dollars-than-all-of-psychiatry"
+followUps: [{"question":"What are the top 10 drugs or procedures by total Medicare spending within ophthalmology in 2023?","dataset":"medicare"},{"question":"How has the total number of psychiatry providers and average payment per provider changed each year from 2013 to 2023?","dataset":"medicare"},{"question":"Which states have the highest ratio of ophthalmology spending to psychiatry spending in 2023?","dataset":"medicare"}]
 ---
 
 One drug, administered by injection into the eye, collected more Medicare dollars in 2023 than the entire psychiatric workforce did in 2022. That's not a rounding error. It's a structural feature of how Medicare values care.

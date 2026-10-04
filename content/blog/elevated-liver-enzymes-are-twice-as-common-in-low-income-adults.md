@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 710
 canonicalUrl: "https://www.openhealthdatahub.com/blog/elevated-liver-enzymes-are-twice-as-common-in-low-income-adults"
+followUps: [{"question":"What is the weighted prevalence of elevated ALT (>40 U/L) by income-to-poverty ratio group among adults?","dataset":"nhanes"},{"question":"What is the weighted prevalence of obesity by race/ethnicity and education level among non-drinking adults?","dataset":"nhanes"},{"question":"Which states have the highest Medicaid spending on liver disease or hepatic condition services?","dataset":"medicaid"}]
 ---
 
 Near-poverty adults with elevated liver enzymes carry a metabolic burden that higher-income adults don't. **73.2% of near-poverty adults with elevated ALT** also have obesity or prediabetes/diabetes, compared to 64.0% among higher-income adults. That 9-point gap represents a compounding of conditions that makes liver disease harder to treat, harder to catch early, and more likely to progress.

@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 1999
 canonicalUrl: "https://www.openhealthdatahub.com/blog/loneliness-social-isolation-health-outcomes-brfss-2024"
+followUps: [{"question":"What is the rate of 14+ poor mental health days by loneliness level broken down by age group in 2024?","dataset":"brfss"},{"question":"How does cost-related healthcare avoidance rate differ by loneliness level across US states in 2024?","dataset":"brfss"},{"question":"What is the diagnosed depression rate among adults lacking emotional support, broken down by income level in 2024?","dataset":"brfss"}]
 ---
 
 ## Loneliness & Health: What BRFSS 2024 Data Reveals

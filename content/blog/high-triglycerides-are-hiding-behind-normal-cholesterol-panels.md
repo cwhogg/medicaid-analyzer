@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 603
 canonicalUrl: "https://www.openhealthdatahub.com/blog/high-triglycerides-are-hiding-behind-normal-cholesterol-panels"
+followUps: [{"question":"What is the average triglyceride level by age group among adults who have never been told they have high cholesterol?","dataset":"nhanes"},{"question":"What percentage of adults with triglycerides >= 150 mg/dL have low HDL, broken down by sex and BMI category?","dataset":"nhanes"},{"question":"How has the weighted prevalence of high triglycerides (>= 150 mg/dL) changed over time from 2014 to 2024 by income level?","dataset":"brfss"}]
 ---
 
 Nearly 28 million Americans have been told their cholesterol is normal. Their triglycerides say otherwise.

@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 645
 canonicalUrl: "https://www.openhealthdatahub.com/blog/psychiatry-s-workforce-is-aging-faster-than-any-other-specialty"
+followUps: [{"question":"Which states have the highest number of psychiatrists per 100,000 population, based on current clinician counts?","dataset":"dac"},{"question":"What are the top 10 states by total number of enrolled psychiatrists in the clinician directory?","dataset":"dac"},{"question":"How does the number of clinical psychologists compare to psychiatrists by state?","dataset":"dac"}]
 ---
 
 Psychiatry graduated 100 clinicians in 1970. By 1974, that number had grown to 170. Those doctors are now in their late 70s and early 80s, and a substantial share are still practicing. When they stop, the states that relied most heavily on that generation will feel it first.

@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 620
 canonicalUrl: "https://www.openhealthdatahub.com/blog/has-obesity-gotten-worse-in-every-state-since-2014"
+followUps: [{"question":"How has the obesity rate changed from 2014 to 2024 in the states with the highest obesity rates (top 10 in 2014)?","dataset":"brfss"},{"question":"What is the obesity rate by year from 2014 to 2024 broken down by income level?","dataset":"brfss"},{"question":"Which states had the largest increase in obesity rate between 2014 and 2024?","dataset":"brfss"}]
 ---
 
 ## In 2014, Six States Had Obesity Rates Below 25%. None Do Anymore.

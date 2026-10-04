@@ -9,6 +9,7 @@ ideaName: "Medicaid Claims Analyzer"
 status: published
 wordCount: 1848
 canonicalUrl: "https://medicaid-analyzer.vercel.app/blog/medicaid-providers-single-procedure-code-billing"
+followUps: [{"question":"Which states have the highest total Medicaid spending on T1019 (personal care service) from 2018 to 2024?","dataset":"medicaid"},{"question":"What is the average number of unique HCPCS codes billed per provider, broken down by year from 2018 to 2024?","dataset":"medicaid"},{"question":"What are the top 10 providers by total spending among those who bill only 90837 (60-minute psychotherapy)?","dataset":"medicaid"}]
 ---
 
 ## Nearly 1 in 4 Medicaid Providers Bills Just One Procedure Code — Here's What That Reveals

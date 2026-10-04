@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 690
 canonicalUrl: "https://www.openhealthdatahub.com/blog/retired-americans-report-better-mental-health-than-employed-ones"
+followUps: [{"question":"What is the average number of poor mental health days by employment status and sex?","dataset":"brfss"},{"question":"How has the average poor mental health days for retired vs. employed-for-wages adults changed from 2014 to 2024?","dataset":"brfss"},{"question":"What is the average poor mental health days by employment status and income level?","dataset":"brfss"}]
 ---
 
 Retired Americans average just **2.55 poor mental health days per month**. Employed workers average 3.67. That gap, drawn from a combined sample of over 2.8 million adults, cuts against one of the more durable assumptions in public health: that work is good for you.

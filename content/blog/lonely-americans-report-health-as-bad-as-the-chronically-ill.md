@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 750
 canonicalUrl: "https://www.openhealthdatahub.com/blog/lonely-americans-report-health-as-bad-as-the-chronically-ill"
+followUps: [{"question":"How has the rate of fair or poor self-rated health changed from 2014 to 2024 by age group?","dataset":"brfss"},{"question":"Which states have the highest rates of fair or poor self-rated health among adults aged 55-64?","dataset":"brfss"},{"question":"What is the prevalence of fair or poor self-rated health by income level among adults aged 45-64?","dataset":"brfss"}]
 ---
 
 60.4% of lonely women aged 55-64 report fair or poor health. Among their rarely or never lonely peers, that number is 19.0%. That gap, more than 40 percentage points, is roughly the same distance between a healthy adult and someone managing multiple chronic conditions.

@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 792
 canonicalUrl: "https://www.openhealthdatahub.com/blog/do-uninsured-americans-have-worse-lab-results"
+followUps: [{"question":"What is the percentage of insured vs uninsured adults with Stage 2 hypertension (SBP >= 140 or DBP >= 90) who report never being told they have high blood pressure?","dataset":"nhanes"},{"question":"What is the undiagnosed diabetes rate (HbA1c >= 6.5% but no diagnosis) by insurance status for adults aged 70 and older?","dataset":"nhanes"},{"question":"What is the mean total cholesterol by insurance status, age group, and race/ethnicity among adults?","dataset":"nhanes"}]
 ---
 
 Half of uninsured adults with Stage 2 hypertension don't know they have it. That's not a gap in treatment — it's a gap in diagnosis itself.

@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 699
 canonicalUrl: "https://www.openhealthdatahub.com/blog/beneficiary-out-of-pocket-costs-grew-faster-than-medicare-s-own-payments"
+followUps: [{"question":"Which states have the highest average beneficiary out-of-pocket gap (total payment minus Medicare payment) per discharge for DRG 871 in 2023?","dataset":"medicare-inpatient"},{"question":"How has the total Medicare inpatient spending vs. beneficiary cost-sharing gap changed by year from 2013 to 2023 for heart failure DRGs 291 and 292?","dataset":"medicare-inpatient"},{"question":"Which hospitals have the highest per-discharge beneficiary cost-sharing gap for DRG 247 (percutaneous cardiovascular with drug-eluting stent) in 2023?","dataset":"medicare-inpatient"}]
 ---
 
 Across every major inpatient diagnosis category, the amount Medicare beneficiaries pay out of pocket for a hospital stay grew faster over the past decade than what Medicare itself paid. That's not a rounding error or a quirk of one procedure. It's a consistent pattern across the 20 highest-volume DRGs in the program.

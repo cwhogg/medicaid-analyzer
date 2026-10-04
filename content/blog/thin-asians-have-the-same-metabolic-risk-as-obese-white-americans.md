@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 688
 canonicalUrl: "https://www.openhealthdatahub.com/blog/thin-asians-have-the-same-metabolic-risk-as-obese-white-americans"
+followUps: [{"question":"What is the weighted prevalence of dysglycemia (HbA1c >= 5.7%) by race/ethnicity and BMI category for adults?","dataset":"nhanes"},{"question":"What is the average triglyceride level and HDL level by race/ethnicity among normal-weight adults (BMI 18.5-24.9)?","dataset":"nhanes"},{"question":"What is the weighted prevalence of diabetes by race/ethnicity and income level among adults with normal BMI?","dataset":"brfss"}]
 ---
 
 Normal-weight Non-Hispanic Asian adults have a **25.6% prevalence of dysglycemia** — prediabetes or diabetes — compared to 16.5% among normal-weight Non-Hispanic White adults. That gap is striking on its own. But set it against this: obese Non-Hispanic White adults have a dysglycemia prevalence of 42.8%. The distance between a thin Asian American and an obese white American, on the most consequential metabolic measure in clinical medicine, is just 17.2 percentage points.

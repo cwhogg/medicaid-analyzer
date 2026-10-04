@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 599
 canonicalUrl: "https://www.openhealthdatahub.com/blog/the-credential-behind-your-specialist-visit-is-changing-fast"
+followUps: [{"question":"What are the top 20 specialties by number of clinicians, broken down by credential type (MD, DO, NP, PA, other)?","dataset":"dac"},{"question":"Which states have the highest ratio of Nurse Practitioners to Internal Medicine physicians?","dataset":"dac"},{"question":"How does total Medicare Part B spending per claim compare between Nurse Practitioner and Internal Medicine providers in 2023?","dataset":"medicare"}]
 ---
 
 Two numbers that don't fit together: 166,593 nurse practitioners are enrolled in Medicare under the Nurse Practitioner specialty designation, while just 39 NP or PA credentialed clinicians list Internal Medicine as their primary specialty. The workforce transformation everyone is debating in statehouses has already happened, just not where most people think.

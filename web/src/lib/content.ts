@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import type { FollowUp } from "@/lib/blogFollowUps";
 
 export interface PostFrontmatter {
   title: string;
@@ -13,6 +14,7 @@ export interface PostFrontmatter {
   wordCount: number;
   canonicalUrl: string;
   description?: string;
+  followUps?: FollowUp[];
 }
 
 export interface Post {

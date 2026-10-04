@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 611
 canonicalUrl: "https://www.openhealthdatahub.com/blog/sepsis-billing-exploded-after-a-definition-change-not-an-outbreak"
+followUps: [{"question":"Which states had the highest total Medicare inpatient spending on DRG 871 in 2018?","dataset":"medicare-inpatient"},{"question":"How did the average Medicare payment per discharge for DRG 871 vs DRG 872 compare from 2013 to 2023?","dataset":"medicare-inpatient"},{"question":"Which hospitals had the largest increase in DRG 871 discharges between 2013 and 2018?","dataset":"medicare-inpatient"}]
 ---
 
 Between 2013 and 2018, Medicare's total sepsis discharges grew from 556,562 to 806,561. Over that same period, the average payment per sepsis discharge fell relative to all other DRGs, converging almost entirely with the hospital-wide average. More volume, less premium per case. That combination is unusual for a genuine disease outbreak and worth examining closely.

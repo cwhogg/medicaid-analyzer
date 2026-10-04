@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 606
 canonicalUrl: "https://www.openhealthdatahub.com/blog/young-adults-are-reporting-significantly-worse-poor-mental-health-since-2014"
+followUps: [{"question":"What is the average number of poor mental health days per month by income level for adults aged 18 to 34?","dataset":"brfss"},{"question":"How has the rate of 14+ poor mental health days per month changed from 2014 to 2024 for women aged 18 to 24 versus women aged 65 and older?","dataset":"brfss"},{"question":"Which states have the highest rates of 14+ poor mental health days per month among adults aged 18 to 34 in 2024?","dataset":"brfss"}]
 ---
 
 Half of young adults now report 14 or more poor mental health days per month. That number was 39.5% in 2016.

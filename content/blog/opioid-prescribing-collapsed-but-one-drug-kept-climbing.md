@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 678
 canonicalUrl: "https://www.openhealthdatahub.com/blog/opioid-prescribing-collapsed-but-one-drug-kept-climbing"
+followUps: [{"question":"How has buprenorphine total claims and number of prescribers changed from 2013 to 2023?","dataset":"medicare-partd"},{"question":"Which specialties wrote the most buprenorphine claims in 2023, ranked by total claims?","dataset":"medicare-partd"},{"question":"How many addiction medicine specialists are in each state?","dataset":"dac"}]
 ---
 
 Buprenorphine access in Medicare Part D varies nearly sixfold across state lines. Vermont's rate of 5.34 claims per 1,000 total Part D claims in 2016 dwarfed New Jersey's 0.86. That gap is the real story inside a decade of collapsing opioid prescribing.

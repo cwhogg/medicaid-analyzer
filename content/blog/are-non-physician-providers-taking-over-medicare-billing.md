@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 851
 canonicalUrl: "https://www.openhealthdatahub.com/blog/are-non-physician-providers-taking-over-medicare-billing"
+followUps: [{"question":"How has the number of unique NPs, PAs, and CRNAs billing Medicare changed each year from 2013 to 2023, broken down by credential type?","dataset":"medicare"},{"question":"Which states have the highest share of Medicare Part B services billed by nurse practitioners and physician assistants vs. physicians in 2023?","dataset":"medicare"},{"question":"What is the average payment per service for CPT 99309 comparing MDs vs. NPs and PAs by state in 2023?","dataset":"medicare"}]
 ---
 
 Non-physician providers aren't taking over Medicare billing — they're actually losing ground. The share of unique advanced practice providers (NPs, PAs, CRNAs) relative to physicians in Medicare billing peaked in 2017 and has fallen every year since, dropping from a ratio of 0.030 to 0.026 by 2023.

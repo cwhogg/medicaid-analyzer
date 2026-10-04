@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 729
 canonicalUrl: "https://www.openhealthdatahub.com/blog/spinal-fusion-became-medicare-s-most-expensive-discretionary-surgery"
+followUps: [{"question":"Which hospitals have the highest average Medicare payment per discharge for spinal fusion DRGs (453, 454, 455, 456, 457, 458, 459, 460) in 2023?","dataset":"medicare-inpatient"},{"question":"How has the charge-to-payment ratio for DRG 460 (spinal fusion without major complications) changed from 2013 to 2023?","dataset":"medicare-inpatient"},{"question":"Which states have the highest total Medicare inpatient spending on spinal fusion DRGs in 2023?","dataset":"medicare-inpatient"}]
 ---
 
 Hospitals billed Medicare nearly **6 times what they were paid** for the most complex spinal fusions in 2023. That number, a charge-to-payment ratio of 5.92 for combined anterior and posterior spinal fusion with major complications (DRG 453), is up from 4.34 a decade earlier. The procedure itself got modestly more expensive for Medicare: average payments rose from $89,076 in 2013 to $92,100 in 2023. But submitted charges went from $386,570 to $545,285 over the same period. The gap between what hospitals ask for and what they receive has never been wider.

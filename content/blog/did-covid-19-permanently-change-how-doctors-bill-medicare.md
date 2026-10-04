@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 624
 canonicalUrl: "https://www.openhealthdatahub.com/blog/did-covid-19-permanently-change-how-doctors-bill-medicare"
+followUps: [{"question":"What is the total Medicare spending for cardiac surgery by year from 2013 to 2023?","dataset":"medicare"},{"question":"Which states have the highest total Medicare spending for anesthesiology in 2023?","dataset":"medicare"},{"question":"What are the top 10 specialties by growth in unique providers billing Medicare from 2019 to 2023?","dataset":"medicare"}]
 ---
 
 Six years after COVID-19 hit, the billing patterns of American physicians still haven't returned to their pre-pandemic baseline. For some specialties and procedures, the pandemic didn't just cause a temporary dip. It caused a permanent reset.

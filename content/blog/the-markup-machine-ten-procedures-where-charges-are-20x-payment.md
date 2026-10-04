@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 693
 canonicalUrl: "https://www.openhealthdatahub.com/blog/the-markup-machine-ten-procedures-where-charges-are-20x-payment"
+followUps: [{"question":"What are the top 10 states by average charge-to-payment ratio for lidocaine HCl injection (J2001) in 2023?","dataset":"medicare"},{"question":"How has the total number of services and average submitted charge for albuterol inhalation solution (J7613) changed from 2013 to 2023?","dataset":"medicare"},{"question":"What are the top 10 HCPCS codes by total services in 2023 where average submitted charge is at least 50x the average Medicare payment?","dataset":"medicare"}]
 ---
 
 Providers billed Medicare **480 times** what it actually paid for a single lidocaine injection in 2023. That's not a rounding error or a data anomaly. It's a window into how American hospital chargemasters work, and the numbers get stranger from there.

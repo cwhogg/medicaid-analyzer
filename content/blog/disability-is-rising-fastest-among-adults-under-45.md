@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 566
 canonicalUrl: "https://www.openhealthdatahub.com/blog/disability-is-rising-fastest-among-adults-under-45"
+followUps: [{"question":"How has any-disability prevalence changed from 2014 to 2024 by income level among adults aged 25 to 44?","dataset":"brfss"},{"question":"What is the prevalence of cognitive difficulty by age group (25-44, 45-64, 65+) across survey years 2014 to 2024?","dataset":"brfss"},{"question":"What is the total Medicaid spending by year from 2018 to 2024 for services related to disability or home health care?","dataset":"medicaid"}]
 ---
 
 Disability used to be, almost by definition, an aging story. The older you got, the more likely you were to report difficulty walking, seeing, or managing daily tasks. That assumption is now measurably wrong.

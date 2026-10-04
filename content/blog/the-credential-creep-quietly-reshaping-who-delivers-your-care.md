@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 675
 canonicalUrl: "https://www.openhealthdatahub.com/blog/the-credential-creep-quietly-reshaping-who-delivers-your-care"
+followUps: [{"question":"What are the top 10 specialties by number of clinicians in Mississippi?","dataset":"dac"},{"question":"What is the NP-to-PCP ratio (family practice + internal medicine) in each state, ranked highest to lowest?","dataset":"dac"},{"question":"Which states have the highest average Medicare Part B spending per provider for nurse practitioners vs. internal medicine physicians in 2023?","dataset":"medicare"}]
 ---
 
 Mississippi has nearly three nurse practitioners for every primary care physician. That single ratio reframes a decade of assumptions about how the American healthcare workforce actually operates.

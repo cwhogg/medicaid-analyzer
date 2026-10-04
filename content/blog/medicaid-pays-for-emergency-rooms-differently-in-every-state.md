@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 698
 canonicalUrl: "https://www.openhealthdatahub.com/blog/medicaid-pays-for-emergency-rooms-differently-in-every-state"
+followUps: [{"question":"What is the average paid per ED claim by state in 2024, ranked from highest to lowest?","dataset":"medicaid"},{"question":"How did total Medicaid ED claims and average payment per claim change year by year from 2018 to 2024?","dataset":"medicaid"},{"question":"Which states have the highest rate of high-acuity ED visits (99285) as a share of all ED claims?","dataset":"medicaid"}]
 ---
 
 Medicaid spent **$1,835.34 per enrollee** on emergency department visits in Connecticut between 2018 and 2024. In California, that number was $310.69. Both states run large, mature Medicaid programs. The nearly 6-fold gap between them isn't a rounding error — it's a window into how differently states structure, price, and use emergency care under the same federal program.

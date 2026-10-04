@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 619
 canonicalUrl: "https://www.openhealthdatahub.com/blog/the-zip-codes-where-no-specialist-exists-within-the-directory"
+followUps: [{"question":"How many psychiatrists are listed in each state, ranked from lowest to highest count?","dataset":"dac"},{"question":"What are the top 10 specialties with the greatest urban vs rural concentration gap by clinician count?","dataset":"dac"},{"question":"Which states have the highest total Medicare spending on psychiatry services?","dataset":"medicare"}]
 ---
 
 Guam has 1 psychiatrist in the Medicare clinician directory. One. Across a jurisdiction of nearly 160,000 people, the entire federal directory records a single psychiatrist, yielding a ratio of **0.07 per 100,000 clinicians** against a total directory population of 1,478,578. That number is not a rounding artifact. It is the floor.

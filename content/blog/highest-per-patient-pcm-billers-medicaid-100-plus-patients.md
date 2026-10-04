@@ -9,6 +9,7 @@ ideaName: "Medicaid Claims Analyzer"
 status: published
 wordCount: 2049
 canonicalUrl: "https://medicaid-analyzer.vercel.app/blog/highest-per-patient-pcm-billers-medicaid-100-plus-patients"
+followUps: [{"question":"Which states have the highest total Medicaid spending on PCM codes (99424, 99425, 99426, 99427)?","dataset":"medicaid"},{"question":"How has total Medicaid spending on procedure codes 99424, 99425, 99426, and 99427 changed by year from 2022 to 2024?","dataset":"medicaid"},{"question":"Who are the top 20 highest-paid providers for PCM codes 99424-99427 by total Medicaid spending?","dataset":"medicaid"}]
 ---
 
 When the federal government expanded reimbursement for Principal Care Management (PCM) services in 2020, the intent was straightforward: pay clinicians to coordinate care for patients with a single high-risk chronic condition, reducing hospitalizations and improving outcomes. What the data reveals, however, is a billing landscape with striking variation — a small group of providers extracting dramatically more per patient than their peers, sometimes at a scale that demands closer scrutiny.

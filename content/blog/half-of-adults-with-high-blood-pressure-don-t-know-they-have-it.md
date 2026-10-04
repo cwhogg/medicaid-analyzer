@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 636
 canonicalUrl: "https://www.openhealthdatahub.com/blog/half-of-adults-with-high-blood-pressure-don-t-know-they-have-it"
+followUps: [{"question":"What is the weighted prevalence of hypertension by income level among adults aged 18-44?","dataset":"nhanes"},{"question":"Which states have the highest rates of adults told they have high blood pressure?","dataset":"brfss"},{"question":"How has the prevalence of adults ever told they have high blood pressure changed from 2014 to 2024?","dataset":"brfss"}]
 ---
 
 Eight out of ten young adults with dangerously elevated blood pressure have never been told they have it.

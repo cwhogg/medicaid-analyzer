@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 589
 canonicalUrl: "https://www.openhealthdatahub.com/blog/childhood-trauma-leaves-a-measurable-scar-on-adult-health"
+followUps: [{"question":"How has the prevalence of 14+ poor mental health days changed from 2014 to 2024 among adults who report frequent mental distress?","dataset":"brfss"},{"question":"What is the current smoking prevalence by age group and sex among adults in 2024?","dataset":"brfss"},{"question":"What is the obesity prevalence by income level among adults aged 18-24 in the BRFSS data?","dataset":"brfss"}]
 ---
 
 From 9.8% to 42.7%: that's the gap in depression prevalence between adults who experienced no adverse childhood experiences and those who experienced five or more. That's not a modest association. It's a fourfold difference, measured in 2024 population-level data, and it follows a pattern so consistent it looks less like correlation and more like a dose-response curve.

@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 539
 canonicalUrl: "https://www.openhealthdatahub.com/blog/young-men-s-blood-pressure-is-the-epidemic-no-one-is-treating"
+followUps: [{"question":"What is the weighted prevalence of undiagnosed hypertension by age group and sex among adults 18-59?","dataset":"nhanes"},{"question":"What percentage of young men aged 18-39 had a routine checkup in the past year, by income level?","dataset":"brfss"},{"question":"How does the rate of no healthcare visit in the past 12 months differ by sex and age group (18-24, 25-34, 35-44)?","dataset":"brfss"}]
 ---
 
 Nearly one in four young men in America has high blood pressure and doesn't know it.

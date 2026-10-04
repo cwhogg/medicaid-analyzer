@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { validateSQL } from "@/lib/sqlValidation";
 import { executeRemoteQuery } from "@/lib/railway";
 import type { DatasetConfig } from "@/lib/datasets/index";
+import type { FollowUp } from "@/lib/blogFollowUps";
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_OWNER = "cwhogg";
@@ -456,7 +457,8 @@ export async function publishToGitHub(
   topic: TopicPlan,
   content: string,
   wordCount: number,
-  send: (event: Record<string, unknown>) => void
+  send: (event: Record<string, unknown>) => void,
+  followUps: FollowUp[] = []
 ): Promise<{ isFirstPublish: boolean }> {
   if (!GITHUB_TOKEN) {
     throw new Error("GITHUB_TOKEN not configured");
@@ -489,6 +491,15 @@ export async function publishToGitHub(
       if (dateMatch) {
         publishDate = dateMatch[1];
       }
+      // Keep existing follow-ups when re-publishing without new ones
+      const followUpsMatch = decoded.match(/^followUps:\s*(\[.*\])$/m);
+      if (followUps.length === 0 && followUpsMatch) {
+        try {
+          followUps = JSON.parse(followUpsMatch[1]);
+        } catch {
+          // Malformed — drop them
+        }
+      }
     }
   } catch {
     // File doesn't exist yet — use current date
@@ -504,7 +515,7 @@ description: "${topic.description.replace(/"/g, '\\"')}"
 ideaName: "Open Health Data Hub"
 status: published
 wordCount: ${wordCount}
-canonicalUrl: "https://www.openhealthdatahub.com/blog/${topic.slug}"
+canonicalUrl: "https://www.openhealthdatahub.com/blog/${topic.slug}"${followUps.length > 0 ? `\nfollowUps: ${JSON.stringify(followUps)}` : ""}
 ---
 
 ${content}

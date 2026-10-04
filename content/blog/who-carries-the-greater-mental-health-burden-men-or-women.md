@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 606
 canonicalUrl: "https://www.openhealthdatahub.com/blog/who-carries-the-greater-mental-health-burden-men-or-women"
+followUps: [{"question":"How has the frequent poor mental health day rate changed from 2016 to 2024 by sex and income level?","dataset":"brfss"},{"question":"Which states have the highest rates of frequent poor mental health days among women aged 18 to 24 in 2024?","dataset":"brfss"},{"question":"What is the weighted prevalence of frequent poor mental health days by sex and race/ethnicity group?","dataset":"brfss"}]
 ---
 
 More than half of young women in America are struggling to get through the month. That's not a metaphor. **57.3% of women aged 18 to 24 reported 14 or more poor mental health days in the past 30 days in 2024**, according to BRFSS data. Their male peers weren't far behind at 44.9%, but the gap between them tells a story that runs across every age group in the survey.

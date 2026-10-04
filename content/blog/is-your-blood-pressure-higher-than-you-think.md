@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 765
 canonicalUrl: "https://www.openhealthdatahub.com/blog/is-your-blood-pressure-higher-than-you-think"
+followUps: [{"question":"What is the undiagnosed Stage 2 hypertension rate by age group among adults with SBP >= 140 or DBP >= 90?","dataset":"nhanes"},{"question":"What is the weighted prevalence of undiagnosed hypertension by race/ethnicity among adults with Stage 2 hypertension?","dataset":"nhanes"},{"question":"How does the undiagnosed Stage 2 hypertension rate differ by income level among adults with SBP >= 140 or DBP >= 90?","dataset":"nhanes"}]
 ---
 
 Among adults with Stage 2 hypertension by measured blood pressure, more than one in three have never been told they have high blood pressure. That's not a rounding error — it's a structural gap in clinical detection, and it raises a direct question: how big is the problem of undiagnosed high blood pressure?

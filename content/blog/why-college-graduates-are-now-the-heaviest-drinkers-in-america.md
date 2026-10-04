@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 589
 canonicalUrl: "https://www.openhealthdatahub.com/blog/why-college-graduates-are-now-the-heaviest-drinkers-in-america"
+followUps: [{"question":"How has binge drinking prevalence changed from 2014 to 2024 by education level for males?","dataset":"brfss"},{"question":"What is the heavy drinking prevalence by income level separately for men and women?","dataset":"brfss"},{"question":"Which states have the highest binge drinking rates among college graduates?","dataset":"brfss"}]
 ---
 
 Among college-educated men, binge drinking has held above 18% for over a decade. That's higher than any other education group in the dataset, and it hasn't meaningfully come down.

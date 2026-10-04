@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 868
 canonicalUrl: "https://www.openhealthdatahub.com/blog/what-does-medicare-actually-spend-on-drugs-vs-doctor-services"
+followUps: [{"question":"What are the top 10 drug HCPCS codes billed by rheumatologists by total Medicare spending from 2013 to 2023?","dataset":"medicare"},{"question":"How has total Medicare Part D spending on aflibercept changed from 2013 to 2023?","dataset":"medicare-partd"},{"question":"What is the total Medicare Part B spending by year from 2013 to 2023 for ophthalmology vs rheumatology vs hematology-oncology?","dataset":"medicare"}]
 ---
 
 Rheumatologists collect **73.7%** of their total Medicare Part B revenue from drug and biological injections — more than any other physician specialty, and nearly 15 percentage points above hematology-oncology. That number reframes what a rheumatology practice actually is: less a diagnostic service, more a drug-delivery operation.

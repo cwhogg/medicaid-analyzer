@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 680
 canonicalUrl: "https://www.openhealthdatahub.com/blog/medicaid-drug-injections-reveal-a-two-tier-specialty-system"
+followUps: [{"question":"Which states have the highest total Medicaid spending on Ocrelizumab (J2350), and what is the spending per enrollee in each state?","dataset":"medicaid"},{"question":"What are the top 20 drugs by total Medicaid spending where fewer than 10,000 claims were filed, showing cost per claim?","dataset":"medicaid"},{"question":"How does the share of organizational vs individual provider billing for J-code injectables vary across states?","dataset":"medicaid"}]
 ---
 
 Connecticut pays **$88.17 per Medicaid enrollee** for Ocrelizumab, a multiple sclerosis biologic. New York pays $8.72 for the same drug. Same J-code. Same federal program. A 10x gap.

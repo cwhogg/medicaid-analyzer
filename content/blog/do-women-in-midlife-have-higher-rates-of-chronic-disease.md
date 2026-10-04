@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 805
 canonicalUrl: "https://www.openhealthdatahub.com/blog/do-women-in-midlife-have-higher-rates-of-chronic-disease"
+followUps: [{"question":"How has arthritis prevalence changed from 2014 to 2024 among women aged 45–64 versus men aged 45–64?","dataset":"brfss"},{"question":"What is the weighted obesity prevalence by age group for women from 2018 to 2024?","dataset":"brfss"},{"question":"What is the diabetes prevalence by sex for adults aged 65 and older compared to ages 45–64?","dataset":"brfss"}]
 ---
 
 Women in midlife carry a heavier arthritis burden than men the same age — but men in that same age bracket have higher rates of both diabetes and coronary heart disease. The chronic disease picture for women aged 45–64 is more complicated than the standard narrative suggests.

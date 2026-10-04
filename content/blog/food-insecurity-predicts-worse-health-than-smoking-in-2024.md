@@ -9,6 +9,7 @@ ideaName: "Open Health Data Hub"
 status: published
 wordCount: 688
 canonicalUrl: "https://www.openhealthdatahub.com/blog/food-insecurity-predicts-worse-health-than-smoking-in-2024"
+followUps: [{"question":"How does the rate of fair or poor health among food-insecure adults vary by state in 2024?","dataset":"brfss"},{"question":"What is the average number of poor mental health days by income level for adults who always run out of food in 2024?","dataset":"brfss"},{"question":"How has the weighted prevalence of fair or poor health among current smokers changed from 2014 to 2024?","dataset":"brfss"}]
 ---
 
 Nearly half of adults who regularly run out of food before the end of the month report being in fair or poor health. That number, **47.7%**, is not a rounding error or a subgroup artifact. It's nearly double the rate for current smokers.
