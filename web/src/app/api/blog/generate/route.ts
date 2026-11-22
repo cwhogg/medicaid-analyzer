@@ -12,6 +12,7 @@ import {
 } from "@/lib/blogGeneration";
 import { postTweetThread, isTwitterConfigured } from "@/lib/twitter";
 import { generateFollowUps } from "@/lib/blogFollowUps";
+import { MODELS, claudeRequest } from "@/lib/claude";
 
 export const maxDuration = 300;
 
@@ -102,9 +103,7 @@ Return ONLY valid JSON, no markdown fences or explanation.`;
       : `Generate a novel ${dsConfig.label} data analysis topic. Avoid topics already covered:\n${existingTitles.map((t) => `- ${t}`).join("\n") || "(none yet)"}`;
 
     const topicResponse = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1024,
-      temperature: userTopic ? 0.3 : 0.7,
+      ...claudeRequest(MODELS.main, { maxTokens: 1024, temperature: userTopic ? 0.3 : 0.7 }),
       system: topicSystemPrompt,
       messages: [{ role: "user", content: topicUserMessage }],
     });

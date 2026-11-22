@@ -1,5 +1,6 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import { getAllDatasets } from "@/lib/datasets/index";
+import { MODELS, claudeRequest } from "@/lib/claude";
 
 export interface FollowUp {
   question: string;
@@ -55,9 +56,7 @@ export async function generateFollowUps(
 
   try {
     const response = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1024,
-      temperature: 0,
+      ...claudeRequest(MODELS.main, { maxTokens: 1024, temperature: 0 }),
       system: `You suggest follow-up questions for readers of a data journalism article on Open Health Data Hub. Each question is pre-filled into a natural-language query tool that turns it into SQL against one dataset.
 
 Available datasets:

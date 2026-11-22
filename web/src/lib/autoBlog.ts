@@ -13,6 +13,7 @@ import {
 } from "@/lib/blogGeneration";
 import { postTweetThread, isTwitterConfigured } from "@/lib/twitter";
 import { generateFollowUps } from "@/lib/blogFollowUps";
+import { MODELS, claudeRequest } from "@/lib/claude";
 
 const RAILWAY_QUERY_URL = process.env.RAILWAY_QUERY_URL;
 const RAILWAY_API_KEY = process.env.RAILWAY_API_KEY;
@@ -136,9 +137,7 @@ Existing titles to avoid overlap with:
 ${existingTitles.map((t) => `- ${t}`).join("\n") || "(none yet)"}`;
 
   const response = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 4096,
-    temperature: 0.8,
+    ...claudeRequest(MODELS.main, { maxTokens: 4096, temperature: 0.8 }),
     system: systemPrompt,
     messages: [{ role: "user", content: userMessage }],
   });
@@ -160,9 +159,7 @@ ${existingTitles.map((t) => `- ${t}`).join("\n") || "(none yet)"}`;
 
   // Ask Claude to rank and pick the best idea
   const rankResponse = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 256,
-    temperature: 0,
+    ...claudeRequest(MODELS.main, { maxTokens: 256, temperature: 0 }),
     system: `You rank blog post ideas. Pick the single best idea from the list based on: (1) personal health impact — topics about conditions, risks, or outcomes that affect individuals directly outperform system/industry analysis by 3-4x on social media, (2) how compelling and declarative the title is (reject any title phrased as a question), (3) whether the analysis questions will yield a specific surprising number, (4) shareability — would someone retweet this? Return ONLY the zero-based index number of the best idea (e.g. "2"). No explanation.`,
     messages: [
       {

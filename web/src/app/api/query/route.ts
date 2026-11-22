@@ -5,6 +5,7 @@ import { checkRateLimit } from "@/lib/rateLimit";
 import { validateSQL, inferChartType } from "@/lib/sqlValidation";
 import { executeRemoteQuery } from "@/lib/railway";
 import { recordRequest, recordQuery, recordFeedItem } from "@/lib/metrics";
+import { MODELS, claudeRequest } from "@/lib/claude";
 
 export const maxDuration = 60; // Allow up to 60s for Claude + Railway query
 
@@ -203,9 +204,7 @@ ${UNIVERSAL_SQL_RULES}`;
 
     const claudeStart = Date.now();
     const message = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1024,
-      temperature: 0,
+      ...claudeRequest(MODELS.main, { maxTokens: 1024, temperature: 0 }),
       system: systemBlocks,
       messages,
     });
@@ -282,9 +281,7 @@ ${UNIVERSAL_SQL_RULES}`;
 
       const retryClaudeStart = Date.now();
       const retryMessage = await client.messages.create({
-        model: "claude-sonnet-4-6",
-        max_tokens: 1024,
-        temperature: 0,
+        ...claudeRequest(MODELS.main, { maxTokens: 1024, temperature: 0 }),
         system: retrySystemBlocks,
         messages: [
           { role: "user", content: question },

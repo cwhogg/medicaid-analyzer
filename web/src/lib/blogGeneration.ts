@@ -3,6 +3,7 @@ import { validateSQL } from "@/lib/sqlValidation";
 import { executeRemoteQuery } from "@/lib/railway";
 import type { DatasetConfig } from "@/lib/datasets/index";
 import type { FollowUp } from "@/lib/blogFollowUps";
+import { MODELS, claudeRequest } from "@/lib/claude";
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_OWNER = "cwhogg";
@@ -90,9 +91,7 @@ export async function runAnalyses(
 
     try {
       const sqlResponse = await client.messages.create({
-        model: "claude-sonnet-4-6",
-        max_tokens: 1024,
-        temperature: 0,
+        ...claudeRequest(MODELS.main, { maxTokens: 1024, temperature: 0 }),
         system: [
           {
             type: "text" as const,
@@ -197,9 +196,7 @@ export async function extractFacts(
 
   try {
     const response = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1024,
-      temperature: 0,
+      ...claudeRequest(MODELS.main, { maxTokens: 1024, temperature: 0 }),
       system: `You are a facts extraction engine. Your ONLY job is to pull explicit numbers and findings from query results into a structured JSON object.
 
 STRICT RULES:
@@ -294,9 +291,7 @@ export async function writeArticle(
   const today = new Date().toISOString().split("T")[0];
 
   const writeResponse = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 4096,
-    temperature: 0.3,
+    ...claudeRequest(MODELS.main, { maxTokens: 4096, temperature: 0.3 }),
     system: `You are a senior data journalist at Open Health Data Hub. This article uses ${dsConfig.label} data. Your readers are healthcare policy researchers, analysts, and journalists.
 
 ## Your job

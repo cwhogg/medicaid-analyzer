@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { MODELS, claudeRequest } from "@/lib/claude";
 
 const RAILWAY_QUERY_URL = process.env.RAILWAY_QUERY_URL;
 const RAILWAY_API_KEY = process.env.RAILWAY_API_KEY;
@@ -143,9 +144,7 @@ Include 4-8 insights and 4-8 recommendations. Focus on patterns, not individual 
   try {
     const client = new Anthropic({ apiKey });
     const response = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 4096,
-      temperature: 0.3,
+      ...claudeRequest(MODELS.main, { maxTokens: 4096, temperature: 0.3 }),
       system: systemPrompt,
       messages: [{ role: "user", content: userPrompt }],
     });

@@ -269,6 +269,7 @@ All use coding: 1=Yes, 2=No, 7=Don't know, 9=Refused — exclude 7 and 9.
 ### Depression Screener (PHQ-9)
 
 Nine items, each scored 0-3 (0=Not at all, 1=Several days, 2=More than half the days, 3=Nearly every day). 7=Refused, 9=Don't know — exclude both.
+Asked of participants aged 12 and older (CDC's published PHQ-9 prevalence uses ages 12+). Filter \`RIDAGEYR >= 18\` only when the question is about adults.
 
 - \`DPQ010\` — Little interest or pleasure in doing things
 - \`DPQ020\` — Feeling down, depressed, or hopeless

@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { getDataset, getAllDatasets } from "@/lib/datasets/index";
 import { getAllPosts } from "@/lib/content";
+import { MODELS, claudeRequest } from "@/lib/claude";
 
 export const maxDuration = 60;
 
@@ -132,9 +133,7 @@ ${existingTitles.map((t) => `- ${t}`).join("\n") || "(none yet)"}`;
 
   try {
     const response = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 4096,
-      temperature: 0.8,
+      ...claudeRequest(MODELS.main, { maxTokens: 4096, temperature: 0.8 }),
       system: systemPrompt,
       messages: [{ role: "user", content: userMessage }],
     });

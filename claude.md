@@ -30,7 +30,7 @@ Run `npm run build` after completing each major step to catch regressions early.
 - **Styling**: Tailwind CSS — dark theme (#0A0A0A bg, #EA580C orange accent)
 - **Fonts**: Outfit (headings/body) + JetBrains Mono (data/code)
 - **Query engine**: @duckdb/duckdb-wasm — client-side SQL execution
-- **NL-to-SQL**: @anthropic-ai/sdk — Claude Sonnet, temperature 0
+- **NL-to-SQL**: @anthropic-ai/sdk — Claude Sonnet 5.5 (models and per-model request settings in `web/src/lib/claude.ts`)
 - **Charts**: Recharts
 - **Icons**: lucide-react
 - **Utilities**: clsx, tailwind-merge
@@ -141,9 +141,9 @@ Build GlassCard, Navbar, Footer, formatters. Final polish pass. **Verification**
 - Pin all dependency versions in `package.json`. Do not use `latest` or `*` version ranges.
 
 ### API Cost Control
-- Use `claude-sonnet-4-6` (not Opus) for the NL-to-SQL API route.
-- Set `max_tokens: 1024` on Claude API calls — SQL responses do not need more.
-- Temperature must be `0` for deterministic SQL generation.
+- Pick models from `MODELS` in `web/src/lib/claude.ts` (Sonnet for NL-to-SQL, not Opus) and build every `messages.create` call with `...claudeRequest(model, { maxTokens, temperature })`. It drops `temperature` for Claude 5.x (which rejects it) and turns thinking off so small budgets aren't spent thinking.
+- Set `max_tokens: 1024` on NL-to-SQL calls — SQL responses do not need more.
+- Run `npx tsx eval/run-eval.ts --layer2-only` against a local dev server before changing models or prompts.
 
 ### Error Handling
 - Every async operation must have error handling. No unhandled promise rejections.

@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { getDataset } from "@/lib/datasets/index";
+import { MODELS, claudeRequest } from "@/lib/claude";
 
 export const maxDuration = 60;
 
@@ -106,9 +107,7 @@ ${feedback ? `User feedback for improvement:\n${feedback}` : "Please improve thi
 
   try {
     const response = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1024,
-      temperature: 0.5,
+      ...claudeRequest(MODELS.main, { maxTokens: 1024, temperature: 0.5 }),
       system: systemPrompt,
       messages: [{ role: "user", content: userMessage }],
     });
@@ -196,9 +195,7 @@ async function improveArticle(
 
   try {
     const response = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 4096,
-      temperature: 0.3,
+      ...claudeRequest(MODELS.main, { maxTokens: 4096, temperature: 0.3 }),
       system: `You are a data journalist editing an article for Open Health Data Hub. This article is about ${dsConfig.label} data.
 
 ## Number integrity rules
